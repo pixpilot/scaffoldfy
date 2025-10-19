@@ -130,7 +130,7 @@ export async function executeDelete(config: DeleteConfig): Promise<void> {
     const fullPath = path.join(process.cwd(), relativePath);
 
     if (fs.existsSync(fullPath)) {
-      execSync(`npx rimraf "${fullPath}"`, { stdio: 'inherit' });
+      fs.rmSync(fullPath, { recursive: true, force: true });
     }
   }
 }
@@ -180,7 +180,7 @@ export async function executeGitInit(config: GitInitConfig): Promise<void> {
   if (config.removeExisting) {
     const gitDir = path.join(process.cwd(), '.git');
     if (fs.existsSync(gitDir)) {
-      execSync(`npx rimraf "${gitDir}"`, { stdio: 'inherit' });
+      fs.rmSync(gitDir, { recursive: true, force: true });
     }
   }
 
