@@ -159,10 +159,25 @@ program
                   required: true,
                   enabled: true,
                   type: 'update-json',
+                  prompts: [
+                    {
+                      id: 'projectName',
+                      type: 'input',
+                      message: 'What is your project name?',
+                      default: 'my-project',
+                      required: true,
+                    },
+                    {
+                      id: 'includeTests',
+                      type: 'confirm',
+                      message: 'Include test files?',
+                      default: true,
+                    },
+                  ],
                   config: {
                     file: 'package.json',
                     updates: {
-                      name: '{{repoName}}',
+                      name: '{{projectName}}',
                       author: '{{author}}',
                     },
                   },

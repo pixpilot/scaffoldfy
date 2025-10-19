@@ -82,7 +82,9 @@ export async function collectConfig(dryRun = false): Promise<InitConfig> {
 
   // Detect organization from git URL - only set default if owner starts with @ or is an org
   const detectedOrgName =
-    gitInfo?.owner != null && gitInfo.owner !== '' ? `@${gitInfo.owner}` : '';
+    gitInfo?.owner != null && gitInfo.owner !== '' && gitInfo.owner.startsWith('@')
+      ? `${gitInfo.owner}`
+      : '';
 
   const orgName = await input({
     message: 'Organization name for packages (e.g., @myorg)',

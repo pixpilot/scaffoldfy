@@ -1,12 +1,13 @@
 /* eslint-disable no-await-in-loop */
 /* eslint-disable no-continue */
-import type { TaskDefinition } from './types.js';
+import type { PromptDefinition, TaskDefinition } from './types.js';
 import { execSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
 import { promisify } from 'node:util';
 import { collectConfig, validateConfig } from './config.js';
+import { collectPrompts, validatePrompts } from './prompts.js';
 import { loadInitializationState, saveInitializationState } from './state.js';
 import { runTask } from './task-executors.js';
 import { topologicalSort } from './task-resolver.js';
@@ -78,6 +79,31 @@ export async function runInitialization(
     validationErrors.forEach((err) => log(`  - ${err}`, 'error'));
     console.log('');
     process.exit(1);
+  }
+
+  // Collect all prompts from tasks
+  const allPrompts: PromptDefinition[] = [];
+  for (const task of sortedTasks) {
+    if (task.prompts && task.prompts.length > 0) {
+      allPrompts.push(...task.prompts);
+    }
+  }
+
+  // Validate prompts
+  if (allPrompts.length > 0) {
+    const promptErrors = validatePrompts(allPrompts);
+    if (promptErrors.length > 0) {
+      log('❌ Prompt validation errors:', 'error');
+      promptErrors.forEach((err) => log(`  - ${err}`, 'error'));
+      console.log('');
+      process.exit(1);
+    }
+
+    // Collect prompt answers
+    const promptAnswers = await collectPrompts(allPrompts);
+
+    // Merge prompt answers into config
+    Object.assign(config, promptAnswers);
   }
 
   console.log('');

@@ -45,6 +45,66 @@
             },
             "description": "IDs of tasks that must run before this one"
           },
+          "prompts": {
+            "type": "array",
+            "description": "Interactive prompts to collect user input before running the task",
+            "items": {
+              "type": "object",
+              "required": ["id", "type", "message"],
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "Unique identifier for the prompt value (alphanumeric, underscores, and hyphens only)",
+                  "pattern": "^[\\w-]+$"
+                },
+                "type": {
+                  "type": "string",
+                  "enum": ["input", "select", "confirm", "password", "number"],
+                  "description": "Type of prompt to display"
+                },
+                "message": {
+                  "type": "string",
+                  "description": "Prompt message to display to the user"
+                },
+                "required": {
+                  "type": "boolean",
+                  "description": "Whether the prompt value is required (cannot be empty)"
+                },
+                "default": {
+                  "description": "Default value for the prompt"
+                },
+                "placeholder": {
+                  "type": "string",
+                  "description": "Placeholder text (for input prompts)"
+                },
+                "min": {
+                  "type": "number",
+                  "description": "Minimum value (for number prompts)"
+                },
+                "max": {
+                  "type": "number",
+                  "description": "Maximum value (for number prompts)"
+                },
+                "choices": {
+                  "type": "array",
+                  "description": "Available choices (for select prompts)",
+                  "items": {
+                    "type": "object",
+                    "required": ["name", "value"],
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "description": "Display name for the choice"
+                      },
+                      "value": {
+                        "description": "Value to use when this choice is selected"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
           "type": {
             "type": "string",
             "enum": [

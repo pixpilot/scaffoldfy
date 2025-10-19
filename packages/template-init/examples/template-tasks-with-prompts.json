@@ -1,0 +1,94 @@
+{
+  "$schema": "../schema/tasks.schema.json",
+  "tasks": [
+    {
+      "id": "configure-project",
+      "name": "Configure Project",
+      "description": "Set up project with custom configuration from user prompts",
+      "required": true,
+      "enabled": true,
+      "type": "update-json",
+      "prompts": [
+        {
+          "id": "projectName",
+          "type": "input",
+          "message": "What is your project name?",
+          "default": "my-awesome-app",
+          "required": true
+        },
+        {
+          "id": "projectDescription",
+          "type": "input",
+          "message": "Project description",
+          "default": "An awesome application"
+        },
+        {
+          "id": "projectVersion",
+          "type": "input",
+          "message": "Initial version",
+          "default": "0.1.0"
+        },
+        {
+          "id": "useTypeScript",
+          "type": "confirm",
+          "message": "Use TypeScript?",
+          "default": true
+        },
+        {
+          "id": "includeTests",
+          "type": "confirm",
+          "message": "Include test setup?",
+          "default": true
+        },
+        {
+          "id": "license",
+          "type": "select",
+          "message": "Select a license",
+          "choices": [
+            { "name": "MIT", "value": "MIT" },
+            { "name": "Apache-2.0", "value": "Apache-2.0" },
+            { "name": "GPL-3.0", "value": "GPL-3.0" },
+            { "name": "ISC", "value": "ISC" },
+            { "name": "Unlicense", "value": "Unlicense" }
+          ],
+          "default": "MIT"
+        }
+      ],
+      "config": {
+        "file": "package.json",
+        "updates": {
+          "name": "{{projectName}}",
+          "version": "{{projectVersion}}",
+          "description": "{{projectDescription}}",
+          "license": "{{license}}",
+          "author": "{{author}}"
+        }
+      }
+    },
+    {
+      "id": "setup-readme",
+      "name": "Setup README",
+      "description": "Create README with project information",
+      "required": true,
+      "enabled": true,
+      "type": "template",
+      "dependencies": ["configure-project"],
+      "config": {
+        "file": "README.md",
+        "template": "# {{projectName}}\n\n{{projectDescription}}\n\n## Installation\n\n```bash\npnpm install\n```\n\n## Development\n\n```bash\npnpm dev\n```\n\n## License\n\n{{license}}\n"
+      }
+    },
+    {
+      "id": "cleanup-example-files",
+      "name": "Cleanup Example Files",
+      "description": "Remove example and template files",
+      "required": false,
+      "enabled": true,
+      "type": "conditional-delete",
+      "config": {
+        "condition": "!includeTests",
+        "paths": ["test", "tests", "__tests__", "*.test.ts", "*.spec.ts"]
+      }
+    }
+  ]
+}
