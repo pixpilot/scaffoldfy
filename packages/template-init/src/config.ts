@@ -3,7 +3,8 @@
  */
 
 import type { InitConfig } from './types.js';
-import { getGitRepoInfo, log, prompt, promptYesNo } from './utils.js';
+import { confirm, input, select } from '@inquirer/prompts';
+import { getGitRepoInfo, log } from './utils.js';
 
 /**
  * Validate the initialization configuration
@@ -58,30 +59,55 @@ export async function collectConfig(dryRun = false): Promise<InitConfig> {
   const gitInfo = getGitRepoInfo();
 
   // Get repository information
-  const repoOwner = await prompt('Repository owner/organization', gitInfo?.owner ?? '');
-  const repoName = await prompt('Repository name', gitInfo?.name ?? '');
-  const repoUrl = await prompt(
-    'Repository URL',
-    gitInfo?.url ?? `https://github.com/${repoOwner}/${repoName}.git`,
-  );
+  const repoOwner = await input({
+    message: 'Repository owner/organization',
+    default: gitInfo?.owner ?? '',
+  });
+
+  const repoName = await input({
+    message: 'Repository name',
+    default: gitInfo?.name ?? '',
+  });
+
+  const repoUrl = await input({
+    message: 'Repository URL',
+    default: gitInfo?.url ?? `https://github.com/${repoOwner}/${repoName}.git`,
+  });
 
   // Get package configuration
-  const author = await prompt('Author name (for package.json)', '');
-  const orgName = await prompt(
-    'Organization name for packages (e.g., @myorg)',
-    repoOwner ? `@${repoOwner}` : '',
-  );
-  const baseRepoUrl = await prompt(
-    'Base repository URL (for package links)',
-    `https://github.com/${repoOwner}/${repoName}`,
-  );
-  const defaultBundler = await prompt('Default bundler (tsc/tsdown)', 'tsc');
+  const author = await input({
+    message: 'Author name (for package.json)',
+    default: '',
+  });
+
+  // Detect organization from git URL - only set default if owner starts with @ or is an org
+  const detectedOrgName =
+    gitInfo?.owner != null && gitInfo.owner !== '' ? `@${gitInfo.owner}` : '';
+
+  const orgName = await input({
+    message: 'Organization name for packages (e.g., @myorg)',
+    default: detectedOrgName,
+  });
+
+  const baseRepoUrl = await input({
+    message: 'Base repository URL (for package links)',
+    default: `https://github.com/${repoOwner}/${repoName}`,
+  });
+
+  const defaultBundler = await select({
+    message: 'Default bundler',
+    choices: [
+      { name: 'TypeScript Compiler (tsc)', value: 'tsc' },
+      { name: 'TSDown (faster builds)', value: 'tsdown' },
+    ],
+    default: 'tsc',
+  });
 
   // Ask about example packages
-  const keepExamplePackages = await promptYesNo(
-    'Keep example packages? (helpful for reference)',
-    false,
-  );
+  const keepExamplePackages = await confirm({
+    message: 'Keep example packages? (helpful for reference)',
+    default: false,
+  });
 
   console.log('');
   return {

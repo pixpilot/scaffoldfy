@@ -47,10 +47,29 @@ export async function executeUpdateJson(
   const content = await readFile(filePath, 'utf-8');
   const json = JSON.parse(content) as Record<string, unknown>;
 
+  /**
+   * Recursively interpolate template strings in objects
+   */
+  function interpolateValue(value: unknown): unknown {
+    if (typeof value === 'string') {
+      return interpolateTemplate(value, initConfig);
+    }
+    if (Array.isArray(value)) {
+      return value.map((item) => interpolateValue(item));
+    }
+    if (value != null && typeof value === 'object') {
+      const result: Record<string, unknown> = {};
+      for (const [k, v] of Object.entries(value)) {
+        result[k] = interpolateValue(v);
+      }
+      return result;
+    }
+    return value;
+  }
+
   // Apply updates
   for (const [key, value] of Object.entries(updates)) {
-    const interpolatedValue =
-      typeof value === 'string' ? interpolateTemplate(value, initConfig) : value;
+    const interpolatedValue = interpolateValue(value);
 
     if (key.includes('.')) {
       setNestedProperty(json, key, interpolatedValue);

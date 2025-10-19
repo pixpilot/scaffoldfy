@@ -163,6 +163,37 @@ describe('task Executors', () => {
       expect(updatedContent.count).toBe(42);
       expect(updatedContent.items).toEqual(['a', 'b', 'c']);
     });
+
+    it('should interpolate nested object values with templates', async () => {
+      const testFile = 'package.json';
+      const initialContent = {
+        name: 'old-name',
+      };
+
+      fs.writeFileSync(testFile, JSON.stringify(initialContent, null, 2));
+
+      const config: UpdateJsonConfig = {
+        file: testFile,
+        updates: {
+          name: '{{repoName}}',
+          repository: {
+            type: 'git',
+            url: '{{repoUrl}}',
+          },
+          homepage: '{{baseRepoUrl}}',
+        },
+      };
+
+      await executeUpdateJson(config, mockConfig);
+
+      const updatedContent = JSON.parse(fs.readFileSync(testFile, 'utf-8'));
+      expect(updatedContent.name).toBe('test-repo');
+      expect(updatedContent.repository).toEqual({
+        type: 'git',
+        url: 'https://github.com/test-owner/test-repo.git',
+      });
+      expect(updatedContent.homepage).toBe('https://github.com/test-owner/test-repo');
+    });
   });
 
   describe('executeTemplate', () => {

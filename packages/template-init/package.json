@@ -61,6 +61,7 @@
     "format": "prettier --check . --ignore-path ../../.gitignore --ignore-path ../../.prettierignore"
   },
   "dependencies": {
+    "@inquirer/prompts": "^7.9.0",
     "commander": "^14.0.1"
   },
   "devDependencies": {
