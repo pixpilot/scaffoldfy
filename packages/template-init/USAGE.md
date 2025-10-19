@@ -96,8 +96,8 @@ await runWithTasks(tasksJson.tasks, {
 ### Custom Task Example
 
 ```typescript
-import type {TaskDefinition} from '@pixpilot/template-init';
-import { runWithTasks  } from '@pixpilot/template-init';
+import type { TaskDefinition } from '@pixpilot/template-init';
+import { runWithTasks } from '@pixpilot/template-init';
 
 const customTasks: TaskDefinition[] = [
   {
