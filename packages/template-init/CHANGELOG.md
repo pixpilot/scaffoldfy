@@ -1,5 +1,11 @@
 # @pixpilot/template-init
 
+## 0.0.4
+
+### Patch Changes
+
+- update script header and remove direct execution
+
 ## 0.0.3
 
 ### Patch Changes
