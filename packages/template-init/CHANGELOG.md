@@ -1,5 +1,11 @@
 # @pixpilot/template-init
 
+## 0.2.0
+
+### Minor Changes
+
+- add support for embedded prompts in task definitions
+
 ## 0.1.0
 
 ### Minor Changes
