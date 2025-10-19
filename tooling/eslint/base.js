@@ -1,12 +1,13 @@
 import makeConfig from '@pixpilot/eslint-config';
 
 /**
- * @type {ReturnType<typeof makeConfig>}
+ * @type {(options?: { rules?: Record<string, any> }) => Promise<ReturnType<typeof makeConfig>>}
  */
-const baseConfig = makeConfig({
-  pnpm: false,
-  turbo: true,
-});
-
-// eslint-disable-next-line antfu/no-top-level-await
-export default await baseConfig;
+export default async (options = {}) => {
+  const base = await makeConfig({ pnpm: false, turbo: true });
+  if (options.rules) {
+    // Assume base is an array of config objects, add a new object with the additional rules
+    return [...base, { rules: options.rules }];
+  }
+  return base;
+};

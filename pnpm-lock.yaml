@@ -102,7 +102,11 @@ importers:
         specifier: catalog:dev
         version: 3.2.4(@types/debug@4.1.12)(@types/node@22.18.11)(@vitest/ui@3.2.4)(jiti@2.6.1)(terser@5.43.1)(tsx@4.20.6)(yaml@2.8.1)
 
-  packages/example-package:
+  packages/template-init:
+    dependencies:
+      commander:
+        specifier: ^14.0.1
+        version: 14.0.1
     devDependencies:
       '@internal/eslint-config':
         specifier: workspace:*
@@ -119,12 +123,18 @@ importers:
       '@internal/vitest-config':
         specifier: workspace:*
         version: link:../../tooling/vitest
-      '@pixpilot/dev-config':
-        specifier: catalog:dev
-        version: 3.16.0
       '@types/node':
         specifier: catalog:dev
         version: 22.18.11
+      eslint:
+        specifier: catalog:dev
+        version: 9.38.0(jiti@2.6.1)
+      tsdown:
+        specifier: catalog:dev
+        version: 0.15.8(typescript@5.9.3)
+      typescript:
+        specifier: catalog:dev
+        version: 5.9.3
 
   tooling/eslint:
     dependencies:

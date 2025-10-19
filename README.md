@@ -1,4 +1,4 @@
-# pnpm-turbo-monorepo-template
+# template-toolkit
 
 > ⚠️ **Opinionated Template:**
 > This monorepo template is designed for our internal standards and workflows. Feel free to use, adapt, and extend it for your own projects.

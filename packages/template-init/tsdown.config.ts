@@ -5,7 +5,10 @@ const MAX_BUNDLE_SIZE_KB = 20;
 
 export default defineConfig({
   bundleSize: MAX_BUNDLE_SIZE_KB * KB,
-  entry: 'src/index.ts',
+  entry: ['src/index.ts', 'src/cli.ts'],
   dts: true,
   minify: true,
+  clean: true,
+  shims: true, // Add Node.js shims for bin script
+  copy: [{ from: 'schema/tasks.schema.json', to: 'dist/schema/tasks.schema.json' }],
 });
