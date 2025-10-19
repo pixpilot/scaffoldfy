@@ -1,5 +1,11 @@
 # @pixpilot/template-init
 
+## 0.1.0
+
+### Minor Changes
+
+- add support for interactive prompts using `@inquirer/prompts`
+
 ## 0.0.4
 
 ### Patch Changes
