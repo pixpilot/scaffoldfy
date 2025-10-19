@@ -72,9 +72,7 @@ describe('state Management', () => {
         repoUrl: 'https://github.com/test-owner/test-repo.git',
         author: 'Test Author',
         baseRepoUrl: 'https://github.com/test-owner/test-repo',
-        defaultBundler: 'tsc',
         orgName: '@test-org',
-        keepExamplePackages: false,
       };
 
       const metadata = {
@@ -119,9 +117,7 @@ describe('state Management', () => {
         repoUrl: 'https://github.com/test-owner/test-repo.git',
         author: 'Test Author',
         baseRepoUrl: 'https://github.com/test-owner/test-repo',
-        defaultBundler: 'tsc',
         orgName: '@test-org',
-        keepExamplePackages: false,
       };
 
       const completedTasks = ['task1', 'task2', 'task3'];
@@ -146,9 +142,7 @@ describe('state Management', () => {
         repoUrl: 'https://github.com/test-owner/test-repo.git',
         author: 'Test Author',
         baseRepoUrl: 'https://github.com/test-owner/test-repo',
-        defaultBundler: 'tsc',
         orgName: '@test-org',
-        keepExamplePackages: false,
       };
 
       // Ensure file doesn't exist before test
@@ -168,9 +162,7 @@ describe('state Management', () => {
         repoUrl: 'https://github.com/test-owner/test-repo.git',
         author: 'Test Author',
         baseRepoUrl: 'https://github.com/test-owner/test-repo',
-        defaultBundler: 'tsc',
         orgName: '@test-org',
-        keepExamplePackages: false,
       };
 
       const before = new Date().toISOString();
@@ -192,9 +184,7 @@ describe('state Management', () => {
         repoUrl: 'https://github.com/old-owner/old-repo.git',
         author: 'Old Author',
         baseRepoUrl: 'https://github.com/old-owner/old-repo',
-        defaultBundler: 'tsc',
         orgName: '@old-org',
-        keepExamplePackages: false,
       };
 
       saveInitializationState(config1, ['task1'], false);
@@ -205,9 +195,7 @@ describe('state Management', () => {
         repoUrl: 'https://github.com/new-owner/new-repo.git',
         author: 'New Author',
         baseRepoUrl: 'https://github.com/new-owner/new-repo',
-        defaultBundler: 'tsdown',
         orgName: '@new-org',
-        keepExamplePackages: true,
       };
 
       saveInitializationState(config2, ['task2', 'task3'], false);
@@ -226,9 +214,7 @@ describe('state Management', () => {
         repoUrl: 'https://github.com/test-owner/test-repo.git',
         author: 'Test Author',
         baseRepoUrl: 'https://github.com/test-owner/test-repo',
-        defaultBundler: 'tsc',
         orgName: '@test-org',
-        keepExamplePackages: false,
       };
 
       saveInitializationState(config, [], false);
@@ -248,9 +234,7 @@ describe('state Management', () => {
         repoUrl: 'https://github.com/round-trip-owner/round-trip-repo.git',
         author: 'Round Trip Author',
         baseRepoUrl: 'https://github.com/round-trip-owner/round-trip-repo',
-        defaultBundler: 'tsdown',
         orgName: '@round-trip',
-        keepExamplePackages: true,
       };
 
       const completedTasks = ['init', 'config', 'finalize'];

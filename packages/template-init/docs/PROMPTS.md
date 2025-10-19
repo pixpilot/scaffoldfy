@@ -175,20 +175,167 @@ Here's a complete example showing how to use prompts in `template-tasks.json`:
 }
 ```
 
+## Global Prompts
+
+You can mark prompts as **global** by setting `"global": true`. Global prompts are collected once at the beginning and their values are available to **all tasks**, not just the task where they're defined.
+
+### When to Use Global Prompts
+
+Use global prompts when:
+
+- Multiple tasks need the same value (e.g., project name, version, author)
+- You want to collect common information upfront
+- You want to avoid asking the user the same question multiple times
+
+### Example: Global Prompts
+
+```json
+{
+  "tasks": [
+    {
+      "id": "update-package-json",
+      "name": "Update package.json",
+      "description": "Set project metadata",
+      "required": true,
+      "enabled": true,
+      "type": "update-json",
+      "prompts": [
+        {
+          "id": "projectName",
+          "type": "input",
+          "message": "What is your project name?",
+          "global": true,
+          "required": true
+        },
+        {
+          "id": "projectVersion",
+          "type": "input",
+          "message": "Initial version",
+          "default": "0.1.0",
+          "global": true
+        }
+      ],
+      "config": {
+        "file": "package.json",
+        "updates": {
+          "name": "{{projectName}}",
+          "version": "{{projectVersion}}"
+        }
+      }
+    },
+    {
+      "id": "create-readme",
+      "name": "Create README",
+      "description": "Generate README file",
+      "required": true,
+      "enabled": true,
+      "type": "template",
+      "config": {
+        "file": "README.md",
+        "template": "# {{projectName}}\\n\\nVersion: {{projectVersion}}"
+      }
+    },
+    {
+      "id": "setup-config",
+      "name": "Setup Config",
+      "description": "Create config file",
+      "required": false,
+      "enabled": true,
+      "type": "update-json",
+      "prompts": [
+        {
+          "id": "enableDebug",
+          "type": "confirm",
+          "message": "Enable debug mode?",
+          "default": false
+        }
+      ],
+      "config": {
+        "file": "config.json",
+        "updates": {
+          "name": "{{projectName}}",
+          "debug": "{{enableDebug}}"
+        }
+      }
+    }
+  ]
+}
+```
+
+In this example:
+
+- `projectName` and `projectVersion` are marked as **global**
+- They are prompted once when the first task runs
+- Both values can be used in **all three tasks** (update-package-json, create-readme, setup-config)
+- `enableDebug` is **task-specific** and only available to the setup-config task
+
+### Prompt Collection Order
+
+When you run initialization:
+
+1. **Global prompts** are collected first (shown once, even if defined in multiple tasks)
+2. **Task-specific prompts** are collected afterwards
+
+This ensures users provide common information upfront before task-specific details.
+
 ## Using Prompt Values
 
 Prompt values are automatically merged into the configuration object and can be used anywhere template interpolation is supported:
 
-- `{{promptId}}` - Access prompt values in config
+- `{{promptId}}` - Access prompt values in config via template interpolation
 - Works in all task types (update-json, template, regex-replace, etc.)
 - Values are available alongside built-in config values (repoName, author, etc.)
+- **Global prompts** are available to all tasks
+- **Task-specific prompts** are only available within their task
+
+### Using Prompt Values in Conditions
+
+Prompt values can also be used directly in condition expressions for `delete` tasks:
+
+```json
+{
+  "id": "handle-example-packages",
+  "name": "Handle example packages",
+  "description": "Prompt user about keeping example packages and remove if not wanted",
+  "required": false,
+  "enabled": true,
+  "type": "delete",
+  "prompts": [
+    {
+      "id": "keepExamplePackages",
+      "type": "confirm",
+      "message": "Keep example packages? (helpful for reference)",
+      "default": true
+    }
+  ],
+  "config": {
+    "condition": "!keepExamplePackages",
+    "paths": ["packages/example-package"]
+  }
+}
+```
+
+In this example:
+
+- When the user answers **"No" (false)** to the confirm prompt, `keepExamplePackages` is `false`
+- The condition `!keepExamplePackages` evaluates to `true`, so the directories are deleted
+- When the user answers **"Yes" (true)**, `keepExamplePackages` is `true`
+- The condition `!keepExamplePackages` evaluates to `false`, so the directories are kept
+
+You can use any JavaScript expression in conditions, including:
+
+- Boolean values: `keepExamplePackages`, `!includeTests`
+- Comparisons: `framework === "react"`, `port > 3000`
+- String methods: `projectName.startsWith("my-")`
+- Logical operators: `useTypeScript && includeTests`
 
 ## Validation Rules
 
 Prompts are validated automatically:
 
 - **ID**: Must contain only alphanumeric characters, underscores, and hyphens
-- **ID uniqueness**: All prompt IDs across all tasks must be unique
+- **ID uniqueness**: All prompt IDs across all tasks must be unique (duplicates are only allowed if all instances are marked as global with the same definition)
+- **Global vs task-specific conflict**: A prompt ID cannot be used as both global and task-specific
 - **Required**: If `required: true`, empty values are rejected
 - **Number min/max**: Values must be within specified range
 - **Select choices**: At least one choice must be provided
@@ -230,9 +377,11 @@ export const tasks: TaskDefinition[] = [
 
 1. **Use descriptive IDs**: Choose clear, semantic IDs like `apiKey` instead of `key1`
 2. **Provide defaults**: Always provide sensible defaults when possible
-3. **Group related prompts**: Put prompts in the task where they're used
-4. **Validate inputs**: Use `required`, `min`, `max` to ensure valid data
-5. **Keep it simple**: Don't overwhelm users with too many prompts
+3. **Mark shared prompts as global**: If multiple tasks need the same value, mark the prompt as `"global": true`
+4. **Group related prompts**: Put prompts in the task where they're primarily used
+5. **Validate inputs**: Use `required`, `min`, `max` to ensure valid data
+6. **Keep it simple**: Don't overwhelm users with too many prompts
+7. **Collect global prompts first**: Define global prompts in your first task so they're collected early
 
 ## CLI Usage
 

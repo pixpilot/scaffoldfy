@@ -81,11 +81,25 @@ export async function runInitialization(
     process.exit(1);
   }
 
-  // Collect all prompts from tasks
+  // Collect all prompts from tasks and separate global vs task-specific
+  const globalPrompts: PromptDefinition[] = [];
+  const taskSpecificPrompts: PromptDefinition[] = [];
   const allPrompts: PromptDefinition[] = [];
+
   for (const task of sortedTasks) {
     if (task.prompts && task.prompts.length > 0) {
-      allPrompts.push(...task.prompts);
+      for (const prompt of task.prompts) {
+        if (prompt.global) {
+          // Check if this global prompt was already added from another task
+          if (!globalPrompts.some((p) => p.id === prompt.id)) {
+            globalPrompts.push(prompt);
+            allPrompts.push(prompt);
+          }
+        } else {
+          taskSpecificPrompts.push(prompt);
+          allPrompts.push(prompt);
+        }
+      }
     }
   }
 
@@ -99,11 +113,27 @@ export async function runInitialization(
       process.exit(1);
     }
 
-    // Collect prompt answers
-    const promptAnswers = await collectPrompts(allPrompts);
+    // Collect global prompts first
+    let globalAnswers: Record<string, unknown> = {};
+    if (globalPrompts.length > 0) {
+      console.log('');
+      log('📋 Global prompts (available to all tasks):', 'info');
+      console.log('');
+      globalAnswers = await collectPrompts(globalPrompts);
+      // Merge global answers into config immediately
+      Object.assign(config, globalAnswers);
+    }
 
-    // Merge prompt answers into config
-    Object.assign(config, promptAnswers);
+    // Collect task-specific prompts
+    if (taskSpecificPrompts.length > 0) {
+      if (globalPrompts.length > 0) {
+        log('📋 Task-specific prompts:', 'info');
+        console.log('');
+      }
+      const taskAnswers = await collectPrompts(taskSpecificPrompts);
+      // Merge task-specific answers into config
+      Object.assign(config, taskAnswers);
+    }
   }
 
   console.log('');

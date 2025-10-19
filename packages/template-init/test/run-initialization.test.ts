@@ -43,9 +43,8 @@ const mockConfig: InitConfig = {
   repoUrl: 'https://github.com/test-owner/test-repo.git',
   author: 'Test Author',
   baseRepoUrl: 'https://github.com/test-owner/test-repo',
-  defaultBundler: 'tsc',
+
   orgName: '@test-org',
-  keepExamplePackages: false,
 };
 
 const mockTasks: TaskDefinition[] = [

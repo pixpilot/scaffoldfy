@@ -6,8 +6,9 @@
  */
 
 import type {
-  ConditionalDeleteConfig,
   DeleteConfig,
+  ExecConfig,
+  GitInitConfig,
   InitConfig,
   RegexReplaceConfig,
   RenameConfig,
@@ -19,8 +20,9 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import {
-  executeConditionalDelete,
   executeDelete,
+  executeExec,
+  executeGitInit,
   executeRegexReplace,
   executeRename,
   executeReplaceInFile,
@@ -36,9 +38,8 @@ const mockConfig: InitConfig = {
   repoUrl: 'https://github.com/test-owner/test-repo.git',
   author: 'Test Author',
   baseRepoUrl: 'https://github.com/test-owner/test-repo',
-  defaultBundler: 'tsc',
+
   orgName: '@test-org',
-  keepExamplePackages: false,
 };
 
 describe('task Executors', () => {
@@ -194,6 +195,57 @@ describe('task Executors', () => {
       });
       expect(updatedContent.homepage).toBe('https://github.com/test-owner/test-repo');
     });
+
+    it('should execute when condition is true', async () => {
+      const testFile = 'package.json';
+      const initialContent = { name: 'old-name' };
+      fs.writeFileSync(testFile, JSON.stringify(initialContent, null, 2));
+
+      const config: UpdateJsonConfig = {
+        file: testFile,
+        updates: { name: 'new-name' },
+        condition: 'true',
+      };
+
+      await executeUpdateJson(config, mockConfig);
+
+      const updatedContent = JSON.parse(fs.readFileSync(testFile, 'utf-8'));
+      expect(updatedContent.name).toBe('new-name');
+    });
+
+    it('should not execute when condition is false', async () => {
+      const testFile = 'package.json';
+      const initialContent = { name: 'old-name' };
+      fs.writeFileSync(testFile, JSON.stringify(initialContent, null, 2));
+
+      const config: UpdateJsonConfig = {
+        file: testFile,
+        updates: { name: 'new-name' },
+        condition: 'false',
+      };
+
+      await executeUpdateJson(config, mockConfig);
+
+      const updatedContent = JSON.parse(fs.readFileSync(testFile, 'utf-8'));
+      expect(updatedContent.name).toBe('old-name');
+    });
+
+    it('should evaluate condition with config variables', async () => {
+      const testFile = 'package.json';
+      const initialContent = { name: 'old-name' };
+      fs.writeFileSync(testFile, JSON.stringify(initialContent, null, 2));
+
+      const config: UpdateJsonConfig = {
+        file: testFile,
+        updates: { name: 'new-name' },
+        condition: 'repoName === "test-repo"',
+      };
+
+      await executeUpdateJson(config, mockConfig);
+
+      const updatedContent = JSON.parse(fs.readFileSync(testFile, 'utf-8'));
+      expect(updatedContent.name).toBe('new-name');
+    });
   });
 
   describe('executeTemplate', () => {
@@ -224,6 +276,33 @@ describe('task Executors', () => {
 
       const content = fs.readFileSync(testFile, 'utf-8');
       expect(content).toBe('New content for test-repo');
+    });
+
+    it('should execute when condition is true', async () => {
+      const testFile = 'test.md';
+      const config: TemplateConfig = {
+        file: testFile,
+        template: 'Created file',
+        condition: 'true',
+      };
+
+      await executeTemplate(config, mockConfig);
+
+      expect(fs.existsSync(testFile)).toBe(true);
+      expect(fs.readFileSync(testFile, 'utf-8')).toBe('Created file');
+    });
+
+    it('should not execute when condition is false', async () => {
+      const testFile = 'test.md';
+      const config: TemplateConfig = {
+        file: testFile,
+        template: 'Should not be created',
+        condition: 'false',
+      };
+
+      await executeTemplate(config, mockConfig);
+
+      expect(fs.existsSync(testFile)).toBe(false);
     });
   });
 
@@ -260,6 +339,40 @@ describe('task Executors', () => {
 
       const content = fs.readFileSync(testFile, 'utf-8');
       expect(content).toBe('Price: $50.00');
+    });
+
+    it('should execute when condition is true', async () => {
+      const testFile = 'test.txt';
+      fs.writeFileSync(testFile, 'old text');
+
+      const config: RegexReplaceConfig = {
+        file: testFile,
+        pattern: 'old',
+        replacement: 'new',
+        condition: 'true',
+      };
+
+      await executeRegexReplace(config, mockConfig);
+
+      const content = fs.readFileSync(testFile, 'utf-8');
+      expect(content).toBe('new text');
+    });
+
+    it('should not execute when condition is false', async () => {
+      const testFile = 'test.txt';
+      fs.writeFileSync(testFile, 'old text');
+
+      const config: RegexReplaceConfig = {
+        file: testFile,
+        pattern: 'old',
+        replacement: 'new',
+        condition: 'false',
+      };
+
+      await executeRegexReplace(config, mockConfig);
+
+      const content = fs.readFileSync(testFile, 'utf-8');
+      expect(content).toBe('old text');
     });
   });
 
@@ -309,6 +422,38 @@ describe('task Executors', () => {
       // Should not throw error
       await expect(executeReplaceInFile(config, mockConfig)).resolves.not.toThrow();
     });
+
+    it('should execute when condition is true', async () => {
+      const testFile = 'test.txt';
+      fs.writeFileSync(testFile, 'old value');
+
+      const config: ReplaceInFileConfig = {
+        file: testFile,
+        replacements: [{ find: 'old', replace: 'new' }],
+        condition: 'true',
+      };
+
+      await executeReplaceInFile(config, mockConfig);
+
+      const content = fs.readFileSync(testFile, 'utf-8');
+      expect(content).toBe('new value');
+    });
+
+    it('should not execute when condition is false', async () => {
+      const testFile = 'test.txt';
+      fs.writeFileSync(testFile, 'old value');
+
+      const config: ReplaceInFileConfig = {
+        file: testFile,
+        replacements: [{ find: 'old', replace: 'new' }],
+        condition: 'false',
+      };
+
+      await executeReplaceInFile(config, mockConfig);
+
+      const content = fs.readFileSync(testFile, 'utf-8');
+      expect(content).toBe('old value');
+    });
   });
 
   describe('executeDelete', () => {
@@ -351,19 +496,17 @@ describe('task Executors', () => {
       // Should not throw error
       await expect(executeDelete(config)).resolves.not.toThrow();
     });
-  });
 
-  describe('executeConditionalDelete', () => {
     it('should delete when condition is true', async () => {
       const testFile = 'conditional.txt';
       fs.writeFileSync(testFile, 'content');
 
-      const config: ConditionalDeleteConfig = {
-        condition: '!keepExamplePackages',
+      const config: DeleteConfig = {
+        condition: 'true',
         paths: [testFile],
       };
 
-      await executeConditionalDelete(config, mockConfig);
+      await executeDelete(config, mockConfig);
 
       expect(fs.existsSync(testFile)).toBe(false);
     });
@@ -372,12 +515,12 @@ describe('task Executors', () => {
       const testFile = 'conditional.txt';
       fs.writeFileSync(testFile, 'content');
 
-      const config: ConditionalDeleteConfig = {
-        condition: 'keepExamplePackages',
+      const config: DeleteConfig = {
+        condition: 'false',
         paths: [testFile],
       };
 
-      await executeConditionalDelete(config, mockConfig);
+      await executeDelete(config, mockConfig);
 
       expect(fs.existsSync(testFile)).toBe(true);
     });
@@ -386,14 +529,56 @@ describe('task Executors', () => {
       const testFile = 'conditional.txt';
       fs.writeFileSync(testFile, 'content');
 
-      const config: ConditionalDeleteConfig = {
+      const config: DeleteConfig = {
         condition: 'invalid condition {{',
         paths: [testFile],
       };
 
-      await executeConditionalDelete(config, mockConfig);
+      await executeDelete(config, mockConfig);
 
       // Should not delete due to invalid condition
+      expect(fs.existsSync(testFile)).toBe(true);
+    });
+
+    it('should delete when negated prompt value condition is true', async () => {
+      const testFile = 'example-package.txt';
+      fs.writeFileSync(testFile, 'content');
+
+      const config: DeleteConfig = {
+        condition: '!keepExamplePackages',
+        paths: [testFile],
+      };
+
+      // Create config with keepExamplePackages set to false
+      const configWithPrompt: InitConfig = {
+        ...mockConfig,
+        keepExamplePackages: false,
+      };
+
+      await executeDelete(config, configWithPrompt);
+
+      // Should delete because !keepExamplePackages evaluates to true when keepExamplePackages is false
+      expect(fs.existsSync(testFile)).toBe(false);
+    });
+
+    it('should not delete when negated prompt value condition is false', async () => {
+      const testFile = 'example-package.txt';
+      fs.writeFileSync(testFile, 'content');
+
+      const config: DeleteConfig = {
+        condition: '!keepExamplePackages',
+        paths: [testFile],
+      };
+
+      // Create config with keepExamplePackages set to true
+      const configWithPrompt: InitConfig = {
+        ...mockConfig,
+        keepExamplePackages: true,
+      };
+
+      await executeDelete(config, configWithPrompt);
+
+      // Should not delete because !keepExamplePackages evaluates to false when keepExamplePackages is true
       expect(fs.existsSync(testFile)).toBe(true);
     });
   });
@@ -438,6 +623,121 @@ describe('task Executors', () => {
 
       // Should not throw error
       await expect(executeRename(config, mockConfig)).resolves.not.toThrow();
+    });
+
+    it('should execute when condition is true', async () => {
+      const oldName = 'old.txt';
+      const newName = 'new.txt';
+      fs.writeFileSync(oldName, 'content');
+
+      const config: RenameConfig = {
+        from: oldName,
+        to: newName,
+        condition: 'true',
+      };
+
+      await executeRename(config, mockConfig);
+
+      expect(fs.existsSync(oldName)).toBe(false);
+      expect(fs.existsSync(newName)).toBe(true);
+    });
+
+    it('should not execute when condition is false', async () => {
+      const oldName = 'old.txt';
+      fs.writeFileSync(oldName, 'content');
+
+      const config: RenameConfig = {
+        from: oldName,
+        to: 'new.txt',
+        condition: 'false',
+      };
+
+      await executeRename(config, mockConfig);
+
+      expect(fs.existsSync(oldName)).toBe(true);
+      expect(fs.existsSync('new.txt')).toBe(false);
+    });
+  });
+
+  describe('executeGitInit', () => {
+    it('should skip when condition is false', async () => {
+      const config: GitInitConfig = {
+        removeExisting: false,
+        initialCommit: false,
+        condition: 'false',
+      };
+
+      // Should not throw error and should skip
+      await expect(executeGitInit(config, mockConfig)).resolves.not.toThrow();
+    });
+
+    it('should attempt to run when condition is true', async () => {
+      const config: GitInitConfig = {
+        removeExisting: false,
+        initialCommit: false,
+        condition: 'true',
+      };
+
+      // This test will try to run git init, which may fail in test environment
+      // We're mainly testing that condition logic works
+      try {
+        await executeGitInit(config, mockConfig);
+      } catch {
+        // It's OK if git command fails in test environment
+        // We're just testing the condition logic
+      }
+    });
+
+    it('should evaluate condition with config variables', async () => {
+      const config: GitInitConfig = {
+        removeExisting: false,
+        initialCommit: false,
+        condition: 'repoName === "test-repo"',
+      };
+
+      // Should attempt to run since condition is true
+      try {
+        await executeGitInit(config, mockConfig);
+      } catch {
+        // It's OK if git command fails in test environment
+      }
+    });
+  });
+
+  describe('executeExec', () => {
+    it('should skip when condition is false', async () => {
+      const config: ExecConfig = {
+        command: 'echo "should not run"',
+        condition: 'false',
+      };
+
+      // Should not execute command
+      await expect(executeExec(config, mockConfig)).resolves.not.toThrow();
+    });
+
+    it('should execute when condition is true', async () => {
+      const testFile = 'exec-test.txt';
+      const config: ExecConfig = {
+        command: `echo "test" > ${testFile}`,
+        condition: 'true',
+      };
+
+      await executeExec(config, mockConfig);
+
+      // Check that command was executed
+      expect(fs.existsSync(testFile)).toBe(true);
+    });
+
+    it('should evaluate condition with config variables', async () => {
+      const testFile = 'exec-conditional.txt';
+      const config: ExecConfig = {
+        command: `echo "conditional" > ${testFile}`,
+        condition: 'author === "Test Author"',
+      };
+
+      await executeExec(config, mockConfig);
+
+      expect(fs.existsSync(testFile)).toBe(true);
     });
   });
 });

@@ -8,9 +8,7 @@ export interface InitConfig {
   repoUrl: string;
   author: string;
   baseRepoUrl: string;
-  defaultBundler: string;
   orgName: string;
-  keepExamplePackages: boolean;
   // Dynamic properties from prompts
   [key: string]: unknown;
 }
@@ -25,6 +23,7 @@ export interface BasePrompt {
   type: PromptType;
   message: string;
   required?: boolean; // If true, value must be provided (not empty)
+  global?: boolean; // If true, this prompt value is available to all tasks (not just the current task)
 }
 
 export interface InputPrompt extends BasePrompt {
@@ -59,7 +58,6 @@ export type TaskType =
   | 'regex-replace'
   | 'replace-in-file'
   | 'delete'
-  | 'conditional-delete'
   | 'rename'
   | 'git-init'
   | 'exec';
@@ -85,11 +83,13 @@ export interface TaskDefinition {
 export interface UpdateJsonConfig {
   file: string;
   updates: Record<string, unknown>;
+  condition?: string;
 }
 
 export interface TemplateConfig {
   file: string;
   template: string;
+  condition?: string;
 }
 
 export interface RegexReplaceConfig {
@@ -97,6 +97,7 @@ export interface RegexReplaceConfig {
   pattern: string;
   flags?: string;
   replacement: string;
+  condition?: string;
 }
 
 export interface ReplaceInFileConfig {
@@ -105,31 +106,31 @@ export interface ReplaceInFileConfig {
     find: string;
     replace: string;
   }>;
+  condition?: string;
 }
 
 export interface DeleteConfig {
   paths: string[];
-}
-
-export interface ConditionalDeleteConfig {
-  condition: string;
-  paths: string[];
+  condition?: string;
 }
 
 export interface RenameConfig {
   from: string;
   to: string;
+  condition?: string;
 }
 
 export interface GitInitConfig {
   removeExisting: boolean;
   initialCommit: boolean;
   message?: string;
+  condition?: string;
 }
 
 export interface ExecConfig {
   command: string;
   cwd?: string;
+  condition?: string;
 }
 
 export interface InitializationMetadata {
@@ -137,4 +138,11 @@ export interface InitializationMetadata {
   config: InitConfig;
   completedTasks: string[];
   version: string;
+}
+
+/**
+ * Configuration file structure for template tasks
+ */
+export interface TasksConfiguration {
+  tasks: TaskDefinition[];
 }

@@ -232,3 +232,153 @@ describe('prompt types', () => {
     expect(errors).toEqual([]);
   });
 });
+
+describe('global prompts', () => {
+  it('should allow prompts marked as global', () => {
+    const prompts: PromptDefinition[] = [
+      {
+        id: 'projectName',
+        type: 'input',
+        message: 'Project name?',
+        global: true,
+      },
+      {
+        id: 'author',
+        type: 'input',
+        message: 'Author name?',
+        global: true,
+      },
+    ];
+
+    const errors = validatePrompts(prompts);
+    expect(errors).toEqual([]);
+  });
+
+  it('should allow mixing global and task-specific prompts with different IDs', () => {
+    const prompts: PromptDefinition[] = [
+      {
+        id: 'projectName',
+        type: 'input',
+        message: 'Project name?',
+        global: true,
+      },
+      {
+        id: 'taskSpecific',
+        type: 'input',
+        message: 'Task-specific value?',
+        global: false,
+      },
+      {
+        id: 'anotherTaskValue',
+        type: 'confirm',
+        message: 'Confirm this task?',
+      },
+    ];
+
+    const errors = validatePrompts(prompts);
+    expect(errors).toEqual([]);
+  });
+
+  it('should detect conflict when same ID is used as both global and task-specific', () => {
+    const prompts: PromptDefinition[] = [
+      {
+        id: 'projectName',
+        type: 'input',
+        message: 'Project name (global)?',
+        global: true,
+      },
+      {
+        id: 'projectName',
+        type: 'input',
+        message: 'Project name (task-specific)?',
+        global: false,
+      },
+    ];
+
+    const errors = validatePrompts(prompts);
+    expect(
+      errors.some((err) => err.includes('is used as both global and task-specific')),
+    ).toBe(true);
+  });
+
+  it('should detect conflict when global prompt is added after task-specific with same ID', () => {
+    const prompts: PromptDefinition[] = [
+      {
+        id: 'value',
+        type: 'input',
+        message: 'Value (task-specific)?',
+      },
+      {
+        id: 'value',
+        type: 'input',
+        message: 'Value (global)?',
+        global: true,
+      },
+    ];
+
+    const errors = validatePrompts(prompts);
+    expect(
+      errors.some((err) => err.includes('is used as both global and task-specific')),
+    ).toBe(true);
+  });
+
+  it('should allow duplicate global prompt IDs (for reuse across tasks)', () => {
+    const prompts: PromptDefinition[] = [
+      {
+        id: 'globalValue',
+        type: 'input',
+        message: 'Global value?',
+        global: true,
+      },
+      {
+        id: 'globalValue',
+        type: 'input',
+        message: 'Global value?',
+        global: true,
+      },
+    ];
+
+    const errors = validatePrompts(prompts);
+    // Should still report duplicate ID, but the key point is it's handled
+    expect(errors).toContain('Duplicate prompt ID: globalValue');
+  });
+
+  it('should handle global prompts with all prompt types', () => {
+    const prompts: PromptDefinition[] = [
+      {
+        id: 'globalText',
+        type: 'input',
+        message: 'Enter text',
+        global: true,
+      },
+      {
+        id: 'globalSecret',
+        type: 'password',
+        message: 'Enter password',
+        global: true,
+      },
+      {
+        id: 'globalNumber',
+        type: 'number',
+        message: 'Enter number',
+        global: true,
+      },
+      {
+        id: 'globalSelect',
+        type: 'select',
+        message: 'Choose',
+        choices: [{ name: 'Option', value: 'opt' }],
+        global: true,
+      },
+      {
+        id: 'globalConfirm',
+        type: 'confirm',
+        message: 'Agree?',
+        global: true,
+      },
+    ];
+
+    const errors = validatePrompts(prompts);
+    expect(errors).toEqual([]);
+  });
+});

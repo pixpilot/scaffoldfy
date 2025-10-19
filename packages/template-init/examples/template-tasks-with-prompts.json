@@ -84,7 +84,7 @@
       "description": "Remove example and template files",
       "required": false,
       "enabled": true,
-      "type": "conditional-delete",
+      "type": "delete",
       "config": {
         "condition": "!includeTests",
         "paths": ["test", "tests", "__tests__", "*.test.ts", "*.spec.ts"]

@@ -14,9 +14,7 @@ describe('configuration Validation', () => {
       repoUrl: 'https://github.com/test-owner/test-repo.git',
       author: 'Test Author',
       baseRepoUrl: 'https://github.com/test-owner/test-repo',
-      defaultBundler: 'tsc',
       orgName: '@test-org',
-      keepExamplePackages: false,
     };
 
     const errors = validateConfig(config);
@@ -30,9 +28,7 @@ describe('configuration Validation', () => {
       repoUrl: 'https://github.com/test-owner/test-repo.git',
       author: 'Test Author',
       baseRepoUrl: 'https://github.com/test-owner/test-repo',
-      defaultBundler: 'tsdown',
       orgName: '@test-org',
-      keepExamplePackages: false,
     };
 
     const errors = validateConfig(config);
@@ -46,9 +42,7 @@ describe('configuration Validation', () => {
       repoUrl: 'https://github.com/test/test.git',
       author: 'Test',
       baseRepoUrl: 'https://github.com/test/test',
-      defaultBundler: 'tsc',
       orgName: '@test',
-      keepExamplePackages: false,
     } as InitConfig;
 
     const errors = validateConfig(config);
@@ -63,64 +57,12 @@ describe('configuration Validation', () => {
       repoUrl: 'https://github.com/test/test.git',
       author: 'Test',
       baseRepoUrl: 'https://github.com/test/test',
-      defaultBundler: 'tsc',
       orgName: '@test',
-      keepExamplePackages: false,
     } as InitConfig;
 
     const errors = validateConfig(config);
     expect(errors.length).toBeGreaterThan(0);
     expect(errors.some((e) => e.includes('Repository owner'))).toBe(true);
-  });
-
-  it('should catch invalid organization name format', () => {
-    const config = {
-      repoName: 'test',
-      repoOwner: 'test',
-      repoUrl: 'https://github.com/test/test.git',
-      author: 'Test',
-      baseRepoUrl: 'https://github.com/test/test',
-      defaultBundler: 'tsc',
-      orgName: 'invalid-org', // Missing @
-      keepExamplePackages: false,
-    } as InitConfig;
-
-    const errors = validateConfig(config);
-    expect(errors.some((e) => e.includes('Organization name should start with @'))).toBe(
-      true,
-    );
-  });
-
-  it('should catch missing organization name', () => {
-    const config = {
-      repoName: 'test',
-      repoOwner: 'test',
-      repoUrl: 'https://github.com/test/test.git',
-      author: 'Test',
-      baseRepoUrl: 'https://github.com/test/test',
-      defaultBundler: 'tsc',
-      orgName: '',
-      keepExamplePackages: false,
-    } as InitConfig;
-
-    const errors = validateConfig(config);
-    expect(errors.some((e) => e.includes('Organization name is required'))).toBe(true);
-  });
-
-  it('should validate bundler options', () => {
-    const config = {
-      repoName: 'test',
-      repoOwner: 'test',
-      repoUrl: 'https://github.com/test/test.git',
-      author: 'Test',
-      baseRepoUrl: 'https://github.com/test/test',
-      defaultBundler: 'invalid',
-      orgName: '@test',
-      keepExamplePackages: false,
-    } as InitConfig;
-
-    const errors = validateConfig(config);
-    expect(errors.some((e) => e.includes('bundler'))).toBe(true);
   });
 
   it('should catch missing repository URL', () => {
@@ -130,9 +72,7 @@ describe('configuration Validation', () => {
       repoUrl: '',
       author: 'Test',
       baseRepoUrl: 'https://github.com/test/test',
-      defaultBundler: 'tsc',
       orgName: '@test',
-      keepExamplePackages: false,
     } as InitConfig;
 
     const errors = validateConfig(config);
@@ -146,9 +86,7 @@ describe('configuration Validation', () => {
       repoUrl: 'https://github.com/test/test.git',
       author: 'Test',
       baseRepoUrl: '',
-      defaultBundler: 'tsc',
       orgName: '@test',
-      keepExamplePackages: false,
     } as InitConfig;
 
     const errors = validateConfig(config);
@@ -162,9 +100,7 @@ describe('configuration Validation', () => {
       repoUrl: '',
       author: 'Test',
       baseRepoUrl: '',
-      defaultBundler: 'invalid',
       orgName: 'no-at-sign',
-      keepExamplePackages: false,
     } as InitConfig;
 
     const errors = validateConfig(config);
@@ -178,9 +114,7 @@ describe('configuration Validation', () => {
       repoUrl: 'https://github.com/test-owner/test-repo.git',
       author: 'Test Author',
       baseRepoUrl: 'https://github.com/test-owner/test-repo',
-      defaultBundler: 'tsc',
       orgName: '@test-org',
-      keepExamplePackages: false,
     };
 
     const errors = validateConfig(config);

@@ -139,14 +139,8 @@ export function setNestedProperty(
  */
 export function evaluateCondition(condition: string, config: InitConfig): boolean {
   try {
-    const context = {
-      keepExamplePackages: config.keepExamplePackages,
-      repoName: config.repoName,
-      repoOwner: config.repoOwner,
-      author: config.author,
-      orgName: config.orgName,
-      defaultBundler: config.defaultBundler,
-    };
+    // Use all config properties (including dynamic prompt values) as context
+    const context = { ...config };
 
     // Simple safe eval using Function constructor
     // Only allow access to the context variables

@@ -3,7 +3,6 @@
  */
 
 import type {
-  ConditionalDeleteConfig,
   DeleteConfig,
   ExecConfig,
   GitInitConfig,
@@ -34,7 +33,6 @@ describe('jSON Schema Validation', () => {
       'regex-replace',
       'replace-in-file',
       'delete',
-      'conditional-delete',
       'rename',
       'git-init',
       'exec',
@@ -46,8 +44,8 @@ describe('jSON Schema Validation', () => {
   it('should have config schemas for all task types', () => {
     const configSchemas = schema.properties.tasks.items.properties.config.oneOf;
 
-    // Should have 9 config schemas (one for each task type)
-    expect(configSchemas).toHaveLength(9);
+    // Should have 8 config schemas (one for each task type)
+    expect(configSchemas).toHaveLength(8);
 
     // Verify each config schema has required properties
     const expectedConfigs = [
@@ -56,7 +54,6 @@ describe('jSON Schema Validation', () => {
       { title: 'Regex Replace Config', required: ['file', 'pattern', 'replacement'] },
       { title: 'Replace In File Config', required: ['file', 'replacements'] },
       { title: 'Delete Config', required: ['paths'] },
-      { title: 'Conditional Delete Config', required: ['condition', 'paths'] },
       { title: 'Rename Config', required: ['from', 'to'] },
       { title: 'Git Init Config', required: ['removeExisting', 'initialCommit'] },
       { title: 'Exec Config', required: ['command'] },
@@ -146,8 +143,8 @@ describe('task Type Validation', () => {
     expect(config.paths).toHaveLength(2);
   });
 
-  it('should validate ConditionalDeleteConfig', () => {
-    const config: ConditionalDeleteConfig = {
+  it('should validate DeleteConfig with condition', () => {
+    const config: DeleteConfig = {
       condition: '!keepExamplePackages',
       paths: ['examples'],
     };

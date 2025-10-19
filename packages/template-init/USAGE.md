@@ -248,7 +248,6 @@ Available variables for interpolation:
 - `{{repoUrl}}` - Full repository URL
 - `{{author}}` - Author name
 - `{{baseRepoUrl}}` - Base repository URL (without .git)
-- `{{defaultBundler}}` - Default bundler (tsc/tsdown)
 - `{{orgName}}` - Organization name with @ prefix
 
 Example usage:

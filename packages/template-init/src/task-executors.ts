@@ -3,7 +3,6 @@
  */
 
 import type {
-  ConditionalDeleteConfig,
   DeleteConfig,
   ExecConfig,
   GitInitConfig,
@@ -41,6 +40,15 @@ export async function executeUpdateJson(
   config: UpdateJsonConfig,
   initConfig: InitConfig,
 ): Promise<void> {
+  // Check condition if specified
+  if (config.condition != null && config.condition !== '') {
+    const shouldExecute = evaluateCondition(config.condition, initConfig);
+    if (!shouldExecute) {
+      log('Condition not met, skipping update-json task', 'info');
+      return;
+    }
+  }
+
   const filePath = path.join(process.cwd(), config.file);
   const { updates } = config;
 
@@ -88,6 +96,15 @@ export async function executeTemplate(
   config: TemplateConfig,
   initConfig: InitConfig,
 ): Promise<void> {
+  // Check condition if specified
+  if (config.condition != null && config.condition !== '') {
+    const shouldExecute = evaluateCondition(config.condition, initConfig);
+    if (!shouldExecute) {
+      log('Condition not met, skipping template task', 'info');
+      return;
+    }
+  }
+
   const filePath = path.join(process.cwd(), config.file);
   const { template } = config;
 
@@ -102,6 +119,15 @@ export async function executeRegexReplace(
   config: RegexReplaceConfig,
   initConfig: InitConfig,
 ): Promise<void> {
+  // Check condition if specified
+  if (config.condition != null && config.condition !== '') {
+    const shouldExecute = evaluateCondition(config.condition, initConfig);
+    if (!shouldExecute) {
+      log('Condition not met, skipping regex-replace task', 'info');
+      return;
+    }
+  }
+
   const filePath = path.join(process.cwd(), config.file);
   const { pattern } = config;
   const flags = config.flags ?? '';
@@ -121,6 +147,15 @@ export async function executeReplaceInFile(
   config: ReplaceInFileConfig,
   initConfig: InitConfig,
 ): Promise<void> {
+  // Check condition if specified
+  if (config.condition != null && config.condition !== '') {
+    const shouldExecute = evaluateCondition(config.condition, initConfig);
+    if (!shouldExecute) {
+      log('Condition not met, skipping replace-in-file task', 'info');
+      return;
+    }
+  }
+
   const filePath = path.join(process.cwd(), config.file);
   const { replacements } = config;
 
@@ -142,8 +177,26 @@ export async function executeReplaceInFile(
 /**
  * Execute delete task
  */
-export async function executeDelete(config: DeleteConfig): Promise<void> {
-  const { paths } = config;
+export async function executeDelete(
+  config: DeleteConfig,
+  initConfig?: InitConfig,
+): Promise<void> {
+  const { paths, condition } = config;
+
+  // If condition is specified, evaluate it first
+  if (condition != null && condition !== '') {
+    if (!initConfig) {
+      log('Condition specified but no config provided, skipping deletion', 'warn');
+      return;
+    }
+
+    const shouldDelete = evaluateCondition(condition, initConfig);
+
+    if (!shouldDelete) {
+      log('Condition not met, skipping deletion', 'info');
+      return;
+    }
+  }
 
   for (const relativePath of paths) {
     const fullPath = path.join(process.cwd(), relativePath);
@@ -155,32 +208,21 @@ export async function executeDelete(config: DeleteConfig): Promise<void> {
 }
 
 /**
- * Execute conditional-delete task
- */
-export async function executeConditionalDelete(
-  config: ConditionalDeleteConfig,
-  initConfig: InitConfig,
-): Promise<void> {
-  const { condition } = config;
-  const { paths } = config;
-
-  const shouldDelete = evaluateCondition(condition, initConfig);
-
-  if (!shouldDelete) {
-    log('Condition not met, skipping deletion', 'info');
-    return;
-  }
-
-  await executeDelete({ paths });
-}
-
-/**
  * Execute rename task
  */
 export async function executeRename(
   config: RenameConfig,
   initConfig: InitConfig,
 ): Promise<void> {
+  // Check condition if specified
+  if (config.condition != null && config.condition !== '') {
+    const shouldExecute = evaluateCondition(config.condition, initConfig);
+    if (!shouldExecute) {
+      log('Condition not met, skipping rename task', 'info');
+      return;
+    }
+  }
+
   const from = path.join(process.cwd(), interpolateTemplate(config.from, initConfig));
   const to = path.join(process.cwd(), interpolateTemplate(config.to, initConfig));
 
@@ -195,7 +237,23 @@ export async function executeRename(
 /**
  * Execute git-init task
  */
-export async function executeGitInit(config: GitInitConfig): Promise<void> {
+export async function executeGitInit(
+  config: GitInitConfig,
+  initConfig?: InitConfig,
+): Promise<void> {
+  // Check condition if specified
+  if (config.condition != null && config.condition !== '') {
+    if (!initConfig) {
+      log('Condition specified but no config provided, skipping git-init', 'warn');
+      return;
+    }
+    const shouldExecute = evaluateCondition(config.condition, initConfig);
+    if (!shouldExecute) {
+      log('Condition not met, skipping git-init task', 'info');
+      return;
+    }
+  }
+
   if (config.removeExisting) {
     const gitDir = path.join(process.cwd(), '.git');
     if (fs.existsSync(gitDir)) {
@@ -215,7 +273,23 @@ export async function executeGitInit(config: GitInitConfig): Promise<void> {
 /**
  * Execute exec task
  */
-export async function executeExec(config: ExecConfig): Promise<void> {
+export async function executeExec(
+  config: ExecConfig,
+  initConfig?: InitConfig,
+): Promise<void> {
+  // Check condition if specified
+  if (config.condition != null && config.condition !== '') {
+    if (!initConfig) {
+      log('Condition specified but no config provided, skipping exec', 'warn');
+      return;
+    }
+    const shouldExecute = evaluateCondition(config.condition, initConfig);
+    if (!shouldExecute) {
+      log('Condition not met, skipping exec task', 'info');
+      return;
+    }
+  }
+
   const cwd = config.cwd != null ? path.join(process.cwd(), config.cwd) : process.cwd();
 
   execSync(config.command, {
@@ -251,19 +325,16 @@ export async function executeTask(
       await executeReplaceInFile(task.config as ReplaceInFileConfig, config);
       break;
     case 'delete':
-      await executeDelete(task.config as DeleteConfig);
-      break;
-    case 'conditional-delete':
-      await executeConditionalDelete(task.config as ConditionalDeleteConfig, config);
+      await executeDelete(task.config as DeleteConfig, config);
       break;
     case 'rename':
       await executeRename(task.config as RenameConfig, config);
       break;
     case 'git-init':
-      await executeGitInit(task.config as GitInitConfig);
+      await executeGitInit(task.config as GitInitConfig, config);
       break;
     case 'exec':
-      await executeExec(task.config as ExecConfig);
+      await executeExec(task.config as ExecConfig, config);
       break;
     default:
       // eslint-disable-next-line ts/restrict-template-expressions

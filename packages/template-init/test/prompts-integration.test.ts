@@ -172,9 +172,8 @@ describe('prompts integration with tasks', () => {
       repoUrl: 'https://github.com/test/repo',
       author: 'Test Author',
       baseRepoUrl: 'https://github.com/test/repo',
-      defaultBundler: 'tsc',
+
       orgName: '@test',
-      keepExamplePackages: false,
       // Prompt values
       projectName: 'my-custom-project',
       includeTests: true,
@@ -353,5 +352,291 @@ describe('prompts integration with tasks', () => {
       'select',
       'number',
     ]);
+  });
+});
+
+describe('global prompts', () => {
+  it('should support prompts marked as global', () => {
+    const tasks: TaskDefinition[] = [
+      {
+        id: 'task1',
+        name: 'Task 1',
+        description: 'First task',
+        required: true,
+        enabled: true,
+        type: 'update-json',
+        prompts: [
+          {
+            id: 'projectName',
+            type: 'input',
+            message: 'What is your project name?',
+            global: true,
+            required: true,
+          },
+          {
+            id: 'task1Value',
+            type: 'input',
+            message: 'Task 1 specific value',
+          },
+        ],
+        config: {
+          file: 'task1.json',
+          updates: {
+            name: '{{projectName}}',
+            value: '{{task1Value}}',
+          },
+        },
+      },
+      {
+        id: 'task2',
+        name: 'Task 2',
+        description: 'Second task',
+        required: true,
+        enabled: true,
+        type: 'update-json',
+        prompts: [
+          {
+            id: 'task2Value',
+            type: 'input',
+            message: 'Task 2 specific value',
+          },
+        ],
+        config: {
+          file: 'task2.json',
+          updates: {
+            name: '{{projectName}}', // Can use global prompt from task1
+            value: '{{task2Value}}',
+          },
+        },
+      },
+    ];
+
+    const globalPrompts = tasks
+      .flatMap((task) => task.prompts || [])
+      .filter((p) => p.global);
+    expect(globalPrompts).toHaveLength(1);
+    expect(globalPrompts[0]?.id).toBe('projectName');
+  });
+
+  it('should allow same global prompt ID across multiple tasks', () => {
+    const tasks: TaskDefinition[] = [
+      {
+        id: 'task1',
+        name: 'Task 1',
+        description: 'First task',
+        required: true,
+        enabled: true,
+        type: 'update-json',
+        prompts: [
+          {
+            id: 'appVersion',
+            type: 'input',
+            message: 'Application version',
+            default: '1.0.0',
+            global: true,
+          },
+        ],
+        config: {},
+      },
+      {
+        id: 'task2',
+        name: 'Task 2',
+        description: 'Second task',
+        required: true,
+        enabled: true,
+        type: 'update-json',
+        prompts: [
+          {
+            id: 'appVersion',
+            type: 'input',
+            message: 'Application version',
+            default: '1.0.0',
+            global: true,
+          },
+        ],
+        config: {},
+      },
+    ];
+
+    const allPrompts = tasks.flatMap((task) => task.prompts || []);
+    const globalPrompts = allPrompts.filter((p) => p.global);
+
+    expect(allPrompts).toHaveLength(2);
+    expect(globalPrompts).toHaveLength(2);
+    expect(globalPrompts.every((p) => p.id === 'appVersion')).toBe(true);
+  });
+
+  it('should separate global and task-specific prompts', () => {
+    const tasks: TaskDefinition[] = [
+      {
+        id: 'setup',
+        name: 'Setup',
+        description: 'Setup task',
+        required: true,
+        enabled: true,
+        type: 'update-json',
+        prompts: [
+          {
+            id: 'projectName',
+            type: 'input',
+            message: 'Project name',
+            global: true,
+          },
+          {
+            id: 'author',
+            type: 'input',
+            message: 'Author',
+            global: true,
+          },
+          {
+            id: 'setupOption',
+            type: 'confirm',
+            message: 'Enable setup option?',
+          },
+        ],
+        config: {},
+      },
+      {
+        id: 'configure',
+        name: 'Configure',
+        description: 'Configure task',
+        required: true,
+        enabled: true,
+        type: 'update-json',
+        prompts: [
+          {
+            id: 'configValue',
+            type: 'input',
+            message: 'Configuration value',
+          },
+        ],
+        config: {},
+      },
+    ];
+
+    const allPrompts = tasks.flatMap((task) => task.prompts || []);
+    const globalPrompts = allPrompts.filter((p) => p.global);
+    const taskSpecificPrompts = allPrompts.filter((p) => !p.global);
+
+    expect(globalPrompts).toHaveLength(2);
+    expect(taskSpecificPrompts).toHaveLength(2);
+    expect(globalPrompts.map((p) => p.id)).toEqual(['projectName', 'author']);
+    expect(taskSpecificPrompts.map((p) => p.id)).toEqual(['setupOption', 'configValue']);
+  });
+
+  it('should use global prompts in multiple task configs', () => {
+    const config: InitConfig = {
+      repoName: 'test-repo',
+      repoOwner: 'test-owner',
+      repoUrl: 'https://github.com/test/repo',
+      author: 'Test Author',
+      baseRepoUrl: 'https://github.com/test/repo',
+      orgName: '@test',
+      // Global prompt values
+      projectName: 'my-awesome-app',
+      version: '2.0.0',
+    };
+
+    const task1Config = 'Project: {{projectName}} v{{version}}';
+    const task2Config = '{{projectName}} - Copyright {{author}}';
+    const task3Config = 'Version {{version}} of {{projectName}}';
+
+    expect(interpolateTemplate(task1Config, config)).toBe(
+      'Project: my-awesome-app v2.0.0',
+    );
+    expect(interpolateTemplate(task2Config, config)).toBe(
+      'my-awesome-app - Copyright Test Author',
+    );
+    expect(interpolateTemplate(task3Config, config)).toBe(
+      'Version 2.0.0 of my-awesome-app',
+    );
+  });
+
+  it('should demonstrate real-world global prompts usage', () => {
+    const tasks: TaskDefinition[] = [
+      {
+        id: 'init-package-json',
+        name: 'Initialize package.json',
+        description: 'Set up package.json with project info',
+        required: true,
+        enabled: true,
+        type: 'update-json',
+        prompts: [
+          {
+            id: 'projectName',
+            type: 'input',
+            message: 'Project name',
+            global: true,
+            required: true,
+          },
+          {
+            id: 'projectVersion',
+            type: 'input',
+            message: 'Initial version',
+            default: '0.1.0',
+            global: true,
+          },
+          {
+            id: 'license',
+            type: 'select',
+            message: 'License',
+            choices: [
+              { name: 'MIT', value: 'MIT' },
+              { name: 'Apache-2.0', value: 'Apache-2.0' },
+            ],
+            default: 'MIT',
+            global: true,
+          },
+        ],
+        config: {
+          file: 'package.json',
+          updates: {
+            name: '{{projectName}}',
+            version: '{{projectVersion}}',
+            license: '{{license}}',
+          },
+        },
+      },
+      {
+        id: 'create-readme',
+        name: 'Create README',
+        description: 'Generate README with project info',
+        required: true,
+        enabled: true,
+        type: 'template',
+        config: {
+          file: 'README.md',
+          template:
+            '# {{projectName}}\n\nVersion: {{projectVersion}}\n\nLicense: {{license}}',
+        },
+      },
+      {
+        id: 'create-license',
+        name: 'Create LICENSE file',
+        description: 'Generate LICENSE file',
+        required: false,
+        enabled: true,
+        type: 'template',
+        config: {
+          file: 'LICENSE',
+          template: '{{license}} License\n\nProject: {{projectName}}',
+        },
+      },
+    ];
+
+    const globalPrompts = tasks
+      .flatMap((task) => task.prompts || [])
+      .filter((p) => p.global);
+    const uniqueGlobalPromptIds = new Set(globalPrompts.map((p) => p.id));
+
+    expect(uniqueGlobalPromptIds.size).toBe(3);
+    expect(uniqueGlobalPromptIds).toContain('projectName');
+    expect(uniqueGlobalPromptIds).toContain('projectVersion');
+    expect(uniqueGlobalPromptIds).toContain('license');
+
+    // All three tasks can use the global prompt values
+    expect(tasks[0]?.config).toBeDefined();
+    expect(tasks[1]?.config).toBeDefined();
+    expect(tasks[2]?.config).toBeDefined();
   });
 });

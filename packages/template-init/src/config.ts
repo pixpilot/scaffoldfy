@@ -3,7 +3,7 @@
  */
 
 import type { InitConfig } from './types.js';
-import { confirm, input, select } from '@inquirer/prompts';
+import { input } from '@inquirer/prompts';
 import { getGitRepoInfo, log } from './utils.js';
 
 /**
@@ -18,16 +18,6 @@ export function validateConfig(config: InitConfig): string[] {
 
   if (!config.repoOwner || config.repoOwner.trim() === '') {
     errors.push('Repository owner is required');
-  }
-
-  if (!config.orgName || config.orgName.trim() === '') {
-    errors.push('Organization name is required');
-  } else if (!config.orgName.startsWith('@')) {
-    errors.push('Organization name should start with @ (e.g., @myorg)');
-  }
-
-  if (!config.defaultBundler || !['tsc', 'tsdown'].includes(config.defaultBundler)) {
-    errors.push('Default bundler must be either "tsc" or "tsdown"');
   }
 
   if (!config.repoUrl || config.repoUrl.trim() === '') {
@@ -87,28 +77,13 @@ export async function collectConfig(dryRun = false): Promise<InitConfig> {
       : '';
 
   const orgName = await input({
-    message: 'Organization name for packages (e.g., @myorg)',
+    message: 'Organization name for packages (e.g., myorg)',
     default: detectedOrgName,
   });
 
   const baseRepoUrl = await input({
     message: 'Base repository URL (for package links)',
     default: `https://github.com/${repoOwner}/${repoName}`,
-  });
-
-  const defaultBundler = await select({
-    message: 'Default bundler',
-    choices: [
-      { name: 'TypeScript Compiler (tsc)', value: 'tsc' },
-      { name: 'TSDown (faster builds)', value: 'tsdown' },
-    ],
-    default: 'tsc',
-  });
-
-  // Ask about example packages
-  const keepExamplePackages = await confirm({
-    message: 'Keep example packages? (helpful for reference)',
-    default: false,
   });
 
   console.log('');
@@ -118,8 +93,6 @@ export async function collectConfig(dryRun = false): Promise<InitConfig> {
     repoUrl,
     author,
     baseRepoUrl,
-    defaultBundler,
     orgName,
-    keepExamplePackages,
   };
 }

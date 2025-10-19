@@ -128,16 +128,39 @@ Values are available via template interpolation:
 | `type`     | all                            | input, password, number, select, confirm |
 | `message`  | all                            | Question text                            |
 | `required` | all                            | Force non-empty value                    |
+| `global`   | all                            | If true, value is available to all tasks |
 | `default`  | input, number, select, confirm | Default value                            |
 | `min`      | number                         | Minimum value                            |
 | `max`      | number                         | Maximum value                            |
 | `choices`  | select                         | Array of {name, value} objects           |
 
+## Global Prompts
+
+Mark prompts as `"global": true` to share values across all tasks:
+
+```json
+{
+  "prompts": [
+    {
+      "id": "projectName",
+      "type": "input",
+      "message": "Project name?",
+      "global": true
+    }
+  ]
+}
+```
+
+- Global prompts are collected once at the beginning
+- Values are available to all tasks, not just the task where defined
+- Useful for project-wide settings (name, version, author, etc.)
+
 ## Validation Rules
 
-- ✅ IDs must be unique across all tasks
+- ✅ IDs must be unique across all tasks (except global prompts can be duplicated)
 - ✅ IDs: alphanumeric, underscores, hyphens only
 - ✅ Messages cannot be empty
+- ✅ A prompt ID cannot be both global and task-specific
 - ✅ Select must have at least one choice
 - ✅ Number min must be ≤ max
 - ✅ Required prompts reject empty values
@@ -145,5 +168,7 @@ Values are available via template interpolation:
 ## See Also
 
 - Full documentation: `docs/PROMPTS.md`
-- Example file: `examples/template-tasks-with-prompts.json`
+- Example files:
+  - `examples/template-tasks-with-prompts.json`
+  - `examples/template-tasks-with-global-prompts.json`
 - Feature summary: `PROMPTS_FEATURE.md`

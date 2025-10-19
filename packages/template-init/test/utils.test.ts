@@ -17,9 +17,7 @@ describe('template Interpolation', () => {
     repoUrl: 'https://github.com/my-owner/my-repo.git',
     author: 'John Doe',
     baseRepoUrl: 'https://github.com/my-owner/my-repo',
-    defaultBundler: 'tsc',
     orgName: '@my-org',
-    keepExamplePackages: true,
   };
 
   it('should interpolate single variable', () => {
@@ -68,29 +66,12 @@ describe('condition Evaluation', () => {
     repoUrl: 'https://github.com/test/test.git',
     author: 'Test',
     baseRepoUrl: 'https://github.com/test/test',
-    defaultBundler: 'tsc',
     orgName: '@test',
-    keepExamplePackages: false,
   };
 
   it('should evaluate simple boolean conditions', () => {
-    expect(evaluateCondition('keepExamplePackages', config)).toBe(false);
-    expect(evaluateCondition('!keepExamplePackages', config)).toBe(true);
-  });
-
-  it('should evaluate string comparisons', () => {
-    expect(evaluateCondition('defaultBundler === "tsc"', config)).toBe(true);
-    expect(evaluateCondition('defaultBundler === "tsdown"', config)).toBe(false);
-  });
-
-  it('should evaluate complex conditions', () => {
-    expect(
-      evaluateCondition('!keepExamplePackages && defaultBundler === "tsc"', config),
-    ).toBe(true);
-
-    expect(
-      evaluateCondition('keepExamplePackages || defaultBundler === "tsc"', config),
-    ).toBe(true);
+    expect(evaluateCondition('orgName.startsWith("@")', config)).toBe(true);
+    expect(evaluateCondition('!orgName.startsWith("@")', config)).toBe(false);
   });
 
   it('should handle invalid conditions gracefully', () => {
@@ -98,14 +79,29 @@ describe('condition Evaluation', () => {
     expect(evaluateCondition('invalid syntax {{', config)).toBe(false);
   });
 
-  it('should evaluate conditions with keepExamplePackages true', () => {
-    const configWithExamples = { ...config, keepExamplePackages: true };
-    expect(evaluateCondition('keepExamplePackages', configWithExamples)).toBe(true);
-    expect(evaluateCondition('!keepExamplePackages', configWithExamples)).toBe(false);
+  it('should evaluate conditions with different values', () => {
+    const configWithoutAt = { ...config, orgName: 'test' };
+    expect(evaluateCondition('orgName.startsWith("@")', configWithoutAt)).toBe(false);
+    expect(evaluateCondition('!orgName.startsWith("@")', configWithoutAt)).toBe(true);
   });
 
-  it('should evaluate numeric comparisons', () => {
-    expect(evaluateCondition('repoName.length > 0', config)).toBe(true);
+  it('should evaluate conditions with dynamic prompt values', () => {
+    // Test with boolean prompt value
+    const configWithPrompt = { ...config, keepExamplePackages: false };
+    expect(evaluateCondition('!keepExamplePackages', configWithPrompt)).toBe(true);
+    expect(evaluateCondition('keepExamplePackages', configWithPrompt)).toBe(false);
+
+    const configWithPromptTrue = { ...config, keepExamplePackages: true };
+    expect(evaluateCondition('!keepExamplePackages', configWithPromptTrue)).toBe(false);
+    expect(evaluateCondition('keepExamplePackages', configWithPromptTrue)).toBe(true);
+  });
+
+  it('should evaluate conditions with string prompt values', () => {
+    const configWithString = { ...config, projectType: 'monorepo' };
+    expect(evaluateCondition('projectType === "monorepo"', configWithString)).toBe(true);
+    expect(evaluateCondition('projectType === "standalone"', configWithString)).toBe(
+      false,
+    );
   });
 });
 

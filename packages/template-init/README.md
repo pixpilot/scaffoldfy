@@ -97,7 +97,8 @@ Collect custom user input directly in your task definitions:
       "id": "projectName",
       "type": "input",
       "message": "What is your project name?",
-      "required": true
+      "required": true,
+      "global": true
     },
     {
       "id": "useTypeScript",
@@ -117,6 +118,8 @@ Collect custom user input directly in your task definitions:
 
 **Supported prompt types:** `input`, `password`, `number`, `select`, `confirm`
 
+**Global prompts:** Mark prompts with `"global": true` to share values across all tasks
+
 💬 **[Full Prompts Guide →](docs/PROMPTS.md)** | 📋 **[Quick Reference →](docs/PROMPTS_QUICK_REFERENCE.md)**
 
 ### Template Variables
@@ -133,7 +136,7 @@ Use `{{variable}}` syntax anywhere in your task configs:
 }
 ```
 
-**Built-in variables:** `repoName`, `repoOwner`, `repoUrl`, `author`, `baseRepoUrl`, `defaultBundler`, `orgName`, `keepExamplePackages`
+**Built-in variables:** `repoName`, `repoOwner`, `repoUrl`, `author`, `baseRepoUrl`, `orgName`
 
 **Custom variables:** Any prompt values you define (e.g., `{{projectName}}`, `{{port}}`)
 
