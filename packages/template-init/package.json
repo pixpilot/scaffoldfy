@@ -37,7 +37,7 @@
         "import": "./dist/index.js",
         "require": "./dist/index.cjs"
       },
-      "./schema": "./src/tasks.schema.json"
+      "./schema": "./schema/tasks.schema.json"
     },
     "bin": {
       "template-init": "./dist/cli.js"
