@@ -1,7 +1,5 @@
-#!/usr/bin/env tsx
-
 /**
- * Template Initialization Script
+ * Template Initialization Library
  *
  * Enhanced version with:
  * - Dry run mode
@@ -77,12 +75,6 @@ async function main(customTasks?: TaskDefinition[]) {
 
     process.exit(1);
   }
-}
-
-// Run if executed directly
-if (require.main === module) {
-  // eslint-disable-next-line ts/no-floating-promises
-  main();
 }
 
 // ============================================================================
