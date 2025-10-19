@@ -20,14 +20,14 @@
   ],
   "exports": {
     ".": "./src/index.ts",
-    "./schema": "./src/tasks.schema.json"
+    "./schema": "./schema/tasks.schema.json"
   },
   "bin": {
     "template-init": "./dist/cli.js"
   },
   "files": [
     "dist",
-    "src/tasks.schema.json"
+    "schema"
   ],
   "publishConfig": {
     "access": "public",

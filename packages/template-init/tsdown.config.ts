@@ -10,5 +10,4 @@ export default defineConfig({
   minify: true,
   clean: true,
   shims: true, // Add Node.js shims for bin script
-  copy: [{ from: 'schema/tasks.schema.json', to: 'dist/schema/tasks.schema.json' }],
 });
