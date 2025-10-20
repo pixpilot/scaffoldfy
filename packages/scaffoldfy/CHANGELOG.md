@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy
 
+## 0.4.0
+
+### Minor Changes
+
+- increase MAX_BUNDLE_SIZE_KB to 40
+
 ## 0.3.0
 
 ### Minor Changes
