@@ -24,6 +24,7 @@ We welcome all contributions, including bug reports, feature requests, documenta
    - Link to any related issues (e.g., `Fixes #123`).
    - Check all items in the pull-request checklist:
      - [ ] Code is up-to-date with the `main` branch
+     - [ ] `pnpm run format` passes with this change
      - [ ] `pnpm run lint` passes with this change
      - [ ] `pnpm run test` passes with this change
      - [ ] This pull request links relevant issues as `Fixes #0000`

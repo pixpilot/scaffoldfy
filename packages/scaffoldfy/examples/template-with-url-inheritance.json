@@ -1,0 +1,30 @@
+{
+  "$schema": "../schema/tasks.schema.json",
+  "extends": "https://raw.githubusercontent.com/pixpilot/scaffoldfy/main/packages/scaffoldfy/examples/base-node-template.json",
+  "tasks": [
+    {
+      "id": "custom-readme",
+      "name": "Create Custom README",
+      "description": "Generate a custom README that extends the base template",
+      "required": true,
+      "enabled": true,
+      "type": "template",
+      "config": {
+        "file": "README.md",
+        "template": "# {{repoName}}\n\nBy {{author}}\n\n## Description\n\nThis project extends a remote base template.\n\n## Features\n\n- Extends base Node.js template from GitHub\n- Adds custom project-specific tasks\n- Demonstrates URL-based template inheritance\n\n## Repository\n\n{{repoUrl}}"
+      }
+    },
+    {
+      "id": "create-changelog",
+      "name": "Create CHANGELOG",
+      "description": "Initialize a CHANGELOG file",
+      "required": false,
+      "enabled": true,
+      "type": "template",
+      "config": {
+        "file": "CHANGELOG.md",
+        "template": "# Changelog\n\nAll notable changes to this project will be documented in this file.\n\n## [Unreleased]\n\n### Added\n- Initial project setup"
+      }
+    }
+  ]
+}

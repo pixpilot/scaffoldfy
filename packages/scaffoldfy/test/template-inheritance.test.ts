@@ -399,4 +399,303 @@ describe('template inheritance', () => {
       expect(tasks).toHaveLength(2);
     });
   });
+
+  describe('url-based template loading', () => {
+    // Mock fetch for testing
+    const originalFetch = globalThis.fetch;
+    let mockFetch: typeof fetch;
+
+    beforeEach(() => {
+      mockFetch = (async (input: any): Promise<Response> => {
+        const url = typeof input === 'string' ? input : input.toString();
+
+        // Mock different URLs
+        if (url === 'https://example.com/base.json') {
+          return new Response(
+            JSON.stringify({
+              tasks: [
+                {
+                  id: 'remote-task',
+                  name: 'Remote Task',
+                  description: 'Task from remote URL',
+                  required: true,
+                  enabled: true,
+                  type: 'template',
+                  config: { remote: true },
+                },
+              ],
+            }),
+            { status: 200, headers: { 'Content-Type': 'application/json' } },
+          );
+        }
+
+        if (url === 'https://example.com/templates/child.json') {
+          return new Response(
+            JSON.stringify({
+              extends: '../base.json',
+              tasks: [
+                {
+                  id: 'child-task',
+                  name: 'Child Task',
+                  description: 'Child task',
+                  required: true,
+                  enabled: true,
+                  type: 'template',
+                  config: {},
+                },
+              ],
+            }),
+            { status: 200, headers: { 'Content-Type': 'application/json' } },
+          );
+        }
+
+        if (url === 'https://example.com/invalid.json') {
+          return new Response('invalid json', {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+          });
+        }
+
+        if (url === 'https://example.com/notfound.json') {
+          return new Response('Not Found', { status: 404 });
+        }
+
+        if (url === 'https://example.com/circular1.json') {
+          return new Response(
+            JSON.stringify({
+              extends: 'https://example.com/circular2.json',
+              tasks: [],
+            }),
+            { status: 200, headers: { 'Content-Type': 'application/json' } },
+          );
+        }
+
+        if (url === 'https://example.com/circular2.json') {
+          return new Response(
+            JSON.stringify({
+              extends: 'https://example.com/circular1.json',
+              tasks: [],
+            }),
+            { status: 200, headers: { 'Content-Type': 'application/json' } },
+          );
+        }
+
+        if (url === 'https://example.com/with-local-extends.json') {
+          return new Response(
+            JSON.stringify({
+              extends: './local-base.json',
+              tasks: [
+                {
+                  id: 'remote-with-local',
+                  name: 'Remote with local extends',
+                  description: 'Test',
+                  required: true,
+                  enabled: true,
+                  type: 'template',
+                  config: {},
+                },
+              ],
+            }),
+            { status: 200, headers: { 'Content-Type': 'application/json' } },
+          );
+        }
+
+        if (url === 'https://example.com/local-base.json') {
+          return new Response(
+            JSON.stringify({
+              tasks: [
+                {
+                  id: 'local-base-task',
+                  name: 'Local Base Task',
+                  description: 'Base task',
+                  required: true,
+                  enabled: true,
+                  type: 'template',
+                  config: {},
+                },
+              ],
+            }),
+            { status: 200, headers: { 'Content-Type': 'application/json' } },
+          );
+        }
+
+        return new Response('Not Found', { status: 404 });
+      }) as typeof fetch;
+
+      globalThis.fetch = mockFetch;
+    });
+
+    afterEach(() => {
+      globalThis.fetch = originalFetch;
+    });
+
+    it('should load template from HTTP URL', async () => {
+      const config = await loadTemplate('https://example.com/base.json');
+
+      expect(config.tasks).toHaveLength(1);
+      expect(config.tasks[0]?.id).toBe('remote-task');
+      expect(config.tasks[0]?.name).toBe('Remote Task');
+    });
+
+    it('should cache remote templates', async () => {
+      const config1 = await loadTemplate('https://example.com/base.json');
+      const config2 = await loadTemplate('https://example.com/base.json');
+
+      expect(config1).toBe(config2); // Should be the same cached instance
+    });
+
+    it('should throw error for 404 responses', async () => {
+      await expect(loadTemplate('https://example.com/notfound.json')).rejects.toThrow(
+        'Failed to fetch template from https://example.com/notfound.json: 404',
+      );
+    });
+
+    it('should throw error for invalid JSON from URL', async () => {
+      await expect(loadTemplate('https://example.com/invalid.json')).rejects.toThrow(
+        'Failed to parse template file',
+      );
+    });
+
+    it('should support template inheritance from URLs', async () => {
+      const config = await loadAndMergeTemplate(
+        'https://example.com/templates/child.json',
+      );
+
+      expect(config.tasks).toHaveLength(2);
+      expect(config.tasks.some((t) => t.id === 'remote-task')).toBe(true);
+      expect(config.tasks.some((t) => t.id === 'child-task')).toBe(true);
+    });
+
+    it('should detect circular dependencies with URLs', async () => {
+      await expect(
+        loadAndMergeTemplate('https://example.com/circular1.json'),
+      ).rejects.toThrow('Circular dependency detected');
+    });
+
+    it('should support mixed local and remote templates', async () => {
+      const localConfig: TasksConfiguration = {
+        extends: 'https://example.com/base.json',
+        tasks: [
+          {
+            id: 'local-task',
+            name: 'Local Task',
+            description: 'Local task extending remote',
+            required: true,
+            enabled: true,
+            type: 'template',
+            config: {},
+          },
+        ],
+      };
+
+      const localPath = createTemplateFile('mixed.json', localConfig);
+      const config = await loadAndMergeTemplate(localPath);
+
+      expect(config.tasks).toHaveLength(2);
+      expect(config.tasks.some((t) => t.id === 'remote-task')).toBe(true);
+      expect(config.tasks.some((t) => t.id === 'local-task')).toBe(true);
+    });
+
+    it('should resolve relative URLs correctly', async () => {
+      const config = await loadAndMergeTemplate(
+        'https://example.com/with-local-extends.json',
+      );
+
+      expect(config.tasks).toHaveLength(2);
+      expect(config.tasks.some((t) => t.id === 'local-base-task')).toBe(true);
+      expect(config.tasks.some((t) => t.id === 'remote-with-local')).toBe(true);
+    });
+
+    it('should load tasks with inheritance from URL', async () => {
+      const tasks = await loadTasksWithInheritance('https://example.com/base.json');
+
+      expect(tasks).toHaveLength(1);
+      expect(tasks[0]?.id).toBe('remote-task');
+    });
+
+    it('should support HTTPS URLs', async () => {
+      const config = await loadTemplate('https://example.com/base.json');
+
+      expect(config.tasks).toHaveLength(1);
+    });
+
+    it('should handle remote templates with multiple extends', async () => {
+      // Mock a template that extends multiple remote templates
+      const multiExtendsFetch = (async (input: any): Promise<Response> => {
+        const url = typeof input === 'string' ? input : input.toString();
+
+        if (url === 'https://example.com/multi.json') {
+          return new Response(
+            JSON.stringify({
+              extends: [
+                'https://example.com/base1.json',
+                'https://example.com/base2.json',
+              ],
+              tasks: [
+                {
+                  id: 'multi-task',
+                  name: 'Multi Task',
+                  description: 'Task with multiple extends',
+                  required: true,
+                  enabled: true,
+                  type: 'template',
+                  config: {},
+                },
+              ],
+            }),
+            { status: 200, headers: { 'Content-Type': 'application/json' } },
+          );
+        }
+
+        if (url === 'https://example.com/base1.json') {
+          return new Response(
+            JSON.stringify({
+              tasks: [
+                {
+                  id: 'base1-task',
+                  name: 'Base 1 Task',
+                  description: 'Task from base 1',
+                  required: true,
+                  enabled: true,
+                  type: 'template',
+                  config: {},
+                },
+              ],
+            }),
+            { status: 200, headers: { 'Content-Type': 'application/json' } },
+          );
+        }
+
+        if (url === 'https://example.com/base2.json') {
+          return new Response(
+            JSON.stringify({
+              tasks: [
+                {
+                  id: 'base2-task',
+                  name: 'Base 2 Task',
+                  description: 'Task from base 2',
+                  required: true,
+                  enabled: true,
+                  type: 'template',
+                  config: {},
+                },
+              ],
+            }),
+            { status: 200, headers: { 'Content-Type': 'application/json' } },
+          );
+        }
+
+        return new Response('Not Found', { status: 404 });
+      }) as typeof fetch;
+
+      globalThis.fetch = multiExtendsFetch;
+
+      const config = await loadAndMergeTemplate('https://example.com/multi.json');
+
+      expect(config.tasks).toHaveLength(3);
+      expect(config.tasks.some((t) => t.id === 'base1-task')).toBe(true);
+      expect(config.tasks.some((t) => t.id === 'base2-task')).toBe(true);
+      expect(config.tasks.some((t) => t.id === 'multi-task')).toBe(true);
+    });
+  });
 });

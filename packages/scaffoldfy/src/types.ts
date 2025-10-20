@@ -165,7 +165,7 @@ export interface InitializationMetadata {
  * Configuration file structure for template tasks
  */
 export interface TasksConfiguration {
-  extends?: string | string[]; // Path(s) to base template file(s) to inherit from
+  extends?: string | string[]; // Path(s) or URL(s) to base template file(s) to inherit from
   tasks: TaskDefinition[];
 }
 

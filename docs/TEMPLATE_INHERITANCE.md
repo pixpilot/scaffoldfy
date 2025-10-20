@@ -1,12 +1,13 @@
 # Template Inheritance
 
-Template inheritance allows you to extend base templates, promoting code reuse and modularity in your template configurations.
+Template inheritance allows you to extend base templates, promoting code reuse and modularity in your template configurations. Templates can be loaded from local file paths or remote URLs (HTTP/HTTPS).
 
 ## Overview
 
 With template inheritance, you can:
 
 - **Extend one or more base templates** using the `extends` field
+- **Load templates from local files or remote URLs** (HTTP/HTTPS)
 - **Override tasks** from base templates by using the same task ID
 - **Merge configurations** intelligently, combining dependencies and prompts
 - **Create reusable template libraries** that can be shared across projects
@@ -89,6 +90,143 @@ You can extend multiple base templates:
 ```
 
 Tasks are merged in order, with later templates taking precedence.
+
+## Remote Templates from URLs
+
+Templates can be loaded from remote URLs (HTTP or HTTPS), enabling you to share base templates across projects and organizations.
+
+### Loading from a URL
+
+Specify a full URL in the `extends` field:
+
+```json
+{
+  "extends": "https://raw.githubusercontent.com/your-org/templates/main/base.json",
+  "tasks": [
+    {
+      "id": "custom-task",
+      "name": "Custom Task",
+      "description": "Project-specific task",
+      "required": true,
+      "enabled": true,
+      "type": "exec",
+      "config": {
+        "command": "echo 'Setup complete!'"
+      }
+    }
+  ]
+}
+```
+
+### GitHub Raw URLs
+
+For templates stored in GitHub repositories, use the raw content URL:
+
+```
+https://raw.githubusercontent.com/owner/repo/branch/path/to/template.json
+```
+
+Example:
+
+```json
+{
+  "extends": [
+    "https://raw.githubusercontent.com/your-org/templates/main/base-node.json",
+    "https://raw.githubusercontent.com/your-org/templates/main/typescript.json"
+  ],
+  "tasks": []
+}
+```
+
+### Relative URLs
+
+When a remote template extends another template using a relative path, the path is resolved relative to the current template's URL:
+
+```json
+// https://example.com/templates/base.json
+{
+  "tasks": [
+    {
+      "id": "base-task",
+      "name": "Base Task",
+      "description": "Common task",
+      "required": true,
+      "enabled": true,
+      "type": "template",
+      "config": {}
+    }
+  ]
+}
+
+// https://example.com/templates/frameworks/react.json
+{
+  "extends": "../base.json",  // Resolves to https://example.com/templates/base.json
+  "tasks": [
+    {
+      "id": "react-setup",
+      "name": "React Setup",
+      "description": "Setup React",
+      "required": true,
+      "enabled": true,
+      "type": "exec",
+      "config": {
+        "command": "npm install react react-dom"
+      }
+    }
+  ]
+}
+```
+
+### Mixed Local and Remote Templates
+
+You can mix local file paths and remote URLs in your template inheritance:
+
+```json
+// Local template extending a remote base
+{
+  "extends": "https://example.com/org-templates/base.json",
+  "tasks": [
+    {
+      "id": "local-task",
+      "name": "Local Task",
+      "description": "Project-specific task",
+      "required": true,
+      "enabled": true,
+      "type": "template",
+      "config": {}
+    }
+  ]
+}
+```
+
+Or a remote template can extend local templates (though this is less common):
+
+```json
+// Remote template
+{
+  "extends": "./local-overrides.json",
+  "tasks": []
+}
+```
+
+### Benefits of Remote Templates
+
+- **Centralized Management**: Maintain organization-wide templates in one location
+- **Version Control**: Use Git tags or branches to version your templates
+- **Easy Updates**: Teams automatically get template updates without manual distribution
+- **Sharing**: Share templates publicly or within your organization
+- **Consistency**: Ensure all projects follow the same patterns and best practices
+
+### Caching
+
+Remote templates are cached in memory during execution to avoid repeated network requests. Each URL is fetched only once per execution, even if multiple templates extend from it.
+
+### Security Considerations
+
+- Only use HTTPS URLs from trusted sources
+- Review remote templates before using them in production
+- Consider pinning to specific versions (e.g., Git tags) for stability
+- Be aware that remote templates can change unless locked to a specific version
 
 ## Task Overriding
 
@@ -281,29 +419,68 @@ Your project template:
 
 ## CLI Usage
 
-The CLI automatically handles template inheritance:
+The CLI automatically handles template inheritance from both local files and remote URLs:
 
 ```bash
-# The template will be loaded with all inherited tasks
+# Load template from local file with inheritance
 scaffoldfy --tasks-file ./my-template.json
+
+# Load template from remote URL
+scaffoldfy --tasks-file https://example.com/templates/project-setup.json
 
 # Dry run to see all inherited and merged tasks
 scaffoldfy --tasks-file ./my-template.json --dry-run
+
+# Dry run with remote template
+scaffoldfy --tasks-file https://raw.githubusercontent.com/org/templates/main/base.json --dry-run
 ```
 
 ## API Reference
 
 ### `loadTemplate(templatePath: string): Promise<TasksConfiguration>`
 
-Load a single template file without processing inheritance.
+Load a single template file from a local path or remote URL without processing inheritance.
+
+**Parameters:**
+- `templatePath`: Local file path (absolute or relative) or remote URL (http/https)
+
+**Example:**
+```typescript
+// Load from local file
+const local = await loadTemplate('./template.json');
+
+// Load from URL
+const remote = await loadTemplate('https://example.com/template.json');
+```
 
 ### `loadAndMergeTemplate(templatePath: string): Promise<TasksConfiguration>`
 
-Load a template and recursively merge all extended templates.
+Load a template and recursively merge all extended templates. Supports both local and remote templates.
+
+**Parameters:**
+- `templatePath`: Local file path or remote URL to the main template
+
+**Example:**
+```typescript
+// Load and merge with inheritance from URL
+const config = await loadAndMergeTemplate('https://example.com/my-template.json');
+console.log(`Loaded ${config.tasks.length} tasks`);
+```
 
 ### `loadTasksWithInheritance(tasksFilePath: string): Promise<TaskDefinition[]>`
 
-Load tasks from a file, processing all inheritance, and return the final task array.
+Load tasks from a file or URL, processing all inheritance, and return the final task array.
+
+**Parameters:**
+- `tasksFilePath`: Local file path or remote URL to the tasks configuration
+
+**Example:**
+```typescript
+// Load from URL with full inheritance chain
+const tasks = await loadTasksWithInheritance(
+  'https://raw.githubusercontent.com/org/templates/main/nodejs.json'
+);
+```
 
 ### `mergeTemplates(templates: TasksConfiguration[]): TasksConfiguration`
 
@@ -312,3 +489,145 @@ Merge multiple template configurations manually.
 ### `clearTemplateCache(): void`
 
 Clear the internal template cache (useful for testing).
+
+## Real-World Examples
+
+### Example 1: Organization Template Library on GitHub
+
+Host your organization's templates on GitHub and reference them via raw URLs:
+
+```json
+// Your project's template
+{
+  "extends": [
+    "https://raw.githubusercontent.com/acme-corp/project-templates/v1.0.0/base-node.json",
+    "https://raw.githubusercontent.com/acme-corp/project-templates/v1.0.0/typescript.json"
+  ],
+  "tasks": [
+    {
+      "id": "install-deps",
+      "name": "Install Project Dependencies",
+      "description": "Install project-specific dependencies",
+      "required": true,
+      "enabled": true,
+      "type": "exec",
+      "config": {
+        "command": "npm install"
+      }
+    }
+  ]
+}
+```
+
+**Benefits:**
+- Version pinning with Git tags (v1.0.0)
+- Easy updates across all projects
+- Centralized maintenance
+
+### Example 2: Public Template Ecosystem
+
+Create and share public templates:
+
+```json
+{
+  "extends": "https://templates.scaffoldfy.dev/react-app/v2.json",
+  "tasks": [
+    {
+      "id": "custom-setup",
+      "name": "Custom Project Setup",
+      "description": "Project-specific configuration",
+      "required": true,
+      "enabled": true,
+      "type": "template",
+      "config": {
+        "file": "package.json",
+        "template": "templates/package.hbs"
+      }
+    }
+  ]
+}
+```
+
+### Example 3: Private CDN for Templates
+
+Host templates on a private CDN or internal server:
+
+```json
+{
+  "extends": [
+    "https://templates.internal.company.com/base/security.json",
+    "https://templates.internal.company.com/base/compliance.json",
+    "https://templates.internal.company.com/tech/nodejs-v18.json"
+  ],
+  "tasks": []
+}
+```
+
+### Example 4: Mix of Local and Remote
+
+Combine organization templates with project-specific local templates:
+
+```json
+// my-project-template.json
+{
+  "extends": [
+    "https://raw.githubusercontent.com/org/templates/main/base.json",
+    "./local-overrides.json"
+  ],
+  "tasks": [
+    {
+      "id": "project-init",
+      "name": "Initialize Project",
+      "description": "Project-specific initialization",
+      "required": true,
+      "enabled": true,
+      "type": "exec",
+      "config": {
+        "command": "npm run init"
+      }
+    }
+  ]
+}
+```
+
+```json
+// local-overrides.json (local file)
+{
+  "tasks": [
+    {
+      "id": "local-config",
+      "name": "Local Configuration",
+      "description": "Set up local environment",
+      "required": true,
+      "enabled": true,
+      "type": "update-json",
+      "config": {
+        "file": ".env.local",
+        "updates": {
+          "API_URL": "http://localhost:3000"
+        }
+      }
+    }
+  ]
+}
+```
+
+### Best Practices for Remote Templates
+
+1. **Use Version Tags**: Pin to specific versions using Git tags for stability
+   ```
+   https://raw.githubusercontent.com/org/templates/v1.2.3/base.json
+   ```
+
+2. **Use HTTPS**: Always use secure HTTPS URLs, never HTTP
+
+3. **Document Dependencies**: Document what remote templates your project depends on
+
+4. **Test Before Deploying**: Test remote template changes in a staging environment
+
+5. **Have Fallbacks**: Consider caching critical templates locally as backups
+
+6. **Monitor Changes**: If using branch references (like `main`), monitor for breaking changes
+
+7. **Access Control**: For private templates, use authenticated URLs or host on secure servers
+

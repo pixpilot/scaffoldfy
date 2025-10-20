@@ -3,6 +3,7 @@
  *
  * This module handles loading and merging template configurations,
  * allowing templates to extend from one or more base templates.
+ * Supports both local file paths and remote URLs (http/https).
  */
 
 import type { TaskDefinition, TasksConfiguration } from './types.js';
@@ -15,13 +16,53 @@ import { log } from './utils.js';
 const readFile = promisify(fs.readFile);
 
 /**
+ * Check if a string is a URL
+ * @param str - String to check
+ * @returns True if the string is a valid HTTP/HTTPS URL
+ */
+function isUrl(str: string): boolean {
+  try {
+    const url = new URL(str);
+    return url.protocol === 'http:' || url.protocol === 'https:';
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Fetch content from a remote URL
+ * @param url - URL to fetch
+ * @returns The fetched content as a string
+ */
+async function fetchRemoteTemplate(url: string): Promise<string> {
+  try {
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      throw new Error(
+        `Failed to fetch template from ${url}: ${response.status} ${response.statusText}`,
+      );
+    }
+
+    return await response.text();
+  } catch (error) {
+    if (error instanceof Error && error.message.includes('Failed to fetch')) {
+      throw error;
+    }
+    throw new Error(
+      `Failed to fetch template from ${url}: ${error instanceof Error ? error.message : String(error)}`,
+    );
+  }
+}
+
+/**
  * Cache for loaded templates to avoid reloading
  */
 const templateCache = new Map<string, TasksConfiguration>();
 
 /**
- * Load a template configuration file
- * @param templatePath - Path to the template file
+ * Load a template configuration file from local path or remote URL
+ * @param templatePath - Path or URL to the template file
  * @param visitedPaths - Set of already visited paths to detect circular dependencies
  * @returns The loaded template configuration
  */
@@ -29,60 +70,78 @@ export async function loadTemplate(
   templatePath: string,
   visitedPaths: Set<string> = new Set(),
 ): Promise<TasksConfiguration> {
-  // Resolve to absolute path
-  const absolutePath = path.isAbsolute(templatePath)
-    ? templatePath
-    : path.resolve(process.cwd(), templatePath);
+  // Check if it's a URL
+  const isRemote = isUrl(templatePath);
+
+  // For URLs, use the URL as-is; for paths, resolve to absolute path
+  let resolvedPath: string;
+  if (isRemote) {
+    resolvedPath = templatePath;
+  } else if (path.isAbsolute(templatePath)) {
+    resolvedPath = templatePath;
+  } else {
+    resolvedPath = path.resolve(process.cwd(), templatePath);
+  }
 
   // Check cache first
-  if (templateCache.has(absolutePath)) {
-    return templateCache.get(absolutePath)!;
+  if (templateCache.has(resolvedPath)) {
+    return templateCache.get(resolvedPath)!;
   }
 
   // Check for circular dependencies
-  if (visitedPaths.has(absolutePath)) {
+  if (visitedPaths.has(resolvedPath)) {
     throw new Error(
-      `Circular dependency detected: ${Array.from(visitedPaths).join(' -> ')} -> ${absolutePath}`,
+      `Circular dependency detected: ${Array.from(visitedPaths).join(' -> ')} -> ${resolvedPath}`,
     );
   }
 
-  // Check if file exists
-  if (!fs.existsSync(absolutePath)) {
-    throw new Error(`Template file not found: ${absolutePath}`);
+  // Add to visited paths
+  visitedPaths.add(resolvedPath);
+
+  // Load the template content
+  let content: string;
+
+  if (isRemote) {
+    // Fetch from remote URL
+    content = await fetchRemoteTemplate(resolvedPath);
+  } else {
+    // Check if file exists
+    if (!fs.existsSync(resolvedPath)) {
+      throw new Error(`Template file not found: ${resolvedPath}`);
+    }
+
+    // Load from local file
+    content = await readFile(resolvedPath, 'utf-8');
   }
 
-  // Add to visited paths
-  visitedPaths.add(absolutePath);
-
-  // Load and parse the template file
-  const content = await readFile(absolutePath, 'utf-8');
+  // Parse the template file
   let config: TasksConfiguration;
 
   try {
     config = JSON.parse(content) as TasksConfiguration;
   } catch (error) {
     throw new Error(
-      `Failed to parse template file ${absolutePath}: ${error instanceof Error ? error.message : String(error)}`,
+      `Failed to parse template file ${resolvedPath}: ${error instanceof Error ? error.message : String(error)}`,
     );
   }
 
   // Validate basic structure
   if (!Array.isArray(config.tasks)) {
     throw new TypeError(
-      `Invalid template file ${absolutePath}: 'tasks' array is required`,
+      `Invalid template file ${resolvedPath}: 'tasks' array is required`,
     );
   }
 
   // Cache the loaded template
-  templateCache.set(absolutePath, config);
+  templateCache.set(resolvedPath, config);
 
   return config;
 }
 
 /**
  * Recursively load and merge templates
- * @param templatePath - Path to the template file
- * @param baseDir - Base directory for resolving relative paths in extends
+ * @param templatePath - Path or URL to the template file
+ * @param baseDir - Base directory or URL for resolving relative paths in extends
  * @param visitedPaths - Set of already visited paths
  * @returns Merged template configuration
  */
@@ -91,30 +150,48 @@ export async function loadAndMergeTemplate(
   baseDir?: string,
   visitedPaths: Set<string> = new Set(),
 ): Promise<TasksConfiguration> {
-  const absolutePath = path.isAbsolute(templatePath)
-    ? templatePath
-    : path.resolve(baseDir ?? process.cwd(), templatePath);
+  // Check if templatePath is a URL
+  const isRemote = isUrl(templatePath);
+
+  // Resolve the absolute path or URL
+  let resolvedPath: string;
+  if (isRemote) {
+    resolvedPath = templatePath;
+  } else if (path.isAbsolute(templatePath)) {
+    resolvedPath = templatePath;
+  } else if (baseDir != null) {
+    // If baseDir is a URL, resolve relative to URL; otherwise resolve as path
+    if (isUrl(baseDir)) {
+      resolvedPath = new URL(templatePath, baseDir).href;
+    } else {
+      resolvedPath = path.resolve(baseDir, templatePath);
+    }
+  } else {
+    resolvedPath = path.resolve(process.cwd(), templatePath);
+  }
 
   // Check for circular dependencies before loading
-  if (visitedPaths.has(absolutePath)) {
+  if (visitedPaths.has(resolvedPath)) {
     throw new Error(
-      `Circular dependency detected: ${Array.from(visitedPaths).join(' -> ')} -> ${absolutePath}`,
+      `Circular dependency detected: ${Array.from(visitedPaths).join(' -> ')} -> ${resolvedPath}`,
     );
   }
 
   // Add current path to visited set
-  visitedPaths.add(absolutePath);
+  visitedPaths.add(resolvedPath);
 
   // Load the current template (don't pass visitedPaths to avoid double-checking)
-  const config = await loadTemplate(absolutePath);
+  const config = await loadTemplate(resolvedPath);
 
   // If no extends, return as is
   if (config.extends == null || config.extends === '') {
     return config;
   }
 
-  // Get the directory of the current template for resolving relative extends
-  const currentDir = path.dirname(absolutePath);
+  // Get the directory or base URL of the current template for resolving relative extends
+  const currentBase = isUrl(resolvedPath)
+    ? new URL('.', resolvedPath).href // For URLs, get the base URL
+    : path.dirname(resolvedPath); // For paths, get the directory
 
   // Process extends (can be string or array)
   const extendsList = Array.isArray(config.extends) ? config.extends : [config.extends];
@@ -124,7 +201,7 @@ export async function loadAndMergeTemplate(
 
   /* eslint-disable no-await-in-loop */
   for (const extendsPath of extendsList) {
-    const baseConfig = await loadAndMergeTemplate(extendsPath, currentDir, visitedPaths);
+    const baseConfig = await loadAndMergeTemplate(extendsPath, currentBase, visitedPaths);
     baseConfigs.push(baseConfig);
   }
   /* eslint-enable no-await-in-loop */
