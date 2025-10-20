@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy
 
+## 0.8.0
+
+### Minor Changes
+
+- rename 'execute' type to 'exec' for consistency
+
 ## 0.7.0
 
 ### Minor Changes
