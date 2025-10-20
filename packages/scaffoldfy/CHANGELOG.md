@@ -1,5 +1,16 @@
 # @pixpilot/scaffoldfy
 
+## 0.9.0
+
+### Minor Changes
+
+- Introduce support for top-level prompts and conditional enabling for tasks
+- Add support for global and variables in template tasks
+
+### Patch Changes
+
+- fix test for CI
+
 ## 0.8.0
 
 ### Minor Changes
