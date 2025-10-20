@@ -6,7 +6,7 @@
  * Supports both local file paths and remote URLs (http/https).
  */
 
-import type { TaskDefinition, TasksConfiguration } from './types.js';
+import type { TaskDefinition, TasksConfiguration, VariableDefinition } from './types.js';
 import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
@@ -228,8 +228,19 @@ export function mergeTemplates(templates: TasksConfiguration[]): TasksConfigurat
   // Use a Map to handle task overriding by ID
   const taskMap = new Map<string, TaskDefinition>();
 
+  // Use a Map to handle variable overriding by ID
+  const variableMap = new Map<string, VariableDefinition>();
+
   // Process templates in order (earlier templates have lower priority)
   for (const template of templates) {
+    // Merge variables if present
+    if (template.variables != null) {
+      for (const variable of template.variables) {
+        variableMap.set(variable.id, { ...variable });
+      }
+    }
+
+    // Merge tasks
     for (const task of template.tasks) {
       if (taskMap.has(task.id)) {
         // Task already exists, merge/override
@@ -242,10 +253,17 @@ export function mergeTemplates(templates: TasksConfiguration[]): TasksConfigurat
     }
   }
 
-  // Convert map back to array, preserving order
-  return {
+  // Convert maps back to arrays
+  const result: TasksConfiguration = {
     tasks: Array.from(taskMap.values()),
   };
+
+  // Add variables if any exist
+  if (variableMap.size > 0) {
+    result.variables = Array.from(variableMap.values());
+  }
+
+  return result;
 }
 
 /**
@@ -279,6 +297,21 @@ function mergeTask(base: TaskDefinition, override: TaskDefinition): TaskDefiniti
     }
   }
 
+  // Merge variables arrays (override variables with same ID)
+  let mergedVariables = base.variables ? [...base.variables] : undefined;
+  if (override.variables && override.variables.length > 0) {
+    if (!mergedVariables) {
+      mergedVariables = [...override.variables];
+    } else {
+      // Replace variables with matching IDs, add new ones
+      const variableMap = new Map(mergedVariables.map((v) => [v.id, v]));
+      for (const variable of override.variables) {
+        variableMap.set(variable.id, variable);
+      }
+      mergedVariables = Array.from(variableMap.values());
+    }
+  }
+
   // Merge dependencies arrays
   const mergedDependencies = [
     ...(base.dependencies ?? []),
@@ -292,6 +325,7 @@ function mergeTask(base: TaskDefinition, override: TaskDefinition): TaskDefiniti
     ...override,
     config: mergedConfig,
     ...(mergedPrompts != null && { prompts: mergedPrompts }),
+    ...(mergedVariables != null && { variables: mergedVariables }),
     ...(uniqueDependencies != null && { dependencies: uniqueDependencies }),
   };
 }
@@ -306,11 +340,11 @@ export function clearTemplateCache(): void {
 /**
  * Load tasks from a configuration file with template inheritance support
  * @param tasksFilePath - Path to the tasks configuration file
- * @returns Array of task definitions
+ * @returns Task configuration with tasks and optional variables
  */
 export async function loadTasksWithInheritance(
   tasksFilePath: string,
-): Promise<TaskDefinition[]> {
+): Promise<{ tasks: TaskDefinition[]; variables?: VariableDefinition[] }> {
   log(`Loading tasks from ${tasksFilePath}...`, 'info');
 
   const config = await loadAndMergeTemplate(tasksFilePath);
@@ -322,5 +356,17 @@ export async function loadTasksWithInheritance(
     log(`Extended from: ${extendsList.join(', ')}`, 'info');
   }
 
-  return config.tasks;
+  if (config.variables != null && config.variables.length > 0) {
+    log(`Found ${config.variables.length} global variable(s)`, 'info');
+  }
+
+  const result: { tasks: TaskDefinition[]; variables?: VariableDefinition[] } = {
+    tasks: config.tasks,
+  };
+
+  if (config.variables != null) {
+    result.variables = config.variables;
+  }
+
+  return result;
 }

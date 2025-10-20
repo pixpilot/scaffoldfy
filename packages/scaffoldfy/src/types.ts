@@ -70,8 +70,19 @@ export interface ConfirmPrompt extends BasePrompt {
 export type PromptDefinition = InputPrompt | NumberPrompt | SelectPrompt | ConfirmPrompt;
 
 /**
+ * Variable value configuration for defining optional global or task-scoped variables
+ * Variables are similar to prompts but don't require user input - they can have static
+ * values or values resolved from executable commands
+ */
+export interface VariableDefinition {
+  id: string; // Unique identifier for the variable
+  value: DefaultValue; // The value of the variable (static or executable)
+  global?: boolean; // If true, this variable is available to all tasks (not just the current task)
+}
+
+/**
  * JavaScript expression evaluated at runtime to determine if a task or operation should execute.
- * Has access to all prompt values and config variables.
+ * Has access to all prompt values, variables, and config variables.
  * @example "useTypeScript === true"
  * @example "nodeVersion >= 16 && includeTests === true"
  * @example "packageManager === 'pnpm'"
@@ -114,6 +125,7 @@ export interface TaskDefinition {
   dependencies?: string[]; // IDs of tasks that must run before this one
   rollback?: RollbackConfig; // How to rollback if something fails
   prompts?: PromptDefinition[]; // Optional prompts to collect before running task
+  variables?: VariableDefinition[]; // Optional variables to define for the task (no user interaction required)
 }
 
 export interface UpdateJsonConfig {
@@ -182,6 +194,7 @@ export interface InitializationMetadata {
  */
 export interface TasksConfiguration {
   extends?: string | string[]; // Path(s) or URL(s) to base template file(s) to inherit from
+  variables?: VariableDefinition[]; // Optional global variables available to all tasks
   tasks: TaskDefinition[];
 }
 

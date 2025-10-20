@@ -1,6 +1,6 @@
 /* eslint-disable no-await-in-loop */
 /* eslint-disable no-continue */
-import type { PromptDefinition, TaskDefinition } from './types.js';
+import type { PromptDefinition, TaskDefinition, VariableDefinition } from './types.js';
 import { execSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -18,6 +18,11 @@ import { loadInitializationState, saveInitializationState } from './state.js';
 import { runTask } from './task-executors.js';
 import { topologicalSort } from './task-resolver.js';
 import { log, promptYesNo } from './utils.js';
+import {
+  collectVariables,
+  resolveAllVariableValues,
+  validateVariables,
+} from './variables/index.js';
 
 const readFile = promisify(fs.readFile);
 
@@ -33,8 +38,8 @@ export async function runInitialization(
   options: {
     dryRun: boolean;
     force: boolean;
-
     tasksFilePath: string | undefined;
+    globalVariables?: VariableDefinition[];
   },
 ): Promise<void> {
   // Check if already initialized
@@ -87,6 +92,62 @@ export async function runInitialization(
   console.log('');
 
   const config = createInitialConfig();
+
+  // ============================================================================
+  // Process Variables (no user interaction)
+  // ============================================================================
+
+  // Collect all variables from global config and tasks
+  const globalVariables: VariableDefinition[] = options.globalVariables ?? [];
+  const taskSpecificVariables: VariableDefinition[] = [];
+  const allVariables: VariableDefinition[] = [...globalVariables];
+
+  for (const task of sortedTasks) {
+    if (task.variables && task.variables.length > 0) {
+      for (const variable of task.variables) {
+        if (variable.global) {
+          // Check if this global variable was already added
+          if (!globalVariables.some((v) => v.id === variable.id)) {
+            globalVariables.push(variable);
+            allVariables.push(variable);
+          }
+        } else {
+          taskSpecificVariables.push(variable);
+          allVariables.push(variable);
+        }
+      }
+    }
+  }
+
+  // Validate variables
+  if (allVariables.length > 0) {
+    const variableErrors = validateVariables(allVariables);
+    if (variableErrors.length > 0) {
+      log('❌ Variable validation errors:', 'error');
+      variableErrors.forEach((err) => log(`  - ${err}`, 'error'));
+      console.log('');
+      process.exit(1);
+    }
+
+    // Resolve all variable values (execute commands in parallel)
+    log('Resolving variable values...', 'info');
+    const resolvedVariableValues = await resolveAllVariableValues(allVariables);
+    console.log('');
+
+    // Collect all variable values and merge into config
+    const variableValues = collectVariables(allVariables, resolvedVariableValues);
+    Object.assign(config, variableValues);
+
+    // Log resolved variables if any
+    if (Object.keys(variableValues).length > 0) {
+      log(`✓ Resolved ${Object.keys(variableValues).length} variable(s)`, 'success');
+      console.log('');
+    }
+  }
+
+  // ============================================================================
+  // Process Prompts (user interaction required)
+  // ============================================================================
 
   // Collect all prompts from tasks and separate global vs task-specific
   const globalPrompts: PromptDefinition[] = [];

@@ -9,7 +9,8 @@ A flexible and powerful template initialization utility for automating project s
 - 🔍 **Dry-Run Mode with Diff** - Preview exact changes before applying
 - 🔌 **Plugin System** - Create custom task types and lifecycle hooks
 - 💬 **Interactive Prompts** - Collect user input with input, select, confirm, number, and password prompts
-- 📦 **JSON/TypeScript Config** - Define tasks in JSON or TypeScript files
+- � **Variables** - Define reusable values from static or executable sources without user interaction
+- �📦 **JSON/TypeScript Config** - Define tasks in JSON or TypeScript files
 - 🔗 **Task Dependencies** - Ensure tasks run in the correct order
 - ✅ **Type-Safe** - Full TypeScript support with JSON schema validation
 - 🎯 **Template Variables** - Use `{{variable}}` syntax for dynamic configuration
@@ -346,6 +347,7 @@ Control execution order:
 - **[Getting Started](https://pixpilot.github.io/scaffoldfy/GETTING_STARTED.html)** - Installation, CLI usage, and examples
 - **[Task Types Reference](https://pixpilot.github.io/scaffoldfy/TASK_TYPES.html)** - All 9 built-in task types
 - **[Interactive Prompts](https://pixpilot.github.io/scaffoldfy/PROMPTS.html)** - Collect user input
+- **[Variables](https://pixpilot.github.io/scaffoldfy/VARIABLES.html)** - Reusable values without user interaction
 - **[Advanced Features](https://pixpilot.github.io/scaffoldfy/FEATURES.html)** - Conditional execution, global prompts, Handlebars
 - **[Template Inheritance](https://pixpilot.github.io/scaffoldfy/TEMPLATE_INHERITANCE.html)** - Extend and compose templates
 - **[Plugin System](https://pixpilot.github.io/scaffoldfy/PLUGINS.html)** - Create custom task types

@@ -1,0 +1,142 @@
+{
+  "$schema": "../schema/tasks.schema.json",
+  "variables": [
+    {
+      "id": "currentYear",
+      "value": {
+        "type": "exec",
+        "value": "node -e \"console.log(new Date().getFullYear())\""
+      },
+      "global": true
+    },
+    {
+      "id": "gitUserName",
+      "value": {
+        "type": "exec",
+        "value": "git config user.name"
+      },
+      "global": true
+    },
+    {
+      "id": "gitUserEmail",
+      "value": {
+        "type": "exec",
+        "value": "git config user.email"
+      },
+      "global": true
+    },
+    {
+      "id": "nodeVersion",
+      "value": {
+        "type": "exec",
+        "value": "node --version"
+      },
+      "global": true
+    },
+    {
+      "id": "defaultLicense",
+      "value": "MIT"
+    }
+  ],
+  "tasks": [
+    {
+      "id": "setup-package-json",
+      "name": "Setup package.json",
+      "description": "Configure package.json with project metadata using variables",
+      "required": true,
+      "enabled": true,
+      "type": "update-json",
+      "prompts": [
+        {
+          "id": "projectName",
+          "type": "input",
+          "message": "What is your project name?",
+          "default": "my-awesome-project",
+          "required": true,
+          "global": true
+        },
+        {
+          "id": "projectDescription",
+          "type": "input",
+          "message": "Project description",
+          "default": "An awesome project",
+          "global": true
+        }
+      ],
+      "config": {
+        "file": "package.json",
+        "updates": {
+          "name": "{{projectName}}",
+          "description": "{{projectDescription}}",
+          "version": "1.0.0",
+          "author": "{{gitUserName}} <{{gitUserEmail}}>",
+          "license": "{{defaultLicense}}"
+        }
+      }
+    },
+    {
+      "id": "create-readme",
+      "name": "Create README",
+      "description": "Generate README.md file with project information",
+      "required": true,
+      "enabled": true,
+      "type": "template",
+      "dependencies": ["setup-package-json"],
+      "variables": [
+        {
+          "id": "readmeTemplate",
+          "value": "standard"
+        }
+      ],
+      "config": {
+        "file": "README.md",
+        "template": "# {{projectName}}\n\n{{projectDescription}}\n\n## Installation\n\nRequires Node.js {{nodeVersion}}\n\n```bash\nnpm install\n```\n\n## Author\n\n{{gitUserName}} ({{gitUserEmail}})\n\n## License\n\n{{defaultLicense}} © {{currentYear}} {{gitUserName}}\n\n## Template\n\nTemplate type: {{readmeTemplate}}\n"
+      }
+    },
+    {
+      "id": "create-license-file",
+      "name": "Create LICENSE",
+      "description": "Generate LICENSE file using variables",
+      "required": false,
+      "enabled": true,
+      "type": "template",
+      "config": {
+        "file": "LICENSE",
+        "template": "{{defaultLicense}} License\n\nCopyright (c) {{currentYear}} {{gitUserName}}\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n"
+      }
+    },
+    {
+      "id": "create-env-example",
+      "name": "Create .env.example",
+      "description": "Generate environment variables example file",
+      "required": false,
+      "enabled": true,
+      "type": "template",
+      "variables": [
+        {
+          "id": "defaultPort",
+          "value": 3000
+        },
+        {
+          "id": "defaultHost",
+          "value": "localhost"
+        }
+      ],
+      "config": {
+        "file": ".env.example",
+        "template": "# Environment Configuration\n# Generated for {{projectName}} (Node {{nodeVersion}})\n\nPORT={{defaultPort}}\nHOST={{defaultHost}}\nNODE_ENV=development\n\n# Author: {{gitUserName}}\n# Year: {{currentYear}}\n"
+      }
+    },
+    {
+      "id": "exec-node-version-check",
+      "name": "Check Node Version",
+      "description": "Verify Node.js version meets requirements",
+      "required": false,
+      "enabled": true,
+      "type": "exec",
+      "config": {
+        "command": "echo \"Current Node version: {{nodeVersion}}\""
+      }
+    }
+  ]
+}

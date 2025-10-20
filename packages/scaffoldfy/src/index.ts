@@ -14,7 +14,7 @@
  * - TypeScript type safety
  */
 
-import type { TaskDefinition } from './types.js';
+import type { TaskDefinition, VariableDefinition } from './types.js';
 
 import process from 'node:process';
 
@@ -87,22 +87,25 @@ async function main(customTasks?: TaskDefinition[]) {
  * @param options.dryRun - Preview changes without applying them
  * @param options.force - Force re-initialization even if already initialized
  * @param options.tasksFilePath - Path to the tasks file
+ * @param options.globalVariables - Optional global variables
  */
 export async function runWithTasks(
   customTasks: TaskDefinition[],
   options?: {
     dryRun?: boolean | undefined;
     force?: boolean | undefined;
-
     tasksFilePath?: string | undefined;
+    globalVariables?: VariableDefinition[] | undefined;
   },
 ): Promise<void> {
   try {
     await runInitialization(customTasks, {
       dryRun: options?.dryRun ?? dryRun,
       force: options?.force ?? forceReInit,
-
       tasksFilePath: options?.tasksFilePath ?? undefined,
+      ...(options?.globalVariables != null && {
+        globalVariables: options.globalVariables,
+      }),
     });
   } catch (error) {
     log('❌ Initialization failed', 'error');
@@ -174,5 +177,11 @@ export {
   promptYesNo,
   setNestedProperty,
 } from './utils.js';
+export {
+  collectVariables,
+  resolveAllVariableValues,
+  resolveVariableValue,
+  validateVariables,
+} from './variables/index.js';
 
 export { main };

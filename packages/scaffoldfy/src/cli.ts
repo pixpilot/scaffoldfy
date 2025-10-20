@@ -4,7 +4,7 @@
  * CLI for template initialization
  */
 
-import type { TaskDefinition } from './types.js';
+import type { TaskDefinition, VariableDefinition } from './types.js';
 import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
@@ -58,6 +58,7 @@ program
   .action(async (options: CliOptions) => {
     try {
       let tasks: TaskDefinition[] = [];
+      let globalVariables: VariableDefinition[] | undefined;
       let tasksFilePath: string | undefined;
 
       // Try to load tasks from TypeScript file first (if specified and exists)
@@ -103,7 +104,9 @@ program
 
           try {
             // Use template inheritance loader to support extends
-            tasks = await loadTasksWithInheritance(jsonPath);
+            const config = await loadTasksWithInheritance(jsonPath);
+            tasks = config.tasks;
+            globalVariables = config.variables;
 
             if (!Array.isArray(tasks)) {
               log('❌ Invalid tasks file format', 'error');
@@ -190,6 +193,7 @@ program
         dryRun: options.dryRun,
         force: options.force,
         tasksFilePath,
+        globalVariables,
       });
     } catch (error) {
       log('❌ CLI execution failed', 'error');

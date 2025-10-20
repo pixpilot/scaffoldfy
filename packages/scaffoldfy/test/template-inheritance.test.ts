@@ -394,9 +394,9 @@ describe('template inheritance', () => {
       createTemplateFile('base.json', baseConfig);
       const childPath = createTemplateFile('child.json', childConfig);
 
-      const tasks = await loadTasksWithInheritance(childPath);
+      const result = await loadTasksWithInheritance(childPath);
 
-      expect(tasks).toHaveLength(2);
+      expect(result.tasks).toHaveLength(2);
     });
   });
 
@@ -607,10 +607,10 @@ describe('template inheritance', () => {
     });
 
     it('should load tasks with inheritance from URL', async () => {
-      const tasks = await loadTasksWithInheritance('https://example.com/base.json');
+      const result = await loadTasksWithInheritance('https://example.com/base.json');
 
-      expect(tasks).toHaveLength(1);
-      expect(tasks[0]?.id).toBe('remote-task');
+      expect(result.tasks).toHaveLength(1);
+      expect(result.tasks[0]?.id).toBe('remote-task');
     });
 
     it('should support HTTPS URLs', async () => {

@@ -4,6 +4,64 @@
   "description": "Configuration for template initialization cleanup tasks",
   "type": "object",
   "properties": {
+    "extends": {
+      "description": "Base template file(s) to extend from. Can be a local path or URL (http/https). Supports single path or array of paths.",
+      "oneOf": [
+        {
+          "type": "string",
+          "description": "Single base template path or URL"
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Array of base template paths or URLs"
+        }
+      ]
+    },
+    "variables": {
+      "type": "array",
+      "description": "Global variables available to all tasks. Variables are resolved once at initialization and do not require user interaction.",
+      "items": {
+        "type": "object",
+        "required": ["id", "value"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier for the variable (must be a valid JavaScript identifier)",
+            "pattern": "^[\\w$]+$"
+          },
+          "value": {
+            "description": "Variable value. Can be a static value or an object with 'type' and 'value' properties for executable values.",
+            "oneOf": [
+              {
+                "description": "Static value (string, number, or boolean)"
+              },
+              {
+                "type": "object",
+                "description": "Value configuration for static or executable values",
+                "required": ["type", "value"],
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "enum": ["static", "exec"],
+                    "description": "Type of value. 'static' for explicit static values, 'exec' for command execution."
+                  },
+                  "value": {
+                    "description": "For 'static' type: the static value. For 'exec' type: the shell command to execute. Commands output will be trimmed and auto-parsed as JSON, number, or boolean when applicable."
+                  }
+                }
+              }
+            ]
+          },
+          "global": {
+            "type": "boolean",
+            "description": "If true, this variable is available to all tasks globally. Note: top-level variables are global by default."
+          }
+        }
+      }
+    },
     "tasks": {
       "type": "array",
       "items": {
@@ -117,6 +175,48 @@
                       }
                     }
                   }
+                }
+              }
+            }
+          },
+          "variables": {
+            "type": "array",
+            "description": "Task-scoped variables available to this specific task. Variables are resolved once at initialization and do not require user interaction.",
+            "items": {
+              "type": "object",
+              "required": ["id", "value"],
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "Unique identifier for the variable (must be a valid JavaScript identifier)",
+                  "pattern": "^[\\w$]+$"
+                },
+                "value": {
+                  "description": "Variable value. Can be a static value or an object with 'type' and 'value' properties for executable values.",
+                  "oneOf": [
+                    {
+                      "description": "Static value (string, number, or boolean)"
+                    },
+                    {
+                      "type": "object",
+                      "description": "Value configuration for static or executable values",
+                      "required": ["type", "value"],
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": ["static", "exec"],
+                          "description": "Type of value. 'static' for explicit static values, 'exec' for command execution."
+                        },
+                        "value": {
+                          "description": "For 'static' type: the static value. For 'exec' type: the shell command to execute. Commands output will be trimmed and auto-parsed as JSON, number, or boolean when applicable."
+                        }
+                      }
+                    }
+                  ]
+                },
+                "global": {
+                  "type": "boolean",
+                  "description": "If true, this variable is available to all tasks globally."
                 }
               }
             }

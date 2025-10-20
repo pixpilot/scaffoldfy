@@ -12,6 +12,7 @@ Welcome to the official documentation for **@pixpilot/scaffoldfy** (formerly sca
 
 - **[Task Types Reference](TASK_TYPES.md)** - Complete reference for all 9 built-in task types
 - **[Interactive Prompts](PROMPTS.md)** - Collect user input with various prompt types
+- **[Variables](VARIABLES.md)** - Define reusable values without user interaction
 - **[Prompts Quick Reference](PROMPTS_QUICK_REFERENCE.md)** - Quick syntax reference for prompts
 
 ### Advanced Features
@@ -41,6 +42,9 @@ Welcome to the official documentation for **@pixpilot/scaffoldfy** (formerly sca
 
 **Need user input?**
 → [Interactive Prompts](PROMPTS.md) + [Prompts Quick Reference](PROMPTS_QUICK_REFERENCE.md)
+
+**Need dynamic values without user input?**
+→ [Variables](VARIABLES.md)
 
 **Building complex templates?**
 → [Template Inheritance](TEMPLATE_INHERITANCE.md) + [Handlebars Templates](HANDLEBARS_TEMPLATES.md)
