@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy
 
+## 0.3.0
+
+### Minor Changes
+
+- rename repo/package, add docs
+
 ## 0.2.0
 
 ### Minor Changes
