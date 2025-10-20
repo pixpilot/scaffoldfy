@@ -39,11 +39,13 @@ describe('resolveVariableValue', () => {
   });
 
   it('should parse JSON output from exec commands', async () => {
+    // Use a JSON array to avoid complex shell quoting issues with object properties
+    // Arrays are simpler and work cross-platform reliably
     const result = await resolveVariableValue(
-      { type: 'exec', value: 'echo {"key": "value"}' },
+      { type: 'exec', value: 'node -p "JSON.stringify([1,2,3])"' },
       'testVar',
     );
-    expect(result).toEqual({ key: 'value' });
+    expect(result).toEqual([1, 2, 3]);
   });
 
   it('should parse number output from exec commands', async () => {
