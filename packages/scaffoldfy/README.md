@@ -1,4 +1,8 @@
-# @pixpilot/scaffoldfy
+<div style="background: #ffdddd; border: 1px solid #ff0000; color: #a00; padding: 1em; margin-bottom: 1.5em; border-radius: 6px; font-weight: bold;">
+🚨 <b>Package moved!</b> Now published as <a href="https://www.npmjs.com/package/@pixpilot/scaffoldfy" style="color: #a00; text-decoration: underline;">@pixpilot/scaffoldfy</a> on npm.
+</div>
+
+# scaffoldfy
 
 A flexible and powerful template initialization utility for automating project setup, cleanup, and configuration tasks.
 
@@ -19,7 +23,7 @@ A flexible and powerful template initialization utility for automating project s
 ## Installation
 
 ```sh
-pnpm add @pixpilot/scaffoldfy
+pnpm add scaffoldfy
 ```
 
 ## Quick Start
@@ -58,7 +62,7 @@ scaffoldfy --force
 ### Programmatic API
 
 ```typescript
-import { runWithTasks } from '@pixpilot/scaffoldfy';
+import { runWithTasks } from 'scaffoldfy';
 
 await runWithTasks(tasks, {
   dryRun: false,
@@ -239,7 +243,7 @@ See color-coded diffs for all file modifications, deletions, and additions.
 Create custom task types for specialized operations:
 
 ```typescript
-import { createPlugin, registerPlugin } from '@pixpilot/scaffoldfy';
+import { createPlugin, registerPlugin } from 'scaffoldfy';
 
 const myPlugin = createPlugin(
   'my-plugin',
@@ -397,7 +401,7 @@ Enable autocomplete and validation in your IDE:
 
 ```json
 {
-  "$schema": "node_modules/@pixpilot/scaffoldfy/schema/tasks.schema.json",
+  "$schema": "node_modules/scaffoldfy/schema/tasks.schema.json",
   "tasks": []
 }
 ```
