@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy
 
+## 0.5.1
+
+### Patch Changes
+
+- change package name from `scaffoldfy` to `@pixpilot/scaffoldfy`
+
 ## 0.5.0
 
 ### Minor Changes
