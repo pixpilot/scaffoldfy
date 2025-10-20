@@ -1,0 +1,76 @@
+{
+  "extends": ["./base-node-template.json"],
+  "tasks": [
+    {
+      "id": "setup-docker",
+      "name": "Setup Docker",
+      "description": "Create Dockerfile and docker-compose.yml",
+      "required": false,
+      "enabled": true,
+      "type": "template",
+      "prompts": [
+        {
+          "id": "nodeVersion",
+          "type": "select",
+          "message": "Select Node.js version",
+          "choices": [
+            { "name": "Node 18 LTS", "value": "18" },
+            { "name": "Node 20 LTS", "value": "20" },
+            { "name": "Node 21 Current", "value": "21" }
+          ],
+          "default": "20"
+        },
+        {
+          "id": "port",
+          "type": "number",
+          "message": "Application port",
+          "default": 3000,
+          "min": 1024,
+          "max": 65535
+        }
+      ],
+      "config": {
+        "file": "Dockerfile",
+        "template": "FROM node:{{nodeVersion}}-alpine\nWORKDIR /app\nCOPY package*.json ./\nRUN npm install\nCOPY . .\nEXPOSE {{port}}\nCMD [\"npm\", \"start\"]"
+      }
+    },
+    {
+      "id": "create-env-file",
+      "name": "Create .env file",
+      "description": "Create environment variables file",
+      "required": true,
+      "enabled": true,
+      "type": "template",
+      "prompts": [
+        {
+          "id": "dbUrl",
+          "type": "input",
+          "message": "Database URL",
+          "default": "postgresql://localhost:5432/mydb"
+        },
+        {
+          "id": "apiKey",
+          "type": "password",
+          "message": "API Key (optional)",
+          "required": false
+        }
+      ],
+      "config": {
+        "file": ".env",
+        "template": "NODE_ENV=development\nPORT={{port}}\nDATABASE_URL={{dbUrl}}\nAPI_KEY={{apiKey}}"
+      }
+    },
+    {
+      "id": "override-readme",
+      "name": "Update README",
+      "description": "Create project-specific README",
+      "required": true,
+      "enabled": true,
+      "type": "template",
+      "config": {
+        "file": "README.md",
+        "template": "# {{repoName}}\n\n> Built with template inheritance\n\nAuthor: {{author}}\n\n## Getting Started\n\n```bash\nnpm install\nnpm run dev\n```\n\n## Environment Variables\n\nSee `.env` file for configuration.\n\n## Docker\n\nBuild and run with Docker:\n\n```bash\ndocker-compose up\n```"
+      }
+    }
+  ]
+}

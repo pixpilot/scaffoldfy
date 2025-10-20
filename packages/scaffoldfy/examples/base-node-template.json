@@ -1,0 +1,48 @@
+{
+  "tasks": [
+    {
+      "id": "update-package",
+      "name": "Update package.json",
+      "description": "Update package metadata",
+      "required": true,
+      "enabled": true,
+      "type": "update-json",
+      "config": {
+        "file": "package.json",
+        "updates": {
+          "name": "{{repoName}}",
+          "author": "{{author}}",
+          "description": "Base Node.js template",
+          "repository": {
+            "type": "git",
+            "url": "{{repoUrl}}"
+          }
+        }
+      }
+    },
+    {
+      "id": "setup-git",
+      "name": "Initialize Git",
+      "description": "Setup git repository",
+      "required": true,
+      "enabled": true,
+      "type": "git-init",
+      "config": {
+        "removeExisting": false,
+        "initialCommit": true,
+        "message": "🎉 Initial commit from template"
+      }
+    },
+    {
+      "id": "cleanup-template-files",
+      "name": "Cleanup Template Files",
+      "description": "Remove template-specific files",
+      "required": false,
+      "enabled": true,
+      "type": "delete",
+      "config": {
+        "paths": ["TEMPLATE_README.md", "template-tasks.json"]
+      }
+    }
+  ]
+}

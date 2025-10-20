@@ -1,0 +1,32 @@
+{
+  "tasks": [
+    {
+      "id": "setup-docker",
+      "name": "Setup Docker",
+      "description": "Create Docker configuration files",
+      "required": true,
+      "enabled": true,
+      "type": "docker-setup",
+      "config": {
+        "baseImage": "node:20-alpine",
+        "port": 3000,
+        "workdir": "/app",
+        "installCommand": "pnpm install --frozen-lockfile",
+        "startCommand": "[\"pnpm\", \"start\"]"
+      }
+    },
+    {
+      "id": "update-readme",
+      "name": "Update README",
+      "description": "Add Docker instructions to README",
+      "required": false,
+      "enabled": true,
+      "type": "template",
+      "dependencies": ["setup-docker"],
+      "config": {
+        "file": "README.md",
+        "template": "# {{repoName}}\n\n## Development\n\n### With Docker\n\n```bash\ndocker-compose up\n```\n\n### Local\n\n```bash\npnpm install\npnpm dev\n```\n\n## Author\n\n{{author}}"
+      }
+    }
+  ]
+}

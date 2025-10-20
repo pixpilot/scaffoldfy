@@ -1,0 +1,52 @@
+{
+  "tasks": [
+    {
+      "id": "clean-readme-inline",
+      "name": "Clean README (Inline)",
+      "description": "Create a fresh README using inline template",
+      "required": true,
+      "enabled": true,
+      "type": "template",
+      "config": {
+        "file": "README.md",
+        "template": "# {{repoName}}\n\n> Created by {{author}}\n\n## Repository\n\n- Owner: {{repoOwner}}\n- URL: {{repoUrl}}\n"
+      }
+    },
+    {
+      "id": "clean-readme-file",
+      "name": "Clean README (File-based)",
+      "description": "Create a fresh README using external template file",
+      "required": true,
+      "enabled": false,
+      "type": "template",
+      "config": {
+        "file": "README.md",
+        "templateFile": "examples/templates/readme.hbs"
+      }
+    },
+    {
+      "id": "simple-template",
+      "name": "Simple Template (Legacy)",
+      "description": "Simple template using {{var}} syntax without Handlebars",
+      "required": true,
+      "enabled": false,
+      "type": "template",
+      "config": {
+        "file": "SIMPLE.md",
+        "template": "# {{repoName}}\nAuthor: {{author}}\n"
+      }
+    },
+    {
+      "id": "simple-template-file",
+      "name": "Simple Template from File (Legacy)",
+      "description": "Simple template from file using {{var}} syntax without Handlebars",
+      "required": true,
+      "enabled": false,
+      "type": "template",
+      "config": {
+        "file": "OUTPUT.md",
+        "templateFile": "examples/templates/readme.hbs"
+      }
+    }
+  ]
+}

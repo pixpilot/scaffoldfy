@@ -1,0 +1,337 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Template Initialization Tasks",
+  "description": "Configuration for template initialization cleanup tasks",
+  "type": "object",
+  "properties": {
+    "tasks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "description",
+          "required",
+          "enabled",
+          "type",
+          "config"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier for the task"
+          },
+          "name": {
+            "type": "string",
+            "description": "Human-readable task name"
+          },
+          "description": {
+            "type": "string",
+            "description": "Detailed description of what the task does"
+          },
+          "required": {
+            "type": "boolean",
+            "description": "Whether failure of this task should stop the process"
+          },
+          "enabled": {
+            "type": "boolean",
+            "description": "Whether this task should be executed"
+          },
+          "dependencies": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "IDs of tasks that must run before this one"
+          },
+          "prompts": {
+            "type": "array",
+            "description": "Interactive prompts to collect user input before running the task",
+            "items": {
+              "type": "object",
+              "required": ["id", "type", "message"],
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "Unique identifier for the prompt value (alphanumeric, underscores, and hyphens only)",
+                  "pattern": "^[\\w-]+$"
+                },
+                "type": {
+                  "type": "string",
+                  "enum": ["input", "select", "confirm", "password", "number"],
+                  "description": "Type of prompt to display"
+                },
+                "message": {
+                  "type": "string",
+                  "description": "Prompt message to display to the user"
+                },
+                "required": {
+                  "type": "boolean",
+                  "description": "Whether the prompt value is required (cannot be empty)"
+                },
+                "global": {
+                  "type": "boolean",
+                  "description": "If true, this prompt value is available to all tasks (not just the current task). Global prompts are collected once and shared across all tasks."
+                },
+                "default": {
+                  "description": "Default value for the prompt. Can be a static value or an object with 'type' and 'value' properties for executable defaults.",
+                  "oneOf": [
+                    {
+                      "description": "Static default value (string, number, or boolean)"
+                    },
+                    {
+                      "type": "object",
+                      "description": "Default value configuration for static or executable values",
+                      "required": ["type", "value"],
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": ["value", "execute"],
+                          "description": "Type of default value. 'value' for static values, 'execute' for command execution."
+                        },
+                        "value": {
+                          "description": "For 'value' type: the static value. For 'execute' type: the shell command to execute. Commands can be any shell command including git, npm, node, etc. The command output will be trimmed and auto-parsed as JSON, number, or boolean when applicable."
+                        }
+                      }
+                    }
+                  ]
+                },
+                "placeholder": {
+                  "type": "string",
+                  "description": "Placeholder text (for input prompts)"
+                },
+                "min": {
+                  "type": "number",
+                  "description": "Minimum value (for number prompts)"
+                },
+                "max": {
+                  "type": "number",
+                  "description": "Maximum value (for number prompts)"
+                },
+                "choices": {
+                  "type": "array",
+                  "description": "Available choices (for select prompts)",
+                  "items": {
+                    "type": "object",
+                    "required": ["name", "value"],
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "description": "Display name for the choice"
+                      },
+                      "value": {
+                        "description": "Value to use when this choice is selected"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "update-json",
+              "template",
+              "regex-replace",
+              "replace-in-file",
+              "delete",
+              "rename",
+              "git-init",
+              "exec"
+            ],
+            "description": "Type of task to execute"
+          },
+          "config": {
+            "type": "object",
+            "description": "Task-specific configuration",
+            "oneOf": [
+              {
+                "title": "Update JSON Config",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "description": "Path to the JSON file to update"
+                  },
+                  "updates": {
+                    "type": "object",
+                    "description": "Key-value pairs to update (supports nested paths with dot notation)"
+                  },
+                  "condition": {
+                    "type": "string",
+                    "description": "Optional JavaScript expression to evaluate. Task only executes if condition evaluates to true."
+                  }
+                },
+                "required": ["file", "updates"]
+              },
+              {
+                "title": "Template Config",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "description": "Path to the file to create or overwrite"
+                  },
+                  "template": {
+                    "type": "string",
+                    "description": "Inline template string with {{variable}} placeholders. Cannot be used with templateFile."
+                  },
+                  "templateFile": {
+                    "type": "string",
+                    "description": "Path to external template file (relative to project root). Files with .hbs extension automatically use Handlebars templating. Cannot be used with template."
+                  },
+                  "condition": {
+                    "type": "string",
+                    "description": "Optional JavaScript expression to evaluate. Task only executes if condition evaluates to true."
+                  }
+                },
+                "required": ["file"],
+                "oneOf": [
+                  {
+                    "required": ["template"]
+                  },
+                  {
+                    "required": ["templateFile"]
+                  }
+                ]
+              },
+              {
+                "title": "Regex Replace Config",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "description": "Path to the file to modify"
+                  },
+                  "pattern": {
+                    "type": "string",
+                    "description": "Regular expression pattern to find"
+                  },
+                  "flags": {
+                    "type": "string",
+                    "description": "Regex flags (e.g., 'g', 'gm', 'gi')"
+                  },
+                  "replacement": {
+                    "type": "string",
+                    "description": "String to replace matches with"
+                  },
+                  "condition": {
+                    "type": "string",
+                    "description": "Optional JavaScript expression to evaluate. Task only executes if condition evaluates to true."
+                  }
+                },
+                "required": ["file", "pattern", "replacement"]
+              },
+              {
+                "title": "Replace In File Config",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "description": "Path to the file to modify"
+                  },
+                  "replacements": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "find": {
+                          "type": "string",
+                          "description": "String to find"
+                        },
+                        "replace": {
+                          "type": "string",
+                          "description": "String to replace with"
+                        }
+                      },
+                      "required": ["find", "replace"]
+                    }
+                  },
+                  "condition": {
+                    "type": "string",
+                    "description": "Optional JavaScript expression to evaluate. Task only executes if condition evaluates to true."
+                  }
+                },
+                "required": ["file", "replacements"]
+              },
+              {
+                "title": "Delete Config",
+                "properties": {
+                  "paths": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Array of file or directory paths to delete"
+                  },
+                  "condition": {
+                    "type": "string",
+                    "description": "Optional JavaScript expression to evaluate. Task only executes if condition evaluates to true."
+                  }
+                },
+                "required": ["paths"]
+              },
+              {
+                "title": "Rename Config",
+                "properties": {
+                  "from": {
+                    "type": "string",
+                    "description": "Current file or directory path"
+                  },
+                  "to": {
+                    "type": "string",
+                    "description": "New file or directory path"
+                  },
+                  "condition": {
+                    "type": "string",
+                    "description": "Optional JavaScript expression to evaluate. Task only executes if condition evaluates to true."
+                  }
+                },
+                "required": ["from", "to"]
+              },
+              {
+                "title": "Git Init Config",
+                "properties": {
+                  "removeExisting": {
+                    "type": "boolean",
+                    "description": "Whether to remove existing .git directory"
+                  },
+                  "initialCommit": {
+                    "type": "boolean",
+                    "description": "Whether to create an initial commit"
+                  },
+                  "message": {
+                    "type": "string",
+                    "description": "Initial commit message"
+                  },
+                  "condition": {
+                    "type": "string",
+                    "description": "Optional JavaScript expression to evaluate. Task only executes if condition evaluates to true."
+                  }
+                },
+                "required": ["removeExisting", "initialCommit"]
+              },
+              {
+                "title": "Exec Config",
+                "properties": {
+                  "command": {
+                    "type": "string",
+                    "description": "Shell command to execute"
+                  },
+                  "cwd": {
+                    "type": "string",
+                    "description": "Working directory for the command"
+                  },
+                  "condition": {
+                    "type": "string",
+                    "description": "Optional JavaScript expression to evaluate. Task only executes if condition evaluates to true."
+                  }
+                },
+                "required": ["command"]
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  "required": ["tasks"]
+}

@@ -1,7 +1,4 @@
-# template-toolkit
-
-> ⚠️ **Opinionated Template:**
-> This monorepo template is designed for our internal standards and workflows. Feel free to use, adapt, and extend it for your own projects.
+# scaffoldfy
 
 A modern TypeScript monorepo template for npm packages, managed with pnpm and TurboRepo.
 
@@ -29,18 +26,30 @@ A modern TypeScript monorepo template for npm packages, managed with pnpm and Tu
 
 ## 📦 Packages
 
-- First, ensure the repository URL is included in the root `package.json`. This allows Turbo to automatically set the `repository` property for packages in the monorepo:
+### @pixpilot/scaffoldfy
 
-  ```json
-  {
-    "repository": {
-      "type": "git",
-      "url": "https://github.com/user/repo.git"
-    }
-  }
-  ```
+A flexible and powerful template initialization utility for automating project setup, cleanup, and configuration tasks.
 
-- [packages/example-package](packages/example-package) – Example package included by default. You can remove this and run `pnpm run turbo:gen:init` to generate a new package for your monorepo.
+- **[Package Documentation](packages/scaffoldfy/README.md)** - Main package README
+- **[Full Documentation](docs/README.md)** - Complete documentation with guides and references
+
+Key features:
+
+- 🔄 9 built-in task types for common operations
+- 💬 Interactive prompts for user input
+- 🧩 Template inheritance for code reuse
+- 🔍 Dry-run mode with diff preview
+- 🔌 Plugin system for custom task types
+- 📝 Handlebars templating support
+
+**Quick start:**
+
+```sh
+pnpm add @pixpilot/scaffoldfy
+scaffoldfy --tasks-file ./tasks.json
+```
+
+For detailed usage, examples, and API documentation, see the [documentation](docs/README.md).
 
 ### 🏷️ Package Naming Convention
 

@@ -1,0 +1,176 @@
+{
+  "$schema": "../schema/tasks.schema.json",
+  "tasks": [
+    {
+      "id": "setup-package-json",
+      "name": "Setup package.json",
+      "description": "Configure package.json with intelligent defaults from environment",
+      "required": true,
+      "enabled": true,
+      "type": "update-json",
+      "prompts": [
+        {
+          "id": "projectName",
+          "type": "input",
+          "message": "What is your project name?",
+          "default": {
+            "type": "execute",
+            "value": "node -p \"require('path').basename(process.cwd())\""
+          },
+          "required": true,
+          "global": true
+        },
+        {
+          "id": "authorName",
+          "type": "input",
+          "message": "Author name",
+          "default": {
+            "type": "execute",
+            "value": "git config user.name"
+          },
+          "global": true
+        },
+        {
+          "id": "authorEmail",
+          "type": "input",
+          "message": "Author email",
+          "default": {
+            "type": "execute",
+            "value": "git config user.email"
+          },
+          "global": true
+        },
+        {
+          "id": "packageManager",
+          "type": "select",
+          "message": "Which package manager do you use?",
+          "choices": [
+            { "name": "npm", "value": "npm" },
+            { "name": "pnpm", "value": "pnpm" },
+            { "name": "yarn", "value": "yarn" }
+          ],
+          "default": {
+            "type": "execute",
+            "value": "command -v pnpm > /dev/null && echo 'pnpm' || (command -v yarn > /dev/null && echo 'yarn' || echo 'npm')"
+          },
+          "global": true
+        },
+        {
+          "id": "nodeVersion",
+          "type": "input",
+          "message": "Node.js version (for engines field)",
+          "default": {
+            "type": "execute",
+            "value": "node --version"
+          }
+        }
+      ],
+      "config": {
+        "file": "package.json",
+        "updates": {
+          "name": "{{projectName}}",
+          "version": "0.1.0",
+          "author": "{{authorName}} <{{authorEmail}}>",
+          "packageManager": "{{packageManager}}@*",
+          "engines": {
+            "node": "{{nodeVersion}}"
+          }
+        }
+      }
+    },
+    {
+      "id": "setup-readme",
+      "name": "Setup README",
+      "description": "Create README with project information",
+      "required": true,
+      "enabled": true,
+      "type": "template",
+      "prompts": [
+        {
+          "id": "description",
+          "type": "input",
+          "message": "Project description",
+          "default": "A new project",
+          "required": true
+        },
+        {
+          "id": "license",
+          "type": "select",
+          "message": "License",
+          "choices": [
+            { "name": "MIT", "value": "MIT" },
+            { "name": "Apache-2.0", "value": "Apache-2.0" },
+            { "name": "GPL-3.0", "value": "GPL-3.0" },
+            { "name": "BSD-3-Clause", "value": "BSD-3-Clause" },
+            { "name": "ISC", "value": "ISC" }
+          ],
+          "default": "MIT"
+        }
+      ],
+      "config": {
+        "file": "README.md",
+        "template": "# {{projectName}}\n\n{{description}}\n\n## Author\n\n{{authorName}}\n\n## License\n\n{{license}}\n"
+      }
+    },
+    {
+      "id": "setup-git",
+      "name": "Setup Git",
+      "description": "Initialize git repository",
+      "required": false,
+      "enabled": true,
+      "type": "git-init",
+      "prompts": [
+        {
+          "id": "initGit",
+          "type": "confirm",
+          "message": "Initialize git repository?",
+          "default": {
+            "type": "execute",
+            "value": "test -d .git && echo 'false' || echo 'true'"
+          }
+        },
+        {
+          "id": "currentBranch",
+          "type": "input",
+          "message": "What branch name to use?",
+          "default": {
+            "type": "execute",
+            "value": "git config init.defaultBranch || echo 'main'"
+          }
+        }
+      ],
+      "config": {
+        "condition": "initGit",
+        "removeExisting": false,
+        "initialCommit": true,
+        "message": "Initial commit for {{projectName}}"
+      }
+    },
+    {
+      "id": "setup-dev-server",
+      "name": "Setup Development Server",
+      "description": "Configure development server port",
+      "required": false,
+      "enabled": true,
+      "type": "update-json",
+      "prompts": [
+        {
+          "id": "devPort",
+          "type": "number",
+          "message": "Development server port",
+          "default": 3000,
+          "min": 1024,
+          "max": 65535
+        }
+      ],
+      "config": {
+        "file": "package.json",
+        "updates": {
+          "scripts": {
+            "dev": "vite --port {{devPort}}"
+          }
+        }
+      }
+    }
+  ]
+}
