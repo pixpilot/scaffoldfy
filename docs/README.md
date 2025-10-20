@@ -54,23 +54,6 @@ Welcome to the official documentation for **@pixpilot/scaffoldfy** (formerly sca
 **Using conditional logic?**
 → [Advanced Features Guide](FEATURES.md)
 
-## 📖 Documentation Structure
-
-```
-docs/
-├── README.md (this file)           # Main documentation index
-├── GETTING_STARTED.md              # Installation, usage, examples
-├── TASK_TYPES.md                   # All built-in task types
-├── PROMPTS.md                      # Interactive prompts guide
-├── PROMPTS_QUICK_REFERENCE.md      # Quick prompt syntax
-├── FEATURES.md                     # Advanced features
-├── TEMPLATE_INHERITANCE.md         # Template composition
-├── HANDLEBARS_TEMPLATES.md         # Handlebars templating
-├── PLUGINS.md                      # Plugin system
-├── DRY_RUN.md                      # Dry-run preview mode
-└── EXECUTABLE_DEFAULTS_REFERENCE.md # Defaults reference
-```
-
 ## 💡 Features at a Glance
 
 - 🔄 **9 Task Types** - update-json, template, regex-replace, replace-in-file, delete, conditional-delete, rename, git-init, exec
