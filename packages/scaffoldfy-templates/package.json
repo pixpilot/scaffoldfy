@@ -5,6 +5,7 @@
   "packageManager": "pnpm@10.17.0",
   "author": "PixPilot <m.doaie@hotmail.com>",
   "license": "MIT",
+  "access": "public",
   "repository": {
     "type": "git",
     "url": "https://github.com/pixpilot/scaffoldfy.git",
