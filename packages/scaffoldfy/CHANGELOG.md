@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy
 
+## 0.6.0
+
+### Minor Changes
+
+- support loading templates from remote URLs
+
 ## 0.5.4
 
 ### Patch Changes
