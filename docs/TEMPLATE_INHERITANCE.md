@@ -442,9 +442,11 @@ scaffoldfy --tasks-file https://raw.githubusercontent.com/org/templates/main/bas
 Load a single template file from a local path or remote URL without processing inheritance.
 
 **Parameters:**
+
 - `templatePath`: Local file path (absolute or relative) or remote URL (http/https)
 
 **Example:**
+
 ```typescript
 // Load from local file
 const local = await loadTemplate('./template.json');
@@ -458,9 +460,11 @@ const remote = await loadTemplate('https://example.com/template.json');
 Load a template and recursively merge all extended templates. Supports both local and remote templates.
 
 **Parameters:**
+
 - `templatePath`: Local file path or remote URL to the main template
 
 **Example:**
+
 ```typescript
 // Load and merge with inheritance from URL
 const config = await loadAndMergeTemplate('https://example.com/my-template.json');
@@ -472,13 +476,15 @@ console.log(`Loaded ${config.tasks.length} tasks`);
 Load tasks from a file or URL, processing all inheritance, and return the final task array.
 
 **Parameters:**
+
 - `tasksFilePath`: Local file path or remote URL to the tasks configuration
 
 **Example:**
+
 ```typescript
 // Load from URL with full inheritance chain
 const tasks = await loadTasksWithInheritance(
-  'https://raw.githubusercontent.com/org/templates/main/nodejs.json'
+  'https://raw.githubusercontent.com/org/templates/main/nodejs.json',
 );
 ```
 
@@ -520,6 +526,7 @@ Host your organization's templates on GitHub and reference them via raw URLs:
 ```
 
 **Benefits:**
+
 - Version pinning with Git tags (v1.0.0)
 - Easy updates across all projects
 - Centralized maintenance
@@ -615,6 +622,7 @@ Combine organization templates with project-specific local templates:
 ### Best Practices for Remote Templates
 
 1. **Use Version Tags**: Pin to specific versions using Git tags for stability
+
    ```
    https://raw.githubusercontent.com/org/templates/v1.2.3/base.json
    ```
@@ -630,4 +638,3 @@ Combine organization templates with project-specific local templates:
 6. **Monitor Changes**: If using branch references (like `main`), monitor for breaking changes
 
 7. **Access Control**: For private templates, use authenticated URLs or host on secure servers
-
