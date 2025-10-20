@@ -30,6 +30,7 @@ describe('jSON Schema Validation', () => {
     const expectedTypes: TaskType[] = [
       'update-json',
       'template',
+      'create',
       'regex-replace',
       'replace-in-file',
       'delete',
@@ -45,7 +46,7 @@ describe('jSON Schema Validation', () => {
     const configSchemas = schema.properties.tasks.items.properties.config.oneOf;
 
     // Should have 8 config schemas (one for each task type)
-    expect(configSchemas).toHaveLength(8);
+    expect(configSchemas).toHaveLength(9);
 
     // Verify each config schema has required properties
     const expectedConfigs = [

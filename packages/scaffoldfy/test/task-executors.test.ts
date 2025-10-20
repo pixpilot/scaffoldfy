@@ -5,30 +5,26 @@
  * Actual file system operations are tested with mocked or temporary directories.
  */
 
-import type {
-  DeleteConfig,
-  ExecConfig,
-  GitInitConfig,
-  InitConfig,
-  RegexReplaceConfig,
-  RenameConfig,
-  ReplaceInFileConfig,
-  TemplateConfig,
-  UpdateJsonConfig,
-} from '../src/types.js';
+import type { DeleteConfig } from '../src/plugins/delete/types.js';
+import type { ExecConfig } from '../src/plugins/exec/types.js';
+import type { GitInitConfig } from '../src/plugins/git-init/types.js';
+import type { RegexReplaceConfig } from '../src/plugins/regex-replace/types.js';
+import type { RenameConfig } from '../src/plugins/rename/types.js';
+import type { ReplaceInFileConfig } from '../src/plugins/replace-in-file/types.js';
+import type { TemplateConfig } from '../src/plugins/template/types.js';
+import type { UpdateJsonConfig } from '../src/plugins/update-json/types.js';
+import type { InitConfig } from '../src/types.js';
 import fs from 'node:fs';
 import path from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import {
-  executeDelete,
-  executeExec,
-  executeGitInit,
-  executeRegexReplace,
-  executeRename,
-  executeReplaceInFile,
-  executeTemplate,
-  executeUpdateJson,
-} from '../src/task-executors.js';
+import { executeDelete } from '../src/plugins/delete/executor.js';
+import { executeExec } from '../src/plugins/exec/executor.js';
+import { executeGitInit } from '../src/plugins/git-init/executor.js';
+import { executeRegexReplace } from '../src/plugins/regex-replace/executor.js';
+import { executeRename } from '../src/plugins/rename/executor.js';
+import { executeReplaceInFile } from '../src/plugins/replace-in-file/executor.js';
+import { executeTemplate } from '../src/plugins/template/executor.js';
+import { executeUpdateJson } from '../src/plugins/update-json/executor.js';
 
 const TEST_DIR = path.join(process.cwd(), '__test_executors__');
 

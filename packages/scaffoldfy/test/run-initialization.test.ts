@@ -11,7 +11,7 @@ import { runInitialization } from '../src/run-initialization.js';
 import { loadInitializationState, saveInitializationState } from '../src/state.js';
 import { runTask } from '../src/task-executors.js';
 import { topologicalSort } from '../src/task-resolver.js';
-import { promptYesNo } from '../src/utils.js';
+import { evaluateEnabled, promptYesNo } from '../src/utils.js';
 
 // Mock dependencies
 vi.mock('../src/state.js');
@@ -38,6 +38,7 @@ const mockRunTask = vi.mocked(runTask);
 const mockTopologicalSort = vi.mocked(topologicalSort);
 const mockPromptYesNo = vi.mocked(promptYesNo);
 const mockDisplayTasksDiff = vi.mocked(displayTasksDiff);
+const mockEvaluateEnabled = vi.mocked(evaluateEnabled);
 
 const mockConfig: InitConfig = {
   projectName: 'test-repo',
@@ -80,6 +81,7 @@ describe('runInitialization', () => {
     mockRunTask.mockResolvedValue(true);
     mockPromptYesNo.mockResolvedValue(true);
     mockDisplayTasksDiff.mockResolvedValue();
+    mockEvaluateEnabled.mockReturnValue(true); // Always return true for enabled tasks
   });
 
   afterEach(() => {
@@ -233,6 +235,14 @@ describe('runInitialization', () => {
         config: {},
       },
     ];
+
+    // Mock evaluateEnabled to return the actual enabled value
+    mockEvaluateEnabled.mockImplementation((enabled) => {
+      if (typeof enabled === 'boolean') {
+        return enabled;
+      }
+      return true; // Default for non-boolean values
+    });
 
     await runInitialization(tasksWithDisabled, {
       dryRun: false,

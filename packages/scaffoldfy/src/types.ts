@@ -2,6 +2,29 @@
  * Task Types and Interfaces for Template Initialization
  */
 
+// Import and re-export config types from plugins
+import type { CreateConfig } from './plugins/create/types.js';
+import type { DeleteConfig } from './plugins/delete/types.js';
+import type { ExecConfig } from './plugins/exec/types.js';
+import type { GitInitConfig } from './plugins/git-init/types.js';
+import type { RegexReplaceConfig } from './plugins/regex-replace/types.js';
+import type { RenameConfig } from './plugins/rename/types.js';
+import type { ReplaceInFileConfig } from './plugins/replace-in-file/types.js';
+import type { TemplateConfig } from './plugins/template/types.js';
+import type { UpdateJsonConfig } from './plugins/update-json/types.js';
+
+export type {
+  CreateConfig,
+  DeleteConfig,
+  ExecConfig,
+  GitInitConfig,
+  RegexReplaceConfig,
+  RenameConfig,
+  ReplaceInFileConfig,
+  TemplateConfig,
+  UpdateJsonConfig,
+};
+
 export interface InitConfig {
   // Dynamic properties from prompts
   [key: string]: unknown;
@@ -142,67 +165,6 @@ export interface TaskDefinition {
   rollback?: RollbackConfig; // How to rollback if something fails
   prompts?: PromptDefinition[]; // Optional task-scoped prompts to collect before running task
   variables?: VariableDefinition[]; // Optional task-scoped variables (not available to other tasks)
-}
-
-export interface UpdateJsonConfig {
-  file: string;
-  updates: Record<string, unknown>;
-  condition?: ConditionExpression;
-}
-
-export interface TemplateConfig {
-  file: string;
-  template?: string; // Inline template string (supports simple {{variable}} syntax)
-  templateFile?: string; // Path to external template file (relative to project root). .hbs files use Handlebars automatically
-  condition?: ConditionExpression;
-}
-
-export interface CreateConfig {
-  file: string;
-  template?: string; // Inline template string (supports simple {{variable}} syntax)
-  templateFile?: string; // Path to external template file (relative to project root). .hbs files use Handlebars automatically
-  condition?: ConditionExpression;
-}
-
-export interface RegexReplaceConfig {
-  file: string;
-  pattern: string;
-  flags?: string;
-  replacement: string;
-  condition?: ConditionExpression;
-}
-
-export interface ReplaceInFileConfig {
-  file: string;
-  replacements: Array<{
-    find: string;
-    replace: string;
-  }>;
-  condition?: ConditionExpression;
-}
-
-export interface DeleteConfig {
-  paths: string[];
-  condition?: ConditionExpression;
-}
-
-export interface RenameConfig {
-  from: string;
-  to: string;
-  condition?: ConditionExpression;
-}
-
-export interface GitInitConfig {
-  removeExisting: boolean;
-  initialCommit: boolean;
-  message?: string;
-  condition?: ConditionExpression;
-}
-
-export interface ExecConfig {
-  command: string;
-  cwd?: string;
-  condition?: ConditionExpression;
 }
 
 export interface InitializationMetadata {
