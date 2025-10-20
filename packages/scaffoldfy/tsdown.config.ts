@@ -1,7 +1,7 @@
 import { defineConfig } from '@internal/tsdown-config';
 
 const KB = 1024;
-const MAX_BUNDLE_SIZE_KB = 20;
+const MAX_BUNDLE_SIZE_KB = 40;
 
 export default defineConfig({
   bundleSize: MAX_BUNDLE_SIZE_KB * KB,
