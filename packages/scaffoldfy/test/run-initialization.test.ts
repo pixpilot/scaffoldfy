@@ -98,7 +98,7 @@ describe('runInitialization', () => {
     await runInitialization(mockTasks, {
       dryRun: false,
       force: false,
-      keepTasksFile: false,
+
       tasksFilePath: undefined,
     });
 
@@ -123,7 +123,7 @@ describe('runInitialization', () => {
       runInitialization(mockTasks, {
         dryRun: false,
         force: false,
-        keepTasksFile: false,
+
         tasksFilePath: undefined,
       }),
     ).rejects.toThrow('Process exit');
@@ -146,7 +146,7 @@ describe('runInitialization', () => {
     await runInitialization(mockTasks, {
       dryRun: true,
       force: true,
-      keepTasksFile: false,
+
       tasksFilePath: undefined,
     });
 
@@ -164,7 +164,7 @@ describe('runInitialization', () => {
       runInitialization(mockTasks, {
         dryRun: false,
         force: false,
-        keepTasksFile: false,
+
         tasksFilePath: undefined,
       }),
     ).rejects.toThrow('Process exit');
@@ -177,7 +177,7 @@ describe('runInitialization', () => {
       runInitialization(mockTasks, {
         dryRun: false,
         force: false,
-        keepTasksFile: false,
+
         tasksFilePath: undefined,
       }),
     ).rejects.toThrow('Process exit');
@@ -207,7 +207,7 @@ describe('runInitialization', () => {
     await runInitialization(tasksWithOptionalFailure, {
       dryRun: false,
       force: false,
-      keepTasksFile: false,
+
       tasksFilePath: undefined,
     });
 
@@ -219,7 +219,7 @@ describe('runInitialization', () => {
     await runInitialization(mockTasks, {
       dryRun: true,
       force: false,
-      keepTasksFile: false,
+
       tasksFilePath: undefined,
     });
 
@@ -247,7 +247,7 @@ describe('runInitialization', () => {
     await runInitialization(tasksWithDisabled, {
       dryRun: false,
       force: false,
-      keepTasksFile: false,
+
       tasksFilePath: undefined,
     });
 

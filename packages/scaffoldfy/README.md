@@ -63,7 +63,6 @@ import { runWithTasks } from '@pixpilot/scaffoldfy';
 await runWithTasks(tasks, {
   dryRun: false,
   force: false,
-  keepTasksFile: true,
   tasksFilePath: './my-tasks.json',
 });
 ```

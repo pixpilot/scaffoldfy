@@ -57,7 +57,6 @@ async function main(customTasks?: TaskDefinition[]) {
     await runInitialization(tasks, {
       dryRun,
       force: forceReInit,
-      keepTasksFile: undefined,
       tasksFilePath: undefined,
     });
   } catch (error) {
@@ -87,7 +86,7 @@ async function main(customTasks?: TaskDefinition[]) {
  * @param options - Optional configuration
  * @param options.dryRun - Preview changes without applying them
  * @param options.force - Force re-initialization even if already initialized
- * @param options.keepTasksFile - Whether to keep the tasks file after initialization
+
  * @param options.tasksFilePath - Path to the tasks file
  */
 export async function runWithTasks(
@@ -95,7 +94,7 @@ export async function runWithTasks(
   options?: {
     dryRun?: boolean | undefined;
     force?: boolean | undefined;
-    keepTasksFile?: boolean | undefined;
+
     tasksFilePath?: string | undefined;
   },
 ): Promise<void> {
@@ -103,7 +102,7 @@ export async function runWithTasks(
     await runInitialization(customTasks, {
       dryRun: options?.dryRun ?? dryRun,
       force: options?.force ?? forceReInit,
-      keepTasksFile: options?.keepTasksFile ?? undefined,
+
       tasksFilePath: options?.tasksFilePath ?? undefined,
     });
   } catch (error) {

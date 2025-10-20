@@ -33,7 +33,7 @@ export async function runInitialization(
   options: {
     dryRun: boolean;
     force: boolean;
-    keepTasksFile: boolean | undefined;
+
     tasksFilePath: string | undefined;
   },
 ): Promise<void> {
@@ -217,10 +217,9 @@ export async function runInitialization(
   log(`✓ Completed: ${completedTasks}/${totalTasks} tasks`, 'success');
   console.log('');
 
-  // Remove tasks file if not keeping it and not in dry run mode
+  // Remove tasks file if not in dry run mode
   if (
     !options.dryRun &&
-    !options.keepTasksFile &&
     options.tasksFilePath != null &&
     fs.existsSync(options.tasksFilePath)
   ) {

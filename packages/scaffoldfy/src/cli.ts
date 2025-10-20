@@ -18,7 +18,6 @@ import { log } from './utils.js';
 interface CliOptions {
   dryRun?: boolean;
   force?: boolean;
-  keepTasksFile?: boolean;
   tasksFile?: string;
   tasksTs?: string;
 }
@@ -46,11 +45,6 @@ program
 program
   .option('--dry-run', 'Run in dry mode without making any changes')
   .option('--force', 'Force re-initialization even if already initialized')
-  .option(
-    '--keep-tasks-file',
-    'Keep the tasks file after successful initialization (default: remove)',
-    false,
-  )
   .option(
     '--tasks-file <path>',
     'Path to JSON file containing task definitions',
@@ -195,7 +189,6 @@ program
       await runWithTasks(tasks, {
         dryRun: options.dryRun,
         force: options.force,
-        keepTasksFile: options.keepTasksFile,
         tasksFilePath,
       });
     } catch (error) {

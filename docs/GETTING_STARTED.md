@@ -97,7 +97,7 @@ await runWithTasks(tasks, { force: true });
 
 // Keep tasks file after initialization
 await runWithTasks(tasks, {
-  keepTasksFile: true,
+
   tasksFilePath: './my-tasks.json',
 });
 ```
@@ -116,7 +116,7 @@ await runWithTasks(tasksJson.tasks);
 
 // Or keep the tasks file
 await runWithTasks(tasksJson.tasks, {
-  keepTasksFile: true,
+
   tasksFilePath,
 });
 ```
