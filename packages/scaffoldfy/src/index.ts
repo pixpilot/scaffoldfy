@@ -29,7 +29,7 @@ import { log } from './utils.js';
 const dryRun = process.argv.includes('--dry-run');
 const forceReInit = process.argv.includes('--force');
 
-// ============================================================================
+// =================================================================
 // Main Execution
 // ============================================================================
 
@@ -157,7 +157,7 @@ export {
   resolveAllDefaultValues,
   resolveDefaultValue,
   validatePrompts,
-} from './prompts.js';
+} from './prompts/index.js';
 export { loadInitializationState, saveInitializationState } from './state.js';
 export { executeTask, runTask } from './task-executors.js';
 export { topologicalSort } from './task-resolver.js';

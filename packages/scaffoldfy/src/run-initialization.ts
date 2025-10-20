@@ -9,7 +9,11 @@ import { promisify } from 'node:util';
 import { collectConfig, validateConfig } from './config.js';
 import { displayTasksDiff } from './dry-run.js';
 import { callHook } from './plugin.js';
-import { collectPrompts, resolveAllDefaultValues, validatePrompts } from './prompts.js';
+import {
+  collectPrompts,
+  resolveAllDefaultValues,
+  validatePrompts,
+} from './prompts/index.js';
 import { loadInitializationState, saveInitializationState } from './state.js';
 import { runTask } from './task-executors.js';
 import { topologicalSort } from './task-resolver.js';

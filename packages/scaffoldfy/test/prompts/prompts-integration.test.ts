@@ -2,11 +2,11 @@
  * Integration tests for prompts with tasks
  */
 
-import type { InitConfig, TaskDefinition } from '../src/types.js';
+import type { InitConfig, TaskDefinition } from '../../src/types.js';
 import fs from 'node:fs';
 import path from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { interpolateTemplate } from '../src/utils.js';
+import { interpolateTemplate } from '../../src/utils.js';
 
 describe('prompts integration with tasks', () => {
   const testDir = path.join(process.cwd(), 'test-temp-prompts');
