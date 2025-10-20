@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy
 
+## 0.7.0
+
+### Minor Changes
+
+- removed defined variable
+
 ## 0.6.0
 
 ### Minor Changes
