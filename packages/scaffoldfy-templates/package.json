@@ -18,8 +18,7 @@
     "project-init"
   ],
   "exports": {
-    "./project-info": "./project-info/template-tasks.json",
-    "./monorepo-base": "./monorepo-base/template-tasks.json"
+    "./project-info": "./project-info/template-tasks.json"
   },
   "files": [
     "*/*.hbs",
