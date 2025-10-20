@@ -35,12 +35,25 @@ export interface DefaultValueConfig<T = string | number | boolean> {
  */
 export type DefaultValue<T = string | number | boolean> = T | DefaultValueConfig<T>;
 
+/**
+ * Conditional enabled configuration for prompts and tasks
+ * Allows dynamic enabling/disabling based on runtime conditions
+ */
+export interface ConditionalEnabled {
+  condition: ConditionExpression; // JavaScript expression evaluated at runtime
+}
+
+/**
+ * Type for enabled field that can be boolean or conditional
+ */
+export type EnabledValue = boolean | ConditionalEnabled;
+
 export interface BasePrompt {
   id: string; // Unique identifier for the prompt value
   type: PromptType;
   message: string;
   required?: boolean; // If true, value must be provided (not empty)
-  global?: boolean; // If true, this prompt value is available to all tasks (not just the current task)
+  enabled?: EnabledValue; // If false or condition evaluates to false, prompt is skipped
 }
 
 export interface InputPrompt extends BasePrompt {
@@ -73,11 +86,12 @@ export type PromptDefinition = InputPrompt | NumberPrompt | SelectPrompt | Confi
  * Variable value configuration for defining optional global or task-scoped variables
  * Variables are similar to prompts but don't require user input - they can have static
  * values or values resolved from executable commands
+ *
+ * Note: Top-level variables are always global. Task-level variables are task-scoped.
  */
 export interface VariableDefinition {
   id: string; // Unique identifier for the variable
   value: DefaultValue; // The value of the variable (static or executable)
-  global?: boolean; // If true, this variable is available to all tasks (not just the current task)
 }
 
 /**
@@ -92,6 +106,7 @@ export type ConditionExpression = string;
 export type TaskType =
   | 'update-json'
   | 'template'
+  | 'create'
   | 'regex-replace'
   | 'replace-in-file'
   | 'delete'
@@ -109,12 +124,13 @@ export interface TaskDefinition {
   name: string;
   description: string;
   required: boolean;
-  enabled: boolean;
+  enabled: EnabledValue; // Can be boolean or conditional expression
   type: TaskType;
   // Task-specific configuration object, validated at runtime
   config:
     | UpdateJsonConfig
     | TemplateConfig
+    | CreateConfig
     | RegexReplaceConfig
     | ReplaceInFileConfig
     | DeleteConfig
@@ -124,8 +140,8 @@ export interface TaskDefinition {
     | Record<string, unknown>;
   dependencies?: string[]; // IDs of tasks that must run before this one
   rollback?: RollbackConfig; // How to rollback if something fails
-  prompts?: PromptDefinition[]; // Optional prompts to collect before running task
-  variables?: VariableDefinition[]; // Optional variables to define for the task (no user interaction required)
+  prompts?: PromptDefinition[]; // Optional task-scoped prompts to collect before running task
+  variables?: VariableDefinition[]; // Optional task-scoped variables (not available to other tasks)
 }
 
 export interface UpdateJsonConfig {
@@ -135,6 +151,13 @@ export interface UpdateJsonConfig {
 }
 
 export interface TemplateConfig {
+  file: string;
+  template?: string; // Inline template string (supports simple {{variable}} syntax)
+  templateFile?: string; // Path to external template file (relative to project root). .hbs files use Handlebars automatically
+  condition?: ConditionExpression;
+}
+
+export interface CreateConfig {
   file: string;
   template?: string; // Inline template string (supports simple {{variable}} syntax)
   templateFile?: string; // Path to external template file (relative to project root). .hbs files use Handlebars automatically
@@ -194,7 +217,8 @@ export interface InitializationMetadata {
  */
 export interface TasksConfiguration {
   extends?: string | string[]; // Path(s) or URL(s) to base template file(s) to inherit from
-  variables?: VariableDefinition[]; // Optional global variables available to all tasks
+  variables?: VariableDefinition[]; // Optional top-level global variables available to all tasks
+  prompts?: PromptDefinition[]; // Optional top-level global prompts collected once upfront
   tasks: TaskDefinition[];
 }
 

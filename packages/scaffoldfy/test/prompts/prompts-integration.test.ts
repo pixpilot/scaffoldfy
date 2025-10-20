@@ -370,7 +370,6 @@ describe('global prompts', () => {
             id: 'projectName',
             type: 'input',
             message: 'What is your project name?',
-            global: true,
             required: true,
           },
           {
@@ -411,120 +410,13 @@ describe('global prompts', () => {
       },
     ];
 
-    const globalPrompts = tasks
-      .flatMap((task) => task.prompts || [])
-      .filter((p) => p.global);
-    expect(globalPrompts).toHaveLength(1);
-    expect(globalPrompts[0]?.id).toBe('projectName');
+    // With new structure, prompts are either top-level or task-scoped
+    // No need to test global property anymore
+    const allTaskPrompts = tasks.flatMap((task) => task.prompts || []);
+    expect(allTaskPrompts.length).toBeGreaterThan(0);
   });
 
-  it('should allow same global prompt ID across multiple tasks', () => {
-    const tasks: TaskDefinition[] = [
-      {
-        id: 'task1',
-        name: 'Task 1',
-        description: 'First task',
-        required: true,
-        enabled: true,
-        type: 'update-json',
-        prompts: [
-          {
-            id: 'appVersion',
-            type: 'input',
-            message: 'Application version',
-            default: '1.0.0',
-            global: true,
-          },
-        ],
-        config: {},
-      },
-      {
-        id: 'task2',
-        name: 'Task 2',
-        description: 'Second task',
-        required: true,
-        enabled: true,
-        type: 'update-json',
-        prompts: [
-          {
-            id: 'appVersion',
-            type: 'input',
-            message: 'Application version',
-            default: '1.0.0',
-            global: true,
-          },
-        ],
-        config: {},
-      },
-    ];
-
-    const allPrompts = tasks.flatMap((task) => task.prompts || []);
-    const globalPrompts = allPrompts.filter((p) => p.global);
-
-    expect(allPrompts).toHaveLength(2);
-    expect(globalPrompts).toHaveLength(2);
-    expect(globalPrompts.every((p) => p.id === 'appVersion')).toBe(true);
-  });
-
-  it('should separate global and task-specific prompts', () => {
-    const tasks: TaskDefinition[] = [
-      {
-        id: 'setup',
-        name: 'Setup',
-        description: 'Setup task',
-        required: true,
-        enabled: true,
-        type: 'update-json',
-        prompts: [
-          {
-            id: 'projectName',
-            type: 'input',
-            message: 'Project name',
-            global: true,
-          },
-          {
-            id: 'author',
-            type: 'input',
-            message: 'Author',
-            global: true,
-          },
-          {
-            id: 'setupOption',
-            type: 'confirm',
-            message: 'Enable setup option?',
-          },
-        ],
-        config: {},
-      },
-      {
-        id: 'configure',
-        name: 'Configure',
-        description: 'Configure task',
-        required: true,
-        enabled: true,
-        type: 'update-json',
-        prompts: [
-          {
-            id: 'configValue',
-            type: 'input',
-            message: 'Configuration value',
-          },
-        ],
-        config: {},
-      },
-    ];
-
-    const allPrompts = tasks.flatMap((task) => task.prompts || []);
-    const globalPrompts = allPrompts.filter((p) => p.global);
-    const taskSpecificPrompts = allPrompts.filter((p) => !p.global);
-
-    expect(globalPrompts).toHaveLength(2);
-    expect(taskSpecificPrompts).toHaveLength(2);
-    expect(globalPrompts.map((p) => p.id)).toEqual(['projectName', 'author']);
-    expect(taskSpecificPrompts.map((p) => p.id)).toEqual(['setupOption', 'configValue']);
-  });
-
-  it('should use global prompts in multiple task configs', () => {
+  it('should use prompt values in multiple task configs', () => {
     const config: InitConfig = {
       repoName: 'test-repo',
       repoOwner: 'test-owner',
@@ -532,7 +424,7 @@ describe('global prompts', () => {
       author: 'Test Author',
       baseRepoUrl: 'https://github.com/test/repo',
       orgName: '@test',
-      // Global prompt values
+      // Prompt values
       projectName: 'my-awesome-app',
       version: '2.0.0',
     };
@@ -550,93 +442,5 @@ describe('global prompts', () => {
     expect(interpolateTemplate(task3Config, config)).toBe(
       'Version 2.0.0 of my-awesome-app',
     );
-  });
-
-  it('should demonstrate real-world global prompts usage', () => {
-    const tasks: TaskDefinition[] = [
-      {
-        id: 'init-package-json',
-        name: 'Initialize package.json',
-        description: 'Set up package.json with project info',
-        required: true,
-        enabled: true,
-        type: 'update-json',
-        prompts: [
-          {
-            id: 'projectName',
-            type: 'input',
-            message: 'Project name',
-            global: true,
-            required: true,
-          },
-          {
-            id: 'projectVersion',
-            type: 'input',
-            message: 'Initial version',
-            default: '0.1.0',
-            global: true,
-          },
-          {
-            id: 'license',
-            type: 'select',
-            message: 'License',
-            choices: [
-              { name: 'MIT', value: 'MIT' },
-              { name: 'Apache-2.0', value: 'Apache-2.0' },
-            ],
-            default: 'MIT',
-            global: true,
-          },
-        ],
-        config: {
-          file: 'package.json',
-          updates: {
-            name: '{{projectName}}',
-            version: '{{projectVersion}}',
-            license: '{{license}}',
-          },
-        },
-      },
-      {
-        id: 'create-readme',
-        name: 'Create README',
-        description: 'Generate README with project info',
-        required: true,
-        enabled: true,
-        type: 'template',
-        config: {
-          file: 'README.md',
-          template:
-            '# {{projectName}}\n\nVersion: {{projectVersion}}\n\nLicense: {{license}}',
-        },
-      },
-      {
-        id: 'create-license',
-        name: 'Create LICENSE file',
-        description: 'Generate LICENSE file',
-        required: false,
-        enabled: true,
-        type: 'template',
-        config: {
-          file: 'LICENSE',
-          template: '{{license}} License\n\nProject: {{projectName}}',
-        },
-      },
-    ];
-
-    const globalPrompts = tasks
-      .flatMap((task) => task.prompts || [])
-      .filter((p) => p.global);
-    const uniqueGlobalPromptIds = new Set(globalPrompts.map((p) => p.id));
-
-    expect(uniqueGlobalPromptIds.size).toBe(3);
-    expect(uniqueGlobalPromptIds).toContain('projectName');
-    expect(uniqueGlobalPromptIds).toContain('projectVersion');
-    expect(uniqueGlobalPromptIds).toContain('license');
-
-    // All three tasks can use the global prompt values
-    expect(tasks[0]?.config).toBeDefined();
-    expect(tasks[1]?.config).toBeDefined();
-    expect(tasks[2]?.config).toBeDefined();
   });
 });

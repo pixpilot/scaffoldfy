@@ -2,19 +2,116 @@
 
 Complete reference for all available task types in scaffoldfy.
 
-## Conditional Execution
+## Conditional Task Execution
 
-Most task types support a `condition` field that determines whether the task should execute. The condition is a JavaScript expression evaluated at runtime with access to all prompt values and configuration variables.
+Tasks can be conditionally enabled using the `enabled` field. This allows you to dynamically skip or run tasks based on runtime conditions.
+
+### Enabled Field
+
+The `enabled` field can be:
+
+1. **Simple boolean**: `true` or `false`
+2. **Conditional object**: `{ "condition": "JavaScript expression" }`
+
+### Simple Boolean
+
+```json
+{
+  "id": "my-task",
+  "name": "My Task",
+  "enabled": true,
+  "type": "template",
+  "config": { ... }
+}
+```
+
+### Conditional Enabled
+
+```json
+{
+  "id": "typescript-setup",
+  "name": "Setup TypeScript",
+  "enabled": {
+    "condition": "useTypeScript === true"
+  },
+  "type": "template",
+  "config": { ... }
+}
+```
+
+### How Conditional Enabled Works
+
+1. Conditions are **JavaScript expressions** evaluated at runtime
+2. The expression has access to:
+   - All prompt values (both top-level and task-level)
+   - All variable values (both global and task-scoped)
+   - All config values
+3. If the condition evaluates to `false`, the task is **completely skipped**
+4. If the condition evaluates to `true`, the task proceeds normally
+
+### Examples
+
+#### Enable Based on Prompt Value
+
+```json
+{
+  "prompts": [
+    {
+      "id": "useTypeScript",
+      "type": "confirm",
+      "message": "Use TypeScript?",
+      "default": true
+    }
+  ],
+  "tasks": [
+    {
+      "id": "setup-typescript",
+      "name": "Setup TypeScript",
+      "enabled": {
+        "condition": "useTypeScript === true"
+      },
+      "type": "template",
+      "config": { ... }
+    }
+  ]
+}
+```
+
+#### Complex Conditional Logic
+
+```json
+{
+  "id": "setup-ci",
+  "name": "Setup CI/CD",
+  "enabled": {
+    "condition": "includeCI === true && (platform === 'github' || platform === 'gitlab')"
+  },
+  "type": "template",
+  "config": { ... }
+}
+```
+
+## Task Config Conditions
+
+Individual task configs also support a `condition` field that determines whether the task operations should execute. The condition is a JavaScript expression evaluated at runtime with access to all prompt values and variables.
 
 **Type:** `ConditionExpression` (string)
 
 **Examples:**
+
 - `"useTypeScript === true"`
 - `"nodeVersion >= 16 && includeTests === true"`
 - `"packageManager === 'pnpm'"`
 - `"!keepExampleCode"`
 
-If the condition evaluates to `false`, the task will be skipped. If omitted, the task will always execute (when enabled).
+If the config condition evaluates to `false`, the task will be skipped. If omitted, the task will always execute (when enabled).
+
+**Note:** The difference between `enabled` and `config.condition`:
+
+- `enabled`: Controls whether the task runs at all (evaluated before the task)
+- `config.condition`: Controls whether the task's operations execute (evaluated during the task)
+
+In most cases, use `enabled` for conditional task execution.
 
 ## update-json
 
@@ -116,6 +213,107 @@ interface Config {
 - Creates directories if needed
 - Overwrites existing files
 - **Optional condition:** JavaScript expression evaluation (skips task if false)
+
+---
+
+## create
+
+Create new files with optional content. Similar to `template` but specifically designed for file creation, with support for both inline content and external template files.
+
+### Configuration
+
+```typescript
+interface Config {
+  file: string; // Path to file to create
+  template?: string; // Inline template string (supports simple {{variable}} syntax)
+  templateFile?: string; // Path to external template file (relative to project root). .hbs files use Handlebars automatically
+  condition?: string; // Optional: only execute if condition evaluates to true
+}
+```
+
+### Example: Inline Template
+
+```json
+{
+  "type": "create",
+  "config": {
+    "file": "README.md",
+    "template": "# {{projectName}}\n\nAuthor: {{author}}\n\nRepository: {{repoUrl}}"
+  }
+}
+```
+
+### Example: External Template File
+
+```json
+{
+  "type": "create",
+  "config": {
+    "file": "src/config.ts",
+    "templateFile": "templates/config.template.ts"
+  }
+}
+```
+
+### Example: Handlebars Template
+
+```json
+{
+  "type": "create",
+  "config": {
+    "file": "README.md",
+    "templateFile": "templates/readme.hbs"
+  }
+}
+```
+
+When using a `.hbs` file, Handlebars syntax is automatically used. Otherwise, simple `{{variable}}` interpolation is used.
+
+### Conditional Example
+
+```json
+{
+  "type": "create",
+  "config": {
+    "file": "CONTRIBUTING.md",
+    "template": "# Contributing Guide\n\nThank you for contributing!",
+    "condition": "includeContributing === true"
+  }
+}
+```
+
+### Features
+
+- Creates files with optional content
+- Supports **inline templates** via `template` property
+- Supports **external template files** via `templateFile` property
+- Automatic Handlebars support for `.hbs` files
+- Simple `{{variable}}` interpolation for non-Handlebars templates
+- Creates parent directories if needed
+- Skips if file already exists (won't overwrite)
+- **Optional condition:** JavaScript expression evaluation (skips task if false)
+
+### Difference from `template` Task
+
+| Feature            | `template`                | `create`                |
+| ------------------ | ------------------------- | ----------------------- |
+| Purpose            | Create or overwrite files | Create new files only   |
+| Overwrite existing | Yes                       | No (skips if exists)    |
+| Inline content     | `template` property       | `template` property     |
+| External templates | Not supported             | `templateFile` property |
+| Handlebars support | No                        | Yes (for `.hbs` files)  |
+
+Use `create` when you want to:
+
+- Create files from external template files
+- Use Handlebars templates
+- Avoid accidentally overwriting existing files
+
+Use `template` when you want to:
+
+- Overwrite existing files
+- Use only inline templates
+- Simple variable interpolation
 
 ---
 
@@ -513,15 +711,18 @@ All tasks respect `--dry-run` flag:
 
 ## Task Type Selection Guide
 
-| Use Case                      | Task Type                                 |
-| ----------------------------- | ----------------------------------------- |
-| Update package.json           | `update-json`                             |
-| Create new files              | `template`                                |
-| Find and replace (regex)      | `regex-replace`                           |
-| Find and replace (simple)     | `replace-in-file`                         |
-| Remove files/folders          | `delete`                                  |
-| Conditional operations        | Any task type (with `condition`)          |
-| Rename/move files             | `rename`                                  |
-| Reset git history             | `git-init`                                |
-| Run commands                  | `exec`                                    |
-| Execute only when user agrees | Any task type (with prompt + `condition`) |
+| Use Case                           | Task Type                                |
+| ---------------------------------- | ---------------------------------------- |
+| Update package.json                | `update-json`                            |
+| Create new files (overwrite ok)    | `template`                               |
+| Create new files (don't overwrite) | `create`                                 |
+| Create from external template      | `create` (with `templateFile`)           |
+| Create with Handlebars template    | `create` (with `.hbs` file)              |
+| Find and replace (regex)           | `regex-replace`                          |
+| Find and replace (simple)          | `replace-in-file`                        |
+| Remove files/folders               | `delete`                                 |
+| Conditional operations             | Any task type (with `enabled.condition`) |
+| Rename/move files                  | `rename`                                 |
+| Reset git history                  | `git-init`                               |
+| Run commands                       | `exec`                                   |
+| Execute only when user agrees      | Any task type (with prompt + `enabled`)  |

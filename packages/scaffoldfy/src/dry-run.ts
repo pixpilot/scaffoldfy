@@ -6,6 +6,7 @@
  */
 
 import type {
+  CreateConfig,
   DeleteConfig,
   ExecConfig,
   GitInitConfig,
@@ -202,6 +203,55 @@ export async function getTemplateDiff(
 }
 
 /**
+ * Get diff for create task
+ */
+export async function getCreateDiff(
+  config: CreateConfig,
+  initConfig: InitConfig,
+): Promise<string> {
+  // Check condition
+  if (config.condition != null && config.condition !== '') {
+    const shouldExecute = evaluateCondition(config.condition, initConfig);
+    if (!shouldExecute) {
+      return `${colors.yellow}⊘ Condition not met - task would be skipped${colors.reset}`;
+    }
+  }
+
+  const filePath = path.join(process.cwd(), config.file);
+
+  // Check if file already exists
+  if (fs.existsSync(filePath)) {
+    return `${colors.cyan}→ File already exists, would be skipped: ${config.file}${colors.reset}`;
+  }
+
+  // Validate that either template or templateFile is provided
+  const hasInlineTemplate = config.template != null && config.template !== '';
+  const hasTemplateFile = config.templateFile != null && config.templateFile !== '';
+
+  if (!hasInlineTemplate && !hasTemplateFile) {
+    return `${colors.red}✗ No template content provided for file: ${config.file}${colors.reset}`;
+  }
+
+  try {
+    let templateContent: string;
+
+    if (hasInlineTemplate) {
+      templateContent = interpolateTemplate(config.template!, initConfig);
+    } else {
+      // For dry run, we just show that an external template would be used
+      return `${colors.blue}File: ${config.file}${colors.reset}\n${colors.green}+ New file would be created from template: ${config.templateFile}${colors.reset}`;
+    }
+
+    const previewLines = templateContent.split('\n').slice(0, PREVIEW_LINES);
+    const preview = previewLines.join('\n');
+    const hasMore = templateContent.split('\n').length > PREVIEW_LINES;
+    return `${colors.blue}File: ${config.file}${colors.reset}\n${colors.green}+ New file would be created${colors.reset}\n${colors.gray}Content preview:${colors.reset}\n${preview}${hasMore ? '\n...' : ''}`;
+  } catch (error) {
+    return `${colors.red}✗ Error: ${error instanceof Error ? error.message : String(error)}${colors.reset}`;
+  }
+}
+
+/**
  * Get diff for regex-replace task
  */
 export async function getRegexReplaceDiff(
@@ -391,6 +441,8 @@ export async function getTaskDiff(
         return await getUpdateJsonDiff(task.config as UpdateJsonConfig, initConfig);
       case 'template':
         return await getTemplateDiff(task.config as TemplateConfig, initConfig);
+      case 'create':
+        return await getCreateDiff(task.config as CreateConfig, initConfig);
       case 'regex-replace':
         return await getRegexReplaceDiff(task.config as RegexReplaceConfig, initConfig);
       case 'replace-in-file':

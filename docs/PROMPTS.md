@@ -1,6 +1,6 @@
-# Using Embedded Prompts in Tasks
+# Using Prompts in scaffoldfy
 
-scaffoldfy supports embedding prompts directly in your task definitions. This allows you to collect user input dynamically and use those values in your task configurations.
+scaffoldfy supports prompts at both the top level (global) and within individual tasks. This allows you to collect user input dynamically and use those values throughout your task configurations.
 
 ## Overview
 
@@ -11,72 +11,124 @@ Prompts enable you to:
 - Define default values and validation rules
 - Execute commands to generate dynamic default values (e.g., git branch, npm version, node version)
 - Use prompt values in task configs via template interpolation
-- **Create global variables** available across all tasks using `"global": true`
+- Define **top-level (global) prompts** collected once upfront
+- Define **task-specific prompts** collected only when that task runs
+- Conditionally enable/disable prompts based on runtime conditions
 
-## Global Prompts
+## Top-Level (Global) Prompts
 
-**Important:** scaffoldfy no longer has built-in variables. Instead, use prompts with `"global": true` to create variables that are available to all tasks.
+You can define prompts at the **top level** of your configuration file. These prompts are **always global** and are collected **once upfront** before any tasks run. Their values are available to **all tasks**.
 
-### Example: Creating Global Configuration Variables
+### Example: Top-Level Prompts
 
 ```json
 {
-  "id": "setup-globals",
-  "name": "Setup Global Variables",
-  "description": "Collect project-wide configuration",
-  "required": true,
-  "enabled": true,
-  "type": "update-json",
+  "$schema": "../schema/tasks.schema.json",
   "prompts": [
     {
       "id": "projectName",
       "type": "input",
       "message": "Project name",
-      "global": true,
       "required": true
     },
     {
       "id": "author",
       "type": "input",
       "message": "Author name",
-      "global": true,
       "default": {
         "type": "exec",
         "value": "git config --get user.name"
       }
     },
     {
-      "id": "repoUrl",
-      "type": "input",
-      "message": "Repository URL",
-      "global": true,
-      "default": {
-        "type": "exec",
-        "value": "git config --get remote.origin.url"
-      }
+      "id": "useTypeScript",
+      "type": "confirm",
+      "message": "Use TypeScript?",
+      "default": true
     }
   ],
-  "config": {
-    "file": "package.json",
-    "updates": {
-      "name": "{{projectName}}",
-      "author": "{{author}}",
-      "repository": {
-        "type": "git",
-        "url": "{{repoUrl}}"
+  "tasks": [
+    {
+      "id": "update-package",
+      "name": "Update package.json",
+      "description": "Set project metadata",
+      "required": true,
+      "enabled": true,
+      "type": "update-json",
+      "config": {
+        "file": "package.json",
+        "updates": {
+          "name": "{{projectName}}",
+          "author": "{{author}}"
+        }
+      }
+    },
+    {
+      "id": "create-readme",
+      "name": "Create README",
+      "description": "Generate README file",
+      "required": true,
+      "enabled": true,
+      "type": "template",
+      "config": {
+        "file": "README.md",
+        "template": "# {{projectName}}\n\nAuthor: {{author}}"
       }
     }
-  }
+  ]
 }
 ```
 
 In this example:
 
-- All prompts have `"global": true`, making their values available to all subsequent tasks
-- The values can be used in any task using `{{projectName}}`, `{{author}}`, `{{repoUrl}}`
-- You can also create tasks with only global prompts and no config (just to collect variables)
+- `prompts` array is defined at the top level (same level as `tasks`)
+- All prompts are collected **once** before any tasks run
+- Values are available to **all tasks** using `{{projectName}}`, `{{author}}`, `{{useTypeScript}}`
 
-## Prompt Types
+## Task-Level Prompts
+
+You can also define prompts within individual tasks. These prompts are **task-specific** and are only collected when that particular task runs. Their values are available **only within that task**.
+
+### Example: Task-Level Prompts
+
+```json
+{
+  "tasks": [
+    {
+      "id": "setup-env",
+      "name": "Setup Environment",
+      "description": "Create .env file",
+      "required": false,
+      "enabled": true,
+      "type": "template",
+      "prompts": [
+        {
+          "id": "apiUrl",
+          "type": "input",
+          "message": "API URL",
+          "default": "https://api.example.com"
+        },
+        {
+          "id": "apiSecret",
+          "type": "password",
+          "message": "API Secret Key",
+          "required": true
+        }
+      ],
+      "config": {
+        "file": ".env",
+        "template": "API_URL={{apiUrl}}\nAPI_SECRET={{apiSecret}}\n"
+      }
+    }
+  ]
+}
+```
+
+In this example:
+
+- `apiUrl` and `apiSecret` are task-specific prompts
+- They are only collected when the `setup-env` task runs
+- They are **not available** to other tasks
 
 ### 1. Input Prompt
 
@@ -89,9 +141,28 @@ Collect text input from the user.
   "message": "What is your project name?",
   "default": "my-project",
   "required": true,
-  "placeholder": "Enter project name"
+  "placeholder": "Enter project name",
+  "enabled": true
 }
 ```
+
+#### Conditional Enabled
+
+You can conditionally enable/disable prompts based on runtime conditions:
+
+```json
+{
+  "id": "tsConfigPath",
+  "type": "input",
+  "message": "Path to tsconfig.json",
+  "default": "./tsconfig.json",
+  "enabled": {
+    "condition": "useTypeScript === true"
+  }
+}
+```
+
+In this example, the `tsConfigPath` prompt is only shown if `useTypeScript` is `true`. Prompts are evaluated in order, so later prompts can depend on earlier prompt values.
 
 ### 2. Password Prompt
 
@@ -542,106 +613,134 @@ Here's a complete example showing how to use prompts with executable defaults in
 }
 ```
 
-## Global Prompts
+## Conditional Enabled for Prompts
 
-You can mark prompts as **global** by setting `"global": true`. Global prompts are collected once at the beginning and their values are available to **all tasks**, not just the task where they're defined.
+Both top-level and task-level prompts support a conditional `enabled` field. This allows you to dynamically show or hide prompts based on runtime conditions.
 
-### When to Use Global Prompts
-
-Use global prompts when:
-
-- Multiple tasks need the same value (e.g., project name, version, author)
-- You want to collect common information upfront
-- You want to avoid asking the user the same question multiple times
-
-### Example: Global Prompts
+### Simple Boolean
 
 ```json
 {
-  "tasks": [
+  "id": "projectName",
+  "type": "input",
+  "message": "Project name",
+  "enabled": true
+}
+```
+
+### Conditional Object
+
+```json
+{
+  "id": "tsConfigPath",
+  "type": "input",
+  "message": "Path to tsconfig.json",
+  "default": "./tsconfig.json",
+  "enabled": {
+    "condition": "useTypeScript === true"
+  }
+}
+```
+
+### How Conditional Enabled Works
+
+1. Conditions are **JavaScript expressions** evaluated at runtime
+2. The expression has access to:
+   - All previously collected prompt values
+   - All variable values (both global and task-scoped)
+   - All config values
+3. Prompts are evaluated **in order**, so later prompts can depend on earlier ones
+4. If the condition evaluates to `false`, the prompt is **skipped**
+
+### Examples
+
+#### Conditional Based on Previous Prompt
+
+```json
+{
+  "prompts": [
     {
-      "id": "update-package-json",
-      "name": "Update package.json",
-      "description": "Set project metadata",
-      "required": true,
-      "enabled": true,
-      "type": "update-json",
-      "prompts": [
-        {
-          "id": "projectName",
-          "type": "input",
-          "message": "What is your project name?",
-          "global": true,
-          "required": true
-        },
-        {
-          "id": "projectVersion",
-          "type": "input",
-          "message": "Initial version",
-          "default": "0.1.0",
-          "global": true
-        }
+      "id": "useDatabase",
+      "type": "confirm",
+      "message": "Use database?",
+      "default": false
+    },
+    {
+      "id": "databaseType",
+      "type": "select",
+      "message": "Select database type",
+      "choices": [
+        { "name": "PostgreSQL", "value": "postgres" },
+        { "name": "MySQL", "value": "mysql" },
+        { "name": "MongoDB", "value": "mongodb" }
       ],
-      "config": {
-        "file": "package.json",
-        "updates": {
-          "name": "{{projectName}}",
-          "version": "{{projectVersion}}"
-        }
+      "enabled": {
+        "condition": "useDatabase === true"
       }
     },
     {
-      "id": "create-readme",
-      "name": "Create README",
-      "description": "Generate README file",
-      "required": true,
-      "enabled": true,
-      "type": "template",
-      "config": {
-        "file": "README.md",
-        "template": "# {{projectName}}\\n\\nVersion: {{projectVersion}}"
-      }
-    },
-    {
-      "id": "setup-config",
-      "name": "Setup Config",
-      "description": "Create config file",
-      "required": false,
-      "enabled": true,
-      "type": "update-json",
-      "prompts": [
-        {
-          "id": "enableDebug",
-          "type": "confirm",
-          "message": "Enable debug mode?",
-          "default": false
-        }
-      ],
-      "config": {
-        "file": "config.json",
-        "updates": {
-          "name": "{{projectName}}",
-          "debug": "{{enableDebug}}"
-        }
+      "id": "databaseUrl",
+      "type": "input",
+      "message": "Database connection URL",
+      "placeholder": "postgresql://localhost:5432/mydb",
+      "enabled": {
+        "condition": "useDatabase === true"
       }
     }
   ]
 }
 ```
 
-In this example:
+#### Complex Conditional Logic
 
-- `projectName` and `projectVersion` are marked as **global**
-- They are prompted once when the first task runs
-- Both values can be used in **all three tasks** (update-package-json, create-readme, setup-config)
-- `enableDebug` is **task-specific** and only available to the setup-config task
+```json
+{
+  "prompts": [
+    {
+      "id": "framework",
+      "type": "select",
+      "message": "Select framework",
+      "choices": [
+        { "name": "React", "value": "react" },
+        { "name": "Vue", "value": "vue" },
+        { "name": "Svelte", "value": "svelte" }
+      ]
+    },
+    {
+      "id": "useTypeScript",
+      "type": "confirm",
+      "message": "Use TypeScript?",
+      "default": true
+    },
+    {
+      "id": "reactRouter",
+      "type": "confirm",
+      "message": "Include React Router?",
+      "default": true,
+      "enabled": {
+        "condition": "framework === 'react'"
+      }
+    },
+    {
+      "id": "tsConfigStrict",
+      "type": "confirm",
+      "message": "Enable strict TypeScript mode?",
+      "default": true,
+      "enabled": {
+        "condition": "useTypeScript === true && (framework === 'react' || framework === 'vue')"
+      }
+    }
+  ]
+}
+```
 
-### Prompt Collection Order
+## Prompt Collection Order
 
 When you run initialization:
 
-1. **Global prompts** are collected first (shown once, even if defined in multiple tasks)
-2. **Task-specific prompts** are collected afterwards
+1. **Top-level (global) prompts** are collected first, in the order they're defined
+2. **Task-specific prompts** are collected when each task runs
+3. Within each level, prompts are evaluated in order, respecting `enabled` conditions
 
 This ensures users provide common information upfront before task-specific details.
 
@@ -651,13 +750,13 @@ Prompt values are automatically merged into the configuration object and can be 
 
 - `{{promptId}}` - Access prompt values in config via template interpolation
 - Works in all task types (update-json, template, regex-replace, etc.)
-- Values are available alongside built-in config values (projectName, author, etc.)
-- **Global prompts** are available to all tasks
+- Values are available alongside variable values
+- **Top-level prompts** are available to all tasks
 - **Task-specific prompts** are only available within their task
 
 ### Using Prompt Values in Conditions
 
-Prompt values can also be used directly in condition expressions for `delete` tasks:
+Prompt values can also be used directly in condition expressions for tasks and within task configs:
 
 ```json
 {
@@ -701,12 +800,12 @@ You can use any JavaScript expression in conditions, including:
 Prompts are validated automatically:
 
 - **ID**: Must contain only alphanumeric characters, underscores, and hyphens
-- **ID uniqueness**: All prompt IDs across all tasks must be unique (duplicates are only allowed if all instances are marked as global with the same definition)
-- **Global vs task-specific conflict**: A prompt ID cannot be used as both global and task-specific
+- **ID uniqueness**: All prompt IDs must be unique (top-level and task-level combined)
 - **Required**: If `required: true`, empty values are rejected
 - **Number min/max**: Values must be within specified range
 - **Select choices**: At least one choice must be provided
 - **Executable defaults**: Commands that fail will result in no default value (prompt shown without a default)
+- **Enabled condition**: Must be a valid JavaScript expression
 
 ## TypeScript Support
 
@@ -746,13 +845,13 @@ export const tasks: TaskDefinition[] = [
 1. **Use descriptive IDs**: Choose clear, semantic IDs like `apiKey` instead of `key1`
 2. **Provide defaults**: Always provide sensible defaults when possible
 3. **Use executable defaults for context**: Let the environment suggest intelligent defaults (e.g., git user name, current directory)
-4. **Mark shared prompts as global**: If multiple tasks need the same value, mark the prompt as `"global": true`
-5. **Group related prompts**: Put prompts in the task where they're primarily used
+4. **Define shared prompts at top level**: If multiple tasks need the same value, define it in the top-level `prompts` array
+5. **Use conditional enabled**: Show/hide prompts based on user choices to create dynamic workflows
 6. **Validate inputs**: Use `required`, `min`, `max` to ensure valid data
 7. **Keep it simple**: Don't overwhelm users with too many prompts
-8. **Collect global prompts first**: Define global prompts in your first task so they're collected early
-9. **Test executable defaults**: Ensure commands work across different platforms
-10. **Handle command failures gracefully**: Don't rely solely on executable defaults for required prompts
+8. **Test executable defaults**: Ensure commands work across different platforms
+9. **Handle command failures gracefully**: Don't rely solely on executable defaults for required prompts
+10. **Order matters**: Later prompts can depend on earlier ones, so order them logically
 
 ## CLI Usage
 
@@ -770,4 +869,3 @@ scaffoldfy --dry-run
 ```
 
 The CLI will automatically detect prompts in your tasks and collect user input before executing the tasks.
-

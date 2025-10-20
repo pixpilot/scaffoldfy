@@ -17,7 +17,7 @@ import {
 import { loadInitializationState, saveInitializationState } from './state.js';
 import { runTask } from './task-executors.js';
 import { topologicalSort } from './task-resolver.js';
-import { log, promptYesNo } from './utils.js';
+import { evaluateEnabled, log, promptYesNo } from './utils.js';
 import {
   collectVariables,
   resolveAllVariableValues,
@@ -40,6 +40,7 @@ export async function runInitialization(
     force: boolean;
     tasksFilePath: string | undefined;
     globalVariables?: VariableDefinition[];
+    globalPrompts?: PromptDefinition[];
   },
 ): Promise<void> {
   // Check if already initialized
@@ -71,8 +72,11 @@ export async function runInitialization(
     console.log('');
   }
 
-  // Get enabled tasks
-  const enabledTasks = tasks.filter((task) => task.enabled);
+  // Get enabled tasks (evaluate conditional enabled)
+  // Initially evaluate with empty config, will re-evaluate later with full config
+  const enabledTasks = tasks.filter((task) =>
+    evaluateEnabled(task.enabled, createInitialConfig()),
+  );
 
   // Sort tasks by dependencies
   log('Resolving task dependencies...', 'info');
@@ -97,24 +101,17 @@ export async function runInitialization(
   // Process Variables (no user interaction)
   // ============================================================================
 
-  // Collect all variables from global config and tasks
+  // Collect all variables from top-level config and task-scoped
   const globalVariables: VariableDefinition[] = options.globalVariables ?? [];
   const taskSpecificVariables: VariableDefinition[] = [];
   const allVariables: VariableDefinition[] = [...globalVariables];
 
+  // Collect task-scoped variables
   for (const task of sortedTasks) {
     if (task.variables && task.variables.length > 0) {
       for (const variable of task.variables) {
-        if (variable.global) {
-          // Check if this global variable was already added
-          if (!globalVariables.some((v) => v.id === variable.id)) {
-            globalVariables.push(variable);
-            allVariables.push(variable);
-          }
-        } else {
-          taskSpecificVariables.push(variable);
-          allVariables.push(variable);
-        }
+        taskSpecificVariables.push(variable);
+        allVariables.push(variable);
       }
     }
   }
@@ -149,24 +146,17 @@ export async function runInitialization(
   // Process Prompts (user interaction required)
   // ============================================================================
 
-  // Collect all prompts from tasks and separate global vs task-specific
-  const globalPrompts: PromptDefinition[] = [];
+  // Collect top-level prompts (always global) and task-scoped prompts
+  const topLevelPrompts: PromptDefinition[] = options.globalPrompts ?? [];
   const taskSpecificPrompts: PromptDefinition[] = [];
-  const allPrompts: PromptDefinition[] = [];
+  const allPrompts: PromptDefinition[] = [...topLevelPrompts];
 
+  // Collect task-scoped prompts
   for (const task of sortedTasks) {
     if (task.prompts && task.prompts.length > 0) {
       for (const prompt of task.prompts) {
-        if (prompt.global) {
-          // Check if this global prompt was already added from another task
-          if (!globalPrompts.some((p) => p.id === prompt.id)) {
-            globalPrompts.push(prompt);
-            allPrompts.push(prompt);
-          }
-        } else {
-          taskSpecificPrompts.push(prompt);
-          allPrompts.push(prompt);
-        }
+        taskSpecificPrompts.push(prompt);
+        allPrompts.push(prompt);
       }
     }
   }
@@ -186,32 +176,48 @@ export async function runInitialization(
     const resolvedDefaults = await resolveAllDefaultValues(allPrompts);
     console.log('');
 
-    // Collect global prompts first
+    // Collect top-level prompts first (always global)
     let globalAnswers: Record<string, unknown> = {};
-    if (globalPrompts.length > 0) {
+    if (topLevelPrompts.length > 0) {
       console.log('');
-      log('📋 Global prompts (available to all tasks):', 'info');
+      log('📋 Top-level prompts (available to all tasks):', 'info');
       console.log('');
-      globalAnswers = await collectPrompts(globalPrompts, resolvedDefaults);
+      globalAnswers = await collectPrompts(topLevelPrompts, resolvedDefaults, config);
       // Merge global answers into config immediately
       Object.assign(config, globalAnswers);
     }
 
     // Collect task-specific prompts
     if (taskSpecificPrompts.length > 0) {
-      if (globalPrompts.length > 0) {
+      if (topLevelPrompts.length > 0) {
         log('📋 Task-specific prompts:', 'info');
         console.log('');
       }
-      const taskAnswers = await collectPrompts(taskSpecificPrompts, resolvedDefaults);
+      const taskAnswers = await collectPrompts(
+        taskSpecificPrompts,
+        resolvedDefaults,
+        config,
+      );
       // Merge task-specific answers into config
       Object.assign(config, taskAnswers);
     }
   }
 
+  // Re-evaluate enabled tasks now that we have full config with all variables and prompts
+  // Filter the already-sorted tasks to only keep enabled ones
+  const finalEnabledTasks = sortedTasks.filter((task) =>
+    evaluateEnabled(task.enabled, config),
+  );
+
+  console.log('');
+  log(
+    `${finalEnabledTasks.length} of ${sortedTasks.length} task(s) enabled for execution`,
+    'info',
+  );
+
   // If dry-run mode, show diff and exit
   if (options.dryRun) {
-    await displayTasksDiff(sortedTasks, config);
+    await displayTasksDiff(finalEnabledTasks, config);
     log('🔍 Dry run completed - no changes were made', 'info');
     log('Run without --dry-run to apply changes', 'info');
     return;
@@ -224,14 +230,14 @@ export async function runInitialization(
   // Call beforeAll hook
   await callHook('beforeAll', config);
 
-  // Execute all tasks
-  const totalTasks = sortedTasks.length;
+  // Execute all enabled tasks
+  const totalTasks = finalEnabledTasks.length;
   let completedTasks = 0;
   let failedTasks = 0;
   const completedTaskIds: string[] = [];
 
-  for (let i = 0; i < sortedTasks.length; i++) {
-    const task = sortedTasks[i];
+  for (let i = 0; i < finalEnabledTasks.length; i++) {
+    const task = finalEnabledTasks[i];
     if (task == null) continue; // Skip if task is undefined
 
     // Call beforeTask hook

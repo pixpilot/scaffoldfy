@@ -22,7 +22,7 @@
     },
     "variables": {
       "type": "array",
-      "description": "Global variables available to all tasks. Variables are resolved once at initialization and do not require user interaction.",
+      "description": "Top-level global variables available to all tasks. Variables are resolved once at initialization and do not require user interaction.",
       "items": {
         "type": "object",
         "required": ["id", "value"],
@@ -54,10 +54,106 @@
                 }
               }
             ]
+          }
+        }
+      }
+    },
+    "prompts": {
+      "type": "array",
+      "description": "Top-level global prompts collected once upfront and available to all tasks.",
+      "items": {
+        "type": "object",
+        "required": ["id", "type", "message"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier for the prompt value (alphanumeric, underscores, and hyphens only)",
+            "pattern": "^[\\w-]+$"
           },
-          "global": {
+          "type": {
+            "type": "string",
+            "enum": ["input", "select", "confirm", "password", "number"],
+            "description": "Type of prompt to display"
+          },
+          "message": {
+            "type": "string",
+            "description": "Prompt message to display to the user"
+          },
+          "required": {
             "type": "boolean",
-            "description": "If true, this variable is available to all tasks globally. Note: top-level variables are global by default."
+            "description": "Whether the prompt value is required (cannot be empty)"
+          },
+          "enabled": {
+            "description": "Whether this prompt should be displayed. Can be a boolean or a conditional expression based on variables or other prompt values.",
+            "oneOf": [
+              {
+                "type": "boolean",
+                "description": "Static enabled state"
+              },
+              {
+                "type": "object",
+                "description": "Conditional enabled configuration",
+                "required": ["condition"],
+                "properties": {
+                  "condition": {
+                    "type": "string",
+                    "description": "JavaScript expression to evaluate. Prompt only displays if condition evaluates to true. Has access to all variables and previously collected prompts."
+                  }
+                }
+              }
+            ]
+          },
+          "default": {
+            "description": "Default value for the prompt. Can be a static value or an object with 'type' and 'value' properties for executable defaults.",
+            "oneOf": [
+              {
+                "description": "Static default value (string, number, or boolean)"
+              },
+              {
+                "type": "object",
+                "description": "Default value configuration for static or executable values",
+                "required": ["type", "value"],
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "enum": ["static", "exec"],
+                    "description": "Type of default value. 'static' for explicit static values, 'exec' for command execution."
+                  },
+                  "value": {
+                    "description": "For 'static' type: the static value. For 'exec' type: the shell command to execute. Commands can be any shell command including git, npm, node, etc. The command output will be trimmed and auto-parsed as JSON, number, or boolean when applicable."
+                  }
+                }
+              }
+            ]
+          },
+          "placeholder": {
+            "type": "string",
+            "description": "Placeholder text (for input prompts)"
+          },
+          "min": {
+            "type": "number",
+            "description": "Minimum value (for number prompts)"
+          },
+          "max": {
+            "type": "number",
+            "description": "Maximum value (for number prompts)"
+          },
+          "choices": {
+            "type": "array",
+            "description": "Available choices (for select prompts)",
+            "items": {
+              "type": "object",
+              "required": ["name", "value"],
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Display name for the choice"
+                },
+                "value": {
+                  "description": "Value to use when this choice is selected"
+                }
+              }
+            }
           }
         }
       }
@@ -85,8 +181,24 @@
             "description": "Whether failure of this task should stop the process"
           },
           "enabled": {
-            "type": "boolean",
-            "description": "Whether this task should be executed"
+            "description": "Whether this task should be executed. Can be a boolean or a conditional expression based on variables or prompt values.",
+            "oneOf": [
+              {
+                "type": "boolean",
+                "description": "Static enabled state"
+              },
+              {
+                "type": "object",
+                "description": "Conditional enabled configuration",
+                "required": ["condition"],
+                "properties": {
+                  "condition": {
+                    "type": "string",
+                    "description": "JavaScript expression to evaluate. Task only executes if condition evaluates to true. Has access to all variables and prompt values."
+                  }
+                }
+              }
+            ]
           },
           "dependencies": {
             "type": "array",
@@ -97,7 +209,7 @@
           },
           "prompts": {
             "type": "array",
-            "description": "Interactive prompts to collect user input before running the task",
+            "description": "Task-specific prompts collected only when this task runs. For prompts shared across tasks, use top-level prompts instead.",
             "items": {
               "type": "object",
               "required": ["id", "type", "message"],
@@ -120,9 +232,25 @@
                   "type": "boolean",
                   "description": "Whether the prompt value is required (cannot be empty)"
                 },
-                "global": {
-                  "type": "boolean",
-                  "description": "If true, this prompt value is available to all tasks (not just the current task). Global prompts are collected once and shared across all tasks."
+                "enabled": {
+                  "description": "Whether this prompt should be displayed. Can be a boolean or a conditional expression based on variables or other prompt values.",
+                  "oneOf": [
+                    {
+                      "type": "boolean",
+                      "description": "Static enabled state"
+                    },
+                    {
+                      "type": "object",
+                      "description": "Conditional enabled configuration",
+                      "required": ["condition"],
+                      "properties": {
+                        "condition": {
+                          "type": "string",
+                          "description": "JavaScript expression to evaluate. Prompt only displays if condition evaluates to true. Has access to all variables and previously collected prompts."
+                        }
+                      }
+                    }
+                  ]
                 },
                 "default": {
                   "description": "Default value for the prompt. Can be a static value or an object with 'type' and 'value' properties for executable defaults.",
@@ -181,7 +309,7 @@
           },
           "variables": {
             "type": "array",
-            "description": "Task-scoped variables available to this specific task. Variables are resolved once at initialization and do not require user interaction.",
+            "description": "Task-scoped variables available only to this specific task. Variables are resolved once at initialization and do not require user interaction. For variables shared across tasks, use top-level variables instead.",
             "items": {
               "type": "object",
               "required": ["id", "value"],
@@ -213,10 +341,6 @@
                       }
                     }
                   ]
-                },
-                "global": {
-                  "type": "boolean",
-                  "description": "If true, this variable is available to all tasks globally."
                 }
               }
             }
@@ -226,6 +350,7 @@
             "enum": [
               "update-json",
               "template",
+              "create",
               "regex-replace",
               "replace-in-file",
               "delete",
@@ -263,6 +388,36 @@
                   "file": {
                     "type": "string",
                     "description": "Path to the file to create or overwrite"
+                  },
+                  "template": {
+                    "type": "string",
+                    "description": "Inline template string with {{variable}} placeholders. Cannot be used with templateFile."
+                  },
+                  "templateFile": {
+                    "type": "string",
+                    "description": "Path to external template file (relative to project root). Files with .hbs extension automatically use Handlebars templating. Cannot be used with template."
+                  },
+                  "condition": {
+                    "type": "string",
+                    "description": "Optional JavaScript expression to evaluate. Task only executes if condition evaluates to true."
+                  }
+                },
+                "required": ["file"],
+                "oneOf": [
+                  {
+                    "required": ["template"]
+                  },
+                  {
+                    "required": ["templateFile"]
+                  }
+                ]
+              },
+              {
+                "title": "Create Config",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "description": "Path to the file to create (will not overwrite if file already exists)"
                   },
                   "template": {
                     "type": "string",

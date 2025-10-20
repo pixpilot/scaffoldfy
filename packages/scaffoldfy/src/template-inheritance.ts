@@ -6,7 +6,12 @@
  * Supports both local file paths and remote URLs (http/https).
  */
 
-import type { TaskDefinition, TasksConfiguration, VariableDefinition } from './types.js';
+import type {
+  PromptDefinition,
+  TaskDefinition,
+  TasksConfiguration,
+  VariableDefinition,
+} from './types.js';
 import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
@@ -231,9 +236,19 @@ export function mergeTemplates(templates: TasksConfiguration[]): TasksConfigurat
   // Use a Map to handle variable overriding by ID
   const variableMap = new Map<string, VariableDefinition>();
 
+  // Use a Map to handle prompt overriding by ID
+  const promptMap = new Map<string, PromptDefinition>();
+
   // Process templates in order (earlier templates have lower priority)
   for (const template of templates) {
-    // Merge variables if present
+    // Merge top-level prompts if present
+    if (template.prompts != null) {
+      for (const prompt of template.prompts) {
+        promptMap.set(prompt.id, { ...prompt });
+      }
+    }
+
+    // Merge top-level variables if present
     if (template.variables != null) {
       for (const variable of template.variables) {
         variableMap.set(variable.id, { ...variable });
@@ -257,6 +272,11 @@ export function mergeTemplates(templates: TasksConfiguration[]): TasksConfigurat
   const result: TasksConfiguration = {
     tasks: Array.from(taskMap.values()),
   };
+
+  // Add prompts if any exist
+  if (promptMap.size > 0) {
+    result.prompts = Array.from(promptMap.values());
+  }
 
   // Add variables if any exist
   if (variableMap.size > 0) {
@@ -340,11 +360,13 @@ export function clearTemplateCache(): void {
 /**
  * Load tasks from a configuration file with template inheritance support
  * @param tasksFilePath - Path to the tasks configuration file
- * @returns Task configuration with tasks and optional variables
+ * @returns Task configuration with tasks, optional variables, and optional prompts
  */
-export async function loadTasksWithInheritance(
-  tasksFilePath: string,
-): Promise<{ tasks: TaskDefinition[]; variables?: VariableDefinition[] }> {
+export async function loadTasksWithInheritance(tasksFilePath: string): Promise<{
+  tasks: TaskDefinition[];
+  variables?: VariableDefinition[];
+  prompts?: PromptDefinition[];
+}> {
   log(`Loading tasks from ${tasksFilePath}...`, 'info');
 
   const config = await loadAndMergeTemplate(tasksFilePath);
@@ -356,13 +378,25 @@ export async function loadTasksWithInheritance(
     log(`Extended from: ${extendsList.join(', ')}`, 'info');
   }
 
-  if (config.variables != null && config.variables.length > 0) {
-    log(`Found ${config.variables.length} global variable(s)`, 'info');
+  if (config.prompts != null && config.prompts.length > 0) {
+    log(`Found ${config.prompts.length} top-level prompt(s)`, 'info');
   }
 
-  const result: { tasks: TaskDefinition[]; variables?: VariableDefinition[] } = {
+  if (config.variables != null && config.variables.length > 0) {
+    log(`Found ${config.variables.length} top-level variable(s)`, 'info');
+  }
+
+  const result: {
+    tasks: TaskDefinition[];
+    variables?: VariableDefinition[];
+    prompts?: PromptDefinition[];
+  } = {
     tasks: config.tasks,
   };
+
+  if (config.prompts != null) {
+    result.prompts = config.prompts;
+  }
 
   if (config.variables != null) {
     result.variables = config.variables;

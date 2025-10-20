@@ -107,8 +107,8 @@ describe('validateVariables', () => {
 
   it('should handle global variables', () => {
     const variables: VariableDefinition[] = [
-      { id: 'globalVar', value: 'test', global: true },
-      { id: 'localVar', value: 'test', global: false },
+      { id: 'globalVar', value: 'test' },
+      { id: 'localVar', value: 'test' },
       { id: 'defaultVar', value: 'test' },
     ];
 

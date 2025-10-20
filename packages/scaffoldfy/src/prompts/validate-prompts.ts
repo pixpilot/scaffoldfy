@@ -12,8 +12,6 @@ import type { PromptDefinition } from '../types.js';
 export function validatePrompts(prompts: PromptDefinition[]): string[] {
   const errors: string[] = [];
   const ids = new Set<string>();
-  const globalIds = new Set<string>();
-  const taskSpecificIds = new Set<string>();
 
   for (const prompt of prompts) {
     // Check for duplicate IDs
@@ -21,26 +19,6 @@ export function validatePrompts(prompts: PromptDefinition[]): string[] {
       errors.push(`Duplicate prompt ID: ${prompt.id}`);
     }
     ids.add(prompt.id);
-
-    // Track global vs task-specific IDs
-    if (prompt.global) {
-      globalIds.add(prompt.id);
-    } else {
-      // Check if a task-specific prompt conflicts with a global prompt
-      if (globalIds.has(prompt.id)) {
-        errors.push(
-          `Prompt ID "${prompt.id}" is used as both global and task-specific. Use unique IDs or mark all instances as global.`,
-        );
-      }
-      taskSpecificIds.add(prompt.id);
-    }
-
-    // Check if a global prompt conflicts with a task-specific prompt
-    if (prompt.global && taskSpecificIds.has(prompt.id)) {
-      errors.push(
-        `Prompt ID "${prompt.id}" is used as both global and task-specific. Use unique IDs or mark all instances as global.`,
-      );
-    }
 
     // Validate ID format (alphanumeric and underscores only)
     if (!/^[\w-]+$/u.test(prompt.id)) {

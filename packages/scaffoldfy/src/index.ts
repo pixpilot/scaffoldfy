@@ -14,7 +14,7 @@
  * - TypeScript type safety
  */
 
-import type { TaskDefinition, VariableDefinition } from './types.js';
+import type { PromptDefinition, TaskDefinition, VariableDefinition } from './types.js';
 
 import process from 'node:process';
 
@@ -87,7 +87,8 @@ async function main(customTasks?: TaskDefinition[]) {
  * @param options.dryRun - Preview changes without applying them
  * @param options.force - Force re-initialization even if already initialized
  * @param options.tasksFilePath - Path to the tasks file
- * @param options.globalVariables - Optional global variables
+ * @param options.globalVariables - Optional top-level global variables
+ * @param options.globalPrompts - Optional top-level global prompts
  */
 export async function runWithTasks(
   customTasks: TaskDefinition[],
@@ -96,6 +97,7 @@ export async function runWithTasks(
     force?: boolean | undefined;
     tasksFilePath?: string | undefined;
     globalVariables?: VariableDefinition[] | undefined;
+    globalPrompts?: PromptDefinition[] | undefined;
   },
 ): Promise<void> {
   try {
@@ -105,6 +107,9 @@ export async function runWithTasks(
       tasksFilePath: options?.tasksFilePath ?? undefined,
       ...(options?.globalVariables != null && {
         globalVariables: options.globalVariables,
+      }),
+      ...(options?.globalPrompts != null && {
+        globalPrompts: options.globalPrompts,
       }),
     });
   } catch (error) {

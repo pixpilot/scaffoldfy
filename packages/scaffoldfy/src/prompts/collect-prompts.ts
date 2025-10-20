@@ -2,20 +2,23 @@
  * Collect prompt answers from task-defined prompts
  */
 
-import type { PromptDefinition } from '../types.js';
+import type { InitConfig, PromptDefinition } from '../types.js';
 import { confirm, input, number, password, select } from '@inquirer/prompts';
-import { log } from '../utils.js';
+import { evaluateEnabled, log } from '../utils.js';
 
 /**
  * Collect prompt answers from task-defined prompts
+ * Only prompts with enabled=true (or enabled condition that evaluates to true) will be shown
  * @param prompts - Array of prompt definitions from tasks
  * @param resolvedDefaults - Map of pre-resolved default values
+ * @param config - Current configuration context (for evaluating enabled conditions)
  * @returns Object mapping prompt IDs to their values
  */
 /* eslint-disable no-await-in-loop */
 export async function collectPrompts(
   prompts: PromptDefinition[],
   resolvedDefaults: Map<string, unknown> = new Map(),
+  config: InitConfig = {},
 ): Promise<Record<string, unknown>> {
   const answers: Record<string, unknown> = {};
 
@@ -24,6 +27,15 @@ export async function collectPrompts(
   }
 
   for (const prompt of prompts) {
+    // Check if prompt is enabled (evaluate condition if needed)
+    // Use current config merged with collected answers for cascading conditions
+    const currentContext = { ...config, ...answers };
+    if (!evaluateEnabled(prompt.enabled, currentContext)) {
+      // Skip this prompt if it's disabled or condition evaluates to false
+      // eslint-disable-next-line no-continue
+      continue;
+    }
+
     try {
       let answer: unknown;
 

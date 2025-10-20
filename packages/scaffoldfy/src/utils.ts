@@ -206,3 +206,6 @@ export function compileHandlebarsTemplate(template: string, config: InitConfig):
     throw error;
   }
 }
+
+// Re-export evaluate-enabled utility
+export { evaluateEnabled } from './utils/evaluate-enabled.js';

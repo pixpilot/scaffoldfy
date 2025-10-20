@@ -25,10 +25,12 @@ Variables are useful for:
 
 Variables can be defined at two levels:
 
-1. **Global variables**: Defined at the top level of the configuration, available to all tasks
-2. **Task variables**: Defined within a specific task, available to that task and its subtasks
+1. **Top-level (global) variables**: Defined at the top level of the configuration, available to all tasks
+2. **Task-scoped variables**: Defined within a specific task, available only to that task
 
-### Global Variables
+### Top-Level (Global) Variables
+
+Top-level variables are defined in the `variables` array at the root of your configuration. They are automatically available to **all tasks**.
 
 ```json
 {
@@ -39,8 +41,7 @@ Variables can be defined at two levels:
       "value": {
         "type": "exec",
         "value": "node -e \"console.log(new Date().getFullYear())\""
-      },
-      "global": true
+      }
     },
     {
       "id": "defaultLicense",
@@ -51,7 +52,15 @@ Variables can be defined at two levels:
 }
 ```
 
+In this example:
+
+- `variables` array is defined at the top level (same level as `tasks`)
+- All variables are **automatically global** and available to all tasks
+- No need for a `global` property
+
 ### Task-Scoped Variables
+
+Task-scoped variables are defined within a specific task's `variables` array. They are only available to that particular task.
 
 ```json
 {
@@ -77,6 +86,12 @@ Variables can be defined at two levels:
   }
 }
 ```
+
+In this example:
+
+- `variables` array is defined within the task
+- These variables are **task-scoped** and only available to this specific task
+- Task-scoped variables are not available to other tasks
 
 ## Variable Types
 
@@ -285,7 +300,7 @@ Variables are available in all template contexts using `{{variableName}}` syntax
 
 ## Combining Variables and Prompts
 
-Variables and prompts work together seamlessly:
+Variables and prompts work together seamlessly. Use top-level `variables` for automatic system information and top-level `prompts` for user input:
 
 ```json
 {
@@ -305,20 +320,19 @@ Variables and prompts work together seamlessly:
       }
     }
   ],
+  "prompts": [
+    {
+      "id": "projectName",
+      "type": "input",
+      "message": "Project name?",
+      "required": true
+    }
+  ],
   "tasks": [
     {
       "id": "setup-project",
       "name": "Setup Project",
       "type": "update-json",
-      "prompts": [
-        {
-          "id": "projectName",
-          "type": "input",
-          "message": "Project name?",
-          "required": true,
-          "global": true
-        }
-      ],
       "config": {
         "file": "package.json",
         "updates": {
@@ -332,19 +346,25 @@ Variables and prompts work together seamlessly:
 }
 ```
 
+In this example:
+
+- `currentYear` and `gitUserName` are variables (automatic, no user input)
+- `projectName` is a prompt (requires user input)
+- All three are available to all tasks
+
 ## Variable Scoping
 
-### Global Variables
+### Top-Level (Global) Variables
 
-- Defined at the top level or with `"global": true` in tasks
-- Available to all tasks
-- Collected/resolved only once
+- Defined at the top level in the `variables` array
+- Available to **all tasks**
+- Resolved only once before any tasks run
 
 ### Task-Scoped Variables
 
-- Defined within a specific task
-- Available only to that task
-- Can override global variables with the same ID
+- Defined within a specific task's `variables` array
+- Available **only to that task**
+- Can override top-level variables with the same ID
 
 Example:
 
@@ -359,6 +379,8 @@ Example:
   "tasks": [
     {
       "id": "task1",
+      "name": "Task 1",
+      "type": "template",
       "variables": [
         {
           "id": "template",
@@ -366,6 +388,7 @@ Example:
         }
       ],
       "config": {
+        "file": "output.txt",
         "template": "Value: {{template}}"
       }
     }
