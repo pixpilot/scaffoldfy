@@ -1,59 +1,72 @@
-# scaffoldfy
-
-A modern TypeScript monorepo template for npm packages, managed with pnpm and TurboRepo.
-
-## ✨ Features
-
-- Monorepo structure with workspaces
-- TypeScript support
-- Linting and formatting with ESLint and Prettier
-- Easy dependency management with pnpm
-
-## 🚀 Getting Started
-
-1. Install dependencies:
-   ```sh
-   pnpm install
-   ```
-2. Build all packages:
-   ```sh
-   pnpm build
-   ```
-3. Run tests:
-   ```sh
-   pnpm test
-   ```
-
-## 📦 Packages
-
-### @pixpilot/scaffoldfy
+# @pixpilot/scaffoldfy
 
 A flexible and powerful template initialization utility for automating project setup, cleanup, and configuration tasks.
 
-- **[Package Documentation](packages/scaffoldfy/README.md)** - Main package README
-- **[Full Documentation](docs/README.md)** - Complete documentation with guides and references
+## ✨ Features
 
-Key features:
+- 🔄 **9 Task Types** - update-json, template, regex-replace, replace-in-file, delete, conditional-delete, rename, git-init, exec
+- 💬 **Interactive Prompts** - Collect user input with various prompt types
+- 🧩 **Template Inheritance** - Extend base templates for code reuse
+- 🔍 **Dry-Run Mode** - Preview changes with detailed diffs before applying
+- 🔌 **Plugin System** - Create custom task types and lifecycle hooks
+- 📝 **Handlebars Support** - Advanced templating with conditionals, loops, and helpers
+- ✅ **Type-Safe** - Full TypeScript support with JSON schema validation
 
-- 🔄 9 built-in task types for common operations
-- 💬 Interactive prompts for user input
-- 🧩 Template inheritance for code reuse
-- 🔍 Dry-run mode with diff preview
-- 🔌 Plugin system for custom task types
-- 📝 Handlebars templating support
+## 🚀 Quick Start
 
-**Quick start:**
+### Installation
 
 ```sh
 pnpm add @pixpilot/scaffoldfy
-scaffoldfy --tasks-file ./tasks.json
 ```
 
-For detailed usage, examples, and API documentation, see the [documentation](docs/README.md).
+### Usage
 
-### 🏷️ Package Naming Convention
+```sh
+# Basic usage with default task file
+scaffoldfy
 
-In this template, we use `@pixpilot` as a placeholder for package names. As a user, you might want to replace it with your own organization or project name.
+# With custom tasks file
+scaffoldfy --tasks-file ./my-tasks.json
+
+# Preview changes (dry run)
+scaffoldfy --dry-run
+```
+
+## 📚 Documentation
+
+- **[Complete Documentation](https://pixpilot.github.io/scaffoldfy/)** - Full guides and references
+- **[Getting Started](https://pixpilot.github.io/scaffoldfy/GETTING_STARTED.html)** - Installation and examples
+- **[Package README](packages/scaffoldfy/README.md)** - Package-specific documentation
+
+## 📦 Monorepo Structure
+
+This is a TypeScript monorepo managed with pnpm and Turbo:
+
+```
+scaffoldfy/
+├── packages/
+│   └── scaffoldfy/        # Main package
+├── docs/                  # Documentation
+├── tooling/               # Shared configs (ESLint, TypeScript, etc.)
+└── turbo/                 # Turbo generators
+```
+
+### Development
+
+```sh
+# Install dependencies
+pnpm install
+
+# Build all packages
+pnpm build
+
+# Run tests
+pnpm test
+
+# Type check
+pnpm typecheck
+```
 
 ## 🚢 Releases
 
