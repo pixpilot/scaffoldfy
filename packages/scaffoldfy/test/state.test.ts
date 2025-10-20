@@ -67,11 +67,11 @@ describe('state Management', () => {
 
     it('should load state from init flag file', () => {
       const config: InitConfig = {
-        repoName: 'test-repo',
-        repoOwner: 'test-owner',
+        projectName: 'test-repo',
+        owner: 'test-owner',
         repoUrl: 'https://github.com/test-owner/test-repo.git',
         author: 'Test Author',
-        baseRepoUrl: 'https://github.com/test-owner/test-repo',
+        homepage: 'https://github.com/test-owner/test-repo',
         orgName: '@test-org',
       };
 
@@ -88,7 +88,7 @@ describe('state Management', () => {
       const state = loadInitializationState();
 
       expect(state).not.toBeNull();
-      expect(state?.config.repoName).toBe('test-repo');
+      expect(state?.config['projectName']).toBe('test-repo');
       expect(state?.completedTasks).toEqual(['task1', 'task2']);
     });
 
@@ -112,11 +112,11 @@ describe('state Management', () => {
   describe('saveInitializationState', () => {
     it('should save state to init flag file', () => {
       const config: InitConfig = {
-        repoName: 'test-repo',
-        repoOwner: 'test-owner',
+        projectName: 'test-repo',
+        owner: 'test-owner',
         repoUrl: 'https://github.com/test-owner/test-repo.git',
         author: 'Test Author',
-        baseRepoUrl: 'https://github.com/test-owner/test-repo',
+        homepage: 'https://github.com/test-owner/test-repo',
         orgName: '@test-org',
       };
 
@@ -129,7 +129,7 @@ describe('state Management', () => {
       const content = fs.readFileSync(INIT_FLAG, 'utf-8');
       const state = JSON.parse(content);
 
-      expect(state.config.repoName).toBe('test-repo');
+      expect(state.config.projectName).toBe('test-repo');
       expect(state.completedTasks).toEqual(completedTasks);
       expect(state.version).toBeDefined();
       expect(state.initializedAt).toBeDefined();
@@ -137,11 +137,11 @@ describe('state Management', () => {
 
     it('should not save state in dry run mode', () => {
       const config: InitConfig = {
-        repoName: 'test-repo',
-        repoOwner: 'test-owner',
+        projectName: 'test-repo',
+        owner: 'test-owner',
         repoUrl: 'https://github.com/test-owner/test-repo.git',
         author: 'Test Author',
-        baseRepoUrl: 'https://github.com/test-owner/test-repo',
+        homepage: 'https://github.com/test-owner/test-repo',
         orgName: '@test-org',
       };
 
@@ -157,11 +157,11 @@ describe('state Management', () => {
 
     it('should save valid timestamp', () => {
       const config: InitConfig = {
-        repoName: 'test-repo',
-        repoOwner: 'test-owner',
+        projectName: 'test-repo',
+        owner: 'test-owner',
         repoUrl: 'https://github.com/test-owner/test-repo.git',
         author: 'Test Author',
-        baseRepoUrl: 'https://github.com/test-owner/test-repo',
+        homepage: 'https://github.com/test-owner/test-repo',
         orgName: '@test-org',
       };
 
@@ -179,22 +179,22 @@ describe('state Management', () => {
 
     it('should overwrite existing state', () => {
       const config1: InitConfig = {
-        repoName: 'old-repo',
-        repoOwner: 'old-owner',
+        projectName: 'old-repo',
+        owner: 'old-owner',
         repoUrl: 'https://github.com/old-owner/old-repo.git',
         author: 'Old Author',
-        baseRepoUrl: 'https://github.com/old-owner/old-repo',
+        homepage: 'https://github.com/old-owner/old-repo',
         orgName: '@old-org',
       };
 
       saveInitializationState(config1, ['task1'], false);
 
       const config2: InitConfig = {
-        repoName: 'new-repo',
-        repoOwner: 'new-owner',
+        projectName: 'new-repo',
+        owner: 'new-owner',
         repoUrl: 'https://github.com/new-owner/new-repo.git',
         author: 'New Author',
-        baseRepoUrl: 'https://github.com/new-owner/new-repo',
+        homepage: 'https://github.com/new-owner/new-repo',
         orgName: '@new-org',
       };
 
@@ -203,17 +203,17 @@ describe('state Management', () => {
       const content = fs.readFileSync(INIT_FLAG, 'utf-8');
       const state = JSON.parse(content);
 
-      expect(state.config.repoName).toBe('new-repo');
+      expect(state.config.projectName).toBe('new-repo');
       expect(state.completedTasks).toEqual(['task2', 'task3']);
     });
 
     it('should save empty completed tasks array', () => {
       const config: InitConfig = {
-        repoName: 'test-repo',
-        repoOwner: 'test-owner',
+        projectName: 'test-repo',
+        owner: 'test-owner',
         repoUrl: 'https://github.com/test-owner/test-repo.git',
         author: 'Test Author',
-        baseRepoUrl: 'https://github.com/test-owner/test-repo',
+        homepage: 'https://github.com/test-owner/test-repo',
         orgName: '@test-org',
       };
 
@@ -229,11 +229,11 @@ describe('state Management', () => {
   describe('round-trip (save and load)', () => {
     it('should be able to load what was saved', () => {
       const config: InitConfig = {
-        repoName: 'round-trip-repo',
-        repoOwner: 'round-trip-owner',
+        projectName: 'round-trip-repo',
+        owner: 'round-trip-owner',
         repoUrl: 'https://github.com/round-trip-owner/round-trip-repo.git',
         author: 'Round Trip Author',
-        baseRepoUrl: 'https://github.com/round-trip-owner/round-trip-repo',
+        homepage: 'https://github.com/round-trip-owner/round-trip-repo',
         orgName: '@round-trip',
       };
 

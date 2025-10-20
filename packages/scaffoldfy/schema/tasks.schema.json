@@ -8,15 +8,7 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": [
-          "id",
-          "name",
-          "description",
-          "required",
-          "enabled",
-          "type",
-          "config"
-        ],
+        "required": ["id", "name", "description", "required", "enabled", "type"],
         "properties": {
           "id": {
             "type": "string",

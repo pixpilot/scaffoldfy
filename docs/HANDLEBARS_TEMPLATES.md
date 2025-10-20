@@ -35,10 +35,10 @@ Templates can be defined in two ways:
 
 ```handlebars
 #
-{{repoName}}
+{{projectName}}
 
 >
-{{repoName}}
+{{projectName}}
 is a modern TypeScript project.
 
 {{#if author}}
@@ -89,7 +89,7 @@ When using inline templates or template files that don't end in `.hbs`, simple `
   "type": "template",
   "config": {
     "file": "README.md",
-    "template": "# {{repoName}}\n\nAuthor: {{author}}\nRepository: {{repoUrl}}"
+    "template": "# {{projectName}}\n\nAuthor: {{author}}\nRepository: {{repoUrl}}"
   }
 }
 ```
@@ -99,7 +99,7 @@ When using inline templates or template files that don't end in `.hbs`, simple `
 **Template file** (`templates/simple-readme.txt`):
 
 ```
-# {{repoName}}
+# {{projectName}}
 
 Author: {{author}}
 Repository: {{repoUrl}}
@@ -175,11 +175,11 @@ See [Handlebars documentation](https://handlebarsjs.com/guide/builtin-helpers.ht
 
 All configuration variables from your `InitConfig` are available in templates:
 
-- `repoName`: Repository name
-- `repoOwner`: Repository owner
+- `projectName`: Repository name
+- `owner`: Repository owner
 - `repoUrl`: Full repository URL
 - `author`: Author name
-- `baseRepoUrl`: Base repository URL
+- `repoUrl`: Base repository URL
 - `orgName`: Organization name
 - Plus any variables collected from prompts
 
@@ -282,7 +282,7 @@ project-root/
 
 ````handlebars
 #
-{{repoName}}
+{{projectName}}
 
 {{#if description}}
   >
@@ -379,7 +379,7 @@ You cannot specify both options:
 
 ```json
 {
-  "template": "# {{repoName}}\n{{#if author}}Author: {{author}}{{/if}}",
+  "template": "# {{projectName}}\n{{#if author}}Author: {{author}}{{/if}}",
   "useHandlebars": true
 }
 ```

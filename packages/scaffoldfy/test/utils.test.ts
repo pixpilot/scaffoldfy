@@ -12,12 +12,9 @@ import {
 
 describe('template Interpolation', () => {
   const config: InitConfig = {
-    repoName: 'my-repo',
-    repoOwner: 'my-owner',
+    projectName: 'my-repo',
     repoUrl: 'https://github.com/my-owner/my-repo.git',
     author: 'John Doe',
-    baseRepoUrl: 'https://github.com/my-owner/my-repo',
-    orgName: '@my-org',
   };
 
   it('should interpolate single variable', () => {
@@ -26,8 +23,8 @@ describe('template Interpolation', () => {
   });
 
   it('should interpolate multiple variables', () => {
-    const result = interpolateTemplate('{{repoOwner}}/{{repoName}}', config);
-    expect(result).toBe('my-owner/my-repo');
+    const result = interpolateTemplate('{{projectName}} at {{repoUrl}}', config);
+    expect(result).toBe('my-repo at https://github.com/my-owner/my-repo.git');
   });
 
   it('should handle missing variables', () => {
@@ -36,16 +33,15 @@ describe('template Interpolation', () => {
   });
 
   it('should work with complex templates', () => {
-    const template = `# {{repoName}}
-Repository: {{baseRepoUrl}}
-Author: {{author}}
-Organization: {{orgName}}`;
+    const template = `# {{projectName}}
+Repository: {{repoUrl}}
+Author: {{author}}`;
 
     const result = interpolateTemplate(template, config);
 
     expect(result).toContain('# my-repo');
     expect(result).toContain('Author: John Doe');
-    expect(result).toContain('Organization: @my-org');
+    expect(result).toContain('Repository: https://github.com/my-owner/my-repo.git');
   });
 
   it('should not interpolate incomplete templates', () => {
@@ -61,12 +57,9 @@ Organization: {{orgName}}`;
 
 describe('condition Evaluation', () => {
   const config: InitConfig = {
-    repoName: 'test',
-    repoOwner: 'test',
-    repoUrl: 'https://github.com/test/test.git',
-    author: 'Test',
-    baseRepoUrl: 'https://github.com/test/test',
+    projectType: 'monorepo',
     orgName: '@test',
+    keepExamples: true,
   };
 
   it('should evaluate simple boolean conditions', () => {

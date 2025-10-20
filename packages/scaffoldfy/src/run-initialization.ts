@@ -6,7 +6,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
 import { promisify } from 'node:util';
-import { collectConfig, validateConfig } from './config.js';
+import { createInitialConfig } from './config.js';
 import { displayTasksDiff } from './dry-run.js';
 import { callHook } from './plugin.js';
 import {
@@ -49,7 +49,6 @@ export async function runInitialization(
       'info',
     );
 
-    log(`  Repo: ${existingState.config.repoName}`, 'info');
     console.log('');
 
     const shouldReInit = await promptYesNo(
@@ -75,17 +74,19 @@ export async function runInitialization(
   const sortedTasks = topologicalSort(enabledTasks);
   console.log('');
 
-  // Collect configuration
-  const config = await collectConfig(options.dryRun);
+  // Create initial empty configuration
+  log('Welcome to the template initialization script!', 'info');
+  console.log('');
 
-  // Validate configuration
-  const validationErrors = validateConfig(config);
-  if (validationErrors.length > 0) {
-    log('❌ Configuration errors:', 'error');
-    validationErrors.forEach((err) => log(`  - ${err}`, 'error'));
+  if (options.dryRun) {
+    log('🔍 DRY RUN MODE - No changes will be made', 'warn');
     console.log('');
-    process.exit(1);
   }
+
+  log('This will initialize your project based on the defined tasks.', 'info');
+  console.log('');
+
+  const config = createInitialConfig();
 
   // Collect all prompts from tasks and separate global vs task-specific
   const globalPrompts: PromptDefinition[] = [];

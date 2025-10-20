@@ -11,7 +11,7 @@
       "type": "template",
       "config": {
         "file": "README.md",
-        "template": "# {{repoName}}\n\nBy {{author}}\n\n## Description\n\nThis project extends a remote base template.\n\n## Features\n\n- Extends base Node.js template from GitHub\n- Adds custom project-specific tasks\n- Demonstrates URL-based template inheritance\n\n## Repository\n\n{{repoUrl}}"
+        "template": "# {{projectName}}\n\nBy {{author}}\n\n## Description\n\nThis project extends a remote base template.\n\n## Features\n\n- Extends base Node.js template from GitHub\n- Adds custom project-specific tasks\n- Demonstrates URL-based template inheritance\n\n## Repository\n\n{{repoUrl}}"
       }
     },
     {

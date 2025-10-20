@@ -213,11 +213,11 @@ const task = {
 };
 
 const config = {
-  repoName: 'new-name',
-  repoOwner: 'owner',
+  projectName: 'new-name',
+  owner: 'owner',
   repoUrl: 'https://github.com/owner/new-name',
   author: 'Author Name',
-  baseRepoUrl: 'https://github.com/owner/new-name',
+  repoUrl: 'https://github.com/owner/new-name',
   orgName: 'org',
 };
 

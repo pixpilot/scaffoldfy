@@ -148,7 +148,7 @@ import { registerHooks } from '@pixpilot/scaffoldfy';
 registerHooks({
   // Called before any tasks run
   beforeAll: async (config) => {
-    console.log(`Starting initialization for ${config.repoName}`);
+    console.log(`Starting initialization for ${config.projectName}`);
   },
 
   // Called after all tasks complete
@@ -379,11 +379,11 @@ describe('my plugin', () => {
     };
 
     const config = {
-      repoName: 'test',
-      repoOwner: 'owner',
+      projectName: 'test',
+      owner: 'owner',
       repoUrl: 'url',
       author: 'author',
-      baseRepoUrl: 'base',
+      repoUrl: 'base',
       orgName: 'org',
     };
 

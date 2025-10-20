@@ -3,12 +3,6 @@
  */
 
 export interface InitConfig {
-  repoName: string;
-  repoOwner: string;
-  repoUrl: string;
-  author: string;
-  baseRepoUrl: string;
-  orgName: string;
   // Dynamic properties from prompts
   [key: string]: unknown;
 }

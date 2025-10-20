@@ -7,10 +7,35 @@
       "required": true,
       "enabled": true,
       "type": "update-json",
+      "prompts": [
+        {
+          "id": "projectName",
+          "type": "input",
+          "message": "Project name",
+          "global": true,
+          "required": true
+        },
+        {
+          "id": "author",
+          "type": "input",
+          "message": "Author name",
+          "global": true
+        },
+        {
+          "id": "repoUrl",
+          "type": "input",
+          "message": "Repository URL",
+          "global": true,
+          "default": {
+            "type": "execute",
+            "value": "git config --get remote.origin.url"
+          }
+        }
+      ],
       "config": {
         "file": "package.json",
         "updates": {
-          "name": "{{repoName}}",
+          "name": "{{projectName}}",
           "author": "{{author}}",
           "description": "Base Node.js template",
           "repository": {

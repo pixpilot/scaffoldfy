@@ -32,7 +32,7 @@ Create a base template:
       "config": {
         "file": "package.json",
         "updates": {
-          "name": "{{repoName}}",
+          "name": "{{projectName}}",
           "author": "{{author}}"
         }
       }
@@ -57,7 +57,7 @@ Extend it in your template:
       "type": "template",
       "config": {
         "file": "README.md",
-        "template": "# {{repoName}}\n\nYour project description here."
+        "template": "# {{projectName}}\n\nYour project description here."
       }
     }
   ]

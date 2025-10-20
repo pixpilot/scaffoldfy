@@ -1,6 +1,6 @@
 # Using Embedded Prompts in Tasks
 
-scaffoldfy now supports embedding prompts directly in your task definitions. This allows you to collect user input dynamically and use those values in your task configurations.
+scaffoldfy supports embedding prompts directly in your task definitions. This allows you to collect user input dynamically and use those values in your task configurations.
 
 ## Overview
 
@@ -11,6 +11,70 @@ Prompts enable you to:
 - Define default values and validation rules
 - Execute commands to generate dynamic default values (e.g., git branch, npm version, node version)
 - Use prompt values in task configs via template interpolation
+- **Create global variables** available across all tasks using `"global": true`
+
+## Global Prompts
+
+**Important:** scaffoldfy no longer has built-in variables. Instead, use prompts with `"global": true` to create variables that are available to all tasks.
+
+### Example: Creating Global Configuration Variables
+
+```json
+{
+  "id": "setup-globals",
+  "name": "Setup Global Variables",
+  "description": "Collect project-wide configuration",
+  "required": true,
+  "enabled": true,
+  "type": "update-json",
+  "prompts": [
+    {
+      "id": "projectName",
+      "type": "input",
+      "message": "Project name",
+      "global": true,
+      "required": true
+    },
+    {
+      "id": "author",
+      "type": "input",
+      "message": "Author name",
+      "global": true,
+      "default": {
+        "type": "execute",
+        "value": "git config --get user.name"
+      }
+    },
+    {
+      "id": "repoUrl",
+      "type": "input",
+      "message": "Repository URL",
+      "global": true,
+      "default": {
+        "type": "execute",
+        "value": "git config --get remote.origin.url"
+      }
+    }
+  ],
+  "config": {
+    "file": "package.json",
+    "updates": {
+      "name": "{{projectName}}",
+      "author": "{{author}}",
+      "repository": {
+        "type": "git",
+        "url": "{{repoUrl}}"
+      }
+    }
+  }
+}
+```
+
+In this example:
+
+- All prompts have `"global": true`, making their values available to all subsequent tasks
+- The values can be used in any task using `{{projectName}}`, `{{author}}`, `{{repoUrl}}`
+- You can also create tasks with only global prompts and no config (just to collect variables)
 
 ## Prompt Types
 
@@ -587,7 +651,7 @@ Prompt values are automatically merged into the configuration object and can be 
 
 - `{{promptId}}` - Access prompt values in config via template interpolation
 - Works in all task types (update-json, template, regex-replace, etc.)
-- Values are available alongside built-in config values (repoName, author, etc.)
+- Values are available alongside built-in config values (projectName, author, etc.)
 - **Global prompts** are available to all tasks
 - **Task-specific prompts** are only available within their task
 

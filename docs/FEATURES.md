@@ -58,7 +58,7 @@ Conditions are JavaScript expressions that have access to all configuration vari
 
 **Available Variables:**
 
-- Built-in config variables: `repoName`, `author`, `repoUrl`, etc.
+- Built-in config variables: `projectName`, `author`, `repoUrl`, etc.
 - Prompt values: Any variable defined through prompts
 - Global prompt values: Available across all tasks
 

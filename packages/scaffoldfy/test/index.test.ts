@@ -81,7 +81,8 @@ describe('jSON Schema Validation', () => {
     expect(requiredProps).toContain('required');
     expect(requiredProps).toContain('enabled');
     expect(requiredProps).toContain('type');
-    expect(requiredProps).toContain('config');
+    // 'config' is now optional to allow tasks with only prompts
+    expect(requiredProps).not.toContain('config');
   });
 });
 

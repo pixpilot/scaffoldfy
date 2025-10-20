@@ -86,7 +86,6 @@ async function main(customTasks?: TaskDefinition[]) {
  * @param options - Optional configuration
  * @param options.dryRun - Preview changes without applying them
  * @param options.force - Force re-initialization even if already initialized
-
  * @param options.tasksFilePath - Path to the tasks file
  */
 export async function runWithTasks(
@@ -122,8 +121,6 @@ export async function runWithTasks(
   }
 }
 
-// Re-export everything from modules for convenience
-export { collectConfig, validateConfig } from './config.js';
 export {
   displayTasksDiff,
   getDeleteDiff,

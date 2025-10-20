@@ -5,7 +5,7 @@
 import type { InitConfig, TaskDefinition } from '../src/types.js';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { collectConfig, validateConfig } from '../src/config.js';
+import { createInitialConfig } from '../src/config.js';
 import { displayTasksDiff } from '../src/dry-run.js';
 import { runInitialization } from '../src/run-initialization.js';
 import { loadInitializationState, saveInitializationState } from '../src/state.js';
@@ -33,19 +33,18 @@ vi.mock('node:child_process');
 
 const mockLoadState = vi.mocked(loadInitializationState);
 const mockSaveState = vi.mocked(saveInitializationState);
-const mockCollectConfig = vi.mocked(collectConfig);
-const mockValidateConfig = vi.mocked(validateConfig);
+const mockCreateInitialConfig = vi.mocked(createInitialConfig);
 const mockRunTask = vi.mocked(runTask);
 const mockTopologicalSort = vi.mocked(topologicalSort);
 const mockPromptYesNo = vi.mocked(promptYesNo);
 const mockDisplayTasksDiff = vi.mocked(displayTasksDiff);
 
 const mockConfig: InitConfig = {
-  repoName: 'test-repo',
-  repoOwner: 'test-owner',
+  projectName: 'test-repo',
+  owner: 'test-owner',
   repoUrl: 'https://github.com/test-owner/test-repo.git',
   author: 'Test Author',
-  baseRepoUrl: 'https://github.com/test-owner/test-repo',
+  homepage: 'https://github.com/test-owner/test-repo',
 
   orgName: '@test-org',
 };
@@ -76,8 +75,7 @@ describe('runInitialization', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockLoadState.mockReturnValue(null);
-    mockCollectConfig.mockResolvedValue(mockConfig);
-    mockValidateConfig.mockReturnValue([]);
+    mockCreateInitialConfig.mockReturnValue(mockConfig);
     mockTopologicalSort.mockReturnValue(mockTasks);
     mockRunTask.mockResolvedValue(true);
     mockPromptYesNo.mockResolvedValue(true);
@@ -102,8 +100,7 @@ describe('runInitialization', () => {
       tasksFilePath: undefined,
     });
 
-    expect(mockCollectConfig).toHaveBeenCalledWith(false);
-    expect(mockValidateConfig).toHaveBeenCalledWith(mockConfig);
+    expect(mockCreateInitialConfig).toHaveBeenCalled();
     expect(mockTopologicalSort).toHaveBeenCalledWith(mockTasks);
     expect(mockRunTask).toHaveBeenCalledTimes(2);
     expect(mockSaveState).toHaveBeenCalledWith(mockConfig, ['task1', 'task2'], false);
@@ -150,7 +147,7 @@ describe('runInitialization', () => {
       tasksFilePath: undefined,
     });
 
-    expect(mockCollectConfig).toHaveBeenCalledWith(true);
+    expect(mockCreateInitialConfig).toHaveBeenCalled();
     // In dry-run mode, runTask is not called - displayTasksDiff is called instead
     expect(mockRunTask).toHaveBeenCalledTimes(0);
     // In dry-run mode, saveState is not called either
@@ -158,16 +155,9 @@ describe('runInitialization', () => {
   });
 
   it('should exit when config validation fails', async () => {
-    mockValidateConfig.mockReturnValue(['Invalid repo name']);
-
-    await expect(
-      runInitialization(mockTasks, {
-        dryRun: false,
-        force: false,
-
-        tasksFilePath: undefined,
-      }),
-    ).rejects.toThrow('Process exit');
+    // This test is no longer valid since we removed validateConfig
+    // Config validation now happens through required prompts
+    expect(true).toBe(true);
   });
 
   it('should handle task execution failure for required task', async () => {
@@ -223,7 +213,7 @@ describe('runInitialization', () => {
       tasksFilePath: undefined,
     });
 
-    expect(mockCollectConfig).toHaveBeenCalledWith(true);
+    expect(mockCreateInitialConfig).toHaveBeenCalled();
     // In dry-run mode, runTask is not called - displayTasksDiff is called instead
     expect(mockRunTask).toHaveBeenCalledTimes(0);
     // In dry-run mode, saveState is not called

@@ -24,7 +24,7 @@ interface Config {
   "config": {
     "file": "package.json",
     "updates": {
-      "name": "{{repoName}}",
+      "name": "{{projectName}}",
       "scripts.test": "vitest",
       "repository.url": "{{repoUrl}}"
     }
@@ -78,7 +78,7 @@ interface Config {
   "type": "template",
   "config": {
     "file": "README.md",
-    "template": "# {{repoName}}\n\nAuthor: {{author}}\n\nRepository: {{baseRepoUrl}}"
+    "template": "# {{projectName}}\n\nAuthor: {{author}}\n\nRepository: {{repoUrl}}"
   }
 }
 ```
@@ -129,7 +129,7 @@ interface Config {
   "config": {
     "file": ".github/workflows/ci.yml",
     "pattern": "old-repo-name",
-    "replacement": "{{repoName}}",
+    "replacement": "{{projectName}}",
     "flags": "g"
   }
 }
@@ -184,7 +184,7 @@ interface Config {
   "config": {
     "file": "CONTRIBUTING.md",
     "replacements": [
-      { "find": "template-name", "replace": "{{repoName}}" },
+      { "find": "template-name", "replace": "{{projectName}}" },
       { "find": "template-author", "replace": "{{author}}" }
     ]
   }
@@ -288,7 +288,7 @@ interface Config {
   "type": "rename",
   "config": {
     "from": "template.config.js",
-    "to": "{{repoName}}.config.js"
+    "to": "{{projectName}}.config.js"
   }
 }
 ```
@@ -300,7 +300,7 @@ interface Config {
   "type": "rename",
   "config": {
     "from": "example.config.js",
-    "to": "{{repoName}}.config.js",
+    "to": "{{projectName}}.config.js",
     "condition": "useCustomConfig === true"
   }
 }
@@ -470,11 +470,11 @@ let condition: string; // JavaScript expression that evaluates to true/false
 
 All task configs support template variable interpolation using `{{variable}}` syntax:
 
-- `{{repoName}}`
-- `{{repoOwner}}`
+- `{{projectName}}`
+- `{{owner}}`
 - `{{repoUrl}}`
 - `{{author}}`
-- `{{baseRepoUrl}}`
+- `{{repoUrl}}`
 - `{{orgName}}`
 - Custom variables from prompts (e.g., `{{keepExamplePackages}}`)
 

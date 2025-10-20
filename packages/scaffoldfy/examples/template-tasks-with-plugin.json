@@ -25,7 +25,7 @@
       "dependencies": ["setup-docker"],
       "config": {
         "file": "README.md",
-        "template": "# {{repoName}}\n\n## Development\n\n### With Docker\n\n```bash\ndocker-compose up\n```\n\n### Local\n\n```bash\npnpm install\npnpm dev\n```\n\n## Author\n\n{{author}}"
+        "template": "# {{projectName}}\n\n## Development\n\n### With Docker\n\n```bash\ndocker-compose up\n```\n\n### Local\n\n```bash\npnpm install\npnpm dev\n```\n\n## Author\n\n{{author}}"
       }
     }
   ]

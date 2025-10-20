@@ -69,7 +69,7 @@
       "type": "template",
       "config": {
         "file": "README.md",
-        "template": "# {{repoName}}\n\n> Built with template inheritance\n\nAuthor: {{author}}\n\n## Getting Started\n\n```bash\nnpm install\nnpm run dev\n```\n\n## Environment Variables\n\nSee `.env` file for configuration.\n\n## Docker\n\nBuild and run with Docker:\n\n```bash\ndocker-compose up\n```"
+        "template": "# {{projectName}}\n\n> Built with template inheritance\n\nAuthor: {{author}}\n\n## Getting Started\n\n```bash\nnpm install\nnpm run dev\n```\n\n## Environment Variables\n\nSee `.env` file for configuration.\n\n## Docker\n\nBuild and run with Docker:\n\n```bash\ndocker-compose up\n```"
       }
     }
   ]

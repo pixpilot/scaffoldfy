@@ -33,12 +33,10 @@ import {
 const TEST_DIR = path.join(process.cwd(), '__test_executors__');
 
 const mockConfig: InitConfig = {
-  repoName: 'test-repo',
-  repoOwner: 'test-owner',
+  projectName: 'test-repo',
+  owner: 'test-owner',
   repoUrl: 'https://github.com/test-owner/test-repo.git',
   author: 'Test Author',
-  baseRepoUrl: 'https://github.com/test-owner/test-repo',
-
   orgName: '@test-org',
 };
 
@@ -106,7 +104,7 @@ describe('task Executors', () => {
       const config: UpdateJsonConfig = {
         file: testFile,
         updates: {
-          name: '{{repoName}}',
+          name: '{{projectName}}',
           author: '{{author}}',
         },
       };
@@ -139,7 +137,7 @@ describe('task Executors', () => {
       await executeUpdateJson(config, mockConfig);
 
       const updatedContent = JSON.parse(fs.readFileSync(testFile, 'utf-8'));
-      expect(updatedContent.repository.url).toBe(mockConfig.repoUrl);
+      expect(updatedContent.repository.url).toBe(mockConfig['repoUrl']);
     });
 
     it('should handle non-string values', async () => {
@@ -176,12 +174,12 @@ describe('task Executors', () => {
       const config: UpdateJsonConfig = {
         file: testFile,
         updates: {
-          name: '{{repoName}}',
+          name: '{{projectName}}',
           repository: {
             type: 'git',
             url: '{{repoUrl}}',
           },
-          homepage: '{{baseRepoUrl}}',
+          homepage: '{{repoUrl}}',
         },
       };
 
@@ -193,7 +191,7 @@ describe('task Executors', () => {
         type: 'git',
         url: 'https://github.com/test-owner/test-repo.git',
       });
-      expect(updatedContent.homepage).toBe('https://github.com/test-owner/test-repo');
+      expect(updatedContent.homepage).toBe('https://github.com/test-owner/test-repo.git');
     });
 
     it('should execute when condition is true', async () => {
@@ -238,7 +236,7 @@ describe('task Executors', () => {
       const config: UpdateJsonConfig = {
         file: testFile,
         updates: { name: 'new-name' },
-        condition: 'repoName === "test-repo"',
+        condition: 'projectName === "test-repo"',
       };
 
       await executeUpdateJson(config, mockConfig);
@@ -253,7 +251,7 @@ describe('task Executors', () => {
       const testFile = 'README.md';
       const config: TemplateConfig = {
         file: testFile,
-        template: '# {{repoName}}\n\nAuthor: {{author}}',
+        template: '# {{projectName}}\n\nAuthor: {{author}}',
       };
 
       await executeTemplate(config, mockConfig);
@@ -269,7 +267,7 @@ describe('task Executors', () => {
 
       const config: TemplateConfig = {
         file: testFile,
-        template: 'New content for {{repoName}}',
+        template: 'New content for {{projectName}}',
       };
 
       await executeTemplate(config, mockConfig);
@@ -310,7 +308,7 @@ describe('task Executors', () => {
       const outputFile = 'output.txt';
 
       // Create template file using simple {{var}} syntax
-      fs.writeFileSync(templateFile, 'Repo: {{repoName}}\nAuthor: {{author}}');
+      fs.writeFileSync(templateFile, 'Repo: {{projectName}}\nAuthor: {{author}}');
 
       const config: TemplateConfig = {
         file: outputFile,
@@ -355,7 +353,7 @@ describe('task Executors', () => {
       const config: RegexReplaceConfig = {
         file: testFile,
         pattern: 'old-name',
-        replacement: '{{repoName}}',
+        replacement: '{{projectName}}',
         flags: 'g',
       };
 
@@ -443,8 +441,8 @@ describe('task Executors', () => {
       const config: ReplaceInFileConfig = {
         file: testFile,
         replacements: [
-          { find: 'OLD_REPO', replace: '{{repoName}}' },
-          { find: 'OLD_OWNER', replace: '{{repoOwner}}' },
+          { find: 'OLD_REPO', replace: '{{projectName}}' },
+          { find: 'OLD_OWNER', replace: '{{owner}}' },
         ],
       };
 
@@ -647,7 +645,7 @@ describe('task Executors', () => {
 
       const config: RenameConfig = {
         from: oldName,
-        to: '{{repoName}}.txt',
+        to: '{{projectName}}.txt',
       };
 
       await executeRename(config, mockConfig);

@@ -128,16 +128,16 @@ Use `{{variable}}` syntax anywhere in your task configs:
 ```json
 {
   "updates": {
-    "name": "{{repoName}}",
+    "name": "{{projectName}}",
     "author": "{{author}}",
     "repository": "{{repoUrl}}"
   }
 }
 ```
 
-**Built-in variables:** `repoName`, `repoOwner`, `repoUrl`, `author`, `baseRepoUrl`, `orgName`
+**All variables come from prompts:** Define prompts with `"global": true` to create variables available across all tasks.
 
-**Custom variables:** Any prompt values you define (e.g., `{{projectName}}`, `{{port}}`)
+**Example:** `{{projectName}}`, `{{author}}`, `{{repoUrl}}`, `{{port}}`, etc.
 
 ### Handlebars Templates
 
@@ -161,7 +161,7 @@ Create powerful file templates with Handlebars support. Files with `.hbs` extens
 
 ```handlebars
 #
-{{repoName}}
+{{projectName}}
 
 {{#if description}}
   >
@@ -286,7 +286,7 @@ Control execution order:
       "config": {
         "file": "package.json",
         "updates": {
-          "name": "{{repoName}}",
+          "name": "{{projectName}}",
           "author": "{{author}}"
         }
       }

@@ -138,7 +138,7 @@ const customTasks: TaskDefinition[] = [
     config: {
       file: 'package.json',
       updates: {
-        name: '{{repoName}}',
+        name: '{{projectName}}',
         author: '{{author}}',
         version: '0.1.0',
       },
@@ -153,7 +153,7 @@ const customTasks: TaskDefinition[] = [
     type: 'template',
     config: {
       file: 'README.md',
-      template: `# {{repoName}}
+      template: `# {{projectName}}
 
 Created by {{author}}
 
@@ -188,7 +188,7 @@ await runWithTasks(customTasks);
       "config": {
         "file": "package.json",
         "updates": {
-          "name": "{{repoName}}"
+          "name": "{{projectName}}"
         }
       }
     }
@@ -315,11 +315,11 @@ The JSON schema will be automatically detected if the `$schema` property is set 
 
 Built-in variables available for interpolation in any task config:
 
-- `{{repoName}}` - Repository name
-- `{{repoOwner}}` - Repository owner/organization
+- `{{projectName}}` - Repository name
+- `{{owner}}` - Repository owner/organization
 - `{{repoUrl}}` - Full repository URL
 - `{{author}}` - Author name
-- `{{baseRepoUrl}}` - Base repository URL (without .git)
+- `{{repoUrl}}` - Base repository URL (without .git)
 - `{{orgName}}` - Organization name with @ prefix
 
 You can also use any custom variables defined through prompts:
@@ -452,7 +452,7 @@ A task lists a dependency that doesn't exist. Verify that all task IDs in `depen
 
 Ensure you're using the correct syntax: `{{variableName}}` and that the variable:
 
-- Is a built-in variable (like `repoName`, `author`, etc.)
+- Is a built-in variable (like `projectName`, `author`, etc.)
 - Or is defined in a prompt with the matching `id`
 - Or is marked as `global: true` if used in a different task
 

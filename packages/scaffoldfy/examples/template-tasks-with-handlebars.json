@@ -9,7 +9,7 @@
       "type": "template",
       "config": {
         "file": "README.md",
-        "template": "# {{repoName}}\n\n> Created by {{author}}\n\n## Repository\n\n- Owner: {{repoOwner}}\n- URL: {{repoUrl}}\n"
+        "template": "# {{projectName}}\n\n> Created by {{author}}\n\n## Repository\n\n- Owner: {{owner}}\n- URL: {{repoUrl}}\n"
       }
     },
     {
@@ -33,7 +33,7 @@
       "type": "template",
       "config": {
         "file": "SIMPLE.md",
-        "template": "# {{repoName}}\nAuthor: {{author}}\n"
+        "template": "# {{projectName}}\nAuthor: {{author}}\n"
       }
     },
     {
