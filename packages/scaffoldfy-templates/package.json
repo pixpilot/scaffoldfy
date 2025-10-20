@@ -1,0 +1,39 @@
+{
+  "name": "@pixpilot/scaffoldfy-templates",
+  "type": "module",
+  "version": "0.0.0",
+  "packageManager": "pnpm@10.17.0",
+  "author": "PixPilot <m.doaie@hotmail.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pixpilot/scaffoldfy.git",
+    "directory": "packages/templates"
+  },
+  "keywords": [
+    "scaffoldfy",
+    "templates",
+    "scaffolding",
+    "project-init"
+  ],
+  "exports": {
+    "./project-info": "./project-info/template-tasks.json",
+    "./monorepo-base": "./monorepo-base/template-tasks.json"
+  },
+  "files": [
+    "*/*.hbs",
+    "*/README.md",
+    "*/template-tasks.json"
+  ],
+  "scripts": {
+    "lint": "eslint",
+    "format": "prettier --check . --ignore-path ../../.gitignore --ignore-path ../../.prettierignore"
+  },
+  "devDependencies": {
+    "@internal/eslint-config": "workspace:*",
+    "@internal/prettier-config": "workspace:*",
+    "@types/node": "catalog:dev",
+    "eslint": "catalog:dev"
+  },
+  "prettier": "@internal/prettier-config"
+}

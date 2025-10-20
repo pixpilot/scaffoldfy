@@ -1,0 +1,87 @@
+{
+  "$schema": "https://unpkg.com/@pixpilot/scaffoldfy/schema",
+  "description": "Initialization tasks for pnpm-turbo-monorepo-template",
+
+  "prompts": [
+    {
+      "id": "projectName",
+      "type": "input",
+      "required": true,
+      "message": "What is your project name?",
+      "default": {
+        "type": "exec",
+        "value": "node -p \"require('path').basename(process.cwd())\""
+      }
+    },
+    {
+      "id": "repoOwner",
+      "type": "input",
+      "message": "Repository owner (GitHub username or organization)",
+      "default": {
+        "type": "exec",
+        "value": "$url = git config --get remote.origin.url; if ($url -match 'github.com[:/](.+?)/') { $matches[1] } else { '' }"
+      },
+      "required": true
+    },
+    {
+      "id": "orgName",
+      "type": "input",
+      "message": "Organization name for packages (used in package scopes)",
+      "default": {
+        "type": "exec",
+        "value": "$url = git config --get remote.origin.url; if ($url -match 'github.com[:/](.+?)/') { $matches[1] } else { '' }"
+      },
+      "required": true
+    },
+    {
+      "id": "author",
+      "type": "input",
+      "message": "Author name",
+      "default": {
+        "type": "exec",
+        "value": "git config user.name"
+      },
+      "required": true
+    },
+    {
+      "id": "authorEmail",
+      "type": "input",
+      "message": "Author email",
+      "default": {
+        "type": "exec",
+        "value": "git config user.email"
+      },
+      "required": false
+    },
+    {
+      "id": "repoUrl",
+      "type": "input",
+      "message": "Repository URL",
+      "default": {
+        "type": "exec",
+        "value": "git config --get remote.origin.url"
+      },
+      "required": false
+    },
+    {
+      "id": "repoName",
+      "type": "input",
+      "message": "Repository name",
+      "default": {
+        "type": "exec",
+        "value": "$url = git config --get remote.origin.url; $parts = $url -split '/'; $repo = $parts[-1]; $repo.Replace('.git', '')"
+      },
+      "required": true
+    },
+    {
+      "id": "baseRepoUrl",
+      "type": "input",
+      "message": "Base repository URL",
+      "default": {
+        "type": "exec",
+        "value": "(git config --get remote.origin.url).Replace('.git', '')"
+      },
+      "required": false
+    }
+  ]
+}
