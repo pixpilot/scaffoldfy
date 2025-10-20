@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy-templates
 
+## 0.1.2
+
+### Patch Changes
+
+- move public access configuration to publishConfig
+
 ## 0.1.1
 
 ### Patch Changes
