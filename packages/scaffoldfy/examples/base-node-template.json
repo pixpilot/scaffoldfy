@@ -27,7 +27,7 @@
           "message": "Repository URL",
           "global": true,
           "default": {
-            "type": "execute",
+            "type": "exec",
             "value": "git config --get remote.origin.url"
           }
         }

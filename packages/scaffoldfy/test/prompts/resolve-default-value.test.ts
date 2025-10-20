@@ -24,21 +24,21 @@ describe('executable default values', () => {
     expect(result).toBe('static-value');
   });
 
-  it('should resolve explicit value type defaults', async () => {
+  it('should resolve explicit static type defaults', async () => {
     const defaultValue: DefaultValue<string> = {
-      type: 'value',
+      type: 'static',
       value: 'explicit-value',
     };
     const result = await resolveDefaultValue(defaultValue, 'test-prompt');
     expect(result).toBe('explicit-value');
   });
 
-  it('should execute command for execute type defaults', async () => {
+  it('should execute command for exec type defaults', async () => {
     const mockExec = vi.mocked(execSync);
     mockExec.mockReturnValue('command-output\n');
 
     const defaultValue: DefaultValue<string> = {
-      type: 'execute',
+      type: 'exec',
       value: 'echo "test"',
     };
     const result = await resolveDefaultValue(defaultValue, 'test-prompt');
@@ -55,7 +55,7 @@ describe('executable default values', () => {
     mockExec.mockReturnValue('42\n');
 
     const defaultValue: DefaultValue<number> = {
-      type: 'execute',
+      type: 'exec',
       value: 'echo "42"',
     };
     const result = await resolveDefaultValue(defaultValue, 'test-prompt');
@@ -67,7 +67,7 @@ describe('executable default values', () => {
     mockExec.mockReturnValue('true\n');
 
     const defaultValue: DefaultValue<boolean> = {
-      type: 'execute',
+      type: 'exec',
       value: 'echo "true"',
     };
     const result = await resolveDefaultValue(defaultValue, 'test-prompt');
@@ -79,7 +79,7 @@ describe('executable default values', () => {
     mockExec.mockReturnValue('{"key":"value"}\n');
 
     const defaultValue: DefaultValue<object> = {
-      type: 'execute',
+      type: 'exec',
       value: 'echo \'{"key":"value"}\'',
     };
     const result = await resolveDefaultValue(defaultValue, 'test-prompt');
@@ -93,16 +93,16 @@ describe('executable default values', () => {
     });
 
     const defaultValue: DefaultValue<string> = {
-      type: 'execute',
+      type: 'exec',
       value: 'failing-command',
     };
     const result = await resolveDefaultValue(defaultValue, 'test-prompt');
     expect(result).toBeUndefined();
   });
 
-  it('should return undefined for execute type with non-string command', async () => {
+  it('should return undefined for exec type with non-string command', async () => {
     const defaultValue = {
-      type: 'execute',
+      type: 'exec',
       value: 123,
     } as unknown as DefaultValue<string>;
     const result = await resolveDefaultValue(defaultValue, 'test-prompt');
@@ -119,7 +119,7 @@ describe('executable default values', () => {
     mockExec.mockReturnValue('main\n');
 
     const defaultValue: DefaultValue<string> = {
-      type: 'execute',
+      type: 'exec',
       value: 'git branch --show-current',
     };
     const result = await resolveDefaultValue(defaultValue, 'test-prompt');
@@ -131,7 +131,7 @@ describe('executable default values', () => {
     mockExec.mockReturnValue('9.6.0\n');
 
     const defaultValue: DefaultValue<string> = {
-      type: 'execute',
+      type: 'exec',
       value: 'npm --version',
     };
     const result = await resolveDefaultValue(defaultValue, 'test-prompt');
@@ -143,7 +143,7 @@ describe('executable default values', () => {
     mockExec.mockReturnValue('v20.10.0\n');
 
     const defaultValue: DefaultValue<string> = {
-      type: 'execute',
+      type: 'exec',
       value: 'node --version',
     };
     const result = await resolveDefaultValue(defaultValue, 'test-prompt');

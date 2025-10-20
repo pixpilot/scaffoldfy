@@ -14,7 +14,7 @@
           "type": "input",
           "message": "What is your project name?",
           "default": {
-            "type": "execute",
+            "type": "exec",
             "value": "node -p \"require('path').basename(process.cwd())\""
           },
           "required": true,
@@ -25,7 +25,7 @@
           "type": "input",
           "message": "Author name",
           "default": {
-            "type": "execute",
+            "type": "exec",
             "value": "git config user.name"
           },
           "global": true
@@ -35,7 +35,7 @@
           "type": "input",
           "message": "Author email",
           "default": {
-            "type": "execute",
+            "type": "exec",
             "value": "git config user.email"
           },
           "global": true
@@ -50,7 +50,7 @@
             { "name": "yarn", "value": "yarn" }
           ],
           "default": {
-            "type": "execute",
+            "type": "exec",
             "value": "command -v pnpm > /dev/null && echo 'pnpm' || (command -v yarn > /dev/null && echo 'yarn' || echo 'npm')"
           },
           "global": true
@@ -60,7 +60,7 @@
           "type": "input",
           "message": "Node.js version (for engines field)",
           "default": {
-            "type": "execute",
+            "type": "exec",
             "value": "node --version"
           }
         }
@@ -125,7 +125,7 @@
           "type": "confirm",
           "message": "Initialize git repository?",
           "default": {
-            "type": "execute",
+            "type": "exec",
             "value": "test -d .git && echo 'false' || echo 'true'"
           }
         },
@@ -134,7 +134,7 @@
           "type": "input",
           "message": "What branch name to use?",
           "default": {
-            "type": "execute",
+            "type": "exec",
             "value": "git config init.defaultBranch || echo 'main'"
           }
         }

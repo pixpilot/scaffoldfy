@@ -2,6 +2,20 @@
 
 Complete reference for all available task types in scaffoldfy.
 
+## Conditional Execution
+
+Most task types support a `condition` field that determines whether the task should execute. The condition is a JavaScript expression evaluated at runtime with access to all prompt values and configuration variables.
+
+**Type:** `ConditionExpression` (string)
+
+**Examples:**
+- `"useTypeScript === true"`
+- `"nodeVersion >= 16 && includeTests === true"`
+- `"packageManager === 'pnpm'"`
+- `"!keepExampleCode"`
+
+If the condition evaluates to `false`, the task will be skipped. If omitted, the task will always execute (when enabled).
+
 ## update-json
 
 Update JSON files with new values. Supports nested properties using dot notation.

@@ -14,21 +14,24 @@ export type PromptType = 'input' | 'select' | 'confirm' | 'password' | 'number';
 
 /**
  * Default value types for prompts
- * - 'value': Static value
- * - 'execute': Execute a command to get the value
+ * - 'static': Static value provided directly
+ * - 'exec': Execute a command to get the value dynamically
  */
-export type DefaultValueType = 'value' | 'execute';
+export type DefaultValueType = 'static' | 'exec';
 
 /**
  * Default value configuration for prompts
  */
 export interface DefaultValueConfig<T = string | number | boolean> {
   type: DefaultValueType;
-  value: T | string; // For 'value' type: the static value; For 'execute' type: the command to execute
+  value: T | string; // For 'static' type: the static value; For 'exec' type: the command to execute
 }
 
 /**
- * Type for default values that can be either static or executable
+ * Type for default values that can be either static or executable.
+ * - For simple static values, pass the value directly (e.g., "default-name", 42, true)
+ * - For executable defaults, use { type: 'exec', value: 'command' }
+ * - For explicit static values, use { type: 'static', value: yourValue }
  */
 export type DefaultValue<T = string | number | boolean> = T | DefaultValueConfig<T>;
 
@@ -66,6 +69,15 @@ export interface ConfirmPrompt extends BasePrompt {
 
 export type PromptDefinition = InputPrompt | NumberPrompt | SelectPrompt | ConfirmPrompt;
 
+/**
+ * JavaScript expression evaluated at runtime to determine if a task or operation should execute.
+ * Has access to all prompt values and config variables.
+ * @example "useTypeScript === true"
+ * @example "nodeVersion >= 16 && includeTests === true"
+ * @example "packageManager === 'pnpm'"
+ */
+export type ConditionExpression = string;
+
 export type TaskType =
   | 'update-json'
   | 'template'
@@ -88,7 +100,17 @@ export interface TaskDefinition {
   required: boolean;
   enabled: boolean;
   type: TaskType;
-  config: unknown; // Allow any config, checked at runtime
+  // Task-specific configuration object, validated at runtime
+  config:
+    | UpdateJsonConfig
+    | TemplateConfig
+    | RegexReplaceConfig
+    | ReplaceInFileConfig
+    | DeleteConfig
+    | RenameConfig
+    | GitInitConfig
+    | ExecConfig
+    | Record<string, unknown>;
   dependencies?: string[]; // IDs of tasks that must run before this one
   rollback?: RollbackConfig; // How to rollback if something fails
   prompts?: PromptDefinition[]; // Optional prompts to collect before running task
@@ -97,14 +119,14 @@ export interface TaskDefinition {
 export interface UpdateJsonConfig {
   file: string;
   updates: Record<string, unknown>;
-  condition?: string;
+  condition?: ConditionExpression;
 }
 
 export interface TemplateConfig {
   file: string;
   template?: string; // Inline template string (supports simple {{variable}} syntax)
   templateFile?: string; // Path to external template file (relative to project root). .hbs files use Handlebars automatically
-  condition?: string;
+  condition?: ConditionExpression;
 }
 
 export interface RegexReplaceConfig {
@@ -112,7 +134,7 @@ export interface RegexReplaceConfig {
   pattern: string;
   flags?: string;
   replacement: string;
-  condition?: string;
+  condition?: ConditionExpression;
 }
 
 export interface ReplaceInFileConfig {
@@ -121,31 +143,31 @@ export interface ReplaceInFileConfig {
     find: string;
     replace: string;
   }>;
-  condition?: string;
+  condition?: ConditionExpression;
 }
 
 export interface DeleteConfig {
   paths: string[];
-  condition?: string;
+  condition?: ConditionExpression;
 }
 
 export interface RenameConfig {
   from: string;
   to: string;
-  condition?: string;
+  condition?: ConditionExpression;
 }
 
 export interface GitInitConfig {
   removeExisting: boolean;
   initialCommit: boolean;
   message?: string;
-  condition?: string;
+  condition?: ConditionExpression;
 }
 
 export interface ExecConfig {
   command: string;
   cwd?: string;
-  condition?: string;
+  condition?: ConditionExpression;
 }
 
 export interface InitializationMetadata {

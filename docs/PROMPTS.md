@@ -41,7 +41,7 @@ Prompts enable you to:
       "message": "Author name",
       "global": true,
       "default": {
-        "type": "execute",
+        "type": "exec",
         "value": "git config --get user.name"
       }
     },
@@ -51,7 +51,7 @@ Prompts enable you to:
       "message": "Repository URL",
       "global": true,
       "default": {
-        "type": "execute",
+        "type": "exec",
         "value": "git config --get remote.origin.url"
       }
     }
@@ -179,7 +179,7 @@ Execute a command to generate the default value:
   "type": "input",
   "message": "Project name",
   "default": {
-    "type": "execute",
+    "type": "exec",
     "value": "basename $(pwd)"
   }
 }
@@ -208,7 +208,7 @@ Get the current git branch:
   "type": "input",
   "message": "Branch name",
   "default": {
-    "type": "execute",
+    "type": "exec",
     "value": "git branch --show-current"
   }
 }
@@ -222,7 +222,7 @@ Get the git remote URL:
   "type": "input",
   "message": "Repository URL",
   "default": {
-    "type": "execute",
+    "type": "exec",
     "value": "git config --get remote.origin.url"
   }
 }
@@ -236,7 +236,7 @@ Get the current git user name:
   "type": "input",
   "message": "Author name",
   "default": {
-    "type": "execute",
+    "type": "exec",
     "value": "git config user.name"
   }
 }
@@ -252,7 +252,7 @@ Detect the Node.js version:
   "type": "input",
   "message": "Node.js version",
   "default": {
-    "type": "execute",
+    "type": "exec",
     "value": "node --version"
   }
 }
@@ -271,7 +271,7 @@ Detect which package manager is available:
     { "name": "yarn", "value": "yarn" }
   ],
   "default": {
-    "type": "execute",
+    "type": "exec",
     "value": "command -v pnpm > /dev/null && echo 'pnpm' || (command -v yarn > /dev/null && echo 'yarn' || echo 'npm')"
   }
 }
@@ -287,7 +287,7 @@ Check if running in CI:
   "type": "confirm",
   "message": "Running in CI?",
   "default": {
-    "type": "execute",
+    "type": "exec",
     "value": "test -n \"$CI\" && echo 'true' || echo 'false'"
   }
 }
@@ -301,7 +301,7 @@ Check if a directory exists:
   "type": "confirm",
   "message": "Include tests?",
   "default": {
-    "type": "execute",
+    "type": "exec",
     "value": "test -d tests && echo 'true' || echo 'false'"
   }
 }
@@ -315,7 +315,7 @@ Get the current directory name:
   "type": "input",
   "message": "Project name",
   "default": {
-    "type": "execute",
+    "type": "exec",
     "value": "basename $(pwd)"
   }
 }
@@ -336,7 +336,7 @@ Get the operating system:
     { "name": "Windows", "value": "win32" }
   ],
   "default": {
-    "type": "execute",
+    "type": "exec",
     "value": "node -p \"process.platform\""
   }
 }
@@ -354,7 +354,7 @@ Find an available port:
   "min": 1024,
   "max": 65535,
   "default": {
-    "type": "execute",
+    "type": "exec",
     "value": "node -e \"require('net').createServer().listen(0, () => { console.log(require('net').createServer().address().port); process.exit(); })\""
   }
 }
@@ -368,7 +368,7 @@ Or use a simpler approach:
   "type": "number",
   "message": "Development server port",
   "default": {
-    "type": "execute",
+    "type": "exec",
     "value": "echo 3000"
   }
 }
@@ -421,7 +421,7 @@ For cross-platform compatibility, prefer using Node.js commands or Git commands 
   "type": "input",
   "message": "Project name",
   "default": {
-    "type": "execute",
+    "type": "exec",
     "value": "node -p \"require('path').basename(process.cwd())\""
   }
 }
@@ -449,7 +449,7 @@ Here's a complete example showing how to use prompts with executable defaults in
           "type": "input",
           "message": "Application name",
           "default": {
-            "type": "execute",
+            "type": "exec",
             "value": "node -p \"require('path').basename(process.cwd())\""
           },
           "required": true
@@ -459,7 +459,7 @@ Here's a complete example showing how to use prompts with executable defaults in
           "type": "input",
           "message": "Author name",
           "default": {
-            "type": "execute",
+            "type": "exec",
             "value": "git config user.name"
           }
         },
@@ -468,7 +468,7 @@ Here's a complete example showing how to use prompts with executable defaults in
           "type": "input",
           "message": "Author email",
           "default": {
-            "type": "execute",
+            "type": "exec",
             "value": "git config user.email"
           }
         },
@@ -488,7 +488,7 @@ Here's a complete example showing how to use prompts with executable defaults in
             { "name": "yarn", "value": "yarn" }
           ],
           "default": {
-            "type": "execute",
+            "type": "exec",
             "value": "command -v pnpm > /dev/null && echo 'pnpm' || echo 'npm'"
           }
         },
@@ -770,3 +770,4 @@ scaffoldfy --dry-run
 ```
 
 The CLI will automatically detect prompts in your tasks and collect user input before executing the tasks.
+

@@ -79,11 +79,11 @@
                       "properties": {
                         "type": {
                           "type": "string",
-                          "enum": ["value", "execute"],
-                          "description": "Type of default value. 'value' for static values, 'execute' for command execution."
+                          "enum": ["static", "exec"],
+                          "description": "Type of default value. 'static' for explicit static values, 'exec' for command execution."
                         },
                         "value": {
-                          "description": "For 'value' type: the static value. For 'execute' type: the shell command to execute. Commands can be any shell command including git, npm, node, etc. The command output will be trimmed and auto-parsed as JSON, number, or boolean when applicable."
+                          "description": "For 'static' type: the static value. For 'exec' type: the shell command to execute. Commands can be any shell command including git, npm, node, etc. The command output will be trimmed and auto-parsed as JSON, number, or boolean when applicable."
                         }
                       }
                     }

@@ -32,13 +32,10 @@ export async function resolveDefaultValue<T = string | number | boolean>(
   // Check if it's a DefaultValueConfig
   const config = defaultValue as { type?: string; value?: unknown };
 
-  if (config.type === 'execute') {
+  if (config.type === 'exec') {
     const command = config.value;
     if (typeof command !== 'string') {
-      log(
-        `Prompt "${promptId}": execute default value must have a string command`,
-        'error',
-      );
+      log(`Prompt "${promptId}": exec default value must have a string command`, 'error');
       return undefined;
     }
 
@@ -84,7 +81,7 @@ export async function resolveDefaultValue<T = string | number | boolean>(
       );
       return undefined;
     }
-  } else if (config.type === 'value') {
+  } else if (config.type === 'static') {
     return config.value as T;
   }
 

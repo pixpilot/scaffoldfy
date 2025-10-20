@@ -37,13 +37,13 @@ describe('resolveAllDefaultValues', () => {
         id: 'exec1',
         type: 'input',
         message: 'Exec 1',
-        default: { type: 'execute', value: 'echo "1"' },
+        default: { type: 'exec', value: 'echo "1"' },
       },
       {
         id: 'exec2',
         type: 'input',
         message: 'Exec 2',
-        default: { type: 'execute', value: 'echo "2"' },
+        default: { type: 'exec', value: 'echo "2"' },
       },
       {
         id: 'no-default',
@@ -70,7 +70,7 @@ describe('resolveAllDefaultValues', () => {
         id: 'port',
         type: 'number',
         message: 'Port',
-        default: { type: 'execute', value: 'echo "3000"' },
+        default: { type: 'exec', value: 'echo "3000"' },
       },
     ];
 
@@ -92,7 +92,7 @@ describe('resolveAllDefaultValues', () => {
           { name: 'pnpm', value: 'pnpm' },
         ],
         default: {
-          type: 'execute',
+          type: 'exec',
           value: 'which pnpm > /dev/null && echo "pnpm" || echo "npm"',
         },
       },
@@ -112,7 +112,7 @@ describe('resolveAllDefaultValues', () => {
         type: 'confirm',
         message: 'Has tests',
         default: {
-          type: 'execute',
+          type: 'exec',
           value: 'test -d tests && echo "true" || echo "false"',
         },
       },
