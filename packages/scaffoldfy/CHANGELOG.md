@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy
 
+## 0.5.2
+
+### Patch Changes
+
+- Adjusted README to reflect the new package name
+
 ## 0.5.1
 
 ### Patch Changes
