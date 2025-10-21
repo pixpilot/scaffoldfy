@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy
 
+## 0.12.0
+
+### Minor Changes
+
+- add validation for unique IDs across tasks, variables, and prompts
+
 ## 0.11.0
 
 ### Minor Changes
