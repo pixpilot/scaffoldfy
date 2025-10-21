@@ -8,7 +8,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/pixpilot/scaffoldfy.git",
-    "directory": "packages/templates"
+    "directory": "packages/scaffoldfy-templates"
   },
   "keywords": [
     "scaffoldfy",
@@ -17,12 +17,12 @@
     "project-init"
   ],
   "exports": {
-    "./project-info": "./project-info/template-tasks.json"
+    "./project-info": "./project-info/template.json"
   },
   "files": [
     "*/*.hbs",
     "*/README.md",
-    "*/template-tasks.json"
+    "*/template.json"
   ],
   "scripts": {
     "lint": "eslint",
