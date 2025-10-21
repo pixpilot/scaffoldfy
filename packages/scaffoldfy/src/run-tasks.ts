@@ -1,11 +1,7 @@
 /* eslint-disable no-await-in-loop */
 /* eslint-disable no-continue */
 import type { PromptDefinition, TaskDefinition, VariableDefinition } from './types.js';
-import { execSync } from 'node:child_process';
-import fs from 'node:fs';
-import path from 'node:path';
 import process from 'node:process';
-import { promisify } from 'node:util';
 import { createInitialConfig } from './config.js';
 import { displayTasksDiff } from './dry-run.js';
 import { callHook } from './plugin.js';
@@ -16,14 +12,12 @@ import {
 } from './prompts/index.js';
 import { runTask } from './task-executors.js';
 import { topologicalSort } from './task-resolver.js';
-import { evaluateEnabled, log, promptYesNo } from './utils.js';
+import { evaluateEnabled, log } from './utils.js';
 import {
   collectVariables,
   resolveAllVariableValues,
   validateVariables,
 } from './variables/index.js';
-
-const readFile = promisify(fs.readFile);
 
 // =================================================================
 // Main Execution
@@ -241,28 +235,5 @@ export async function runTasks(
     log('Next steps:', 'info');
     log('1. Review the changes made to your project', 'info');
     log('2. Commit the changes to git', 'info');
-
-    // Check if turbo:gen:init exists in package.json
-    const packageJsonPath = path.join(process.cwd(), 'package.json');
-    if (fs.existsSync(packageJsonPath)) {
-      const packageJson = JSON.parse(await readFile(packageJsonPath, 'utf-8')) as {
-        scripts?: Record<string, string>;
-      };
-
-      if (packageJson.scripts?.['turbo:gen:init'] != null) {
-        log('3. Run "pnpm run turbo:gen:init" to create your first package', 'info');
-
-        // Ask if user wants to run it now
-        const runNow = await promptYesNo(
-          'Would you like to run turbo:gen:init now?',
-          true,
-        );
-
-        if (runNow) {
-          log('Running turbo:gen:init...', 'info');
-          execSync('pnpm run turbo:gen:init', { stdio: 'inherit' });
-        }
-      }
-    }
   }
 }
