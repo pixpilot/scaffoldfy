@@ -1,6 +1,6 @@
 {
   "$schema": "https://unpkg.com/@pixpilot/scaffoldfy/schema",
-  "description": "Initialization tasks for pnpm-turbo-monorepo-template",
+  "description": "Project information prompts for pnpm-turbo-monorepo-template",
 
   "prompts": [
     {
@@ -31,7 +31,7 @@
         "type": "exec",
         "value": "$url = git config --get remote.origin.url; if ($url -match 'github.com[:/](.+?)/') { $matches[1] } else { '' }"
       },
-      "required": true
+      "required": false
     },
     {
       "id": "author",

@@ -160,7 +160,6 @@ export async function collectPrompts(
     }
   }
 
-  console.log('');
   return answers;
 }
 /* eslint-enable no-await-in-loop */

@@ -473,7 +473,6 @@ export async function displayTasksDiff(
   tasks: TaskDefinition[],
   initConfig: InitConfig,
 ): Promise<void> {
-  console.log('');
   console.log(
     `${colors.blue}═══════════════════════════════════════════════════════${colors.reset}`,
   );
@@ -481,19 +480,16 @@ export async function displayTasksDiff(
   console.log(
     `${colors.blue}═══════════════════════════════════════════════════════${colors.reset}`,
   );
-  console.log('');
 
   /* eslint-disable no-await-in-loop */
   for (const task of tasks) {
     console.log(`${colors.cyan}▶ Task: ${task.name}${colors.reset}`);
     console.log(`${colors.gray}  ${task.description}${colors.reset}`);
-    console.log('');
 
     const diff = await getTaskDiff(task, initConfig);
     console.log(diff);
-    console.log('');
+
     console.log(`${colors.gray}${'─'.repeat(SEPARATOR_LENGTH)}${colors.reset}`);
-    console.log('');
   }
   /* eslint-enable no-await-in-loop */
 
@@ -504,5 +500,4 @@ export async function displayTasksDiff(
   console.log(
     `${colors.blue}═══════════════════════════════════════════════════════${colors.reset}`,
   );
-  console.log('');
 }

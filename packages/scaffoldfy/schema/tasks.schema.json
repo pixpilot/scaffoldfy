@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "Template Initialization Tasks",
-  "description": "Configuration for template initialization cleanup tasks",
+  "title": "Template Tasks Configuration",
+  "description": "Configuration for template task automation and cleanup",
   "type": "object",
   "properties": {
     "extends": {
@@ -22,7 +22,7 @@
     },
     "variables": {
       "type": "array",
-      "description": "Top-level global variables available to all tasks. Variables are resolved once at initialization and do not require user interaction.",
+      "description": "Top-level global variables available to all tasks. Variables are resolved once at startup and do not require user interaction.",
       "items": {
         "type": "object",
         "required": ["id", "value"],
@@ -309,7 +309,7 @@
           },
           "variables": {
             "type": "array",
-            "description": "Task-scoped variables available only to this specific task. Variables are resolved once at initialization and do not require user interaction. For variables shared across tasks, use top-level variables instead.",
+            "description": "Task-scoped variables available only to this specific task. Variables are resolved once at startup and do not require user interaction. For variables shared across tasks, use top-level variables instead.",
             "items": {
               "type": "object",
               "required": ["id", "value"],

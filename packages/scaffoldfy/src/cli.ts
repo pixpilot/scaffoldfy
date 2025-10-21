@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * CLI for template initialization
+ * CLI for task automation
  */
 
 import type { PromptDefinition, TaskDefinition, VariableDefinition } from './types.js';
@@ -39,12 +39,12 @@ try {
 
 program
   .name('scaffoldfy')
-  .description('Initialize and configure project templates with customizable tasks')
+  .description('Automate project setup and configuration with customizable tasks')
   .version(version);
 
 program
   .option('--dry-run', 'Run in dry mode without making any changes')
-  .option('--force', 'Force re-initialization even if already initialized')
+  .option('--force', 'Force execution even if checks fail')
   .option(
     '--tasks-file <path>',
     'Path to JSON file containing task definitions',
@@ -137,13 +137,13 @@ program
 
       if (tasks.length === 0 && !hasGlobalData) {
         log('❌ No tasks defined', 'error');
-        console.log('');
+
         log('Please provide tasks using one of these methods:', 'info');
         log('  1. Create a template-tasks.json file in the current directory', 'info');
         log('  2. Create a template-tasks.ts file in the current directory', 'info');
         log('  3. Use --tasks-file option to specify a different JSON file', 'info');
         log('  4. Use --tasks-ts option to specify a different TypeScript file', 'info');
-        console.log('');
+
         log('Example JSON structure:', 'info');
         const JSON_INDENT = 2;
         console.log(
@@ -186,12 +186,9 @@ program
             JSON_INDENT,
           ),
         );
-        console.log('');
 
         process.exit(EXIT_CODE_ERROR);
       }
-
-      console.log('');
 
       if (tasks.length === 0) {
         log(
@@ -202,9 +199,7 @@ program
         log(`Loaded ${tasks.length} task(s)`, 'success');
       }
 
-      console.log('');
-
-      // Run initialization with tasks
+      // Run task execution
       await runWithTasks(tasks, {
         dryRun: options.dryRun,
         force: options.force,

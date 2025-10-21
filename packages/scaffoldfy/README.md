@@ -1,6 +1,6 @@
 # @pixpilot/scaffoldfy
 
-A flexible and powerful template initialization utility for automating project setup, cleanup, and configuration tasks.
+A flexible and powerful task automation utility for project setup, cleanup, and configuration.
 
 ## Features
 

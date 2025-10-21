@@ -14,7 +14,6 @@ import {
   resolveAllDefaultValues,
   validatePrompts,
 } from './prompts/index.js';
-import { loadInitializationState, saveInitializationState } from './state.js';
 import { runTask } from './task-executors.js';
 import { topologicalSort } from './task-resolver.js';
 import { evaluateEnabled, log, promptYesNo } from './utils.js';
@@ -31,9 +30,9 @@ const readFile = promisify(fs.readFile);
 // ============================================================================
 
 /**
- * Core initialization logic shared by both main() and runWithTasks()
+ * Core task execution logic shared by both main() and runWithTasks()
  */
-export async function runInitialization(
+export async function runTasks(
   tasks: TaskDefinition[],
   options: {
     dryRun: boolean;
@@ -43,35 +42,6 @@ export async function runInitialization(
     globalPrompts?: PromptDefinition[];
   },
 ): Promise<void> {
-  // Check if already initialized
-  const existingState = loadInitializationState();
-
-  if (existingState && !options.force) {
-    console.log('');
-    log('⚠️  This template has already been initialized!', 'warn');
-    console.log('');
-    log(
-      `  Initialized at: ${new Date(existingState.initializedAt).toLocaleString()}`,
-      'info',
-    );
-
-    console.log('');
-
-    const shouldReInit = await promptYesNo(
-      'Do you want to re-initialize? This may cause issues',
-      false,
-    );
-
-    if (!shouldReInit) {
-      log('Initialization cancelled', 'info');
-      process.exit(0);
-    }
-
-    console.log('');
-    log('⚠️  Proceeding with re-initialization...', 'warn');
-    console.log('');
-  }
-
   // Get enabled tasks (evaluate conditional enabled)
   // Initially evaluate with empty config, will re-evaluate later with full config
   const enabledTasks = tasks.filter((task) =>
@@ -81,19 +51,15 @@ export async function runInitialization(
   // Sort tasks by dependencies
   log('Resolving task dependencies...', 'info');
   const sortedTasks = topologicalSort(enabledTasks);
-  console.log('');
 
   // Create initial empty configuration
-  log('Welcome to the template initialization script!', 'info');
-  console.log('');
+  log("Welcome! Let's execute your tasks.", 'info');
 
   if (options.dryRun) {
     log('🔍 DRY RUN MODE - No changes will be made', 'warn');
-    console.log('');
   }
 
-  log('This will initialize your project based on the defined tasks.', 'info');
-  console.log('');
+  log('This will execute your project tasks based on the defined configuration.', 'info');
 
   const config = createInitialConfig();
 
@@ -122,14 +88,13 @@ export async function runInitialization(
     if (variableErrors.length > 0) {
       log('❌ Variable validation errors:', 'error');
       variableErrors.forEach((err) => log(`  - ${err}`, 'error'));
-      console.log('');
+
       process.exit(1);
     }
 
     // Resolve all variable values (execute commands in parallel)
     log('Resolving variable values...', 'info');
     const resolvedVariableValues = await resolveAllVariableValues(allVariables);
-    console.log('');
 
     // Collect all variable values and merge into config
     const variableValues = collectVariables(allVariables, resolvedVariableValues);
@@ -138,7 +103,6 @@ export async function runInitialization(
     // Log resolved variables if any
     if (Object.keys(variableValues).length > 0) {
       log(`✓ Resolved ${Object.keys(variableValues).length} variable(s)`, 'success');
-      console.log('');
     }
   }
 
@@ -167,21 +131,19 @@ export async function runInitialization(
     if (promptErrors.length > 0) {
       log('❌ Prompt validation errors:', 'error');
       promptErrors.forEach((err) => log(`  - ${err}`, 'error'));
-      console.log('');
+
       process.exit(1);
     }
 
     // Pre-resolve all default values (execute commands in parallel)
     log('Resolving prompt default values...', 'info');
     const resolvedDefaults = await resolveAllDefaultValues(allPrompts);
-    console.log('');
 
     // Collect top-level prompts first (always global)
     let globalAnswers: Record<string, unknown> = {};
     if (topLevelPrompts.length > 0) {
-      console.log('');
       log('📋 Top-level prompts (available to all tasks):', 'info');
-      console.log('');
+
       globalAnswers = await collectPrompts(topLevelPrompts, resolvedDefaults, config);
       // Merge global answers into config immediately
       Object.assign(config, globalAnswers);
@@ -191,7 +153,6 @@ export async function runInitialization(
     if (taskSpecificPrompts.length > 0) {
       if (topLevelPrompts.length > 0) {
         log('📋 Task-specific prompts:', 'info');
-        console.log('');
       }
       const taskAnswers = await collectPrompts(
         taskSpecificPrompts,
@@ -209,7 +170,6 @@ export async function runInitialization(
     evaluateEnabled(task.enabled, config),
   );
 
-  console.log('');
   log(
     `${finalEnabledTasks.length} of ${sortedTasks.length} task(s) enabled for execution`,
     'info',
@@ -223,9 +183,7 @@ export async function runInitialization(
     return;
   }
 
-  console.log('');
-  log('Starting initialization tasks...', 'info');
-  console.log('');
+  log('Starting task execution...', 'info');
 
   // Call beforeAll hook
   await callHook('beforeAll', config);
@@ -264,12 +222,10 @@ export async function runInitialization(
       // Call onError hook
       await callHook('onError', new Error(`Task ${task.name} failed`), task);
     }
-
-    console.log('');
   }
 
   if (failedTasks > 0) {
-    log(`❌ Initialization failed with ${failedTasks} critical error(s)`, 'error');
+    log(`❌ Task execution failed with ${failedTasks} critical error(s)`, 'error');
     log(`✓ Completed: ${completedTasks}/${totalTasks} tasks`, 'info');
     process.exit(1);
   }
@@ -277,31 +233,9 @@ export async function runInitialization(
   // Call afterAll hook
   await callHook('afterAll', config);
 
-  // Save initialization state
-  saveInitializationState(config, completedTaskIds, options.dryRun);
+  log('✅ All tasks completed successfully!', 'success');
 
-  log('✅ Initialization completed successfully!', 'success');
-  console.log('');
   log(`✓ Completed: ${completedTasks}/${totalTasks} tasks`, 'success');
-  console.log('');
-
-  // Remove tasks file if not in dry run mode
-  if (
-    !options.dryRun &&
-    options.tasksFilePath != null &&
-    fs.existsSync(options.tasksFilePath)
-  ) {
-    try {
-      fs.unlinkSync(options.tasksFilePath);
-      log(`🗑️  Removed tasks file: ${path.basename(options.tasksFilePath)}`, 'info');
-      console.log('');
-    } catch (error) {
-      log(
-        `⚠️  Failed to remove tasks file: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        'warn',
-      );
-    }
-  }
 
   if (!options.dryRun) {
     log('Next steps:', 'info');
@@ -317,7 +251,6 @@ export async function runInitialization(
 
       if (packageJson.scripts?.['turbo:gen:init'] != null) {
         log('3. Run "pnpm run turbo:gen:init" to create your first package', 'info');
-        console.log('');
 
         // Ask if user wants to run it now
         const runNow = await promptYesNo(
@@ -326,13 +259,10 @@ export async function runInitialization(
         );
 
         if (runNow) {
-          console.log('');
           log('Running turbo:gen:init...', 'info');
           execSync('pnpm run turbo:gen:init', { stdio: 'inherit' });
         }
       }
     }
   }
-
-  console.log('');
 }

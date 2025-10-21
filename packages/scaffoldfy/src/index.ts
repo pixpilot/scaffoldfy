@@ -1,5 +1,5 @@
 /**
- * Template Initialization Library
+ * Template Task Automation Library
  *
  * Enhanced version with:
  * - Dry run mode
@@ -9,7 +9,6 @@
  * - Advanced conditional evaluation
  * - More task types (rename, git-init, exec)
  * - Better error messages
- * - Skip already initialized check
  * - Configuration validation
  * - TypeScript type safety
  */
@@ -18,7 +17,7 @@ import type { PromptDefinition, TaskDefinition, VariableDefinition } from './typ
 
 import process from 'node:process';
 
-import { runInitialization } from './run-initialization.js';
+import { runTasks } from './run-tasks.js';
 import { log } from './utils.js';
 
 // ============================================================================
@@ -27,14 +26,14 @@ import { log } from './utils.js';
 
 // Check for dry run mode
 const dryRun = process.argv.includes('--dry-run');
-const forceReInit = process.argv.includes('--force');
+const force = process.argv.includes('--force');
 
 // =================================================================
 // Main Execution
 // ============================================================================
 
 /**
- * Main function for running initialization with default/empty tasks
+ * Main function for executing tasks with default/empty tasks array
  * For most use cases, you should use runWithTasks() with your custom tasks
  */
 // eslint-disable-next-line ts/explicit-module-boundary-types
@@ -48,19 +47,19 @@ async function main(customTasks?: TaskDefinition[]) {
         '⚠️  No tasks defined. Use --tasks-file to specify tasks or call runWithTasks() programmatically.',
         'warn',
       );
-      console.log('');
+
       log('Example: scaffoldfy --tasks-file ./tasks.json', 'info');
-      console.log('');
+
       process.exit(1);
     }
 
-    await runInitialization(tasks, {
+    await runTasks(tasks, {
       dryRun,
-      force: forceReInit,
+      force,
       tasksFilePath: undefined,
     });
   } catch (error) {
-    log('❌ Initialization failed', 'error');
+    log('❌ Task execution failed', 'error');
 
     if (error instanceof Error) {
       log(`Error: ${error.message}`, 'error');
@@ -81,11 +80,11 @@ async function main(customTasks?: TaskDefinition[]) {
 // ============================================================================
 
 /**
- * Run initialization with custom tasks
+ * Execute tasks with custom task definitions
  * @param customTasks - Array of task definitions to execute
  * @param options - Optional configuration
  * @param options.dryRun - Preview changes without applying them
- * @param options.force - Force re-initialization even if already initialized
+ * @param options.force - Force execution even if checks fail
  * @param options.tasksFilePath - Path to the tasks file
  * @param options.globalVariables - Optional top-level global variables
  * @param options.globalPrompts - Optional top-level global prompts
@@ -101,9 +100,9 @@ export async function runWithTasks(
   },
 ): Promise<void> {
   try {
-    await runInitialization(customTasks, {
+    await runTasks(customTasks, {
       dryRun: options?.dryRun ?? dryRun,
-      force: options?.force ?? forceReInit,
+      force: options?.force ?? force,
       tasksFilePath: options?.tasksFilePath ?? undefined,
       ...(options?.globalVariables != null && {
         globalVariables: options.globalVariables,
@@ -113,7 +112,7 @@ export async function runWithTasks(
       }),
     });
   } catch (error) {
-    log('❌ Initialization failed', 'error');
+    log('❌ Task execution failed', 'error');
 
     if (error instanceof Error) {
       log(`Error: ${error.message}`, 'error');
@@ -162,7 +161,6 @@ export {
   resolveDefaultValue,
   validatePrompts,
 } from './prompts/index.js';
-export { loadInitializationState, saveInitializationState } from './state.js';
 export { executeTask, runTask } from './task-executors.js';
 export { topologicalSort } from './task-resolver.js';
 export {

@@ -1,6 +1,6 @@
 # Getting Started
 
-This guide will help you get started with **@pixpilot/scaffoldfy** (formerly scaffoldfy) - a flexible and powerful template initialization utility for automating project setup, cleanup, and configuration tasks.
+This guide will help you get started with **@pixpilot/scaffoldfy** (formerly scaffoldfy) - a flexible and powerful task automation utility for project setup, cleanup, and configuration tasks.
 
 ## Installation
 
@@ -34,12 +34,6 @@ Define your tasks in a JSON file and pass it to the CLI:
 scaffoldfy --tasks-file ./tasks.json
 ```
 
-**Note:** By default, the tasks file will be removed after successful initialization. Use `--keep-tasks-file` to preserve it:
-
-```sh
-scaffoldfy --tasks-file ./tasks.json --keep-tasks-file
-```
-
 ### With TypeScript Tasks File
 
 You can also use TypeScript files for tasks:
@@ -58,9 +52,9 @@ scaffoldfy --tasks-file ./tasks.json --dry-run
 
 Learn more: [Dry Run Mode Documentation](DRY_RUN.md)
 
-### Force Re-initialization
+### Force Execution
 
-Re-run initialization even if it was already completed:
+Force execution even if checks fail:
 
 ```sh
 scaffoldfy --force
@@ -73,8 +67,7 @@ scaffoldfy --force
 | `--tasks-file <path>` | Path to JSON task file (default: `./template-tasks.json`)     |
 | `--tasks-ts <path>`   | Path to TypeScript task file (default: `./template-tasks.ts`) |
 | `--dry-run`           | Preview changes without applying them                         |
-| `--force`             | Force re-initialization                                       |
-| `--keep-tasks-file`   | Keep task file after completion (default: remove)             |
+| `--force`             | Force execution even if checks fail                           |
 | `-h, --help`          | Show help message                                             |
 | `-v, --version`       | Show version                                                  |
 
@@ -92,13 +85,8 @@ await runWithTasks(tasks);
 // Run with dry-run enabled
 await runWithTasks(tasks, { dryRun: true });
 
-// Force re-initialization
+// Force execution
 await runWithTasks(tasks, { force: true });
-
-// Keep tasks file after initialization
-await runWithTasks(tasks, {
-  tasksFilePath: './my-tasks.json',
-});
 ```
 
 ### Loading Tasks from JSON
@@ -110,13 +98,7 @@ import { runWithTasks } from '@pixpilot/scaffoldfy';
 const tasksFilePath = './tasks.json';
 const tasksJson = JSON.parse(fs.readFileSync(tasksFilePath, 'utf-8'));
 
-// By default, tasks file will be removed after successful init
 await runWithTasks(tasksJson.tasks);
-
-// Or keep the tasks file
-await runWithTasks(tasksJson.tasks, {
-  tasksFilePath,
-});
 ```
 
 ### Custom Task Example
@@ -196,8 +178,6 @@ await runWithTasks(customTasks);
 
 > **Note:** The `tasks` array is optional when using template inheritance. You can create templates with only `prompts` and/or `variables` that other templates can extend. See [Template Inheritance](./TEMPLATE_INHERITANCE.md) for details.
 
-````
-
 ### With Interactive Prompts
 
 Add user prompts to collect custom input:
@@ -236,7 +216,7 @@ Add user prompts to collect custom input:
     }
   ]
 }
-````
+```
 
 Learn more: [Interactive Prompts Guide](PROMPTS.md)
 
