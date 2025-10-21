@@ -9,6 +9,7 @@ import path from 'node:path';
 import process from 'node:process';
 import readline from 'node:readline';
 import Handlebars from 'handlebars';
+import { TemplateFileNotFoundError } from './errors/template.js';
 
 /**
  * Get Git repository information from the current directory
@@ -177,7 +178,7 @@ export function compileHandlebarsTemplateFile(
       : path.join(process.cwd(), templatePath);
 
     if (!fs.existsSync(absolutePath)) {
-      throw new Error(`Template file not found: ${templatePath}`);
+      throw TemplateFileNotFoundError.forPath(templatePath);
     }
 
     const templateContent = fs.readFileSync(absolutePath, 'utf-8');

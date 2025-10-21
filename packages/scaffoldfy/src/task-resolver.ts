@@ -3,6 +3,8 @@
  */
 
 import type { TaskDefinition } from './types.js';
+import { CircularDependencyError } from './errors/base.js';
+import { TaskNotFoundError } from './errors/other.js';
 
 /**
  * Sort tasks by dependencies using topological sort
@@ -17,14 +19,14 @@ export function topologicalSort(tasks: TaskDefinition[]): TaskDefinition[] {
     if (visited.has(taskId)) return;
 
     if (visiting.has(taskId)) {
-      throw new Error(`Circular dependency detected involving task: ${taskId}`);
+      throw CircularDependencyError.forTaskDependency(taskId);
     }
 
     visiting.add(taskId);
 
     const task = taskMap.get(taskId);
     if (!task) {
-      throw new Error(`Task not found: ${taskId}`);
+      throw TaskNotFoundError.forId(taskId);
     }
 
     // Visit dependencies first

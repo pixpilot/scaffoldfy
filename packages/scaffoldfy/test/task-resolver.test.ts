@@ -4,6 +4,7 @@
 
 import type { DeleteConfig, TaskDefinition } from '../src/types.js';
 import { describe, expect, it } from 'vitest';
+import { CircularDependencyError } from '../src/errors/index.js';
 import { topologicalSort } from '../src/task-resolver.js';
 
 describe('task Dependency Resolution', () => {
@@ -186,7 +187,7 @@ describe('task Dependency Resolution', () => {
       },
     ];
 
-    expect(() => topologicalSort(tasks)).toThrow('Circular dependency');
+    expect(() => topologicalSort(tasks)).toThrow(CircularDependencyError);
   });
 
   it('should detect circular dependencies in larger chains', () => {
@@ -223,7 +224,8 @@ describe('task Dependency Resolution', () => {
       },
     ];
 
-    expect(() => topologicalSort(tasks)).toThrow('Circular dependency');
+    // This should detect a circular dependency
+    expect(() => topologicalSort(tasks)).toThrow(CircularDependencyError);
   });
 
   it('should throw error for missing dependency', () => {
@@ -283,7 +285,7 @@ describe('task Dependency Resolution', () => {
     ];
 
     // This should detect a circular dependency
-    expect(() => topologicalSort(tasks)).toThrow('Circular dependency');
+    expect(() => topologicalSort(tasks)).toThrow(CircularDependencyError);
   });
 
   it('should maintain task properties after sorting', () => {

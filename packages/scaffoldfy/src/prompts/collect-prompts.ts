@@ -4,6 +4,7 @@
 
 import type { InitConfig, PromptDefinition } from '../types.js';
 import { confirm, input, number, password, select } from '@inquirer/prompts';
+import { PromptValidationError } from '../errors/other.js';
 import { evaluateEnabled, log } from '../utils.js';
 
 /**
@@ -62,7 +63,7 @@ export async function collectPrompts(
             (answer == null || (typeof answer === 'string' && answer.trim() === ''))
           ) {
             log(`${prompt.message} is required`, 'error');
-            throw new Error(`Prompt "${prompt.id}" is required`);
+            throw PromptValidationError.required(prompt.id);
           }
           break;
         }
@@ -79,7 +80,7 @@ export async function collectPrompts(
             (answer == null || (typeof answer === 'string' && answer.trim() === ''))
           ) {
             log(`${prompt.message} is required`, 'error');
-            throw new Error(`Prompt "${prompt.id}" is required`);
+            throw PromptValidationError.required(prompt.id);
           }
           break;
         }
@@ -111,7 +112,7 @@ export async function collectPrompts(
           // Validate required
           if (prompt.required && answer == null) {
             log(`${prompt.message} is required`, 'error');
-            throw new Error(`Prompt "${prompt.id}" is required`);
+            throw PromptValidationError.required(prompt.id);
           }
           break;
         }
@@ -147,7 +148,7 @@ export async function collectPrompts(
 
         default: {
           log(`Unknown prompt type: ${(prompt as { type: string }).type}`, 'error');
-          throw new Error(`Unknown prompt type: ${(prompt as { type: string }).type}`);
+          throw PromptValidationError.unknownType((prompt as { type: string }).type);
         }
       }
 

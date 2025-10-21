@@ -7,6 +7,12 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import {
+  CircularDependencyError,
+  TemplateFetchError,
+  TemplateFileNotFoundError,
+  TemplateParseError,
+} from '../src/errors/index.js';
+import {
   clearTemplateCache,
   loadAndMergeTemplate,
   loadTasksWithInheritance,
@@ -70,7 +76,7 @@ describe('template inheritance', () => {
 
     it('should throw error for non-existent file', async () => {
       await expect(loadTemplate('non-existent.json')).rejects.toThrow(
-        'Template file not found',
+        TemplateFileNotFoundError,
       );
     });
 
@@ -79,9 +85,7 @@ describe('template inheritance', () => {
       fs.mkdirSync(testDir, { recursive: true });
       fs.writeFileSync(filePath, 'invalid json');
 
-      await expect(loadTemplate(filePath)).rejects.toThrow(
-        'Failed to parse template file',
-      );
+      await expect(loadTemplate(filePath)).rejects.toThrow(TemplateParseError);
     });
 
     it('should allow missing tasks array (for templates with only prompts/variables)', async () => {
@@ -121,7 +125,7 @@ describe('template inheritance', () => {
 
       await expect(
         loadAndMergeTemplate(path.join(testDir, 'template1.json')),
-      ).rejects.toThrow('Circular dependency detected');
+      ).rejects.toThrow(CircularDependencyError);
     });
   });
 
@@ -668,13 +672,13 @@ describe('template inheritance', () => {
 
     it('should throw error for 404 responses', async () => {
       await expect(loadTemplate('https://example.com/notfound.json')).rejects.toThrow(
-        'Failed to fetch template from https://example.com/notfound.json: 404',
+        TemplateFetchError,
       );
     });
 
     it('should throw error for invalid JSON from URL', async () => {
       await expect(loadTemplate('https://example.com/invalid.json')).rejects.toThrow(
-        'Failed to parse template file',
+        TemplateParseError,
       );
     });
 
@@ -692,7 +696,7 @@ describe('template inheritance', () => {
     it('should detect circular dependencies with URLs', async () => {
       await expect(
         loadAndMergeTemplate('https://example.com/circular1.json'),
-      ).rejects.toThrow('Circular dependency detected');
+      ).rejects.toThrow(CircularDependencyError);
     });
 
     it('should support mixed local and remote templates', async () => {

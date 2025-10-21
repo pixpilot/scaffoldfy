@@ -17,6 +17,16 @@ import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
 import { promisify } from 'node:util';
+import { CircularDependencyError } from './errors/base.js';
+import {
+  DuplicateIdError,
+  IdConflictError,
+  InvalidTemplateError,
+  TemplateFetchError,
+  TemplateFileNotFoundError,
+  TemplateParseError,
+  TemplateResolutionError,
+} from './errors/index.js';
 import { log } from './utils.js';
 
 const readFile = promisify(fs.readFile);
@@ -91,9 +101,7 @@ export function resolveTemplateFilePath(
       const resolvedUrl = new URL(templateFilePath, baseUrl);
       return resolvedUrl.href;
     } catch {
-      throw new Error(
-        `Failed to resolve templateFile "${templateFilePath}" relative to remote template "${sourceUrl}"`,
-      );
+      throw TemplateResolutionError.forRemoteTemplate(templateFilePath, sourceUrl);
     }
   }
 
@@ -116,7 +124,7 @@ export async function fetchTemplateFile(urlOrPath: string): Promise<string> {
 
   // Local file
   if (!fs.existsSync(urlOrPath)) {
-    throw new Error(`Template file not found: ${urlOrPath}`);
+    throw TemplateFileNotFoundError.forPath(urlOrPath);
   }
   return readFile(urlOrPath, 'utf-8');
 }
@@ -131,9 +139,7 @@ async function fetchRemoteTemplate(url: string): Promise<string> {
     const response = await fetch(url);
 
     if (!response.ok) {
-      throw new Error(
-        `Failed to fetch template from ${url}: ${response.status} ${response.statusText}`,
-      );
+      throw TemplateFetchError.forUrl(url, response.status, response.statusText);
     }
 
     return await response.text();
@@ -141,9 +147,7 @@ async function fetchRemoteTemplate(url: string): Promise<string> {
     if (error instanceof Error && error.message.includes('Failed to fetch')) {
       throw error;
     }
-    throw new Error(
-      `Failed to fetch template from ${url}: ${error instanceof Error ? error.message : String(error)}`,
-    );
+    throw TemplateFetchError.forUrl(url, error instanceof Error ? error : undefined);
   }
 }
 
@@ -182,9 +186,7 @@ export async function loadTemplate(
 
   // Check for circular dependencies
   if (visitedPaths.has(resolvedPath)) {
-    throw new Error(
-      `Circular dependency detected: ${Array.from(visitedPaths).join(' -> ')} -> ${resolvedPath}`,
-    );
+    throw CircularDependencyError.forTemplateInheritance(visitedPaths, resolvedPath);
   }
 
   // Add to visited paths
@@ -199,7 +201,7 @@ export async function loadTemplate(
   } else {
     // Check if file exists
     if (!fs.existsSync(resolvedPath)) {
-      throw new Error(`Template file not found: ${resolvedPath}`);
+      throw TemplateFileNotFoundError.forPath(resolvedPath);
     }
 
     // Load from local file
@@ -212,16 +214,15 @@ export async function loadTemplate(
   try {
     config = JSON.parse(content) as TasksConfiguration;
   } catch (error) {
-    throw new Error(
-      `Failed to parse template file ${resolvedPath}: ${error instanceof Error ? error.message : String(error)}`,
+    throw TemplateParseError.forFile(
+      resolvedPath,
+      error instanceof Error ? error : new Error(String(error)),
     );
   }
 
   // Validate basic structure - tasks can be optional but must be an array if present
   if (config.tasks !== undefined && !Array.isArray(config.tasks)) {
-    throw new TypeError(
-      `Invalid template file ${resolvedPath}: 'tasks' must be an array if provided`,
-    );
+    throw InvalidTemplateError.tasksNotArray(resolvedPath);
   }
 
   // Initialize tasks as empty array if not provided (for templates that only provide prompts/variables)
@@ -274,9 +275,7 @@ export async function loadAndMergeTemplate(
 
   // Check for circular dependencies before loading
   if (visitedPaths.has(resolvedPath)) {
-    throw new Error(
-      `Circular dependency detected: ${Array.from(visitedPaths).join(' -> ')} -> ${resolvedPath}`,
-    );
+    throw CircularDependencyError.forTemplateInheritance(visitedPaths, resolvedPath);
   }
 
   // Add current path to visited set
@@ -329,9 +328,7 @@ function validateUniqueIds(
   // Check task IDs
   for (const task of tasks) {
     if (allIds.has(task.id)) {
-      throw new Error(
-        `Duplicate ID "${task.id}" found in task. This ID is already used in ${allIds.get(task.id)}`,
-      );
+      throw DuplicateIdError.forId(task.id, 'task', allIds.get(task.id));
     }
     allIds.set(task.id, 'task');
   }
@@ -340,9 +337,7 @@ function validateUniqueIds(
   if (variables != null) {
     for (const variable of variables) {
       if (allIds.has(variable.id)) {
-        throw new Error(
-          `Duplicate ID "${variable.id}" found in variable. This ID is already used in ${allIds.get(variable.id)}`,
-        );
+        throw DuplicateIdError.forId(variable.id, 'variable', allIds.get(variable.id));
       }
       allIds.set(variable.id, 'variable');
     }
@@ -352,9 +347,7 @@ function validateUniqueIds(
   if (prompts != null) {
     for (const prompt of prompts) {
       if (allIds.has(prompt.id)) {
-        throw new Error(
-          `Duplicate ID "${prompt.id}" found in prompt. This ID is already used in ${allIds.get(prompt.id)}`,
-        );
+        throw DuplicateIdError.forId(prompt.id, 'prompt', allIds.get(prompt.id));
       }
       allIds.set(prompt.id, 'prompt');
     }
@@ -467,11 +460,7 @@ export function mergeTemplates(templates: TasksConfiguration[]): TasksConfigurat
         if (promptMap.has(prompt.id)) {
           // Prompt already exists - require explicit override strategy
           if (prompt.override == null) {
-            throw new Error(
-              `Prompt ID conflict: "${prompt.id}" is defined in multiple templates.\n` +
-                `  You must specify an override strategy: add "override": "merge" or "override": "replace" to the prompt.\n` +
-                `  Prompt is being extended/overridden but no override strategy was specified.`,
-            );
+            throw IdConflictError.forPrompt(prompt.id);
           }
           const existingPrompt = promptMap.get(prompt.id)!;
           promptMap.set(prompt.id, mergePrompt(existingPrompt, prompt));
@@ -488,11 +477,7 @@ export function mergeTemplates(templates: TasksConfiguration[]): TasksConfigurat
         if (variableMap.has(variable.id)) {
           // Variable already exists - require explicit override strategy
           if (variable.override == null) {
-            throw new Error(
-              `Variable ID conflict: "${variable.id}" is defined in multiple templates.\n` +
-                `  You must specify an override strategy: add "override": "merge" or "override": "replace" to the variable.\n` +
-                `  Variable is being extended/overridden but no override strategy was specified.`,
-            );
+            throw IdConflictError.forVariable(variable.id);
           }
           const existingVariable = variableMap.get(variable.id)!;
           variableMap.set(variable.id, mergeVariable(existingVariable, variable));
@@ -509,12 +494,10 @@ export function mergeTemplates(templates: TasksConfiguration[]): TasksConfigurat
         // Task already exists - require explicit override strategy
         if (task.override == null) {
           const existing = taskMap.get(task.id)!;
-          throw new Error(
-            `Task ID conflict: "${task.id}" is defined in multiple templates.\n` +
-              `  Base task from: ${getSourceDisplayName(existing.$sourceUrl)}\n` +
-              `  Override task from: ${getSourceDisplayName(task.$sourceUrl)}\n` +
-              `  You must specify an override strategy: add "override": "merge" or "override": "replace" to the task.\n` +
-              `  Task is being extended/overridden but no override strategy was specified.`,
+          throw IdConflictError.forTask(
+            task.id,
+            getSourceDisplayName(existing.$sourceUrl),
+            getSourceDisplayName(task.$sourceUrl),
           );
         }
         const existingTask = taskMap.get(task.id)!;

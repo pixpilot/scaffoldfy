@@ -8,6 +8,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
 import { promisify } from 'node:util';
+import { PluginConfigurationError } from '../../errors/other.js';
+import { TemplateFileNotFoundError } from '../../errors/template.js';
 import {
   compileHandlebarsTemplateFile,
   evaluateCondition,
@@ -46,16 +48,12 @@ export async function executeCreate(
   const hasTemplateFile = config.templateFile != null && config.templateFile !== '';
 
   if (!hasInlineTemplate && !hasTemplateFile) {
-    throw new Error(
-      'Create task requires either "template" (inline) or "templateFile" (file path) to be specified',
-    );
+    throw PluginConfigurationError.createMissingTemplateOrFile();
   }
 
   // Both template and templateFile cannot be specified together
   if (hasInlineTemplate && hasTemplateFile) {
-    throw new Error(
-      'Create task cannot have both "template" and "templateFile" specified. Use one or the other.',
-    );
+    throw PluginConfigurationError.createHasBothTemplateAndFile();
   }
 
   let content: string;
@@ -74,7 +72,7 @@ export async function executeCreate(
       : path.join(process.cwd(), templateFilePath);
 
     if (!fs.existsSync(templatePath)) {
-      throw new Error(`Template file not found: ${templateFilePath}`);
+      throw TemplateFileNotFoundError.forPath(templateFilePath);
     }
 
     const templateContent = fs.readFileSync(templatePath, 'utf-8');

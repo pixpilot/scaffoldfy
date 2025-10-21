@@ -8,6 +8,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
 import { promisify } from 'node:util';
+import { PluginConfigurationError } from '../../errors/other.js';
 import {
   fetchTemplateFile,
   resolveTemplateFilePath,
@@ -40,16 +41,12 @@ export async function executeTemplate(
   const hasTemplateFile = config.templateFile != null && config.templateFile !== '';
 
   if (!hasInlineTemplate && !hasTemplateFile) {
-    throw new Error(
-      'Template task requires either "template" (inline) or "templateFile" (file path) to be specified',
-    );
+    throw PluginConfigurationError.templateMissingTemplateOrFile();
   }
 
   // Both template and templateFile cannot be specified together
   if (hasInlineTemplate && hasTemplateFile) {
-    throw new Error(
-      'Template task cannot have both "template" and "templateFile" specified. Use one or the other.',
-    );
+    throw PluginConfigurationError.templateHasBothTemplateAndFile();
   }
 
   let content: string;
