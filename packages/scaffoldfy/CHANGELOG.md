@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy
 
+## 0.13.0
+
+### Minor Changes
+
+- implement override strategies for tasks, variables, and prompts
+
 ## 0.12.0
 
 ### Minor Changes
