@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy-templates
 
+## 0.1.3
+
+### Patch Changes
+
+- correct repository directory and update exports and files
+
 ## 0.1.2
 
 ### Patch Changes
