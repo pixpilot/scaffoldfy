@@ -24,7 +24,7 @@
       ],
       "config": {
         "file": "turbo/generators/config.ts",
-        "templateFile": "./turbo-generator.hbs"
+        "templateFile": "./turbo-generator.ts.hbs"
       }
     }
   ]
