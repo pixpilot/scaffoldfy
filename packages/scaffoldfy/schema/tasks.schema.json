@@ -54,6 +54,11 @@
                 }
               }
             ]
+          },
+          "override": {
+            "type": "string",
+            "enum": ["merge", "replace"],
+            "description": "Strategy for merging with base variable when extending templates. 'merge' (default) replaces the value, 'replace' completely replaces the variable. Must be specified when variable ID conflicts with base template."
           }
         }
       }
@@ -154,6 +159,11 @@
                 }
               }
             }
+          },
+          "override": {
+            "type": "string",
+            "enum": ["merge", "replace"],
+            "description": "Strategy for merging with base prompt when extending templates. 'merge' (default) intelligently merges properties, 'replace' completely replaces the base prompt. Must be specified when prompt ID conflicts with base template."
           }
         }
       }
@@ -206,6 +216,11 @@
               "type": "string"
             },
             "description": "IDs of tasks that must run before this one"
+          },
+          "override": {
+            "type": "string",
+            "enum": ["merge", "replace"],
+            "description": "Strategy for merging with base task when extending templates. 'merge' (default) intelligently merges properties, 'replace' completely replaces the base task. Must be specified when task ID conflicts with base template."
           },
           "prompts": {
             "type": "array",

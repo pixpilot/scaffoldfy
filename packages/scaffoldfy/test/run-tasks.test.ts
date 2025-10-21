@@ -11,6 +11,7 @@ import { runTasks } from '../src/run-tasks.js';
 import { runTask } from '../src/task-executors.js';
 import { topologicalSort } from '../src/task-resolver.js';
 import { evaluateEnabled, promptYesNo } from '../src/utils.js';
+import { validateAllTasks } from '../src/validation.js';
 
 // Mock dependencies
 vi.mock('../src/config.js');
@@ -18,6 +19,7 @@ vi.mock('../src/task-executors.js');
 vi.mock('../src/task-resolver.js');
 vi.mock('../src/utils.js');
 vi.mock('../src/dry-run.js');
+vi.mock('../src/validation.js');
 vi.mock('node:process', () => ({
   default: {
     exit: vi.fn(() => {
@@ -35,6 +37,7 @@ const mockTopologicalSort = vi.mocked(topologicalSort);
 const mockPromptYesNo = vi.mocked(promptYesNo);
 const mockDisplayTasksDiff = vi.mocked(displayTasksDiff);
 const mockEvaluateEnabled = vi.mocked(evaluateEnabled);
+const mockValidateAllTasks = vi.mocked(validateAllTasks);
 
 const mockConfig: InitConfig = {
   projectName: 'test-repo',
@@ -77,6 +80,7 @@ describe('runTasks', () => {
     mockPromptYesNo.mockResolvedValue(true);
     mockDisplayTasksDiff.mockResolvedValue();
     mockEvaluateEnabled.mockReturnValue(true); // Always return true for enabled tasks
+    mockValidateAllTasks.mockReturnValue([]); // Return no validation errors
   });
 
   afterEach(() => {

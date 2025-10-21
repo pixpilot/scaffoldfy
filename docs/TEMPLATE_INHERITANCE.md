@@ -8,8 +8,9 @@ With template inheritance, you can:
 
 - **Extend one or more base templates** using the `extends` field
 - **Load templates from local files or remote URLs** (HTTP/HTTPS)
-- **Override tasks** from base templates by using the same task ID
-- **Merge configurations** intelligently, combining dependencies and prompts
+- **Override tasks, variables, and prompts** from base templates using explicit merge strategies
+- **Merge configurations intelligently** with smart conflict detection and resolution
+- **Validate early** to catch configuration errors before user prompts
 - **Create reusable template libraries** that can be shared across projects
 
 ## Basic Usage
@@ -90,6 +91,167 @@ You can extend multiple base templates:
 ```
 
 Tasks are merged in order, with later templates taking precedence.
+
+## Override Strategies
+
+**Important:** When a child template has a task, variable, or prompt with the same ID as a base template, you **must** explicitly specify an override strategy. This requirement was added to prevent accidental conflicts and make template inheritance more predictable.
+
+### Available Strategies
+
+There are two override strategies:
+
+1. **`merge`** (default, recommended): Intelligently merges the child item with the base item
+   - For tasks: Merges config, dependencies, prompts, and variables
+   - For variables: Replaces the value
+   - For prompts: Merges properties (message, type, etc.)
+
+2. **`replace`**: Completely replaces the base item with the child item
+   - No merging occurs - the base item is discarded entirely
+   - Useful when you want to completely redefine an item
+
+### Specifying Override Strategy
+
+Add the `override` field to the conflicting task, variable, or prompt:
+
+```json
+{
+  "extends": "base-template.json",
+  "tasks": [
+    {
+      "id": "update-package",
+      "name": "Custom Package Update",
+      "description": "Updated description",
+      "required": true,
+      "enabled": true,
+      "type": "update-json",
+      "config": {
+        "file": "package.json",
+        "updates": {
+          "name": "{{projectName}}",
+          "version": "2.0.0"
+        }
+      },
+      "override": "merge" // ← Required when ID conflicts with base
+    }
+  ]
+}
+```
+
+### What Happens Without Override?
+
+If you extend a template and use the same ID without specifying `override`, you'll get a clear error:
+
+```
+Task ID conflict: "update-package" is defined in multiple templates.
+  Base task from: base-template.json
+  Override task from: my-template.json
+  You must specify an override strategy: add "override": "merge" or "override": "replace" to the task.
+```
+
+### Merge Strategy in Detail
+
+When using `override: "merge"` for tasks:
+
+**Base template:**
+
+```json
+{
+  "id": "setup",
+  "name": "Basic Setup",
+  "description": "Base setup",
+  "required": true,
+  "enabled": true,
+  "type": "template",
+  "config": {
+    "file": "README.md",
+    "templateFile": "./base-readme.hbs"
+  },
+  "dependencies": ["task-a"]
+}
+```
+
+**Child template:**
+
+```json
+{
+  "id": "setup",
+  "name": "Enhanced Setup",
+  "description": "Enhanced setup with more features",
+  "required": true,
+  "enabled": true,
+  "type": "template",
+  "config": {
+    "file": "README.md",
+    "template": "# {{projectName}}\n\nCustom readme"
+  },
+  "dependencies": ["task-b"],
+  "override": "merge"
+}
+```
+
+**Result after merge:**
+
+- `name`: `"Enhanced Setup"` (from child)
+- `description`: `"Enhanced setup with more features"` (from child)
+- `dependencies`: `["task-a", "task-b"]` (merged from both)
+- `config.file`: `"README.md"` (both have same value)
+- `config.templateFile`: removed (child specified `template` instead)
+- `config.template`: `"# {{projectName}}\n\nCustom readme"` (from child)
+
+Note how the conflicting config fields (`templateFile` vs `template`) were intelligently handled - when you specify `template` in the child, it removes `templateFile` from the base to prevent validation errors.
+
+### Replace Strategy in Detail
+
+When using `override: "replace"`:
+
+```json
+{
+  "id": "setup",
+  "name": "Completely New Setup",
+  "description": "Starts from scratch",
+  "required": false,
+  "enabled": true,
+  "type": "exec",
+  "config": {
+    "command": "npm init -y"
+  },
+  "override": "replace" // Nothing from base is kept
+}
+```
+
+The base task is completely ignored, and only the child task definition is used.
+
+### Override for Variables
+
+```json
+{
+  "extends": "base.json",
+  "variables": [
+    {
+      "id": "buildDir",
+      "value": "dist",
+      "override": "merge" // Required when variable ID conflicts
+    }
+  ]
+}
+```
+
+### Override for Prompts
+
+```json
+{
+  "extends": "base.json",
+  "prompts": [
+    {
+      "id": "projectName",
+      "type": "input",
+      "message": "Enter your awesome project name:",
+      "placeholder": "my-project",
+      "override": "merge" // Required when prompt ID conflicts
+    }
+  ]
+}
+```
 
 ## Templates with Only Prompts/Variables
 

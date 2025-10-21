@@ -13,6 +13,7 @@ import {
 import { runTask } from './task-executors.js';
 import { topologicalSort } from './task-resolver.js';
 import { evaluateEnabled, log } from './utils.js';
+import { displayValidationErrors, validateAllTasks } from './validation.js';
 import {
   collectVariables,
   resolveAllVariableValues,
@@ -36,6 +37,17 @@ export async function runTasks(
     globalPrompts?: PromptDefinition[];
   },
 ): Promise<void> {
+  // ============================================================================
+  // Early Validation - Before any user input
+  // ============================================================================
+  log('Validating task configurations...', 'info');
+  const validationErrors = validateAllTasks(tasks);
+  if (validationErrors.length > 0) {
+    displayValidationErrors(validationErrors);
+    process.exit(1);
+  }
+  log('✓ All tasks validated successfully', 'success');
+
   // Get enabled tasks (evaluate conditional enabled)
   // Initially evaluate with empty config, will re-evaluate later with full config
   const enabledTasks = tasks.filter((task) =>

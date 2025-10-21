@@ -188,6 +188,7 @@ describe('template inheritance', () => {
             enabled: false,
             type: 'delete',
             config: { value: 'new' },
+            override: 'merge',
           },
         ],
       };
@@ -223,6 +224,7 @@ describe('template inheritance', () => {
         type: 'template',
         config: {},
         dependencies: ['dep2', 'dep3'],
+        override: 'merge',
       };
 
       const merged = mergeTemplates([{ tasks: [task1] }, { tasks: [task2] }]);
@@ -1000,6 +1002,7 @@ describe('template inheritance', () => {
             enabled: true,
             type: 'template',
             config: { value: 'new' },
+            override: 'merge',
           },
         ],
       };
@@ -1151,6 +1154,7 @@ describe('template inheritance', () => {
             enabled: true,
             type: 'template',
             config: {},
+            override: 'merge',
           },
         ],
       };
@@ -1180,6 +1184,7 @@ describe('template inheritance', () => {
           {
             id: 'var-id',
             value: 'override',
+            override: 'merge',
           },
         ],
       };
@@ -1211,6 +1216,7 @@ describe('template inheritance', () => {
             id: 'prompt-id',
             type: 'input',
             message: 'Override message',
+            override: 'merge',
           },
         ],
       };
@@ -1222,6 +1228,131 @@ describe('template inheritance', () => {
       const merged = await loadAndMergeTemplate(childPath);
       expect(merged.prompts).toHaveLength(1);
       expect(merged.prompts![0]?.message).toBe('Override message');
+    });
+
+    it('should allow same ID when overriding variables with replace strategy', async () => {
+      const baseConfig: TasksConfiguration = {
+        variables: [
+          {
+            id: 'var-id',
+            value: 'base',
+          },
+        ],
+      };
+
+      const childConfig: TasksConfiguration = {
+        extends: 'base.json',
+        variables: [
+          {
+            id: 'var-id',
+            value: 'replaced',
+            override: 'replace',
+          },
+        ],
+      };
+
+      createTemplateFile('base.json', baseConfig);
+      const childPath = createTemplateFile('child.json', childConfig);
+
+      // This should not throw - it's a valid override
+      const merged = await loadAndMergeTemplate(childPath);
+      expect(merged.variables).toHaveLength(1);
+      expect(merged.variables![0]?.value).toBe('replaced');
+      // Verify override field is removed
+      expect(merged.variables![0]?.override).toBeUndefined();
+    });
+
+    it('should allow same ID when overriding prompts with replace strategy', async () => {
+      const baseConfig: TasksConfiguration = {
+        prompts: [
+          {
+            id: 'prompt-id',
+            type: 'input',
+            message: 'Base message',
+            default: 'base default',
+          },
+        ],
+      };
+
+      const childConfig: TasksConfiguration = {
+        extends: 'base.json',
+        prompts: [
+          {
+            id: 'prompt-id',
+            type: 'confirm',
+            message: 'Replaced message',
+            override: 'replace',
+          },
+        ],
+      };
+
+      createTemplateFile('base.json', baseConfig);
+      const childPath = createTemplateFile('child.json', childConfig);
+
+      // This should not throw - it's a valid override
+      const merged = await loadAndMergeTemplate(childPath);
+      expect(merged.prompts).toHaveLength(1);
+      expect(merged.prompts![0]?.message).toBe('Replaced message');
+      expect(merged.prompts![0]?.type).toBe('confirm');
+      // Verify override field is removed and base properties are completely replaced
+      expect(merged.prompts![0]?.override).toBeUndefined();
+      expect(merged.prompts![0]?.default).toBeUndefined(); // Should be completely replaced
+    });
+
+    it('should throw error when overriding variable without override strategy', () => {
+      const baseConfig: TasksConfiguration = {
+        variables: [
+          {
+            id: 'var-id',
+            value: 'base',
+          },
+        ],
+      };
+
+      const childConfig: TasksConfiguration = {
+        variables: [
+          {
+            id: 'var-id',
+            value: 'override',
+            // Missing override field - should throw error
+          },
+        ],
+      };
+
+      expect(() => mergeTemplates([baseConfig, childConfig])).toThrow(
+        'Variable ID conflict: "var-id" is defined in multiple templates.\n' +
+          '  You must specify an override strategy: add "override": "merge" or "override": "replace" to the variable.\n' +
+          '  Variable is being extended/overridden but no override strategy was specified.',
+      );
+    });
+
+    it('should throw error when overriding prompt without override strategy', () => {
+      const baseConfig: TasksConfiguration = {
+        prompts: [
+          {
+            id: 'prompt-id',
+            type: 'input',
+            message: 'Base message',
+          },
+        ],
+      };
+
+      const childConfig: TasksConfiguration = {
+        prompts: [
+          {
+            id: 'prompt-id',
+            type: 'input',
+            message: 'Override message',
+            // Missing override field - should throw error
+          },
+        ],
+      };
+
+      expect(() => mergeTemplates([baseConfig, childConfig])).toThrow(
+        'Prompt ID conflict: "prompt-id" is defined in multiple templates.\n' +
+          '  You must specify an override strategy: add "override": "merge" or "override": "replace" to the prompt.\n' +
+          '  Prompt is being extended/overridden but no override strategy was specified.',
+      );
     });
 
     it('should throw error with multiple templates having cross-type duplicates', () => {

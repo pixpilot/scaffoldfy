@@ -7,6 +7,7 @@
  */
 
 import type {
+  MergeStrategy,
   PromptDefinition,
   TaskDefinition,
   TasksConfiguration,
@@ -19,6 +20,32 @@ import { promisify } from 'node:util';
 import { log } from './utils.js';
 
 const readFile = promisify(fs.readFile);
+
+/**
+ * Conflicting field groups for different task types
+ * These fields cannot coexist in the same config
+ */
+const CONFLICTING_FIELDS: Record<string, string[][]> = {
+  template: [['template', 'templateFile']], // template tasks can have either inline template OR templateFile
+};
+
+/**
+ * Get display name for source URL
+ */
+function getSourceDisplayName(sourceUrl?: string): string {
+  if (sourceUrl == null || sourceUrl === '') {
+    return 'current template';
+  }
+  if (isUrl(sourceUrl)) {
+    return sourceUrl;
+  }
+  // For local files, show relative path if possible
+  const cwd = process.cwd();
+  if (sourceUrl.startsWith(cwd)) {
+    return path.relative(cwd, sourceUrl);
+  }
+  return sourceUrl;
+}
 
 /**
  * Check if a string is a URL
@@ -335,6 +362,77 @@ function validateUniqueIds(
 }
 
 /**
+ * Merge two variable definitions (later variable overrides earlier)
+ * @param base - Base variable definition
+ * @param override - Override variable definition
+ * @returns Merged variable definition
+ */
+function mergeVariable(
+  base: VariableDefinition,
+  override: VariableDefinition,
+): VariableDefinition {
+  // Determine merge strategy
+  const strategy: MergeStrategy = override.override ?? 'merge';
+
+  // If strategy is 'replace', completely replace the base variable
+  if (strategy === 'replace') {
+    log(`  → Variable "${override.id}" using 'replace' strategy`, 'info');
+    // Remove the override field from the final variable
+    const { override: _override, ...variableWithoutOverrideFlag } = override;
+    return variableWithoutOverrideFlag as VariableDefinition;
+  }
+
+  // Strategy is 'merge' - for variables, this essentially means replace since variables are simple
+  // But we log it for clarity
+  log(`  → Variable "${override.id}" merged (value replaced)`, 'info');
+
+  const result = {
+    ...base,
+    ...override,
+  } as Record<string, unknown>;
+
+  // Remove override field from final variable
+  delete result['override'];
+
+  return result as unknown as VariableDefinition;
+}
+
+/**
+ * Merge two prompt definitions (later prompt overrides earlier)
+ * @param base - Base prompt definition
+ * @param override - Override prompt definition
+ * @returns Merged prompt definition
+ */
+function mergePrompt(
+  base: PromptDefinition,
+  override: PromptDefinition,
+): PromptDefinition {
+  // Determine merge strategy
+  const strategy: MergeStrategy = override.override ?? 'merge';
+
+  // If strategy is 'replace', completely replace the base prompt
+  if (strategy === 'replace') {
+    log(`  → Prompt "${override.id}" using 'replace' strategy`, 'info');
+    // Remove the override field from the final prompt
+    const { override: _override, ...promptWithoutOverrideFlag } = override;
+    return promptWithoutOverrideFlag as PromptDefinition;
+  }
+
+  // Strategy is 'merge' - intelligently merge prompt properties
+  log(`  → Prompt "${override.id}" merged`, 'info');
+
+  const result = {
+    ...base,
+    ...override,
+  } as Record<string, unknown>;
+
+  // Remove override field from final prompt
+  delete result['override'];
+
+  return result as unknown as PromptDefinition;
+}
+
+/**
  * Merge multiple template configurations
  * Later templates override earlier ones for conflicting task IDs
  * @param templates - Array of templates to merge (in priority order)
@@ -366,21 +464,59 @@ export function mergeTemplates(templates: TasksConfiguration[]): TasksConfigurat
     // Merge top-level prompts if present
     if (template.prompts != null) {
       for (const prompt of template.prompts) {
-        promptMap.set(prompt.id, { ...prompt });
+        if (promptMap.has(prompt.id)) {
+          // Prompt already exists - require explicit override strategy
+          if (prompt.override == null) {
+            throw new Error(
+              `Prompt ID conflict: "${prompt.id}" is defined in multiple templates.\n` +
+                `  You must specify an override strategy: add "override": "merge" or "override": "replace" to the prompt.\n` +
+                `  Prompt is being extended/overridden but no override strategy was specified.`,
+            );
+          }
+          const existingPrompt = promptMap.get(prompt.id)!;
+          promptMap.set(prompt.id, mergePrompt(existingPrompt, prompt));
+        } else {
+          // New prompt, add it
+          promptMap.set(prompt.id, { ...prompt });
+        }
       }
     }
 
     // Merge top-level variables if present
     if (template.variables != null) {
       for (const variable of template.variables) {
-        variableMap.set(variable.id, { ...variable });
+        if (variableMap.has(variable.id)) {
+          // Variable already exists - require explicit override strategy
+          if (variable.override == null) {
+            throw new Error(
+              `Variable ID conflict: "${variable.id}" is defined in multiple templates.\n` +
+                `  You must specify an override strategy: add "override": "merge" or "override": "replace" to the variable.\n` +
+                `  Variable is being extended/overridden but no override strategy was specified.`,
+            );
+          }
+          const existingVariable = variableMap.get(variable.id)!;
+          variableMap.set(variable.id, mergeVariable(existingVariable, variable));
+        } else {
+          // New variable, add it
+          variableMap.set(variable.id, { ...variable });
+        }
       }
     }
 
     // Merge tasks
     for (const task of template.tasks ?? []) {
       if (taskMap.has(task.id)) {
-        // Task already exists, merge/override
+        // Task already exists - require explicit override strategy
+        if (task.override == null) {
+          const existing = taskMap.get(task.id)!;
+          throw new Error(
+            `Task ID conflict: "${task.id}" is defined in multiple templates.\n` +
+              `  Base task from: ${getSourceDisplayName(existing.$sourceUrl)}\n` +
+              `  Override task from: ${getSourceDisplayName(task.$sourceUrl)}\n` +
+              `  You must specify an override strategy: add "override": "merge" or "override": "replace" to the task.\n` +
+              `  Task is being extended/overridden but no override strategy was specified.`,
+          );
+        }
         const existingTask = taskMap.get(task.id)!;
         taskMap.set(task.id, mergeTask(existingTask, task));
       } else {
@@ -416,20 +552,124 @@ export function mergeTemplates(templates: TasksConfiguration[]): TasksConfigurat
 }
 
 /**
+ * Detect conflicting fields in config based on task type
+ */
+function detectConfigConflicts(
+  taskType: string,
+  config: Record<string, unknown>,
+): string[] | null {
+  const conflictGroups = CONFLICTING_FIELDS[taskType];
+  if (!conflictGroups) {
+    return null;
+  }
+
+  for (const group of conflictGroups) {
+    const presentFields = group.filter(
+      (field) => field in config && config[field] != null,
+    );
+    if (presentFields.length > 1) {
+      return presentFields;
+    }
+  }
+
+  return null;
+}
+
+/**
+ * Intelligently merge config objects, handling conflicts
+ */
+function mergeConfigs(
+  baseConfig: Record<string, unknown>,
+  overrideConfig: Record<string, unknown>,
+  taskType: string,
+): Record<string, unknown> {
+  // Start with base config
+  const merged = { ...baseConfig };
+
+  // Get conflict groups for this task type
+  const conflictGroups = CONFLICTING_FIELDS[taskType] ?? [];
+
+  // For each field in override, decide how to merge
+  for (const [key, value] of Object.entries(overrideConfig)) {
+    // Check if this field is part of a conflict group
+    for (const group of conflictGroups) {
+      if (group.includes(key)) {
+        // This field is part of a conflict group
+        // Remove ALL other fields in this group from merged config
+        for (const conflictField of group) {
+          if (conflictField !== key) {
+            delete merged[conflictField];
+          }
+        }
+        break;
+      }
+    }
+
+    // Set the override value
+    merged[key] = value;
+  }
+
+  return merged;
+}
+
+/**
  * Merge two task definitions (later task overrides earlier)
  * @param base - Base task definition
  * @param override - Override task definition
  * @returns Merged task definition
  */
 function mergeTask(base: TaskDefinition, override: TaskDefinition): TaskDefinition {
-  // Deep merge config objects
-  const mergedConfig =
+  // Determine merge strategy
+  const strategy: MergeStrategy = override.override ?? 'merge';
+
+  // If strategy is 'replace', completely replace the base task
+  if (strategy === 'replace') {
+    log(
+      `  → Task "${override.id}" using 'replace' strategy - completely replacing base task`,
+      'info',
+    );
+    log(`    Base: ${getSourceDisplayName(base.$sourceUrl)}`, 'info');
+    log(`    Override: ${getSourceDisplayName(override.$sourceUrl)}`, 'info');
+
+    // Remove the override field from the final task
+    const { override: _override, ...taskWithoutOverrideFlag } = override;
+    return taskWithoutOverrideFlag as TaskDefinition;
+  }
+
+  // Strategy is 'merge' - intelligent merging
+  log(`  → Merging task "${override.id}"`, 'info');
+  log(`    Base: ${getSourceDisplayName(base.$sourceUrl)}`, 'info');
+  log(`    Override: ${getSourceDisplayName(override.$sourceUrl)}`, 'info');
+
+  // Intelligently merge config objects
+  let mergedConfig: Record<string, unknown>;
+  if (
     typeof base.config === 'object' &&
     base.config !== null &&
     typeof override.config === 'object' &&
     override.config !== null
-      ? { ...base.config, ...override.config }
-      : override.config;
+  ) {
+    mergedConfig = mergeConfigs(
+      base.config as Record<string, unknown>,
+      override.config as Record<string, unknown>,
+      override.type,
+    );
+
+    // Check for conflicts in the merged config
+    const conflicts = detectConfigConflicts(override.type, mergedConfig);
+    if (conflicts !== null && conflicts.length > 0) {
+      log(
+        `    ⚠️  Warning: Conflicting config fields detected: ${conflicts.join(', ')}`,
+        'warn',
+      );
+      log(
+        `    Please use override: "replace" or specify only one of these fields`,
+        'warn',
+      );
+    }
+  } else {
+    mergedConfig = (override.config ?? base.config) as Record<string, unknown>;
+  }
 
   // Merge prompts arrays (override prompts with same ID)
   let mergedPrompts = base.prompts ? [...base.prompts] : undefined;
@@ -472,7 +712,7 @@ function mergeTask(base: TaskDefinition, override: TaskDefinition): TaskDefiniti
   // Use override's $sourceUrl if present, otherwise keep base's
   const sourceUrl = override.$sourceUrl ?? base.$sourceUrl;
 
-  return {
+  const result = {
     ...base,
     ...override,
     config: mergedConfig,
@@ -480,7 +720,12 @@ function mergeTask(base: TaskDefinition, override: TaskDefinition): TaskDefiniti
     ...(mergedVariables != null && { variables: mergedVariables }),
     ...(uniqueDependencies != null && { dependencies: uniqueDependencies }),
     ...(sourceUrl != null && { $sourceUrl: sourceUrl }),
-  };
+  } as Record<string, unknown>;
+
+  // Remove override field from final task
+  delete result['override'];
+
+  return result as unknown as TaskDefinition;
 }
 
 /**

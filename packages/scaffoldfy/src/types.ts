@@ -77,6 +77,7 @@ export interface BasePrompt {
   message: string;
   required?: boolean; // If true, value must be provided (not empty)
   enabled?: EnabledValue; // If false or condition evaluates to false, prompt is skipped
+  override?: MergeStrategy; // Strategy for merging with base prompt: 'merge' (default, intelligent) or 'replace' (complete override)
 }
 
 export interface InputPrompt extends BasePrompt {
@@ -115,6 +116,7 @@ export type PromptDefinition = InputPrompt | NumberPrompt | SelectPrompt | Confi
 export interface VariableDefinition {
   id: string; // Unique identifier for the variable
   value: DefaultValue; // The value of the variable (static or executable)
+  override?: MergeStrategy; // Strategy for merging with base variable: 'merge' (default, intelligent) or 'replace' (complete override)
 }
 
 /**
@@ -142,6 +144,13 @@ export interface RollbackConfig {
   config: unknown;
 }
 
+/**
+ * Merge strategy when extending templates
+ * - 'merge': Intelligently merge with base task (default) - smart field-level merging
+ * - 'replace': Completely replace base task - no merging at all
+ */
+export type MergeStrategy = 'merge' | 'replace';
+
 export interface TaskDefinition {
   id: string;
   name: string;
@@ -165,6 +174,7 @@ export interface TaskDefinition {
   rollback?: RollbackConfig; // How to rollback if something fails
   prompts?: PromptDefinition[]; // Optional task-scoped prompts to collect before running task
   variables?: VariableDefinition[]; // Optional task-scoped variables (not available to other tasks)
+  override?: MergeStrategy; // Strategy for merging with base task: 'merge' (default, intelligent) or 'replace' (complete override)
   $sourceUrl?: string; // Internal: URL or path of the template file this task came from (for resolving relative paths)
 }
 
