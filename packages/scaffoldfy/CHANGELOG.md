@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy
 
+## 0.10.0
+
+### Minor Changes
+
+- refactor codebase to remove initialization state update terminology for generic task automation
+
 ## 0.9.0
 
 ### Minor Changes

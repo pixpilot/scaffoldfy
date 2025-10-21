@@ -1,5 +1,13 @@
 # @pixpilot/scaffoldfy-templates
 
+## 0.2.0
+
+### Minor Changes
+
+- add internal configurations for tsdown and vitest
+- support templates with optional tasks array
+- enhance remote template file handling
+
 ## 0.1.3
 
 ### Patch Changes
