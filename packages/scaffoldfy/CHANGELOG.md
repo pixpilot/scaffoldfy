@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy
 
+## 0.14.0
+
+### Minor Changes
+
+- add custom error classes for better error handling
+
 ## 0.13.0
 
 ### Minor Changes
