@@ -35,6 +35,66 @@ function isUrl(str: string): boolean {
 }
 
 /**
+ * Resolve a templateFile path relative to a source URL or path
+ * @param templateFilePath - The templateFile path (can be relative or absolute)
+ * @param sourceUrl - The URL or path of the template that references this file
+ * @returns The resolved absolute path or URL
+ */
+export function resolveTemplateFilePath(
+  templateFilePath: string,
+  sourceUrl?: string,
+): string {
+  // If templateFilePath is already a URL, return as-is
+  if (isUrl(templateFilePath)) {
+    return templateFilePath;
+  }
+
+  // If no sourceUrl is provided, resolve relative to CWD
+  if (sourceUrl == null || sourceUrl === '') {
+    return path.isAbsolute(templateFilePath)
+      ? templateFilePath
+      : path.resolve(process.cwd(), templateFilePath);
+  }
+
+  // If sourceUrl is a URL, resolve templateFilePath relative to it
+  if (isUrl(sourceUrl)) {
+    try {
+      // Use URL resolution to handle relative paths
+      const baseUrl = new URL('.', sourceUrl); // Get directory URL
+      const resolvedUrl = new URL(templateFilePath, baseUrl);
+      return resolvedUrl.href;
+    } catch {
+      throw new Error(
+        `Failed to resolve templateFile "${templateFilePath}" relative to remote template "${sourceUrl}"`,
+      );
+    }
+  }
+
+  // Otherwise, sourceUrl is a local path, resolve relative to it
+  const sourceDir = path.dirname(sourceUrl);
+  return path.isAbsolute(templateFilePath)
+    ? templateFilePath
+    : path.resolve(sourceDir, templateFilePath);
+}
+
+/**
+ * Fetch content from a remote URL or read from local file
+ * @param urlOrPath - URL or file path to fetch/read
+ * @returns The content as a string
+ */
+export async function fetchTemplateFile(urlOrPath: string): Promise<string> {
+  if (isUrl(urlOrPath)) {
+    return fetchRemoteTemplate(urlOrPath);
+  }
+
+  // Local file
+  if (!fs.existsSync(urlOrPath)) {
+    throw new Error(`Template file not found: ${urlOrPath}`);
+  }
+  return readFile(urlOrPath, 'utf-8');
+}
+
+/**
  * Fetch content from a remote URL
  * @param url - URL to fetch
  * @returns The fetched content as a string
@@ -135,6 +195,11 @@ export async function loadTemplate(
     throw new TypeError(
       `Invalid template file ${resolvedPath}: 'tasks' array is required`,
     );
+  }
+
+  // Annotate each task with the source URL/path for resolving relative templateFile references
+  for (const task of config.tasks) {
+    task.$sourceUrl = resolvedPath;
   }
 
   // Cache the loaded template
@@ -340,6 +405,9 @@ function mergeTask(base: TaskDefinition, override: TaskDefinition): TaskDefiniti
   const uniqueDependencies =
     mergedDependencies.length > 0 ? [...new Set(mergedDependencies)] : undefined;
 
+  // Use override's $sourceUrl if present, otherwise keep base's
+  const sourceUrl = override.$sourceUrl ?? base.$sourceUrl;
+
   return {
     ...base,
     ...override,
@@ -347,6 +415,7 @@ function mergeTask(base: TaskDefinition, override: TaskDefinition): TaskDefiniti
     ...(mergedPrompts != null && { prompts: mergedPrompts }),
     ...(mergedVariables != null && { variables: mergedVariables }),
     ...(uniqueDependencies != null && { dependencies: uniqueDependencies }),
+    ...(sourceUrl != null && { $sourceUrl: sourceUrl }),
   };
 }
 

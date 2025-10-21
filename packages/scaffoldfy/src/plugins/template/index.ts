@@ -18,6 +18,6 @@ export const templatePlugin: TaskPlugin = {
     if (options.dryRun) {
       return;
     }
-    await executeTemplate(task.config as TemplateConfig, config);
+    await executeTemplate(task.config as TemplateConfig, config, task);
   },
 };

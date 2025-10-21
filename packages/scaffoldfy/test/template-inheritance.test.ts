@@ -60,7 +60,11 @@ describe('template inheritance', () => {
       const filePath = createTemplateFile('simple.json', config);
       const loaded = await loadTemplate(filePath);
 
-      expect(loaded).toEqual(config);
+      // Tasks should be annotated with $sourceUrl
+      expect(loaded.tasks).toHaveLength(1);
+      expect(loaded.tasks[0]?.$sourceUrl).toBe(filePath);
+      expect(loaded.tasks[0]?.id).toBe('task1');
+      expect(loaded.tasks[0]?.name).toBe('Task 1');
     });
 
     it('should throw error for non-existent file', async () => {
@@ -696,6 +700,195 @@ describe('template inheritance', () => {
       expect(config.tasks.some((t) => t.id === 'base1-task')).toBe(true);
       expect(config.tasks.some((t) => t.id === 'base2-task')).toBe(true);
       expect(config.tasks.some((t) => t.id === 'multi-task')).toBe(true);
+    });
+  });
+
+  describe('resolveTemplateFilePath and fetchTemplateFile', () => {
+    it('should return absolute URLs as-is', async () => {
+      const { resolveTemplateFilePath } = await import('../src/template-inheritance.js');
+      const url = 'https://example.com/templates/file.hbs';
+      const resolved = resolveTemplateFilePath(url);
+      expect(resolved).toBe(url);
+    });
+
+    it('should resolve relative path to CWD when no sourceUrl provided', async () => {
+      const { resolveTemplateFilePath } = await import('../src/template-inheritance.js');
+      const resolved = resolveTemplateFilePath('test.hbs');
+      expect(path.isAbsolute(resolved)).toBe(true);
+      expect(resolved).toContain('test.hbs');
+    });
+
+    it('should resolve relative path to remote source URL', async () => {
+      const { resolveTemplateFilePath } = await import('../src/template-inheritance.js');
+      const sourceUrl = 'https://example.com/templates/main.json';
+      const templateFile = './config.hbs';
+      const resolved = resolveTemplateFilePath(templateFile, sourceUrl);
+      expect(resolved).toBe('https://example.com/templates/config.hbs');
+    });
+
+    it('should resolve parent directory path to remote source URL', async () => {
+      const { resolveTemplateFilePath } = await import('../src/template-inheritance.js');
+      const sourceUrl = 'https://example.com/templates/main.json';
+      const templateFile = '../shared/config.hbs';
+      const resolved = resolveTemplateFilePath(templateFile, sourceUrl);
+      expect(resolved).toBe('https://example.com/shared/config.hbs');
+    });
+
+    it('should resolve nested relative path to remote source URL', async () => {
+      const { resolveTemplateFilePath } = await import('../src/template-inheritance.js');
+      const sourceUrl = 'https://example.com/templates/project/main.json';
+      const templateFile = './files/tsconfig.hbs';
+      const resolved = resolveTemplateFilePath(templateFile, sourceUrl);
+      expect(resolved).toBe('https://example.com/templates/project/files/tsconfig.hbs');
+    });
+
+    it('should resolve relative path to local source path', async () => {
+      const { resolveTemplateFilePath } = await import('../src/template-inheritance.js');
+      const sourceUrl = path.join(testDir, 'templates', 'main.json');
+      const templateFile = './config.hbs';
+      const resolved = resolveTemplateFilePath(templateFile, sourceUrl);
+      const expected = path.join(testDir, 'templates', 'config.hbs');
+      expect(resolved).toBe(expected);
+    });
+
+    it('should handle absolute local paths', async () => {
+      const { resolveTemplateFilePath } = await import('../src/template-inheritance.js');
+      const absolutePath = path.join(testDir, 'template.hbs');
+      const resolved = resolveTemplateFilePath(absolutePath);
+      expect(resolved).toBe(absolutePath);
+    });
+
+    it('should fetch from remote URL', async () => {
+      const { fetchTemplateFile } = await import('../src/template-inheritance.js');
+      const mockFetch = (async (url: string) => {
+        if (url === 'https://example.com/template.hbs') {
+          return Promise.resolve(
+            new Response('# {{title}}\n\nWelcome to {{projectName}}', {
+              status: 200,
+              headers: { 'Content-Type': 'text/plain' },
+            }),
+          );
+        }
+        return Promise.resolve(new Response('Not Found', { status: 404 }));
+      }) as typeof fetch;
+
+      globalThis.fetch = mockFetch;
+
+      const content = await fetchTemplateFile('https://example.com/template.hbs');
+      expect(content).toBe('# {{title}}\n\nWelcome to {{projectName}}');
+    });
+
+    it('should read from local file', async () => {
+      const { fetchTemplateFile } = await import('../src/template-inheritance.js');
+      const templatePath = path.join(testDir, 'local-template.hbs');
+      fs.mkdirSync(testDir, { recursive: true });
+      fs.writeFileSync(templatePath, 'Local content: {{name}}');
+
+      const content = await fetchTemplateFile(templatePath);
+      expect(content).toBe('Local content: {{name}}');
+    });
+
+    it('should throw error for non-existent local file', async () => {
+      const { fetchTemplateFile } = await import('../src/template-inheritance.js');
+      const nonExistentPath = path.join(testDir, 'does-not-exist.hbs');
+      await expect(fetchTemplateFile(nonExistentPath)).rejects.toThrow(
+        'Template file not found',
+      );
+    });
+  });
+
+  describe('$sourceUrl annotation', () => {
+    it('should annotate tasks with source URL from remote template', async () => {
+      const mockFetch = (async (url: string) => {
+        if (url === 'https://example.com/remote-template.json') {
+          return Promise.resolve(
+            new Response(
+              JSON.stringify({
+                tasks: [
+                  {
+                    id: 'remote-task',
+                    name: 'Remote Task',
+                    description: 'Task from remote',
+                    required: true,
+                    enabled: true,
+                    type: 'template',
+                    config: { file: 'output.txt', templateFile: './template.hbs' },
+                  },
+                ],
+              }),
+              { status: 200, headers: { 'Content-Type': 'application/json' } },
+            ),
+          );
+        }
+        return Promise.resolve(new Response('Not Found', { status: 404 }));
+      }) as typeof fetch;
+
+      globalThis.fetch = mockFetch;
+
+      const config = await loadTemplate('https://example.com/remote-template.json');
+      expect(config.tasks[0]?.$sourceUrl).toBe(
+        'https://example.com/remote-template.json',
+      );
+    });
+
+    it('should annotate tasks with source path from local template', async () => {
+      const config: TasksConfiguration = {
+        tasks: [
+          {
+            id: 'local-task',
+            name: 'Local Task',
+            description: 'Task from local',
+            required: true,
+            enabled: true,
+            type: 'template',
+            config: { file: 'output.txt', templateFile: './template.hbs' },
+          },
+        ],
+      };
+
+      const filePath = createTemplateFile('local-with-templatefile.json', config);
+      const loaded = await loadTemplate(filePath);
+
+      expect(loaded.tasks[0]?.$sourceUrl).toBe(filePath);
+    });
+
+    it('should preserve $sourceUrl when merging templates', async () => {
+      const baseConfig: TasksConfiguration = {
+        tasks: [
+          {
+            id: 'task1',
+            name: 'Base Task',
+            description: 'Base',
+            required: true,
+            enabled: true,
+            type: 'template',
+            config: {},
+          },
+        ],
+      };
+
+      const childConfig: TasksConfiguration = {
+        extends: 'base.json',
+        tasks: [
+          {
+            id: 'task1',
+            name: 'Overridden Task',
+            description: 'Overridden',
+            required: false,
+            enabled: true,
+            type: 'template',
+            config: { value: 'new' },
+          },
+        ],
+      };
+
+      createTemplateFile('base.json', baseConfig);
+      const childPath = createTemplateFile('child.json', childConfig);
+
+      const merged = await loadAndMergeTemplate(childPath);
+
+      // The overridden task should have the child's source URL
+      expect(merged.tasks[0]?.$sourceUrl).toBe(childPath);
     });
   });
 });

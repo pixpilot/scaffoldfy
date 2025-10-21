@@ -165,6 +165,7 @@ export interface TaskDefinition {
   rollback?: RollbackConfig; // How to rollback if something fails
   prompts?: PromptDefinition[]; // Optional task-scoped prompts to collect before running task
   variables?: VariableDefinition[]; // Optional task-scoped variables (not available to other tasks)
+  $sourceUrl?: string; // Internal: URL or path of the template file this task came from (for resolving relative paths)
 }
 
 export interface InitializationMetadata {

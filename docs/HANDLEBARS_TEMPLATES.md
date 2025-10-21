@@ -12,7 +12,9 @@ Template tasks can use two different templating approaches:
 Templates can be defined in two ways:
 
 1. **Inline**: Template string directly in the task configuration (simple interpolation only)
-2. **File-based**: External template file (relative to project root). `.hbs` files automatically use Handlebars
+2. **File-based**: External template file (relative to project root or template source). `.hbs` files automatically use Handlebars
+
+> **Note**: When using [template inheritance](./TEMPLATE_INHERITANCE.md) with remote templates, `templateFile` paths are automatically resolved relative to the remote template's location. This allows remote templates to reference their own template files hosted alongside them.
 
 ## Configuration Options
 
@@ -20,7 +22,7 @@ Templates can be defined in two ways:
 
 - **`file`** (required): Path to the output file to create or overwrite
 - **`template`** (optional): Inline template string using simple `{{variable}}` syntax
-- **`templateFile`** (optional): Path to external template file (relative to project root)
+- **`templateFile`** (optional): Path to external template file (relative to project root, or for remote templates, relative to the template's URL)
 - **`condition`** (optional): JavaScript expression to conditionally execute the task
 
 **Important**: You must specify either `template` OR `templateFile`, but not both.

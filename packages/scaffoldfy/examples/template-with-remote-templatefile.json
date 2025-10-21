@@ -1,0 +1,36 @@
+{
+  "extends": "https://raw.githubusercontent.com/your-org/templates/main/base-node.json",
+  "prompts": [
+    {
+      "id": "projectName",
+      "type": "input",
+      "message": "What is your project name?",
+      "default": "my-project"
+    },
+    {
+      "id": "description",
+      "type": "input",
+      "message": "Project description?",
+      "default": "A new project"
+    },
+    {
+      "id": "author",
+      "type": "input",
+      "message": "Author name?",
+      "default": "Your Name"
+    }
+  ],
+  "tasks": [
+    {
+      "id": "install-deps",
+      "name": "Install Dependencies",
+      "description": "Install npm dependencies",
+      "required": true,
+      "enabled": true,
+      "type": "exec",
+      "config": {
+        "command": "npm install"
+      }
+    }
+  ]
+}

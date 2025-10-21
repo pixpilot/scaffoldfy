@@ -2,18 +2,17 @@
  * template plugin executor
  */
 
-import type { InitConfig } from '../../types.js';
+import type { InitConfig, TaskDefinition } from '../../types.js';
 import type { TemplateConfig } from './types.js';
 import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
 import { promisify } from 'node:util';
 import {
-  compileHandlebarsTemplateFile,
-  evaluateCondition,
-  interpolateTemplate,
-  log,
-} from '../../utils.js';
+  fetchTemplateFile,
+  resolveTemplateFilePath,
+} from '../../template-inheritance.js';
+import { evaluateCondition, interpolateTemplate, log } from '../../utils.js';
 
 const writeFile = promisify(fs.writeFile);
 
@@ -23,6 +22,7 @@ const writeFile = promisify(fs.writeFile);
 export async function executeTemplate(
   config: TemplateConfig,
   initConfig: InitConfig,
+  task?: TaskDefinition,
 ): Promise<void> {
   // Check condition if specified
   if (config.condition != null && config.condition !== '') {
@@ -58,20 +58,30 @@ export async function executeTemplate(
   const shouldUseHandlebars = hasTemplateFile && config.templateFile!.endsWith('.hbs');
 
   if (shouldUseHandlebars) {
-    // Read and compile external template file with Handlebars
-    content = compileHandlebarsTemplateFile(config.templateFile!, initConfig);
+    // Resolve the templateFile path relative to the task's source
+    const resolvedTemplatePath = resolveTemplateFilePath(
+      config.templateFile!,
+      task?.$sourceUrl,
+    );
+
+    // Fetch the template file (from URL or local filesystem)
+    const templateContent = await fetchTemplateFile(resolvedTemplatePath);
+
+    // Compile with Handlebars
+    const Handlebars = await import('handlebars');
+    const template = Handlebars.default.compile(templateContent);
+    content = template(initConfig);
   } else if (hasTemplateFile) {
-    // Read external template file and use simple interpolation
-    const templateFilePath = config.templateFile!;
-    const templatePath = path.isAbsolute(templateFilePath)
-      ? templateFilePath
-      : path.join(process.cwd(), templateFilePath);
+    // Resolve the templateFile path relative to the task's source
+    const resolvedTemplatePath = resolveTemplateFilePath(
+      config.templateFile!,
+      task?.$sourceUrl,
+    );
 
-    if (!fs.existsSync(templatePath)) {
-      throw new Error(`Template file not found: ${templateFilePath}`);
-    }
+    // Fetch the template file (from URL or local filesystem)
+    const templateContent = await fetchTemplateFile(resolvedTemplatePath);
 
-    const templateContent = fs.readFileSync(templatePath, 'utf-8');
+    // Use simple interpolation
     content = interpolateTemplate(templateContent, initConfig);
   } else {
     // Use simple interpolation on inline template

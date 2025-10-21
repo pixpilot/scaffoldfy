@@ -228,6 +228,121 @@ Remote templates are cached in memory during execution to avoid repeated network
 - Consider pinning to specific versions (e.g., Git tags) for stability
 - Be aware that remote templates can change unless locked to a specific version
 
+### Remote Template Files
+
+When a remote template uses the `templateFile` property in a `template` task, the file path is automatically resolved relative to the remote template's location. This allows remote templates to reference their own template files seamlessly.
+
+#### How It Works
+
+When you extend a remote template that contains tasks with `templateFile` references, the CLI automatically:
+
+1. Tracks the source URL of each task
+2. Resolves `templateFile` paths relative to the remote template's URL
+3. Fetches the template file from the remote location
+4. Processes it with the specified template engine (Handlebars for `.hbs` files)
+
+#### Example: Remote Template with Template Files
+
+**Remote base template** at `https://raw.githubusercontent.com/your-org/templates/main/base-node.json`:
+
+```json
+{
+  "tasks": [
+    {
+      "id": "create-tsconfig",
+      "name": "Create TypeScript Config",
+      "description": "Generate tsconfig.json",
+      "required": true,
+      "enabled": true,
+      "type": "template",
+      "config": {
+        "file": "tsconfig.json",
+        "templateFile": "./tsconfig.hbs"
+      }
+    },
+    {
+      "id": "create-readme",
+      "name": "Create README",
+      "description": "Generate README.md",
+      "required": true,
+      "enabled": true,
+      "type": "template",
+      "config": {
+        "file": "README.md",
+        "templateFile": "../shared/readme.hbs"
+      }
+    }
+  ]
+}
+```
+
+**Template files hosted alongside the template:**
+- `https://raw.githubusercontent.com/your-org/templates/main/tsconfig.hbs`
+- `https://raw.githubusercontent.com/your-org/templates/shared/readme.hbs`
+
+**Your local template** extending the remote one:
+
+```json
+{
+  "extends": "https://raw.githubusercontent.com/your-org/templates/main/base-node.json",
+  "tasks": [
+    {
+      "id": "custom-task",
+      "name": "Custom Task",
+      "description": "Your project-specific task",
+      "required": true,
+      "enabled": true,
+      "type": "exec",
+      "config": {
+        "command": "npm install"
+      }
+    }
+  ]
+}
+```
+
+When you run this, the CLI will:
+1. Fetch `base-node.json` from GitHub
+2. For the `create-tsconfig` task, resolve `./tsconfig.hbs` → `https://raw.githubusercontent.com/your-org/templates/main/tsconfig.hbs`
+3. For the `create-readme` task, resolve `../shared/readme.hbs` → `https://raw.githubusercontent.com/your-org/templates/shared/readme.hbs`
+4. Fetch both template files from their remote locations
+5. Process them with Handlebars to generate the output files
+
+#### Path Resolution Rules
+
+The `templateFile` paths are resolved using standard URL/path resolution:
+
+- **Relative paths** (`./file.hbs`, `file.hbs`): Resolved relative to the template's directory
+- **Parent directory paths** (`../file.hbs`): Navigate up from the template's directory
+- **Absolute URLs** (`https://...`): Used as-is
+- **Absolute local paths** (`/path/to/file.hbs`): Used as-is for local templates
+
+#### Mixed Remote and Local Template Files
+
+You can combine remote templates with local template files, though remote templates with remote template files are more common for portability:
+
+```json
+{
+  "extends": "https://example.com/templates/base.json",
+  "tasks": [
+    {
+      "id": "custom-template",
+      "name": "Custom Template",
+      "description": "Use local template file",
+      "required": true,
+      "enabled": true,
+      "type": "template",
+      "config": {
+        "file": "output.txt",
+        "templateFile": "./local-template.hbs"
+      }
+    }
+  ]
+}
+```
+
+In this case, the `create-tsconfig` task from the remote template will fetch its template file from the remote location, while your `custom-template` task will use the local `./local-template.hbs` file.
+
 ## Task Overriding
 
 If a child template defines a task with the same ID as a base template, the child's task completely replaces the base task:
