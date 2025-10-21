@@ -1,7 +1,6 @@
 {
   "$schema": "https://unpkg.com/@pixpilot/scaffoldfy/schema",
   "description": "Project information prompts for pnpm-turbo-monorepo-template",
-
   "prompts": [
     {
       "id": "projectName",
@@ -19,7 +18,7 @@
       "message": "Repository owner (GitHub username or organization)",
       "default": {
         "type": "exec",
-        "value": "$url = git config --get remote.origin.url; if ($url -match 'github.com[:/](.+?)/') { $matches[1] } else { '' }"
+        "value": "git remote get-url origin | node -e \"const url=require('fs').readFileSync(0,'utf-8'); console.log(url.match(/[:/]([^/]+)\\/[^/]+(?:\\.git)?$/)[1])\""
       },
       "required": true
     },
@@ -29,7 +28,7 @@
       "message": "Organization name for packages (used in package scopes)",
       "default": {
         "type": "exec",
-        "value": "$url = git config --get remote.origin.url; if ($url -match 'github.com[:/](.+?)/') { $matches[1] } else { '' }"
+        "value": "git remote get-url origin | node -e \"const url=require('fs').readFileSync(0,'utf-8'); console.log(url.match(/[:/]([^/]+)\\/[^/]+(?:\\.git)?$/)[1])\""
       },
       "required": false
     },
@@ -69,7 +68,7 @@
       "message": "Repository name",
       "default": {
         "type": "exec",
-        "value": "$url = git config --get remote.origin.url; $parts = $url -split '/'; $repo = $parts[-1]; $repo.Replace('.git', '')"
+        "value": "git remote get-url origin | node -e \"const url=require('fs').readFileSync(0,'utf-8').trim(); console.log(url.match(/[:/]([^/]+)\\/([^/]+?)(?:\\.git)?$/)[2])\""
       },
       "required": true
     },
@@ -79,7 +78,7 @@
       "message": "Base repository URL",
       "default": {
         "type": "exec",
-        "value": "(git config --get remote.origin.url).Replace('.git', '')"
+        "value": "git remote get-url origin | node -e \"const url=require('fs').readFileSync(0,'utf-8').trim(); const match=url.match(/^(?:https?:\\/\\/|git@)([^/:]+)[:/](.+?)(?:\\.git)?$/); console.log(match ? `https://${match[1]}/${match[2]}` : '')\""
       },
       "required": false
     }

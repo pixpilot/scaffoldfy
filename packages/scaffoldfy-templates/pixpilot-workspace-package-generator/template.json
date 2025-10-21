@@ -1,0 +1,31 @@
+{
+  "$schema": "https://unpkg.com/@pixpilot/scaffoldfy/schema",
+  "description": "Pixpilot workspace package generator template for pnpm + Turbo monorepo. Provides project info prompts and config tasks.",
+
+  "tasks": [
+    {
+      "id": "update-turbo-generator",
+      "name": "Update Turbo generator config",
+      "description": "Update the turbo generator configuration with user settings",
+      "required": true,
+      "enabled": true,
+      "type": "template",
+      "prompts": [
+        {
+          "id": "defaultBundler",
+          "type": "select",
+          "message": "Select your default bundler",
+          "choices": [
+            { "name": "TypeScript Compiler (tsc)", "value": "tsc" },
+            { "name": "TSDown", "value": "tsdown" }
+          ],
+          "default": "tsc"
+        }
+      ],
+      "config": {
+        "file": "turbo/generators/config.ts",
+        "templateFile": "./turbo-generator.hbs"
+      }
+    }
+  ]
+}
