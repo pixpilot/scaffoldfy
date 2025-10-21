@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy
 
+## 0.11.0
+
+### Minor Changes
+
+- add TypeScript template file for Turbo generator
+
 ## 0.10.0
 
 ### Minor Changes

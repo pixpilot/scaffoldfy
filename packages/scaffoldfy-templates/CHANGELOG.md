@@ -1,5 +1,15 @@
 # @pixpilot/scaffoldfy-templates
 
+## 0.3.0
+
+### Minor Changes
+
+- add TypeScript template file for Turbo generator
+
+### Patch Changes
+
+- removed unnecessary commands
+
 ## 0.2.0
 
 ### Minor Changes
