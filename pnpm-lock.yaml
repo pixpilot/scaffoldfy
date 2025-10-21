@@ -153,6 +153,12 @@ importers:
       '@internal/prettier-config':
         specifier: workspace:*
         version: link:../../tooling/prettier
+      '@internal/tsdown-config':
+        specifier: workspace:*
+        version: link:../../tooling/tsdown
+      '@internal/vitest-config':
+        specifier: workspace:*
+        version: link:../../tooling/vitest
       '@types/node':
         specifier: catalog:dev
         version: 22.18.11
