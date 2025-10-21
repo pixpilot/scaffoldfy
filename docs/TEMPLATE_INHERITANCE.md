@@ -277,6 +277,7 @@ When you extend a remote template that contains tasks with `templateFile` refere
 ```
 
 **Template files hosted alongside the template:**
+
 - `https://raw.githubusercontent.com/your-org/templates/main/tsconfig.hbs`
 - `https://raw.githubusercontent.com/your-org/templates/shared/readme.hbs`
 
@@ -302,6 +303,7 @@ When you extend a remote template that contains tasks with `templateFile` refere
 ```
 
 When you run this, the CLI will:
+
 1. Fetch `base-node.json` from GitHub
 2. For the `create-tsconfig` task, resolve `./tsconfig.hbs` → `https://raw.githubusercontent.com/your-org/templates/main/tsconfig.hbs`
 3. For the `create-readme` task, resolve `../shared/readme.hbs` → `https://raw.githubusercontent.com/your-org/templates/shared/readme.hbs`

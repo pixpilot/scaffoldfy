@@ -98,47 +98,25 @@ templates/
 ### `tsconfig.hbs`
 
 ```handlebars
-{
-  "compilerOptions": {
-    "target": "ES2022",
-    "module": "ESNext",
-    "moduleResolution": "bundler",
-    "strict": true,
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "outDir": "./dist",
-    "rootDir": "./src"
-  },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist"]
-}
+{ "compilerOptions": { "target": "ES2022", "module": "ESNext", "moduleResolution":
+"bundler", "strict": true, "esModuleInterop": true, "skipLibCheck": true,
+"forceConsistentCasingInFileNames": true, "outDir": "./dist", "rootDir": "./src" },
+"include": ["src/**/*"], "exclude": ["node_modules", "dist"] }
 ```
 
 ### `package.json.hbs`
 
 ```handlebars
-{
-  "name": "{{projectName}}",
-  "version": "0.1.0",
-  "description": "{{description}}",
-  "author": "{{author}}",
-  "type": "module",
-  "scripts": {
-    "build": "tsc",
-    "dev": "tsc --watch",
-    "start": "node dist/index.js"
-  },
-  "devDependencies": {
-    "typescript": "^5.0.0"
-  }
-}
+{ "name": "{{projectName}}", "version": "0.1.0", "description": "{{description}}",
+"author": "{{author}}", "type": "module", "scripts": { "build": "tsc", "dev": "tsc
+--watch", "start": "node dist/index.js" }, "devDependencies": { "typescript": "^5.0.0" } }
 ```
 
 ### `shared/readme.hbs`
 
 ```handlebars
-# {{projectName}}
+#
+{{projectName}}
 
 {{description}}
 
@@ -146,27 +124,8 @@ templates/
 
 {{author}}
 
-## Installation
-
-\`\`\`bash
-npm install
-\`\`\`
-
-## Development
-
-\`\`\`bash
-npm run dev
-\`\`\`
-
-## Build
-
-\`\`\`bash
-npm run build
-\`\`\`
-
-## License
-
-MIT
+## Installation \`\`\`bash npm install \`\`\` ## Development \`\`\`bash npm run dev \`\`\`
+## Build \`\`\`bash npm run build \`\`\` ## License MIT
 ```
 
 ### `shared/gitignore.hbs`
