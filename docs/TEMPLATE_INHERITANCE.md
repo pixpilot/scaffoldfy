@@ -91,6 +91,85 @@ You can extend multiple base templates:
 
 Tasks are merged in order, with later templates taking precedence.
 
+## Templates with Only Prompts/Variables
+
+Starting from version 2.0, the `tasks` array is optional. This allows you to create base templates that only provide shared prompts and variables for child templates to use.
+
+### Use Case
+
+This is particularly useful when you want to:
+
+- Create reusable prompt collections across multiple templates
+- Define common variables that multiple child templates should use
+- Build composable template libraries without duplicating prompts
+- Separate concerns between data collection (base) and task execution (child)
+
+### Example: Shared Prompts Template
+
+**Base template** (`shared-prompts.json`):
+
+```json
+{
+  "prompts": [
+    {
+      "id": "projectName",
+      "type": "input",
+      "message": "What is your project name?",
+      "required": true
+    },
+    {
+      "id": "author",
+      "type": "input",
+      "message": "Author name?",
+      "required": true
+    },
+    {
+      "id": "useTypeScript",
+      "type": "confirm",
+      "message": "Use TypeScript?",
+      "default": true
+    }
+  ],
+  "variables": [
+    {
+      "id": "currentYear",
+      "value": {
+        "type": "exec",
+        "value": "node -e \"console.log(new Date().getFullYear())\""
+      }
+    }
+  ]
+}
+```
+
+**Child template** that extends it:
+
+```json
+{
+  "extends": "shared-prompts.json",
+  "tasks": [
+    {
+      "id": "setup-project",
+      "name": "Setup Project",
+      "description": "Initialize project using shared prompts",
+      "required": true,
+      "enabled": true,
+      "type": "update-json",
+      "config": {
+        "file": "package.json",
+        "updates": {
+          "name": "{{projectName}}",
+          "author": "{{author}}",
+          "year": "{{currentYear}}"
+        }
+      }
+    }
+  ]
+}
+```
+
+The child template inherits all prompts and variables from the base template and can use them in its tasks without redefining them.
+
 ## Remote Templates from URLs
 
 Templates can be loaded from remote URLs (HTTP or HTTPS), enabling you to share base templates across projects and organizations.

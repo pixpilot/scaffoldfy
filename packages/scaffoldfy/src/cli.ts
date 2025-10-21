@@ -129,8 +129,13 @@ program
         }
       }
 
-      // If no tasks loaded, show error and exit
-      if (tasks.length === 0) {
+      // If no tasks loaded but we have globalPrompts or globalVariables, that's okay (extending template)
+      // Otherwise show error
+      const hasGlobalData =
+        (globalPrompts != null && globalPrompts.length > 0) ||
+        (globalVariables != null && globalVariables.length > 0);
+
+      if (tasks.length === 0 && !hasGlobalData) {
         log('❌ No tasks defined', 'error');
         console.log('');
         log('Please provide tasks using one of these methods:', 'info');
@@ -187,7 +192,16 @@ program
       }
 
       console.log('');
-      log(`Loaded ${tasks.length} task(s)`, 'success');
+
+      if (tasks.length === 0) {
+        log(
+          'Loaded template with 0 tasks (template may only provide prompts/variables for extending)',
+          'info',
+        );
+      } else {
+        log(`Loaded ${tasks.length} task(s)`, 'success');
+      }
+
       console.log('');
 
       // Run initialization with tasks

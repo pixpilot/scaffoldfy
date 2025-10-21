@@ -182,7 +182,7 @@ export interface TasksConfiguration {
   extends?: string | string[]; // Path(s) or URL(s) to base template file(s) to inherit from
   variables?: VariableDefinition[]; // Optional top-level global variables available to all tasks
   prompts?: PromptDefinition[]; // Optional top-level global prompts collected once upfront
-  tasks: TaskDefinition[];
+  tasks?: TaskDefinition[]; // Optional tasks array - can be omitted when extending templates that only provide prompts/variables
 }
 
 /**

@@ -31,6 +31,8 @@
   "devDependencies": {
     "@internal/eslint-config": "workspace:*",
     "@internal/prettier-config": "workspace:*",
+    "@internal/tsdown-config": "workspace:*",
+    "@internal/vitest-config": "workspace:*",
     "@types/node": "catalog:dev",
     "eslint": "catalog:dev"
   },

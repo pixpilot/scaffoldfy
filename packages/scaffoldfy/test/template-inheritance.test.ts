@@ -61,10 +61,11 @@ describe('template inheritance', () => {
       const loaded = await loadTemplate(filePath);
 
       // Tasks should be annotated with $sourceUrl
+      expect(loaded.tasks).toBeDefined();
       expect(loaded.tasks).toHaveLength(1);
-      expect(loaded.tasks[0]?.$sourceUrl).toBe(filePath);
-      expect(loaded.tasks[0]?.id).toBe('task1');
-      expect(loaded.tasks[0]?.name).toBe('Task 1');
+      expect(loaded.tasks![0]?.$sourceUrl).toBe(filePath);
+      expect(loaded.tasks![0]?.id).toBe('task1');
+      expect(loaded.tasks![0]?.name).toBe('Task 1');
     });
 
     it('should throw error for non-existent file', async () => {
@@ -83,12 +84,26 @@ describe('template inheritance', () => {
       );
     });
 
-    it('should throw error for missing tasks array', async () => {
+    it('should allow missing tasks array (for templates with only prompts/variables)', async () => {
       const filePath = path.join(testDir, 'no-tasks.json');
       fs.mkdirSync(testDir, { recursive: true });
-      fs.writeFileSync(filePath, JSON.stringify({ other: 'data' }));
+      fs.writeFileSync(
+        filePath,
+        JSON.stringify({
+          prompts: [
+            {
+              id: 'projectName',
+              type: 'input',
+              message: 'Project name?',
+            },
+          ],
+        }),
+      );
 
-      await expect(loadTemplate(filePath)).rejects.toThrow("'tasks' array is required");
+      const config = await loadTemplate(filePath);
+      expect(config.tasks).toEqual([]);
+      expect(config.prompts).toBeDefined();
+      expect(config.prompts).toHaveLength(1);
     });
 
     it('should detect circular dependencies', async () => {
@@ -142,9 +157,10 @@ describe('template inheritance', () => {
 
       const merged = mergeTemplates([template1, template2]);
 
+      expect(merged.tasks).toBeDefined();
       expect(merged.tasks).toHaveLength(2);
-      expect(merged.tasks[0]?.id).toBe('task1');
-      expect(merged.tasks[1]?.id).toBe('task2');
+      expect(merged.tasks![0]?.id).toBe('task1');
+      expect(merged.tasks![1]?.id).toBe('task2');
     });
 
     it('should override tasks with same ID', () => {
@@ -178,11 +194,12 @@ describe('template inheritance', () => {
 
       const merged = mergeTemplates([template1, template2]);
 
+      expect(merged.tasks).toBeDefined();
       expect(merged.tasks).toHaveLength(1);
-      expect(merged.tasks[0]?.name).toBe('Updated Name');
-      expect(merged.tasks[0]?.description).toBe('Updated');
-      expect(merged.tasks[0]?.required).toBe(false);
-      expect(merged.tasks[0]?.type).toBe('delete');
+      expect(merged.tasks![0]?.name).toBe('Updated Name');
+      expect(merged.tasks![0]?.description).toBe('Updated');
+      expect(merged.tasks![0]?.required).toBe(false);
+      expect(merged.tasks![0]?.type).toBe('delete');
     });
 
     it('should merge dependencies arrays', () => {
@@ -210,12 +227,60 @@ describe('template inheritance', () => {
 
       const merged = mergeTemplates([{ tasks: [task1] }, { tasks: [task2] }]);
 
-      expect(merged.tasks[0]?.dependencies).toEqual(['dep1', 'dep2', 'dep3']);
+      expect(merged.tasks).toBeDefined();
+      expect(merged.tasks![0]?.dependencies).toEqual(['dep1', 'dep2', 'dep3']);
     });
 
     it('should handle empty templates array', () => {
       const merged = mergeTemplates([]);
       expect(merged.tasks).toHaveLength(0);
+    });
+
+    it('should merge template with only prompts/variables (no tasks)', () => {
+      const baseTemplate: TasksConfiguration = {
+        prompts: [
+          {
+            id: 'projectName',
+            type: 'input',
+            message: 'Project name?',
+          },
+          {
+            id: 'author',
+            type: 'input',
+            message: 'Author name?',
+          },
+        ],
+        variables: [
+          {
+            id: 'currentYear',
+            value: '2024',
+          },
+        ],
+      };
+
+      const childTemplate: TasksConfiguration = {
+        tasks: [
+          {
+            id: 'use-prompts',
+            name: 'Use Prompts',
+            description: 'Task using inherited prompts',
+            required: true,
+            enabled: true,
+            type: 'template',
+            config: {},
+          },
+        ],
+      };
+
+      const merged = mergeTemplates([baseTemplate, childTemplate]);
+
+      expect(merged.tasks).toBeDefined();
+      expect(merged.tasks).toHaveLength(1);
+      expect(merged.tasks![0]?.id).toBe('use-prompts');
+      expect(merged.prompts).toBeDefined();
+      expect(merged.prompts).toHaveLength(2);
+      expect(merged.variables).toBeDefined();
+      expect(merged.variables).toHaveLength(1);
     });
 
     it('should return single template as-is', () => {
@@ -239,6 +304,54 @@ describe('template inheritance', () => {
   });
 
   describe('loadAndMergeTemplate', () => {
+    it('should load template with only prompts/variables (no tasks) for extending', async () => {
+      const baseConfig: TasksConfiguration = {
+        prompts: [
+          {
+            id: 'sharedPrompt',
+            type: 'input',
+            message: 'Enter value',
+          },
+        ],
+        variables: [
+          {
+            id: 'baseVar',
+            value: 'baseValue',
+          },
+        ],
+      };
+
+      const childConfig: TasksConfiguration = {
+        extends: 'base.json',
+        tasks: [
+          {
+            id: 'child-task',
+            name: 'Child Task',
+            description: 'Task using base prompts/variables',
+            required: true,
+            enabled: true,
+            type: 'template',
+            config: {},
+          },
+        ],
+      };
+
+      createTemplateFile('base.json', baseConfig);
+      const childPath = createTemplateFile('child.json', childConfig);
+
+      const merged = await loadAndMergeTemplate(childPath);
+
+      expect(merged.tasks).toBeDefined();
+      expect(merged.tasks).toHaveLength(1);
+      expect(merged.tasks![0]?.id).toBe('child-task');
+      expect(merged.prompts).toBeDefined();
+      expect(merged.prompts).toHaveLength(1);
+      expect(merged.prompts![0]?.id).toBe('sharedPrompt');
+      expect(merged.variables).toBeDefined();
+      expect(merged.variables).toHaveLength(1);
+      expect(merged.variables![0]?.id).toBe('baseVar');
+    });
+
     it('should load and merge templates with extends', async () => {
       const baseConfig: TasksConfiguration = {
         tasks: [
@@ -274,9 +387,10 @@ describe('template inheritance', () => {
 
       const merged = await loadAndMergeTemplate(childPath);
 
+      expect(merged.tasks).toBeDefined();
       expect(merged.tasks).toHaveLength(2);
-      expect(merged.tasks.find((t) => t.id === 'base-task')).toBeDefined();
-      expect(merged.tasks.find((t) => t.id === 'child-task')).toBeDefined();
+      expect(merged.tasks!.find((t) => t.id === 'base-task')).toBeDefined();
+      expect(merged.tasks!.find((t) => t.id === 'child-task')).toBeDefined();
     });
 
     it('should support multiple extends', async () => {
@@ -359,8 +473,9 @@ describe('template inheritance', () => {
 
       const merged = await loadAndMergeTemplate(childPath);
 
+      expect(merged.tasks).toBeDefined();
       expect(merged.tasks).toHaveLength(1);
-      expect(merged.tasks[0]?.id).toBe('base');
+      expect(merged.tasks![0]?.id).toBe('base');
     });
   });
 
@@ -536,9 +651,10 @@ describe('template inheritance', () => {
     it('should load template from HTTP URL', async () => {
       const config = await loadTemplate('https://example.com/base.json');
 
+      expect(config.tasks).toBeDefined();
       expect(config.tasks).toHaveLength(1);
-      expect(config.tasks[0]?.id).toBe('remote-task');
-      expect(config.tasks[0]?.name).toBe('Remote Task');
+      expect(config.tasks![0]?.id).toBe('remote-task');
+      expect(config.tasks![0]?.name).toBe('Remote Task');
     });
 
     it('should cache remote templates', async () => {
@@ -565,9 +681,10 @@ describe('template inheritance', () => {
         'https://example.com/templates/child.json',
       );
 
+      expect(config.tasks).toBeDefined();
       expect(config.tasks).toHaveLength(2);
-      expect(config.tasks.some((t) => t.id === 'remote-task')).toBe(true);
-      expect(config.tasks.some((t) => t.id === 'child-task')).toBe(true);
+      expect(config.tasks!.some((t) => t.id === 'remote-task')).toBe(true);
+      expect(config.tasks!.some((t) => t.id === 'child-task')).toBe(true);
     });
 
     it('should detect circular dependencies with URLs', async () => {
@@ -595,9 +712,10 @@ describe('template inheritance', () => {
       const localPath = createTemplateFile('mixed.json', localConfig);
       const config = await loadAndMergeTemplate(localPath);
 
+      expect(config.tasks).toBeDefined();
       expect(config.tasks).toHaveLength(2);
-      expect(config.tasks.some((t) => t.id === 'remote-task')).toBe(true);
-      expect(config.tasks.some((t) => t.id === 'local-task')).toBe(true);
+      expect(config.tasks!.some((t) => t.id === 'remote-task')).toBe(true);
+      expect(config.tasks!.some((t) => t.id === 'local-task')).toBe(true);
     });
 
     it('should resolve relative URLs correctly', async () => {
@@ -605,9 +723,10 @@ describe('template inheritance', () => {
         'https://example.com/with-local-extends.json',
       );
 
+      expect(config.tasks).toBeDefined();
       expect(config.tasks).toHaveLength(2);
-      expect(config.tasks.some((t) => t.id === 'local-base-task')).toBe(true);
-      expect(config.tasks.some((t) => t.id === 'remote-with-local')).toBe(true);
+      expect(config.tasks!.some((t) => t.id === 'local-base-task')).toBe(true);
+      expect(config.tasks!.some((t) => t.id === 'remote-with-local')).toBe(true);
     });
 
     it('should load tasks with inheritance from URL', async () => {
@@ -696,10 +815,11 @@ describe('template inheritance', () => {
 
       const config = await loadAndMergeTemplate('https://example.com/multi.json');
 
+      expect(config.tasks).toBeDefined();
       expect(config.tasks).toHaveLength(3);
-      expect(config.tasks.some((t) => t.id === 'base1-task')).toBe(true);
-      expect(config.tasks.some((t) => t.id === 'base2-task')).toBe(true);
-      expect(config.tasks.some((t) => t.id === 'multi-task')).toBe(true);
+      expect(config.tasks!.some((t) => t.id === 'base1-task')).toBe(true);
+      expect(config.tasks!.some((t) => t.id === 'base2-task')).toBe(true);
+      expect(config.tasks!.some((t) => t.id === 'multi-task')).toBe(true);
     });
   });
 
@@ -826,7 +946,8 @@ describe('template inheritance', () => {
       globalThis.fetch = mockFetch;
 
       const config = await loadTemplate('https://example.com/remote-template.json');
-      expect(config.tasks[0]?.$sourceUrl).toBe(
+      expect(config.tasks).toBeDefined();
+      expect(config.tasks![0]?.$sourceUrl).toBe(
         'https://example.com/remote-template.json',
       );
     });
@@ -849,7 +970,8 @@ describe('template inheritance', () => {
       const filePath = createTemplateFile('local-with-templatefile.json', config);
       const loaded = await loadTemplate(filePath);
 
-      expect(loaded.tasks[0]?.$sourceUrl).toBe(filePath);
+      expect(loaded.tasks).toBeDefined();
+      expect(loaded.tasks![0]?.$sourceUrl).toBe(filePath);
     });
 
     it('should preserve $sourceUrl when merging templates', async () => {
@@ -888,7 +1010,8 @@ describe('template inheritance', () => {
       const merged = await loadAndMergeTemplate(childPath);
 
       // The overridden task should have the child's source URL
-      expect(merged.tasks[0]?.$sourceUrl).toBe(childPath);
+      expect(merged.tasks).toBeDefined();
+      expect(merged.tasks![0]?.$sourceUrl).toBe(childPath);
     });
   });
 });

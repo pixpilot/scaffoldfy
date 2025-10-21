@@ -97,7 +97,6 @@ await runWithTasks(tasks, { force: true });
 
 // Keep tasks file after initialization
 await runWithTasks(tasks, {
-
   tasksFilePath: './my-tasks.json',
 });
 ```
@@ -116,7 +115,6 @@ await runWithTasks(tasksJson.tasks);
 
 // Or keep the tasks file
 await runWithTasks(tasksJson.tasks, {
-
   tasksFilePath,
 });
 ```
@@ -196,6 +194,10 @@ await runWithTasks(customTasks);
 }
 ```
 
+> **Note:** The `tasks` array is optional when using template inheritance. You can create templates with only `prompts` and/or `variables` that other templates can extend. See [Template Inheritance](./TEMPLATE_INHERITANCE.md) for details.
+
+````
+
 ### With Interactive Prompts
 
 Add user prompts to collect custom input:
@@ -234,7 +236,7 @@ Add user prompts to collect custom input:
     }
   ]
 }
-```
+````
 
 Learn more: [Interactive Prompts Guide](PROMPTS.md)
 

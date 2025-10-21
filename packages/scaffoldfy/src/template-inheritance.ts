@@ -190,11 +190,16 @@ export async function loadTemplate(
     );
   }
 
-  // Validate basic structure
-  if (!Array.isArray(config.tasks)) {
+  // Validate basic structure - tasks can be optional but must be an array if present
+  if (config.tasks !== undefined && !Array.isArray(config.tasks)) {
     throw new TypeError(
-      `Invalid template file ${resolvedPath}: 'tasks' array is required`,
+      `Invalid template file ${resolvedPath}: 'tasks' must be an array if provided`,
     );
+  }
+
+  // Initialize tasks as empty array if not provided (for templates that only provide prompts/variables)
+  if (config.tasks === undefined) {
+    config.tasks = [];
   }
 
   // Annotate each task with the source URL/path for resolving relative templateFile references
@@ -321,7 +326,7 @@ export function mergeTemplates(templates: TasksConfiguration[]): TasksConfigurat
     }
 
     // Merge tasks
-    for (const task of template.tasks) {
+    for (const task of template.tasks ?? []) {
       if (taskMap.has(task.id)) {
         // Task already exists, merge/override
         const existingTask = taskMap.get(task.id)!;
@@ -440,7 +445,7 @@ export async function loadTasksWithInheritance(tasksFilePath: string): Promise<{
 
   const config = await loadAndMergeTemplate(tasksFilePath);
 
-  log(`Loaded ${config.tasks.length} task(s)`, 'info');
+  log(`Loaded ${config.tasks?.length ?? 0} task(s)`, 'info');
 
   if (config.extends != null && config.extends !== '') {
     const extendsList = Array.isArray(config.extends) ? config.extends : [config.extends];
@@ -460,7 +465,7 @@ export async function loadTasksWithInheritance(tasksFilePath: string): Promise<{
     variables?: VariableDefinition[];
     prompts?: PromptDefinition[];
   } = {
-    tasks: config.tasks,
+    tasks: config.tasks ?? [],
   };
 
   if (config.prompts != null) {
