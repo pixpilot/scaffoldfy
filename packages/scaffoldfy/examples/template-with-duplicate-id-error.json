@@ -1,0 +1,25 @@
+{
+  "$schema": "../schema/tasks.schema.json",
+  "tasks": [
+    {
+      "id": "projectName",
+      "name": "Setup Project",
+      "description": "This will fail because the ID 'projectName' conflicts with the prompt below",
+      "required": true,
+      "enabled": true,
+      "type": "template",
+      "config": {
+        "file": "README.md",
+        "template": "# {{projectName}}"
+      }
+    }
+  ],
+  "prompts": [
+    {
+      "id": "projectName",
+      "type": "input",
+      "message": "What is your project name?",
+      "required": true
+    }
+  ]
+}

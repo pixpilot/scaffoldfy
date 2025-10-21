@@ -581,6 +581,144 @@ The system automatically detects and prevents circular dependencies:
 4. **Keep inheritance chains shallow** (2-3 levels max) for maintainability
 5. **Version your base templates** if they're shared across projects
 6. **Test inheritance chains** to ensure tasks merge as expected
+7. **Use unique IDs across all types** - All IDs must be unique across tasks, variables, and prompts. For example, you cannot have a task with ID `projectName` and a variable with the same ID `projectName`
+
+## ID Uniqueness Validation
+
+Starting from version 2.1, Scaffoldfy validates that all IDs are unique across tasks, variables, and prompts when templates are merged during inheritance. This prevents naming conflicts and ensures clarity in your template configurations.
+
+### Valid Example
+
+```json
+{
+  "tasks": [
+    {
+      "id": "setup-project",
+      "name": "Setup Project",
+      "description": "Initialize the project",
+      "required": true,
+      "enabled": true,
+      "type": "template",
+      "config": {}
+    }
+  ],
+  "variables": [
+    {
+      "id": "currentYear",
+      "value": "2024"
+    }
+  ],
+  "prompts": [
+    {
+      "id": "projectName",
+      "type": "input",
+      "message": "Project name?"
+    }
+  ]
+}
+```
+
+All IDs are unique: `setup-project`, `currentYear`, and `projectName`.
+
+### Invalid Example (Will Throw Error)
+
+```json
+{
+  "tasks": [
+    {
+      "id": "projectName",
+      "name": "Setup",
+      "description": "Setup task",
+      "required": true,
+      "enabled": true,
+      "type": "template",
+      "config": {}
+    }
+  ],
+  "prompts": [
+    {
+      "id": "projectName", // ❌ Error: Duplicate ID!
+      "type": "input",
+      "message": "Project name?"
+    }
+  ]
+}
+```
+
+This will throw an error: `Duplicate ID "projectName" found in prompt. This ID is already used in task`
+
+### With Inheritance
+
+The validation also applies when templates are merged through inheritance:
+
+```json
+// base.json
+{
+  "variables": [
+    {
+      "id": "sharedId",
+      "value": "base-value"
+    }
+  ]
+}
+
+// child.json
+{
+  "extends": "base.json",
+  "tasks": [
+    {
+      "id": "sharedId",  // ❌ Error: Conflicts with variable from base!
+      "name": "My Task",
+      "description": "Task",
+      "required": true,
+      "enabled": true,
+      "type": "template",
+      "config": {}
+    }
+  ]
+}
+```
+
+This will throw an error when loading the child template.
+
+### Overriding is Allowed
+
+Note that overriding items of the **same type** is allowed and intentional:
+
+```json
+// base.json
+{
+  "tasks": [
+    {
+      "id": "setup",
+      "name": "Base Setup",
+      "description": "Base setup task",
+      "required": true,
+      "enabled": true,
+      "type": "template",
+      "config": {}
+    }
+  ]
+}
+
+// child.json
+{
+  "extends": "base.json",
+  "tasks": [
+    {
+      "id": "setup",  // ✅ OK: Overriding task with same ID
+      "name": "Custom Setup",
+      "description": "Customized setup",
+      "required": true,
+      "enabled": true,
+      "type": "template",
+      "config": { "custom": true }
+    }
+  ]
+}
+```
+
+This is valid - the child's `setup` task will completely replace the base's `setup` task.
 
 ## Example: Organization Template Library
 

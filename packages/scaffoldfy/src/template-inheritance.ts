@@ -286,6 +286,55 @@ export async function loadAndMergeTemplate(
 }
 
 /**
+ * Validate that there are no duplicate IDs across tasks, variables, and prompts
+ * @param tasks - Array of tasks
+ * @param variables - Array of variables
+ * @param prompts - Array of prompts
+ * @throws Error if duplicate IDs are found
+ */
+function validateUniqueIds(
+  tasks: TaskDefinition[],
+  variables?: VariableDefinition[],
+  prompts?: PromptDefinition[],
+): void {
+  const allIds = new Map<string, string>();
+
+  // Check task IDs
+  for (const task of tasks) {
+    if (allIds.has(task.id)) {
+      throw new Error(
+        `Duplicate ID "${task.id}" found in task. This ID is already used in ${allIds.get(task.id)}`,
+      );
+    }
+    allIds.set(task.id, 'task');
+  }
+
+  // Check variable IDs
+  if (variables != null) {
+    for (const variable of variables) {
+      if (allIds.has(variable.id)) {
+        throw new Error(
+          `Duplicate ID "${variable.id}" found in variable. This ID is already used in ${allIds.get(variable.id)}`,
+        );
+      }
+      allIds.set(variable.id, 'variable');
+    }
+  }
+
+  // Check prompt IDs
+  if (prompts != null) {
+    for (const prompt of prompts) {
+      if (allIds.has(prompt.id)) {
+        throw new Error(
+          `Duplicate ID "${prompt.id}" found in prompt. This ID is already used in ${allIds.get(prompt.id)}`,
+        );
+      }
+      allIds.set(prompt.id, 'prompt');
+    }
+  }
+}
+
+/**
  * Merge multiple template configurations
  * Later templates override earlier ones for conflicting task IDs
  * @param templates - Array of templates to merge (in priority order)
@@ -297,7 +346,10 @@ export function mergeTemplates(templates: TasksConfiguration[]): TasksConfigurat
   }
 
   if (templates.length === 1) {
-    return templates[0]!;
+    const template = templates[0]!;
+    // Validate even for single templates
+    validateUniqueIds(template.tasks ?? [], template.variables, template.prompts);
+    return template;
   }
 
   // Use a Map to handle task overriding by ID
@@ -339,18 +391,25 @@ export function mergeTemplates(templates: TasksConfiguration[]): TasksConfigurat
   }
 
   // Convert maps back to arrays
+  const tasks = Array.from(taskMap.values());
+  const prompts = promptMap.size > 0 ? Array.from(promptMap.values()) : undefined;
+  const variables = variableMap.size > 0 ? Array.from(variableMap.values()) : undefined;
+
+  // Validate that all IDs are unique across tasks, variables, and prompts
+  validateUniqueIds(tasks, variables, prompts);
+
   const result: TasksConfiguration = {
-    tasks: Array.from(taskMap.values()),
+    tasks,
   };
 
   // Add prompts if any exist
-  if (promptMap.size > 0) {
-    result.prompts = Array.from(promptMap.values());
+  if (prompts != null) {
+    result.prompts = prompts;
   }
 
   // Add variables if any exist
-  if (variableMap.size > 0) {
-    result.variables = Array.from(variableMap.values());
+  if (variables != null) {
+    result.variables = variables;
   }
 
   return result;

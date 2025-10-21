@@ -1014,4 +1014,278 @@ describe('template inheritance', () => {
       expect(merged.tasks![0]?.$sourceUrl).toBe(childPath);
     });
   });
+
+  describe('duplicate ID validation', () => {
+    it('should throw error when task ID duplicates variable ID', () => {
+      const template: TasksConfiguration = {
+        tasks: [
+          {
+            id: 'duplicate-id',
+            name: 'Task',
+            description: 'Test task',
+            required: true,
+            enabled: true,
+            type: 'template',
+            config: {},
+          },
+        ],
+        variables: [
+          {
+            id: 'duplicate-id',
+            value: 'test',
+          },
+        ],
+      };
+
+      expect(() => mergeTemplates([template])).toThrow(
+        'Duplicate ID "duplicate-id" found in variable. This ID is already used in task',
+      );
+    });
+
+    it('should throw error when task ID duplicates prompt ID', () => {
+      const template: TasksConfiguration = {
+        tasks: [
+          {
+            id: 'duplicate-id',
+            name: 'Task',
+            description: 'Test task',
+            required: true,
+            enabled: true,
+            type: 'template',
+            config: {},
+          },
+        ],
+        prompts: [
+          {
+            id: 'duplicate-id',
+            type: 'input',
+            message: 'Enter value',
+          },
+        ],
+      };
+
+      expect(() => mergeTemplates([template])).toThrow(
+        'Duplicate ID "duplicate-id" found in prompt. This ID is already used in task',
+      );
+    });
+
+    it('should throw error when variable ID duplicates prompt ID', () => {
+      const template: TasksConfiguration = {
+        tasks: [],
+        variables: [
+          {
+            id: 'duplicate-id',
+            value: 'test',
+          },
+        ],
+        prompts: [
+          {
+            id: 'duplicate-id',
+            type: 'input',
+            message: 'Enter value',
+          },
+        ],
+      };
+
+      expect(() => mergeTemplates([template])).toThrow(
+        'Duplicate ID "duplicate-id" found in prompt. This ID is already used in variable',
+      );
+    });
+
+    it('should throw error when duplicate IDs exist after inheritance merge', async () => {
+      const baseConfig: TasksConfiguration = {
+        variables: [
+          {
+            id: 'shared-id',
+            value: 'base-value',
+          },
+        ],
+      };
+
+      const childConfig: TasksConfiguration = {
+        extends: 'base.json',
+        tasks: [
+          {
+            id: 'shared-id',
+            name: 'Task',
+            description: 'Task with same ID as variable',
+            required: true,
+            enabled: true,
+            type: 'template',
+            config: {},
+          },
+        ],
+      };
+
+      createTemplateFile('base.json', baseConfig);
+      const childPath = createTemplateFile('child.json', childConfig);
+
+      await expect(loadAndMergeTemplate(childPath)).rejects.toThrow(
+        'Duplicate ID "shared-id"',
+      );
+    });
+
+    it('should allow same ID when overriding (task to task)', async () => {
+      const baseConfig: TasksConfiguration = {
+        tasks: [
+          {
+            id: 'same-id',
+            name: 'Base Task',
+            description: 'Base',
+            required: true,
+            enabled: true,
+            type: 'template',
+            config: {},
+          },
+        ],
+      };
+
+      const childConfig: TasksConfiguration = {
+        extends: 'base.json',
+        tasks: [
+          {
+            id: 'same-id',
+            name: 'Overridden Task',
+            description: 'Overridden',
+            required: false,
+            enabled: true,
+            type: 'template',
+            config: {},
+          },
+        ],
+      };
+
+      createTemplateFile('base.json', baseConfig);
+      const childPath = createTemplateFile('child.json', childConfig);
+
+      // This should not throw - it's a valid override
+      const merged = await loadAndMergeTemplate(childPath);
+      expect(merged.tasks).toHaveLength(1);
+      expect(merged.tasks![0]?.name).toBe('Overridden Task');
+    });
+
+    it('should allow same ID when overriding variables', async () => {
+      const baseConfig: TasksConfiguration = {
+        variables: [
+          {
+            id: 'var-id',
+            value: 'base',
+          },
+        ],
+      };
+
+      const childConfig: TasksConfiguration = {
+        extends: 'base.json',
+        variables: [
+          {
+            id: 'var-id',
+            value: 'override',
+          },
+        ],
+      };
+
+      createTemplateFile('base.json', baseConfig);
+      const childPath = createTemplateFile('child.json', childConfig);
+
+      // This should not throw - it's a valid override
+      const merged = await loadAndMergeTemplate(childPath);
+      expect(merged.variables).toHaveLength(1);
+      expect(merged.variables![0]?.value).toBe('override');
+    });
+
+    it('should allow same ID when overriding prompts', async () => {
+      const baseConfig: TasksConfiguration = {
+        prompts: [
+          {
+            id: 'prompt-id',
+            type: 'input',
+            message: 'Base message',
+          },
+        ],
+      };
+
+      const childConfig: TasksConfiguration = {
+        extends: 'base.json',
+        prompts: [
+          {
+            id: 'prompt-id',
+            type: 'input',
+            message: 'Override message',
+          },
+        ],
+      };
+
+      createTemplateFile('base.json', baseConfig);
+      const childPath = createTemplateFile('child.json', childConfig);
+
+      // This should not throw - it's a valid override
+      const merged = await loadAndMergeTemplate(childPath);
+      expect(merged.prompts).toHaveLength(1);
+      expect(merged.prompts![0]?.message).toBe('Override message');
+    });
+
+    it('should throw error with multiple templates having cross-type duplicates', () => {
+      const base1: TasksConfiguration = {
+        tasks: [
+          {
+            id: 'id1',
+            name: 'Task 1',
+            description: 'Test',
+            required: true,
+            enabled: true,
+            type: 'template',
+            config: {},
+          },
+        ],
+      };
+
+      const base2: TasksConfiguration = {
+        variables: [
+          {
+            id: 'id1',
+            value: 'test',
+          },
+        ],
+      };
+
+      expect(() => mergeTemplates([base1, base2])).toThrow(
+        'Duplicate ID "id1" found in variable. This ID is already used in task',
+      );
+    });
+
+    it('should not throw when all IDs are unique across tasks, variables, and prompts', () => {
+      const template: TasksConfiguration = {
+        tasks: [
+          {
+            id: 'task-1',
+            name: 'Task 1',
+            description: 'Test task',
+            required: true,
+            enabled: true,
+            type: 'template',
+            config: {},
+          },
+        ],
+        variables: [
+          {
+            id: 'var-1',
+            value: 'test',
+          },
+        ],
+        prompts: [
+          {
+            id: 'prompt-1',
+            type: 'input',
+            message: 'Enter value',
+          },
+        ],
+      };
+
+      expect(() => mergeTemplates([template])).not.toThrow();
+      const merged = mergeTemplates([template]);
+      expect(merged.tasks).toHaveLength(1);
+      expect(merged.variables).toHaveLength(1);
+      expect(merged.prompts).toHaveLength(1);
+    });
+  });
 });
