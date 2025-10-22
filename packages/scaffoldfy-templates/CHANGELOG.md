@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy-templates
 
+## 0.13.0
+
+### Minor Changes
+
+- add JSON schema validation for task configurations
+
 ## 0.12.0
 
 ### Minor Changes
