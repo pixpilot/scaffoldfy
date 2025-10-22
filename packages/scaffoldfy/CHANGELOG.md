@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy
 
+## 0.18.0
+
+### Minor Changes
+
+- add conditional default configuration for prompts
+
 ## 0.17.0
 
 ### Minor Changes
