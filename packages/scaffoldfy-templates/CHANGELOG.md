@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy-templates
 
+## 0.11.0
+
+### Minor Changes
+
+- add task for creating SECURITY.md
+
 ## 0.10.0
 
 ### Minor Changes
