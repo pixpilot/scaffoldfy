@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy-templates
 
+## 0.8.0
+
+### Minor Changes
+
+- add template for updating root package.json
+
 ## 0.7.0
 
 ### Minor Changes
