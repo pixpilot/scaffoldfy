@@ -53,10 +53,6 @@ export async function resolveDefaultValue<T = string | number | boolean>(
   if (config.type === 'conditional') {
     // Handle conditional defaults
     if (!context) {
-      log(
-        `Prompt "${promptId}": conditional default requires context but none was provided`,
-        'warn',
-      );
       return undefined;
     }
 
