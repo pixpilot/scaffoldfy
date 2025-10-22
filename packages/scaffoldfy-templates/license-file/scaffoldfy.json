@@ -2,6 +2,7 @@
   "name": "license-file",
   "description": "Generate a LICENSE file with common open-source licenses",
   "dependencies": ["project-info"],
+
   "prompts": [
     {
       "id": "licenseType",
@@ -21,16 +22,6 @@
         { "name": "No License", "value": "NONE" }
       ],
       "default": "MIT"
-    },
-    {
-      "id": "licenseYear",
-      "type": "input",
-      "message": "Enter the copyright year",
-      "default": {
-        "type": "exec",
-        "value": "node -e \"process.stdout.write(String(new Date().getFullYear()))\""
-      },
-      "required": true
     }
   ],
   "tasks": [
@@ -40,8 +31,11 @@
       "description": "Create a LICENSE file with MIT license",
       "type": "template",
       "required": true,
-      "enabled": true,
-      "condition": "licenseType === 'MIT'",
+      "enabled": {
+        "type": "condition",
+        "condition": "licenseType === 'MIT'"
+      },
+
       "config": {
         "file": "LICENSE",
         "templateFile": "./licenses/mit.hbs"

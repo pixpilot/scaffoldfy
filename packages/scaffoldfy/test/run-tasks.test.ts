@@ -198,4 +198,36 @@ describe('runTasks', () => {
 
     expect(mockTopologicalSort).toHaveBeenCalledWith(mockTasks); // Only enabled tasks
   });
+
+  it('should use lazy evaluation for initial task filtering', async () => {
+    const tasksWithPromptCondition = [
+      {
+        id: 'task1',
+        name: 'Task with prompt condition',
+        description: 'Task depending on prompt value',
+        required: true,
+        enabled: {
+          condition: 'addSecurityFile === true',
+        },
+        type: 'template' as const,
+        config: {},
+      },
+    ];
+
+    // Mock evaluateEnabled to track lazy parameter
+    const lazyCallsLog: Array<{ lazy: boolean | undefined }> = [];
+    mockEvaluateEnabled.mockImplementation((enabled, config, options) => {
+      lazyCallsLog.push({ lazy: options?.lazy });
+      return true; // Include task in initial filter
+    });
+
+    await runTasks(tasksWithPromptCondition, {
+      dryRun: false,
+      force: false,
+      tasksFilePath: undefined,
+    });
+
+    // Verify that lazy mode was used in at least one call (initial filtering)
+    expect(lazyCallsLog.some((call) => call.lazy === true)).toBe(true);
+  });
 });

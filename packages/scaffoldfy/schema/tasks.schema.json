@@ -106,11 +106,15 @@
             "description": "Whether the prompt value is required (cannot be empty)"
           },
           "enabled": {
-            "description": "Whether this prompt should be displayed. Can be a boolean or a conditional expression based on variables or other prompt values.",
+            "description": "Whether this prompt should be displayed. Can be a boolean, a string expression, or a conditional expression based on variables or other prompt values.",
             "oneOf": [
               {
                 "type": "boolean",
                 "description": "Static enabled state"
+              },
+              {
+                "type": "string",
+                "description": "JavaScript expression to evaluate (shorthand for { condition: \"...\" }). Prompt only displays if expression evaluates to true."
               },
               {
                 "type": "object",
@@ -231,12 +235,16 @@
             "default": true
           },
           "enabled": {
-            "description": "Whether this task should be executed. Can be a boolean or a conditional expression based on variables or prompt values (optional, defaults to true).",
+            "description": "Whether this task should be executed. Can be a boolean, a string expression, or a conditional expression based on variables or prompt values (optional, defaults to true).",
             "default": true,
             "oneOf": [
               {
                 "type": "boolean",
                 "description": "Static enabled state"
+              },
+              {
+                "type": "string",
+                "description": "JavaScript expression to evaluate (shorthand for { condition: \"...\" }). Task only executes if expression evaluates to true."
               },
               {
                 "type": "object",
@@ -289,11 +297,15 @@
                   "description": "Whether the prompt value is required (cannot be empty)"
                 },
                 "enabled": {
-                  "description": "Whether this prompt should be displayed. Can be a boolean or a conditional expression based on variables or other prompt values.",
+                  "description": "Whether this prompt should be displayed. Can be a boolean, a string expression, or a conditional expression based on variables or other prompt values.",
                   "oneOf": [
                     {
                       "type": "boolean",
                       "description": "Static enabled state"
+                    },
+                    {
+                      "type": "string",
+                      "description": "JavaScript expression to evaluate (shorthand for { condition: \"...\" }). Prompt only displays if expression evaluates to true."
                     },
                     {
                       "type": "object",

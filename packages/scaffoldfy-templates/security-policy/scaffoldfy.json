@@ -6,9 +6,21 @@
 
   "prompts": [
     {
+      "id": "addSecurityFile",
+      "type": "confirm",
+      "message": "Add a SECURITY.md file?",
+      "default": true,
+      "required": true
+    },
+    {
       "id": "securityEmail",
       "type": "input",
       "message": "Security contact email",
+
+      "enabled": {
+        "type": "condition",
+        "condition": "addSecurityFile === true"
+      },
       "default": {
         "type": "conditional",
         "condition": "orgName === 'pixpilot'",
@@ -25,6 +37,10 @@
       "name": "Create SECURITY.md",
       "description": "Create security policy file with contact email",
       "type": "template",
+      "enabled": {
+        "type": "condition",
+        "condition": "addSecurityFile === true"
+      },
       "config": {
         "file": "SECURITY.md",
         "templateFile": "SECURITY.hbs"

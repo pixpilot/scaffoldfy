@@ -16,7 +16,7 @@ Every task has the following properties:
 
 - **`description`** (string): Detailed description of what the task does. Defaults to empty string if omitted.
 - **`required`** (boolean): Whether failure of this task should stop the process. Defaults to `true` if omitted. Set to `false` for non-critical tasks.
-- **`enabled`** (boolean | object): Whether this task should execute. Defaults to `true` if omitted. Can be a boolean or conditional expression (see below).
+- **`enabled`** (boolean | string | object): Whether this task should execute. Defaults to `true` if omitted. Can be a boolean, a string expression, or conditional expression object (see below).
 - **`config`** (object): Task-specific configuration (varies by task type)
 - **`dependencies`** (string[]): IDs of tasks that must run before this one
 - **`rollback`** (object): How to rollback if something fails
@@ -50,7 +50,8 @@ The `enabled` field can be:
 
 1. **Omitted** (default): Task is always enabled (defaults to `true`)
 2. **Simple boolean**: `true` or `false`
-3. **Conditional object**: `{ "condition": "JavaScript expression" }`
+3. **String expression**: Direct JavaScript expression (shorthand for `{ "condition": "..." }`)
+4. **Conditional object**: `{ "condition": "JavaScript expression" }`
 
 ### Simple Boolean
 
@@ -66,6 +67,25 @@ The `enabled` field can be:
   }
 }
 ```
+
+### String Expression (Shorthand)
+
+You can use a string directly as a condition expression:
+
+```json
+{
+  "id": "typescript-setup",
+  "name": "Setup TypeScript",
+  "enabled": "useTypeScript === true",
+  "type": "template",
+  "config": {
+    "file": "tsconfig.json",
+    "template": "{ \"compilerOptions\": {} }"
+  }
+}
+```
+
+This is equivalent to using the conditional object syntax but more concise.
 
 ### Conditional Enabled
 
@@ -94,9 +114,46 @@ The `enabled` field can be:
 3. If the condition evaluates to `false`, the task is **completely skipped**
 4. If the condition evaluates to `true`, the task proceeds normally
 
+**Evaluation Timing:**
+
+- Tasks are evaluated **twice** during execution:
+  1. **Initial filter (lazy mode)**: Before prompts are collected. Tasks with conditions referencing undefined prompts are **included** (not filtered out yet).
+  2. **Final filter (strict mode)**: After all prompts and variables are collected. Tasks are evaluated with the full context, and only enabled tasks are executed.
+
+This two-phase approach allows you to use prompt values in task `enabled` conditions without errors. Tasks referencing prompts that don't exist yet will be temporarily included, then properly filtered once all user input is collected.
+
 ### Examples
 
 #### Enable Based on Prompt Value
+
+Using string expression (shorthand):
+
+```json
+{
+  "prompts": [
+    {
+      "id": "useTypeScript",
+      "type": "confirm",
+      "message": "Use TypeScript?",
+      "default": true
+    }
+  ],
+  "tasks": [
+    {
+      "id": "setup-typescript",
+      "name": "Setup TypeScript",
+      "enabled": "useTypeScript === true",
+      "type": "template",
+      "config": {
+        "file": "tsconfig.json",
+        "template": "{ \"compilerOptions\": {} }"
+      }
+    }
+  ]
+}
+```
+
+Using conditional object (verbose):
 
 ```json
 {
@@ -126,6 +183,23 @@ The `enabled` field can be:
 ```
 
 #### Complex Conditional Logic
+
+Using string expression:
+
+```json
+{
+  "id": "setup-ci",
+  "name": "Setup CI/CD",
+  "enabled": "includeCI === true && (platform === 'github' || platform === 'gitlab')",
+  "type": "template",
+  "config": {
+    "file": ".github/workflows/ci.yml",
+    "template": "name: CI"
+  }
+}
+```
+
+Using conditional object:
 
 ```json
 {

@@ -148,7 +148,21 @@ Collect text input from the user.
 
 #### Conditional Enabled
 
-You can conditionally enable/disable prompts based on runtime conditions:
+You can conditionally enable/disable prompts based on runtime conditions using a string expression (shorthand) or conditional object:
+
+**String expression (shorthand):**
+
+```json
+{
+  "id": "tsConfigPath",
+  "type": "input",
+  "message": "Path to tsconfig.json",
+  "default": "./tsconfig.json",
+  "enabled": "useTypeScript === true"
+}
+```
+
+**Conditional object (verbose):**
 
 ```json
 {
@@ -162,7 +176,7 @@ You can conditionally enable/disable prompts based on runtime conditions:
 }
 ```
 
-In this example, the `tsConfigPath` prompt is only shown if `useTypeScript` is `true`. Prompts are evaluated in order, so later prompts can depend on earlier prompt values.
+In these examples, the `tsConfigPath` prompt is only shown if `useTypeScript` is `true`. Prompts are evaluated in order, so later prompts can depend on earlier prompt values.
 
 ### 2. Password Prompt
 
@@ -669,6 +683,22 @@ Both top-level and task-level prompts support a conditional `enabled` field. Thi
 }
 ```
 
+### String Expression (Shorthand)
+
+You can use a string directly as a condition expression:
+
+```json
+{
+  "id": "tsConfigPath",
+  "type": "input",
+  "message": "Path to tsconfig.json",
+  "default": "./tsconfig.json",
+  "enabled": "useTypeScript === true"
+}
+```
+
+This is equivalent to using the conditional object syntax but more concise.
+
 ### Conditional Object
 
 ```json
@@ -692,10 +722,41 @@ Both top-level and task-level prompts support a conditional `enabled` field. Thi
    - All config values
 3. Prompts are evaluated **in order**, so later prompts can depend on earlier ones
 4. If the condition evaluates to `false`, the prompt is **skipped**
+5. Conditions can be provided as:
+   - **String expression**: `"enabled": "useDatabase === true"` (shorthand)
+   - **Conditional object**: `"enabled": { "condition": "useDatabase === true" }` (verbose)
 
 ### Examples
 
 #### Conditional Based on Previous Prompt
+
+Using string expression (shorthand):
+
+```json
+{
+  "prompts": [
+    {
+      "id": "useDatabase",
+      "type": "confirm",
+      "message": "Use database?",
+      "default": false
+    },
+    {
+      "id": "databaseType",
+      "type": "select",
+      "message": "Select database type",
+      "choices": [
+        { "name": "PostgreSQL", "value": "postgres" },
+        { "name": "MySQL", "value": "mysql" },
+        { "name": "MongoDB", "value": "mongodb" }
+      ],
+      "enabled": "useDatabase === true"
+    }
+  ]
+}
+```
+
+Using conditional object (verbose):
 
 ```json
 {
@@ -733,6 +794,40 @@ Both top-level and task-level prompts support a conditional `enabled` field. Thi
 ```
 
 #### Complex Conditional Logic
+
+Using string expression:
+
+```json
+{
+  "prompts": [
+    {
+      "id": "framework",
+      "type": "select",
+      "message": "Select framework",
+      "choices": [
+        { "name": "React", "value": "react" },
+        { "name": "Vue", "value": "vue" },
+        { "name": "Svelte", "value": "svelte" }
+      ]
+    },
+    {
+      "id": "useTypeScript",
+      "type": "confirm",
+      "message": "Use TypeScript?",
+      "default": true
+    },
+    {
+      "id": "tsConfigPath",
+      "type": "input",
+      "message": "Path to tsconfig.json",
+      "default": "./tsconfig.json",
+      "enabled": "useTypeScript === true && (framework === 'react' || framework === 'vue')"
+    }
+  ]
+}
+```
+
+Using conditional object:
 
 ```json
 {

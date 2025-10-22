@@ -6,6 +6,7 @@ import type { InitConfig } from '../src/types.js';
 import { describe, expect, it } from 'vitest';
 import {
   evaluateCondition,
+  evaluateEnabled,
   interpolateTemplate,
   setNestedProperty,
 } from '../src/utils.js';
@@ -96,6 +97,34 @@ describe('condition Evaluation', () => {
       false,
     );
   });
+
+  it('should return false for undefined variables in normal mode', () => {
+    const emptyConfig: InitConfig = {};
+    expect(evaluateCondition('undefinedVar === true', emptyConfig)).toBe(false);
+  });
+
+  it('should return true for undefined variables in lazy mode', () => {
+    const emptyConfig: InitConfig = {};
+    expect(evaluateCondition('undefinedVar === true', emptyConfig, { lazy: true })).toBe(
+      true,
+    );
+  });
+
+  it('should evaluate correctly in lazy mode when variable exists', () => {
+    const configWithVar = { myVar: true };
+    expect(evaluateCondition('myVar === true', configWithVar, { lazy: true })).toBe(true);
+    expect(evaluateCondition('myVar === false', configWithVar, { lazy: true })).toBe(
+      false,
+    );
+  });
+
+  it('should handle complex conditions with undefined variables in lazy mode', () => {
+    const emptyConfig: InitConfig = {};
+    // In lazy mode, if any variable is undefined (ReferenceError), return true
+    expect(
+      evaluateCondition('addSecurityFile === true', emptyConfig, { lazy: true }),
+    ).toBe(true);
+  });
 });
 
 describe('set Nested Property', () => {
@@ -177,5 +206,89 @@ describe('set Nested Property', () => {
     setNestedProperty(obj, 'a..b', 'value');
     // Should skip empty keys
     expect(obj).toHaveProperty('a');
+  });
+});
+
+describe('evaluate Enabled', () => {
+  const config: InitConfig = {
+    useTypeScript: true,
+    projectType: 'monorepo',
+  };
+
+  it('should return true when enabled is undefined', () => {
+    expect(evaluateEnabled(undefined, config)).toBe(true);
+  });
+
+  it('should return the boolean value when enabled is boolean', () => {
+    expect(evaluateEnabled(true, config)).toBe(true);
+    expect(evaluateEnabled(false, config)).toBe(false);
+  });
+
+  it('should evaluate string condition when enabled is a string', () => {
+    expect(evaluateEnabled('useTypeScript === true', config)).toBe(true);
+    expect(evaluateEnabled('useTypeScript === false', config)).toBe(false);
+    expect(evaluateEnabled('projectType === "monorepo"', config)).toBe(true);
+  });
+
+  it('should handle complex string conditions', () => {
+    expect(
+      evaluateEnabled('useTypeScript === true && projectType === "monorepo"', config),
+    ).toBe(true);
+    expect(
+      evaluateEnabled('useTypeScript === false || projectType === "lib"', config),
+    ).toBe(false);
+  });
+
+  it('should evaluate condition when enabled is conditional object', () => {
+    expect(evaluateEnabled({ condition: 'useTypeScript === true' }, config)).toBe(true);
+    expect(evaluateEnabled({ condition: 'useTypeScript === false' }, config)).toBe(false);
+  });
+
+  it('should return false for undefined variables in normal mode', () => {
+    const emptyConfig: InitConfig = {};
+    expect(evaluateEnabled({ condition: 'missingVar === true' }, emptyConfig)).toBe(
+      false,
+    );
+    // Test string syntax too
+    expect(evaluateEnabled('missingVar === true', emptyConfig)).toBe(false);
+  });
+
+  it('should return true for undefined variables in lazy mode', () => {
+    const emptyConfig: InitConfig = {};
+    expect(
+      evaluateEnabled({ condition: 'missingVar === true' }, emptyConfig, { lazy: true }),
+    ).toBe(true);
+    // Test string syntax too
+    expect(evaluateEnabled('missingVar === true', emptyConfig, { lazy: true })).toBe(
+      true,
+    );
+  });
+
+  it('should evaluate correctly in lazy mode when variable exists', () => {
+    expect(
+      evaluateEnabled({ condition: 'useTypeScript === true' }, config, { lazy: true }),
+    ).toBe(true);
+    expect(
+      evaluateEnabled({ condition: 'useTypeScript === false' }, config, { lazy: true }),
+    ).toBe(false);
+    // Test string syntax too
+    expect(evaluateEnabled('useTypeScript === true', config, { lazy: true })).toBe(true);
+    expect(evaluateEnabled('useTypeScript === false', config, { lazy: true })).toBe(
+      false,
+    );
+  });
+
+  it('should handle complex conditions with undefined variables in lazy mode', () => {
+    const emptyConfig: InitConfig = {};
+    expect(
+      evaluateEnabled({ condition: 'addSecurityFile === true' }, emptyConfig, {
+        lazy: true,
+      }),
+    ).toBe(true);
+  });
+
+  it('should return false for unexpected enabled values', () => {
+    // Test edge case where enabled is neither boolean nor conditional object
+    expect(evaluateEnabled({} as never, config)).toBe(false);
   });
 });

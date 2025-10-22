@@ -56,9 +56,10 @@ export async function runTasks(
   log('✓ All tasks validated successfully', 'success');
 
   // Get enabled tasks (evaluate conditional enabled)
-  // Initially evaluate with empty config, will re-evaluate later with full config
+  // Use lazy evaluation - tasks with conditions referencing prompts will be included
+  // and re-evaluated later with full config after prompts are collected
   const enabledTasks = tasks.filter((task) =>
-    evaluateEnabled(task.enabled, createInitialConfig()),
+    evaluateEnabled(task.enabled, createInitialConfig(), { lazy: true }),
   );
 
   // Sort tasks by dependencies

@@ -83,9 +83,12 @@ export interface ConditionalEnabled {
 }
 
 /**
- * Type for enabled field that can be boolean or conditional
+ * Type for enabled field that can be boolean, string condition, or conditional object
+ * - boolean: Simple true/false
+ * - string: JavaScript expression to evaluate (shorthand for { condition: "..." })
+ * - ConditionalEnabled: Object with condition property
  */
-export type EnabledValue = boolean | ConditionalEnabled;
+export type EnabledValue = boolean | string | ConditionalEnabled;
 
 export interface BasePrompt {
   id: string; // Unique identifier for the prompt value

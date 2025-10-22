@@ -2,6 +2,15 @@
   "$schema": "https://unpkg.com/@pixpilot/scaffoldfy/schema",
   "description": "Project information prompts for pnpm-turbo-monorepo-template",
   "name": "project-info",
+  "variables": [
+    {
+      "id": "currentYear",
+      "value": {
+        "type": "exec",
+        "value": "node -e \"process.stdout.write(String(new Date().getFullYear()))\""
+      }
+    }
+  ],
   "prompts": [
     {
       "id": "projectName",

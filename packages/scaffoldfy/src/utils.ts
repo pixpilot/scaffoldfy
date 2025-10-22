@@ -149,8 +149,18 @@ export function setNestedProperty(
 
 /**
  * Evaluate a condition expression with the given config
+ * @param condition - JavaScript expression to evaluate
+ * @param config - Configuration context for evaluation
+ * @param options - Optional evaluation options
+ * @param options.lazy - If true, return true (assume enabled) when condition fails due to missing variables
+ * @param options.silent - If true, suppress warning messages
+ * @returns The result of condition evaluation
  */
-export function evaluateCondition(condition: string, config: InitConfig): boolean {
+export function evaluateCondition(
+  condition: string,
+  config: InitConfig,
+  options?: { lazy?: boolean; silent?: boolean },
+): boolean {
   try {
     // Use all config properties (including dynamic prompt values) as context
     const context = { ...config };
@@ -166,10 +176,21 @@ export function evaluateCondition(condition: string, config: InitConfig): boolea
 
     return func(...Object.values(context));
   } catch (error) {
-    log(`Failed to evaluate condition: ${condition}`, 'warn');
-    if (error instanceof Error) {
-      log(`  Error: ${error.message}`, 'warn');
+    // In lazy mode, if the error is about an undefined variable,
+    // assume the task should be included and will be filtered later
+    if (options?.lazy === true && error instanceof ReferenceError) {
+      // Don't log warnings in lazy mode - this is expected
+      return true;
     }
+
+    // Log warning unless silent mode is enabled
+    if (options?.silent !== true) {
+      log(`Failed to evaluate condition: ${condition}`, 'warn');
+      if (error instanceof Error) {
+        log(`  Error: ${error.message}`, 'warn');
+      }
+    }
+
     return false;
   }
 }
