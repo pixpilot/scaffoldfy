@@ -84,10 +84,11 @@ describe('jSON Schema Validation', () => {
 
     expect(requiredProps).toContain('id');
     expect(requiredProps).toContain('name');
-    expect(requiredProps).toContain('description');
-    expect(requiredProps).toContain('required');
-    expect(requiredProps).toContain('enabled');
     expect(requiredProps).toContain('type');
+    // description, required, and enabled are now optional with defaults
+    expect(requiredProps).not.toContain('description');
+    expect(requiredProps).not.toContain('required');
+    expect(requiredProps).not.toContain('enabled');
     // 'config' is now optional to allow tasks with only prompts
     expect(requiredProps).not.toContain('config');
   });

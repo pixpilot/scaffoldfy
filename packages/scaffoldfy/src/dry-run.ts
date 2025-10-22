@@ -506,7 +506,9 @@ export async function displayTasksDiff(
   /* eslint-disable no-await-in-loop */
   for (const task of tasks) {
     console.log(`${colors.cyan}▶ Task: ${task.name}${colors.reset}`);
-    console.log(`${colors.gray}  ${task.description}${colors.reset}`);
+
+    if (task.description != null && task.description !== '')
+      console.log(`${colors.gray}  ${task.description}${colors.reset}`);
 
     const diff = await getTaskDiff(task, initConfig);
     console.log(diff);

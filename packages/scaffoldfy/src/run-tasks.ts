@@ -222,7 +222,8 @@ export async function runTasks(
 
       // Call afterTask hook
       await callHook('afterTask', task, config);
-    } else if (task.required) {
+    } else if (task.required ?? true) {
+      // Default to true if undefined
       failedTasks++;
 
       // Call onError hook

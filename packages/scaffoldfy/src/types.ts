@@ -154,9 +154,9 @@ export type MergeStrategy = 'merge' | 'replace';
 export interface TaskDefinition {
   id: string;
   name: string;
-  description: string;
-  required: boolean;
-  enabled: EnabledValue; // Can be boolean or conditional expression
+  description?: string; // Optional description of what the task does (defaults to empty)
+  required?: boolean; // Optional: Whether failure of this task should stop the process (defaults to true)
+  enabled?: EnabledValue; // Optional: Can be boolean or conditional expression (defaults to true)
   type: TaskType;
   // Task-specific configuration object, validated at runtime
   config:

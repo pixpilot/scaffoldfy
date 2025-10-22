@@ -86,7 +86,8 @@ export async function runTask(
       }
     }
 
-    if (task.required) {
+    if (task.required ?? true) {
+      // Default to true if undefined
       log(`  This is a required task. Initialization cannot continue.`, 'error');
     }
 

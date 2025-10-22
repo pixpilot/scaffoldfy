@@ -193,6 +193,7 @@ await runWithTasks(customTasks);
 > - The `description` field is optional but recommended for documentation.
 > - The `dependencies` field is optional and can be used to document template dependencies.
 > - The `tasks` array is optional when using template inheritance. You can create templates with only `prompts` and/or `variables` that other templates can extend. See [Template Inheritance](./TEMPLATE_INHERITANCE.md) for details.
+> - Task properties `description`, `required`, and `enabled` are optional and default to `""`, `true`, and `true` respectively.
 
 ### With Interactive Prompts
 
@@ -425,7 +426,7 @@ Here's a complete example that sets up a Node.js project:
 1. **Always use dry-run first** - Test with `--dry-run` before applying changes to see exactly what will happen
 2. **Keep tasks atomic** - Each task should do one thing well and have a clear purpose
 3. **Use dependencies wisely** - Chain tasks that must run in a specific order
-4. **Mark critical tasks as required** - Only essential tasks should have `required: true` to stop execution on failure
+4. **Mark critical tasks as required** - Essential tasks are `required: true` by default. Set `required: false` for optional tasks that shouldn't stop execution on failure
 5. **Document your tasks** - Write clear names and descriptions for maintainability
 6. **Version your task files** - Keep task definitions in version control alongside your project
 7. **Use global prompts** - Mark prompts with `"global": true` for values needed across multiple tasks

@@ -2,6 +2,44 @@
 
 Complete reference for all available task types in scaffoldfy.
 
+## Task Structure
+
+Every task has the following properties:
+
+### Required Properties
+
+- **`id`** (string): Unique identifier for the task
+- **`name`** (string): Human-readable task name
+- **`type`** (string): Task type (see below for all available types)
+
+### Optional Properties
+
+- **`description`** (string): Detailed description of what the task does. Defaults to empty string if omitted.
+- **`required`** (boolean): Whether failure of this task should stop the process. Defaults to `true` if omitted. Set to `false` for non-critical tasks.
+- **`enabled`** (boolean | object): Whether this task should execute. Defaults to `true` if omitted. Can be a boolean or conditional expression (see below).
+- **`config`** (object): Task-specific configuration (varies by task type)
+- **`dependencies`** (string[]): IDs of tasks that must run before this one
+- **`rollback`** (object): How to rollback if something fails
+- **`prompts`** (array): Task-scoped prompts to collect before running task
+- **`variables`** (array): Task-scoped variables (not available to other tasks)
+- **`override`** (string): Merge strategy when extending templates (`'merge'` or `'replace'`)
+
+### Minimal Task Example
+
+```json
+{
+  "id": "my-task",
+  "name": "My Task",
+  "type": "template",
+  "config": {
+    "file": "README.md",
+    "template": "# My Project"
+  }
+}
+```
+
+This will use defaults: `description: ""`, `required: true`, `enabled: true`.
+
 ## Conditional Task Execution
 
 Tasks can be conditionally enabled using the `enabled` field. This allows you to dynamically skip or run tasks based on runtime conditions.
@@ -10,8 +48,9 @@ Tasks can be conditionally enabled using the `enabled` field. This allows you to
 
 The `enabled` field can be:
 
-1. **Simple boolean**: `true` or `false`
-2. **Conditional object**: `{ "condition": "JavaScript expression" }`
+1. **Omitted** (default): Task is always enabled (defaults to `true`)
+2. **Simple boolean**: `true` or `false`
+3. **Conditional object**: `{ "condition": "JavaScript expression" }`
 
 ### Simple Boolean
 
@@ -21,7 +60,10 @@ The `enabled` field can be:
   "name": "My Task",
   "enabled": true,
   "type": "template",
-  "config": { ... }
+  "config": {
+    "file": "README.md",
+    "template": "# My Project"
+  }
 }
 ```
 
@@ -35,7 +77,10 @@ The `enabled` field can be:
     "condition": "useTypeScript === true"
   },
   "type": "template",
-  "config": { ... }
+  "config": {
+    "file": "tsconfig.json",
+    "template": "{ \"compilerOptions\": {} }"
+  }
 }
 ```
 
@@ -71,7 +116,10 @@ The `enabled` field can be:
         "condition": "useTypeScript === true"
       },
       "type": "template",
-      "config": { ... }
+      "config": {
+        "file": "tsconfig.json",
+        "template": "{ \"compilerOptions\": {} }"
+      }
     }
   ]
 }
@@ -87,7 +135,10 @@ The `enabled` field can be:
     "condition": "includeCI === true && (platform === 'github' || platform === 'gitlab')"
   },
   "type": "template",
-  "config": { ... }
+  "config": {
+    "file": ".github/workflows/ci.yml",
+    "template": "name: CI"
+  }
 }
 ```
 
@@ -692,8 +743,8 @@ All task configs support template variable interpolation using `{{variable}}` sy
 
 ### Error Handling
 
-- **Required tasks**: Stop execution on failure
-- **Non-required tasks**: Log warning and continue
+- **Required tasks** (default): Stop execution on failure
+- **Non-required tasks** (`required: false`): Log warning and continue
 - **File not found**: Most tasks handle gracefully
 - **Invalid config**: Validation error before execution
 - **Invalid condition**: Task is skipped with warning

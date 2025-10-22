@@ -189,7 +189,7 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["id", "name", "description", "required", "enabled", "type"],
+        "required": ["id", "name", "type"],
         "properties": {
           "id": {
             "type": "string",
@@ -201,14 +201,16 @@
           },
           "description": {
             "type": "string",
-            "description": "Detailed description of what the task does"
+            "description": "Detailed description of what the task does (optional, defaults to empty string)"
           },
           "required": {
             "type": "boolean",
-            "description": "Whether failure of this task should stop the process"
+            "description": "Whether failure of this task should stop the process (optional, defaults to true)",
+            "default": true
           },
           "enabled": {
-            "description": "Whether this task should be executed. Can be a boolean or a conditional expression based on variables or prompt values.",
+            "description": "Whether this task should be executed. Can be a boolean or a conditional expression based on variables or prompt values (optional, defaults to true).",
+            "default": true,
             "oneOf": [
               {
                 "type": "boolean",
