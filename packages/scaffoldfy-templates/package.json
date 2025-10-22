@@ -16,13 +16,8 @@
     "scaffolding",
     "project-init"
   ],
-  "exports": {
-    "./project-info": "./project-info/template.json"
-  },
   "files": [
-    "*/*.hbs",
-    "*/README.md",
-    "*/template.json"
+    "*"
   ],
   "scripts": {
     "lint": "eslint",
