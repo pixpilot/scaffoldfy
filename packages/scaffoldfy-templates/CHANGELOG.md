@@ -1,5 +1,15 @@
 # @pixpilot/scaffoldfy-templates
 
+## 0.12.0
+
+### Minor Changes
+
+- Enhance conditional prompt and task enabling with string expressions
+
+### Patch Changes
+
+- remove unnecessary log for missing context in conditional defaults
+
 ## 0.11.0
 
 ### Minor Changes
