@@ -1,0 +1,168 @@
+{
+  "name": "license-file",
+  "description": "Generate a LICENSE file with common open-source licenses",
+  "dependencies": ["project-info"],
+  "prompts": [
+    {
+      "id": "licenseType",
+      "type": "select",
+      "message": "Select a license for your project",
+      "choices": [
+        { "name": "MIT", "value": "MIT" },
+        { "name": "Apache 2.0", "value": "Apache-2.0" },
+        { "name": "GPL v3", "value": "GPL-3.0" },
+        { "name": "GPL v2", "value": "GPL-2.0" },
+        { "name": "BSD 3-Clause", "value": "BSD-3-Clause" },
+        { "name": "BSD 2-Clause", "value": "BSD-2-Clause" },
+        { "name": "ISC", "value": "ISC" },
+        { "name": "MPL 2.0", "value": "MPL-2.0" },
+        { "name": "AGPL v3", "value": "AGPL-3.0" },
+        { "name": "Unlicense", "value": "Unlicense" },
+        { "name": "No License", "value": "NONE" }
+      ],
+      "default": "MIT"
+    },
+    {
+      "id": "licenseYear",
+      "type": "input",
+      "message": "Enter the copyright year",
+      "default": {
+        "type": "exec",
+        "value": "node -e \"process.stdout.write(String(new Date().getFullYear()))\""
+      },
+      "required": true
+    }
+  ],
+  "tasks": [
+    {
+      "id": "create-mit-license",
+      "name": "Create MIT License",
+      "description": "Create a LICENSE file with MIT license",
+      "type": "template",
+      "required": true,
+      "enabled": true,
+      "condition": "licenseType === 'MIT'",
+      "config": {
+        "file": "LICENSE",
+        "templateFile": "./licenses/mit.hbs"
+      }
+    },
+    {
+      "id": "create-apache-license",
+      "name": "Create Apache 2.0 License",
+      "description": "Create a LICENSE file with Apache 2.0 license",
+      "type": "template",
+      "required": true,
+      "enabled": true,
+      "condition": "licenseType === 'Apache-2.0'",
+      "config": {
+        "file": "LICENSE",
+        "templateFile": "./licenses/apache-2.0.hbs"
+      }
+    },
+    {
+      "id": "create-gpl3-license",
+      "name": "Create GPL v3 License",
+      "description": "Create a LICENSE file with GPL v3 license",
+      "type": "template",
+      "required": true,
+      "enabled": true,
+      "condition": "licenseType === 'GPL-3.0'",
+      "config": {
+        "file": "LICENSE",
+        "templateFile": "./licenses/gpl-3.0.hbs"
+      }
+    },
+    {
+      "id": "create-gpl2-license",
+      "name": "Create GPL v2 License",
+      "description": "Create a LICENSE file with GPL v2 license",
+      "type": "template",
+      "required": true,
+      "enabled": true,
+      "condition": "licenseType === 'GPL-2.0'",
+      "config": {
+        "file": "LICENSE",
+        "templateFile": "./licenses/gpl-2.0.hbs"
+      }
+    },
+    {
+      "id": "create-bsd3-license",
+      "name": "Create BSD 3-Clause License",
+      "description": "Create a LICENSE file with BSD 3-Clause license",
+      "type": "template",
+      "required": true,
+      "enabled": true,
+      "condition": "licenseType === 'BSD-3-Clause'",
+      "config": {
+        "file": "LICENSE",
+        "templateFile": "./licenses/bsd-3-clause.hbs"
+      }
+    },
+    {
+      "id": "create-bsd2-license",
+      "name": "Create BSD 2-Clause License",
+      "description": "Create a LICENSE file with BSD 2-Clause license",
+      "type": "template",
+      "required": true,
+      "enabled": true,
+      "condition": "licenseType === 'BSD-2-Clause'",
+      "config": {
+        "file": "LICENSE",
+        "templateFile": "./licenses/bsd-2-clause.hbs"
+      }
+    },
+    {
+      "id": "create-isc-license",
+      "name": "Create ISC License",
+      "description": "Create a LICENSE file with ISC license",
+      "type": "template",
+      "required": true,
+      "enabled": true,
+      "condition": "licenseType === 'ISC'",
+      "config": {
+        "file": "LICENSE",
+        "templateFile": "./licenses/isc.hbs"
+      }
+    },
+    {
+      "id": "create-mpl-license",
+      "name": "Create MPL 2.0 License",
+      "description": "Create a LICENSE file with MPL 2.0 license",
+      "type": "template",
+      "required": true,
+      "enabled": true,
+      "condition": "licenseType === 'MPL-2.0'",
+      "config": {
+        "file": "LICENSE",
+        "templateFile": "./licenses/mpl-2.0.hbs"
+      }
+    },
+    {
+      "id": "create-agpl-license",
+      "name": "Create AGPL v3 License",
+      "description": "Create a LICENSE file with AGPL v3 license",
+      "type": "template",
+      "required": true,
+      "enabled": true,
+      "condition": "licenseType === 'AGPL-3.0'",
+      "config": {
+        "file": "LICENSE",
+        "templateFile": "./licenses/agpl-3.0.hbs"
+      }
+    },
+    {
+      "id": "create-unlicense",
+      "name": "Create Unlicense",
+      "description": "Create a LICENSE file with Unlicense",
+      "type": "template",
+      "required": true,
+      "enabled": true,
+      "condition": "licenseType === 'Unlicense'",
+      "config": {
+        "file": "LICENSE",
+        "templateFile": "./licenses/unlicense.hbs"
+      }
+    }
+  ]
+}

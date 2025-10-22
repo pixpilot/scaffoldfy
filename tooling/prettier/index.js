@@ -13,7 +13,7 @@ const config = {
       },
     },
     {
-      files: '*.js.hbs',
+      files: ['*.js.hbs', '*.jsx.hbs'],
       options: {
         parser: 'babel',
       },

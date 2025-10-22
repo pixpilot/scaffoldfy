@@ -14,7 +14,9 @@
     "scaffoldfy",
     "templates",
     "scaffolding",
-    "project-init"
+    "project-init",
+    "license",
+    "oss"
   ],
   "files": [
     "*"
