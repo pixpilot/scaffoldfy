@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy
 
+## 0.16.0
+
+### Minor Changes
+
+- standardize string quotes and improve test readability
+
 ## 0.15.2
 
 ### Patch Changes
