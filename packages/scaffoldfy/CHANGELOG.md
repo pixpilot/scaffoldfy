@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy
 
+## 0.15.2
+
+### Patch Changes
+
+- 703069a: release
+
 ## 0.15.1
 
 ### Patch Changes

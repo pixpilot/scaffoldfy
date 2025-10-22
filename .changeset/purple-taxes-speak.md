@@ -1,5 +1,0 @@
----
-'@pixpilot/scaffoldfy': patch
----
-
-release
