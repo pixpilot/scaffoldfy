@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy-templates
 
+## 0.9.0
+
+### Minor Changes
+
+- add support for multiple open-source licenses
+
 ## 0.8.0
 
 ### Minor Changes
