@@ -1,4 +1,6 @@
 {
+  "name": "template-with-handlebars",
+  "description": "Demonstrates using Handlebars for advanced templating with helpers and partials",
   "tasks": [
     {
       "id": "clean-readme-inline",

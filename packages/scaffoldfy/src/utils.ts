@@ -14,14 +14,23 @@ import { TemplateFileNotFoundError } from './errors/template.js';
 /**
  * Get Git repository information from the current directory
  */
-export function getGitRepoInfo(): { owner: string; name: string; url: string } | null {
+export function getGitRepoInfo(): {
+  owner: string;
+  name: string;
+  url: string;
+} | null {
   try {
-    const remoteUrl = execSync('git remote get-url origin', { encoding: 'utf-8' }).trim();
+    const remoteUrl = execSync('git remote get-url origin', {
+      encoding: 'utf-8',
+    }).trim();
 
     // Parse GitHub URL (https or git format)
     const match = remoteUrl.match(/github\.com[:/](?<owner>[^/]+)\/(?<name>[^/]+)$/u);
     if (match?.groups) {
-      const { owner, name: rawName } = match.groups as { owner: string; name: string };
+      const { owner, name: rawName } = match.groups as {
+        owner: string;
+        name: string;
+      };
       let name = rawName;
       if (name.endsWith('.git')) {
         name = name.slice(0, -'.git'.length);

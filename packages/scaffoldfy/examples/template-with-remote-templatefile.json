@@ -1,4 +1,6 @@
 {
+  "name": "template-with-remote-templatefile",
+  "description": "Demonstrates using a remote template file from a URL",
   "extends": "https://raw.githubusercontent.com/your-org/templates/main/base-node.json",
   "prompts": [
     {

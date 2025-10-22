@@ -56,7 +56,9 @@ describe('executeUpdateJson', () => {
           retries--;
           if (retries === 0) {
             console.warn(
-              `Failed to clean up test directory: ${error instanceof Error ? error.message : String(error)}`,
+              `Failed to clean up test directory: ${
+                error instanceof Error ? error.message : String(error)
+              }`,
             );
           } else {
             await new Promise<void>((resolve) => {

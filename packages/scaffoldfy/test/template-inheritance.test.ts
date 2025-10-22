@@ -50,6 +50,7 @@ describe('template inheritance', () => {
   describe('loadTemplate', () => {
     it('should load a simple template file', async () => {
       const config: TasksConfiguration = {
+        name: 'test-template',
         tasks: [
           {
             id: 'task1',
@@ -94,6 +95,7 @@ describe('template inheritance', () => {
       fs.writeFileSync(
         filePath,
         JSON.stringify({
+          name: 'prompts-only-template',
           prompts: [
             {
               id: 'projectName',
@@ -112,10 +114,12 @@ describe('template inheritance', () => {
 
     it('should detect circular dependencies', async () => {
       const config1: TasksConfiguration = {
+        name: 'test-template-1',
         extends: 'template2.json',
         tasks: [],
       };
       const config2: TasksConfiguration = {
+        name: 'test-template-2',
         extends: 'template1.json',
         tasks: [],
       };
@@ -132,6 +136,7 @@ describe('template inheritance', () => {
   describe('mergeTemplates', () => {
     it('should merge tasks from multiple templates', () => {
       const template1: TasksConfiguration = {
+        name: 'test-template',
         tasks: [
           {
             id: 'task1',
@@ -146,6 +151,7 @@ describe('template inheritance', () => {
       };
 
       const template2: TasksConfiguration = {
+        name: 'test-template',
         tasks: [
           {
             id: 'task2',
@@ -169,6 +175,7 @@ describe('template inheritance', () => {
 
     it('should override tasks with same ID', () => {
       const template1: TasksConfiguration = {
+        name: 'test-template',
         tasks: [
           {
             id: 'task1',
@@ -183,6 +190,7 @@ describe('template inheritance', () => {
       };
 
       const template2: TasksConfiguration = {
+        name: 'test-template',
         tasks: [
           {
             id: 'task1',
@@ -231,7 +239,10 @@ describe('template inheritance', () => {
         override: 'merge',
       };
 
-      const merged = mergeTemplates([{ tasks: [task1] }, { tasks: [task2] }]);
+      const merged = mergeTemplates([
+        { name: 'test-template', tasks: [task1] },
+        { name: 'test-template', tasks: [task2] },
+      ]);
 
       expect(merged.tasks).toBeDefined();
       expect(merged.tasks![0]?.dependencies).toEqual(['dep1', 'dep2', 'dep3']);
@@ -244,6 +255,7 @@ describe('template inheritance', () => {
 
     it('should merge template with only prompts/variables (no tasks)', () => {
       const baseTemplate: TasksConfiguration = {
+        name: 'test-template',
         prompts: [
           {
             id: 'projectName',
@@ -265,6 +277,7 @@ describe('template inheritance', () => {
       };
 
       const childTemplate: TasksConfiguration = {
+        name: 'test-template',
         tasks: [
           {
             id: 'use-prompts',
@@ -291,6 +304,7 @@ describe('template inheritance', () => {
 
     it('should return single template as-is', () => {
       const template: TasksConfiguration = {
+        name: 'test-template',
         tasks: [
           {
             id: 'task1',
@@ -312,6 +326,7 @@ describe('template inheritance', () => {
   describe('loadAndMergeTemplate', () => {
     it('should load template with only prompts/variables (no tasks) for extending', async () => {
       const baseConfig: TasksConfiguration = {
+        name: 'test-template',
         prompts: [
           {
             id: 'sharedPrompt',
@@ -328,6 +343,7 @@ describe('template inheritance', () => {
       };
 
       const childConfig: TasksConfiguration = {
+        name: 'child-template',
         extends: 'base.json',
         tasks: [
           {
@@ -360,6 +376,7 @@ describe('template inheritance', () => {
 
     it('should load and merge templates with extends', async () => {
       const baseConfig: TasksConfiguration = {
+        name: 'test-template',
         tasks: [
           {
             id: 'base-task',
@@ -374,6 +391,7 @@ describe('template inheritance', () => {
       };
 
       const childConfig: TasksConfiguration = {
+        name: 'child-template',
         extends: 'base.json',
         tasks: [
           {
@@ -401,6 +419,7 @@ describe('template inheritance', () => {
 
     it('should support multiple extends', async () => {
       const base1: TasksConfiguration = {
+        name: 'test-template',
         tasks: [
           {
             id: 'task1',
@@ -415,6 +434,7 @@ describe('template inheritance', () => {
       };
 
       const base2: TasksConfiguration = {
+        name: 'test-template',
         tasks: [
           {
             id: 'task2',
@@ -429,6 +449,7 @@ describe('template inheritance', () => {
       };
 
       const child: TasksConfiguration = {
+        name: 'child-template',
         extends: ['base1.json', 'base2.json'],
         tasks: [
           {
@@ -456,6 +477,7 @@ describe('template inheritance', () => {
       fs.mkdirSync(path.join(testDir, 'subdir'), { recursive: true });
 
       const baseConfig: TasksConfiguration = {
+        name: 'test-template',
         tasks: [
           {
             id: 'base',
@@ -470,6 +492,7 @@ describe('template inheritance', () => {
       };
 
       const childConfig: TasksConfiguration = {
+        name: 'test-template-1',
         extends: '../base.json',
         tasks: [],
       };
@@ -488,6 +511,7 @@ describe('template inheritance', () => {
   describe('loadTasksWithInheritance', () => {
     it('should load tasks with inheritance info', async () => {
       const baseConfig: TasksConfiguration = {
+        name: 'test-template',
         tasks: [
           {
             id: 'base',
@@ -502,6 +526,7 @@ describe('template inheritance', () => {
       };
 
       const childConfig: TasksConfiguration = {
+        name: 'child-template',
         extends: 'base.json',
         tasks: [
           {
@@ -538,6 +563,7 @@ describe('template inheritance', () => {
         if (url === 'https://example.com/base.json') {
           return new Response(
             JSON.stringify({
+              name: 'test-template',
               tasks: [
                 {
                   id: 'remote-task',
@@ -557,6 +583,7 @@ describe('template inheritance', () => {
         if (url === 'https://example.com/templates/child.json') {
           return new Response(
             JSON.stringify({
+              name: 'child-template',
               extends: '../base.json',
               tasks: [
                 {
@@ -588,6 +615,7 @@ describe('template inheritance', () => {
         if (url === 'https://example.com/circular1.json') {
           return new Response(
             JSON.stringify({
+              name: 'circular-template-1',
               extends: 'https://example.com/circular2.json',
               tasks: [],
             }),
@@ -598,6 +626,7 @@ describe('template inheritance', () => {
         if (url === 'https://example.com/circular2.json') {
           return new Response(
             JSON.stringify({
+              name: 'circular-template-2',
               extends: 'https://example.com/circular1.json',
               tasks: [],
             }),
@@ -608,6 +637,7 @@ describe('template inheritance', () => {
         if (url === 'https://example.com/with-local-extends.json') {
           return new Response(
             JSON.stringify({
+              name: 'remote-with-local-extends',
               extends: './local-base.json',
               tasks: [
                 {
@@ -628,6 +658,7 @@ describe('template inheritance', () => {
         if (url === 'https://example.com/local-base.json') {
           return new Response(
             JSON.stringify({
+              name: 'test-template',
               tasks: [
                 {
                   id: 'local-base-task',
@@ -701,6 +732,7 @@ describe('template inheritance', () => {
 
     it('should support mixed local and remote templates', async () => {
       const localConfig: TasksConfiguration = {
+        name: 'local-template',
         extends: 'https://example.com/base.json',
         tasks: [
           {
@@ -756,6 +788,7 @@ describe('template inheritance', () => {
         if (url === 'https://example.com/multi.json') {
           return new Response(
             JSON.stringify({
+              name: 'multi-extends-template',
               extends: [
                 'https://example.com/base1.json',
                 'https://example.com/base2.json',
@@ -779,6 +812,7 @@ describe('template inheritance', () => {
         if (url === 'https://example.com/base1.json') {
           return new Response(
             JSON.stringify({
+              name: 'test-template',
               tasks: [
                 {
                   id: 'base1-task',
@@ -798,6 +832,7 @@ describe('template inheritance', () => {
         if (url === 'https://example.com/base2.json') {
           return new Response(
             JSON.stringify({
+              name: 'test-template',
               tasks: [
                 {
                   id: 'base2-task',
@@ -930,6 +965,7 @@ describe('template inheritance', () => {
           return Promise.resolve(
             new Response(
               JSON.stringify({
+                name: 'test-template',
                 tasks: [
                   {
                     id: 'remote-task',
@@ -938,7 +974,10 @@ describe('template inheritance', () => {
                     required: true,
                     enabled: true,
                     type: 'template',
-                    config: { file: 'output.txt', templateFile: './template.hbs' },
+                    config: {
+                      file: 'output.txt',
+                      templateFile: './template.hbs',
+                    },
                   },
                 ],
               }),
@@ -960,6 +999,7 @@ describe('template inheritance', () => {
 
     it('should annotate tasks with source path from local template', async () => {
       const config: TasksConfiguration = {
+        name: 'test-template',
         tasks: [
           {
             id: 'local-task',
@@ -982,6 +1022,7 @@ describe('template inheritance', () => {
 
     it('should preserve $sourceUrl when merging templates', async () => {
       const baseConfig: TasksConfiguration = {
+        name: 'test-template',
         tasks: [
           {
             id: 'task1',
@@ -996,6 +1037,7 @@ describe('template inheritance', () => {
       };
 
       const childConfig: TasksConfiguration = {
+        name: 'child-template',
         extends: 'base.json',
         tasks: [
           {
@@ -1025,6 +1067,7 @@ describe('template inheritance', () => {
   describe('duplicate ID validation', () => {
     it('should throw error when task ID duplicates variable ID', () => {
       const template: TasksConfiguration = {
+        name: 'test-template',
         tasks: [
           {
             id: 'duplicate-id',
@@ -1051,6 +1094,7 @@ describe('template inheritance', () => {
 
     it('should throw error when task ID duplicates prompt ID', () => {
       const template: TasksConfiguration = {
+        name: 'test-template',
         tasks: [
           {
             id: 'duplicate-id',
@@ -1078,6 +1122,7 @@ describe('template inheritance', () => {
 
     it('should throw error when variable ID duplicates prompt ID', () => {
       const template: TasksConfiguration = {
+        name: 'test-template',
         tasks: [],
         variables: [
           {
@@ -1101,6 +1146,7 @@ describe('template inheritance', () => {
 
     it('should throw error when duplicate IDs exist after inheritance merge', async () => {
       const baseConfig: TasksConfiguration = {
+        name: 'test-template',
         variables: [
           {
             id: 'shared-id',
@@ -1110,6 +1156,7 @@ describe('template inheritance', () => {
       };
 
       const childConfig: TasksConfiguration = {
+        name: 'child-template',
         extends: 'base.json',
         tasks: [
           {
@@ -1134,6 +1181,7 @@ describe('template inheritance', () => {
 
     it('should allow same ID when overriding (task to task)', async () => {
       const baseConfig: TasksConfiguration = {
+        name: 'test-template',
         tasks: [
           {
             id: 'same-id',
@@ -1148,6 +1196,7 @@ describe('template inheritance', () => {
       };
 
       const childConfig: TasksConfiguration = {
+        name: 'child-template',
         extends: 'base.json',
         tasks: [
           {
@@ -1174,6 +1223,7 @@ describe('template inheritance', () => {
 
     it('should allow same ID when overriding variables', async () => {
       const baseConfig: TasksConfiguration = {
+        name: 'test-template',
         variables: [
           {
             id: 'var-id',
@@ -1183,6 +1233,7 @@ describe('template inheritance', () => {
       };
 
       const childConfig: TasksConfiguration = {
+        name: 'test-template-2',
         extends: 'base.json',
         variables: [
           {
@@ -1204,6 +1255,7 @@ describe('template inheritance', () => {
 
     it('should allow same ID when overriding prompts', async () => {
       const baseConfig: TasksConfiguration = {
+        name: 'test-template',
         prompts: [
           {
             id: 'prompt-id',
@@ -1214,6 +1266,7 @@ describe('template inheritance', () => {
       };
 
       const childConfig: TasksConfiguration = {
+        name: 'test-template-3',
         extends: 'base.json',
         prompts: [
           {
@@ -1236,6 +1289,7 @@ describe('template inheritance', () => {
 
     it('should allow same ID when overriding variables with replace strategy', async () => {
       const baseConfig: TasksConfiguration = {
+        name: 'test-template',
         variables: [
           {
             id: 'var-id',
@@ -1245,6 +1299,7 @@ describe('template inheritance', () => {
       };
 
       const childConfig: TasksConfiguration = {
+        name: 'test-template-4',
         extends: 'base.json',
         variables: [
           {
@@ -1268,6 +1323,7 @@ describe('template inheritance', () => {
 
     it('should allow same ID when overriding prompts with replace strategy', async () => {
       const baseConfig: TasksConfiguration = {
+        name: 'test-template',
         prompts: [
           {
             id: 'prompt-id',
@@ -1279,6 +1335,7 @@ describe('template inheritance', () => {
       };
 
       const childConfig: TasksConfiguration = {
+        name: 'test-template-5',
         extends: 'base.json',
         prompts: [
           {
@@ -1305,6 +1362,7 @@ describe('template inheritance', () => {
 
     it('should throw error when overriding variable without override strategy', () => {
       const baseConfig: TasksConfiguration = {
+        name: 'test-template',
         variables: [
           {
             id: 'var-id',
@@ -1314,6 +1372,7 @@ describe('template inheritance', () => {
       };
 
       const childConfig: TasksConfiguration = {
+        name: 'test-template',
         variables: [
           {
             id: 'var-id',
@@ -1332,6 +1391,7 @@ describe('template inheritance', () => {
 
     it('should throw error when overriding prompt without override strategy', () => {
       const baseConfig: TasksConfiguration = {
+        name: 'test-template',
         prompts: [
           {
             id: 'prompt-id',
@@ -1342,6 +1402,7 @@ describe('template inheritance', () => {
       };
 
       const childConfig: TasksConfiguration = {
+        name: 'test-template',
         prompts: [
           {
             id: 'prompt-id',
@@ -1361,6 +1422,7 @@ describe('template inheritance', () => {
 
     it('should throw error with multiple templates having cross-type duplicates', () => {
       const base1: TasksConfiguration = {
+        name: 'test-template',
         tasks: [
           {
             id: 'id1',
@@ -1375,6 +1437,7 @@ describe('template inheritance', () => {
       };
 
       const base2: TasksConfiguration = {
+        name: 'test-template',
         variables: [
           {
             id: 'id1',
@@ -1390,6 +1453,7 @@ describe('template inheritance', () => {
 
     it('should not throw when all IDs are unique across tasks, variables, and prompts', () => {
       const template: TasksConfiguration = {
+        name: 'test-template',
         tasks: [
           {
             id: 'task-1',

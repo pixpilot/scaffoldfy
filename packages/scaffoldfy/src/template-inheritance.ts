@@ -220,6 +220,22 @@ export async function loadTemplate(
     );
   }
 
+  // Validate required name field
+  if (config.name == null || config.name.trim() === '') {
+    throw InvalidTemplateError.missingName(resolvedPath);
+  }
+
+  // Validate name format (similar to npm package names)
+  // Rules:
+  // - Must contain only lowercase letters, digits, and hyphens
+  // - Cannot start or end with a hyphen
+  // - Cannot contain consecutive hyphens
+  // - Must be at least 1 character long
+  const namePattern = /^[a-z\d]+(?:-[a-z\d]+)*$/u;
+  if (!namePattern.test(config.name)) {
+    throw InvalidTemplateError.invalidNameFormat(resolvedPath, config.name);
+  }
+
   // Validate basic structure - tasks can be optional but must be an array if present
   if (config.tasks !== undefined && !Array.isArray(config.tasks)) {
     throw InvalidTemplateError.tasksNotArray(resolvedPath);
@@ -433,7 +449,8 @@ function mergePrompt(
  */
 export function mergeTemplates(templates: TasksConfiguration[]): TasksConfiguration {
   if (templates.length === 0) {
-    return { tasks: [] };
+    // This should not happen in practice but return a minimal valid config
+    return { name: 'Empty Template', tasks: [] };
   }
 
   if (templates.length === 1) {
@@ -517,9 +534,22 @@ export function mergeTemplates(templates: TasksConfiguration[]): TasksConfigurat
   // Validate that all IDs are unique across tasks, variables, and prompts
   validateUniqueIds(tasks, variables, prompts);
 
+  // Use the last template's name, description, and dependencies (highest priority)
+  const lastTemplate = templates[templates.length - 1]!;
+
   const result: TasksConfiguration = {
+    name: lastTemplate.name,
     tasks,
   };
+
+  // Add optional fields from last template if they exist
+  if (lastTemplate.description != null) {
+    result.description = lastTemplate.description;
+  }
+
+  if (lastTemplate.dependencies != null) {
+    result.dependencies = lastTemplate.dependencies;
+  }
 
   // Add prompts if any exist
   if (prompts != null) {

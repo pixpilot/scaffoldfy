@@ -76,7 +76,9 @@ export async function resolveDefaultValue<T = string | number | boolean>(
       return result as T;
     } catch (error) {
       log(
-        `Prompt "${promptId}": failed to execute default value command: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Prompt "${promptId}": failed to execute default value command: ${
+          error instanceof Error ? error.message : 'Unknown error'
+        }`,
         'warn',
       );
       return undefined;

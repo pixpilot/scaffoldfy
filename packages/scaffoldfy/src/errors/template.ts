@@ -151,4 +151,24 @@ export class InvalidTemplateError extends ScaffoldfyError {
       filePath,
     );
   }
+
+  /**
+   * Create an invalid template error for missing required name field
+   */
+  static missingName(filePath: string): InvalidTemplateError {
+    return new InvalidTemplateError(
+      `Invalid template file ${filePath}: 'name' field is required`,
+      filePath,
+    );
+  }
+
+  /**
+   * Create an invalid template error for invalid name format
+   */
+  static invalidNameFormat(filePath: string, name: string): InvalidTemplateError {
+    return new InvalidTemplateError(
+      `Invalid template file ${filePath}: 'name' field "${name}" must contain only lowercase letters, digits, and hyphens. It cannot start or end with a hyphen, and cannot contain consecutive hyphens.`,
+      filePath,
+    );
+  }
 }

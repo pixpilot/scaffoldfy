@@ -165,6 +165,9 @@ await runWithTasks(customTasks);
 ```json
 {
   "$schema": "node_modules/@pixpilot/scaffoldfy/schema/tasks.schema.json",
+  "name": "my-template",
+  "description": "Optional description of what this template does",
+  "dependencies": ["optional-dependency-template"],
   "tasks": [
     {
       "id": "unique-id",
@@ -184,7 +187,12 @@ await runWithTasks(customTasks);
 }
 ```
 
-> **Note:** The `tasks` array is optional when using template inheritance. You can create templates with only `prompts` and/or `variables` that other templates can extend. See [Template Inheritance](./TEMPLATE_INHERITANCE.md) for details.
+> **Note:**
+>
+> - The `name` field is **required** for all templates. It must contain only lowercase letters, digits, and hyphens. It cannot start or end with a hyphen, or contain consecutive hyphens (e.g., `my-template`, `node-project-generator`).
+> - The `description` field is optional but recommended for documentation.
+> - The `dependencies` field is optional and can be used to document template dependencies.
+> - The `tasks` array is optional when using template inheritance. You can create templates with only `prompts` and/or `variables` that other templates can extend. See [Template Inheritance](./TEMPLATE_INHERITANCE.md) for details.
 
 ### With Interactive Prompts
 
@@ -192,6 +200,8 @@ Add user prompts to collect custom input:
 
 ```json
 {
+  "name": "project-setup-with-prompts",
+  "description": "Configure project with interactive prompts",
   "tasks": [
     {
       "id": "setup",
@@ -234,6 +244,8 @@ Tasks can depend on other tasks to ensure correct execution order:
 
 ```json
 {
+  "name": "task-dependencies-example",
+  "description": "Demonstrates task execution order with dependencies",
   "tasks": [
     {
       "id": "update-config",
@@ -270,7 +282,7 @@ Use conditions to control task execution based on user input or configuration:
 ```json
 {
   "id": "remove-examples",
-  "name": "Remove Examples",
+  "name": "remove-examples",
   "description": "Delete example files if not needed",
   "required": false,
   "enabled": true,

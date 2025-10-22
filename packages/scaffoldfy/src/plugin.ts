@@ -65,7 +65,9 @@ export function registerPlugin(plugin: TaskPlugin): void {
   }
 
   log(
-    `✓ Registered plugin: ${plugin.name}${plugin.version != null ? ` v${plugin.version}` : ''}`,
+    `✓ Registered plugin: ${plugin.name}${
+      plugin.version != null ? ` v${plugin.version}` : ''
+    }`,
     'info',
   );
 }
@@ -219,7 +221,9 @@ export async function callHook(
     }
   } catch (error) {
     log(
-      `Error in ${hookName} hook: ${error instanceof Error ? error.message : String(error)}`,
+      `Error in ${hookName} hook: ${
+        error instanceof Error ? error.message : String(error)
+      }`,
       'error',
     );
   }

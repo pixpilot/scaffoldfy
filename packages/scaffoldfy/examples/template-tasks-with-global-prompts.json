@@ -1,5 +1,7 @@
 {
   "$schema": "../schema/tasks.schema.json",
+  "name": "template-with-global-prompts",
+  "description": "Demonstrates using top-level global prompts available to all tasks",
   "tasks": [
     {
       "id": "configure-project",

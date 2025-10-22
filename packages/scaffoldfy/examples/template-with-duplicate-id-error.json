@@ -1,5 +1,7 @@
 {
   "$schema": "../schema/tasks.schema.json",
+  "name": "template-with-duplicate-id-error",
+  "description": "Example that demonstrates duplicate task ID validation error",
   "tasks": [
     {
       "id": "projectName",

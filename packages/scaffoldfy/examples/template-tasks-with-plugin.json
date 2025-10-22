@@ -1,4 +1,6 @@
 {
+  "name": "template-with-custom-plugin",
+  "description": "Demonstrates using a custom plugin for specialized tasks",
   "tasks": [
     {
       "id": "setup-docker",

@@ -1,4 +1,6 @@
 {
+  "name": "base-node-template",
+  "description": "A base Node.js project template with essential configuration tasks",
   "tasks": [
     {
       "id": "update-package",

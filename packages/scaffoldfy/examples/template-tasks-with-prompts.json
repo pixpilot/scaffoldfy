@@ -1,5 +1,7 @@
 {
   "$schema": "../schema/tasks.schema.json",
+  "name": "template-with-task-prompts",
+  "description": "Demonstrates using task-scoped prompts for interactive configuration",
   "tasks": [
     {
       "id": "configure-project",

@@ -157,7 +157,7 @@ When using `override: "merge"` for tasks:
 ```json
 {
   "id": "setup",
-  "name": "Basic Setup",
+  "name": "basic-setup",
   "description": "Base setup",
   "required": true,
   "enabled": true,
@@ -175,7 +175,7 @@ When using `override: "merge"` for tasks:
 ```json
 {
   "id": "setup",
-  "name": "Enhanced Setup",
+  "name": "enhanced-setup",
   "description": "Enhanced setup with more features",
   "required": true,
   "enabled": true,
@@ -207,7 +207,7 @@ When using `override: "replace"`:
 ```json
 {
   "id": "setup",
-  "name": "Completely New Setup",
+  "name": "completely-new-setup",
   "description": "Starts from scratch",
   "required": false,
   "enabled": true,

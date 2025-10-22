@@ -3,7 +3,24 @@
   "title": "Template Tasks Configuration",
   "description": "Configuration for template task automation and cleanup",
   "type": "object",
+  "required": ["name"],
   "properties": {
+    "name": {
+      "type": "string",
+      "description": "Unique identifier name for this template. Must contain only lowercase letters, digits, and hyphens. Cannot start or end with a hyphen.",
+      "pattern": "^[a-z\\d]+(?:-[a-z\\d]+)*$"
+    },
+    "description": {
+      "type": "string",
+      "description": "Detailed description of what this template does"
+    },
+    "dependencies": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Names or identifiers of other templates that this template depends on"
+    },
     "extends": {
       "description": "Base template file(s) to extend from. Can be a local path or URL (http/https). Supports single path or array of paths.",
       "oneOf": [

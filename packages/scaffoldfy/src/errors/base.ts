@@ -36,7 +36,9 @@ export class CircularDependencyError extends ScaffoldfyError {
     resolvedPath: string,
   ): CircularDependencyError {
     const dependencyChain = Array.from(visitedPaths);
-    const message = `Circular dependency detected: ${dependencyChain.join(' -> ')} -> ${resolvedPath}`;
+    const message = `Circular dependency detected: ${dependencyChain.join(
+      ' -> ',
+    )} -> ${resolvedPath}`;
 
     return new CircularDependencyError(message, dependencyChain, resolvedPath);
   }

@@ -72,7 +72,9 @@ export async function resolveVariableValue<T = string | number | boolean>(
       return result as T;
     } catch (error) {
       log(
-        `Variable "${variableId}": failed to execute command: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Variable "${variableId}": failed to execute command: ${
+          error instanceof Error ? error.message : 'Unknown error'
+        }`,
         'warn',
       );
       return undefined;

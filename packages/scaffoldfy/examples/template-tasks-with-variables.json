@@ -1,5 +1,7 @@
 {
   "$schema": "../schema/tasks.schema.json",
+  "name": "template-with-variables",
+  "description": "Demonstrates using global and task-scoped variables for configuration",
   "variables": [
     {
       "id": "currentYear",

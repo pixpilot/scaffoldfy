@@ -1,5 +1,7 @@
 {
   "$schema": "../schema/tasks.schema.json",
+  "name": "template-with-executable-defaults",
+  "description": "Demonstrates using executable commands for prompt default values",
   "tasks": [
     {
       "id": "setup-package-json",

@@ -62,7 +62,10 @@ describe('collectVariables', () => {
       { id: 'string', value: 'test' },
       { id: 'number', value: 42 },
       { id: 'boolean', value: true },
-      { id: 'object', value: { type: 'static', value: { key: 'value' } } as never },
+      {
+        id: 'object',
+        value: { type: 'static', value: { key: 'value' } } as never,
+      },
       { id: 'array', value: [1, 2, 3] as never },
     ];
 

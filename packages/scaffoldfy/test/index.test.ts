@@ -52,11 +52,17 @@ describe('jSON Schema Validation', () => {
     const expectedConfigs = [
       { title: 'Update JSON Config', required: ['file', 'updates'] },
       { title: 'Template Config', required: ['file'] },
-      { title: 'Regex Replace Config', required: ['file', 'pattern', 'replacement'] },
+      {
+        title: 'Regex Replace Config',
+        required: ['file', 'pattern', 'replacement'],
+      },
       { title: 'Replace In File Config', required: ['file', 'replacements'] },
       { title: 'Delete Config', required: ['paths'] },
       { title: 'Rename Config', required: ['from', 'to'] },
-      { title: 'Git Init Config', required: ['removeExisting', 'initialCommit'] },
+      {
+        title: 'Git Init Config',
+        required: ['removeExisting', 'initialCommit'],
+      },
       { title: 'Exec Config', required: ['command'] },
     ];
 
@@ -255,20 +261,40 @@ describe('jSON Task Loading', () => {
 
   it('should validate all config types can be represented in JSON', () => {
     const configs = [
-      { type: 'update-json', config: { file: 'test.json', updates: { key: 'value' } } },
-      { type: 'template', config: { file: 'test.md', template: '# {{title}}' } },
+      {
+        type: 'update-json',
+        config: { file: 'test.json', updates: { key: 'value' } },
+      },
+      {
+        type: 'template',
+        config: { file: 'test.md', template: '# {{title}}' },
+      },
       {
         type: 'regex-replace',
-        config: { file: 'test.txt', pattern: 'old', replacement: 'new', flags: 'g' },
+        config: {
+          file: 'test.txt',
+          pattern: 'old',
+          replacement: 'new',
+          flags: 'g',
+        },
       },
       {
         type: 'replace-in-file',
-        config: { file: 'test.txt', replacements: [{ find: 'old', replace: 'new' }] },
+        config: {
+          file: 'test.txt',
+          replacements: [{ find: 'old', replace: 'new' }],
+        },
       },
       { type: 'delete', config: { paths: ['test.txt'] } },
-      { type: 'conditional-delete', config: { condition: 'true', paths: ['test.txt'] } },
+      {
+        type: 'conditional-delete',
+        config: { condition: 'true', paths: ['test.txt'] },
+      },
       { type: 'rename', config: { from: 'old.txt', to: 'new.txt' } },
-      { type: 'git-init', config: { removeExisting: true, initialCommit: true } },
+      {
+        type: 'git-init',
+        config: { removeExisting: true, initialCommit: true },
+      },
       { type: 'exec', config: { command: 'echo test', cwd: './' } },
     ];
 

@@ -45,10 +45,13 @@ export async function collectPrompts(
 
       switch (prompt.type) {
         case 'input': {
-          const inputOptions: { message: string; default?: string; required?: boolean } =
-            {
-              message: prompt.message,
-            };
+          const inputOptions: {
+            message: string;
+            default?: string;
+            required?: boolean;
+          } = {
+            message: prompt.message,
+          };
           if (defaultValue !== undefined) {
             inputOptions.default = String(defaultValue);
           }

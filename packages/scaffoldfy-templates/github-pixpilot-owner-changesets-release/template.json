@@ -1,15 +1,15 @@
 {
   "$schema": "https://unpkg.com/@pixpilot/scaffoldfy/schema",
   "description": "Pixpilot workspace package generator template for pnpm + Turbo monorepo. Provides project info prompts and config tasks.",
-  "extends": [],
+  "name": "github-pixpilot-owner-changesets-release",
   "tasks": [
     {
-      "id": "github-pixpilot-admin-changesets-release",
+      "id": "github-pixpilot-admin-changesets-release-create",
       "name": "Setup Changesets Release Workflow",
       "description": "Adds a GitHub Actions workflow for Changesets-based releases",
       "required": true,
       "enabled": true,
-      "type": "create",
+      "type": "template",
       "config": {
         "templateFile": "release.yml",
         "file": ".github/workflows/release.yml",

@@ -155,7 +155,9 @@ export async function getUpdateJsonDiff(
     const diff = generateDiff(originalContent, modifiedContent);
     return `${colors.blue}File: ${config.file}${colors.reset}\n${diff.join('\n')}`;
   } catch (error) {
-    return `${colors.red}✗ Error: ${error instanceof Error ? error.message : String(error)}${colors.reset}`;
+    return `${colors.red}✗ Error: ${
+      error instanceof Error ? error.message : String(error)
+    }${colors.reset}`;
   }
 }
 
@@ -185,7 +187,11 @@ export async function getTemplateDiff(
     const previewLines = templateContent.split('\n').slice(0, PREVIEW_LINES);
     const preview = previewLines.join('\n');
     const hasMore = templateContent.split('\n').length > PREVIEW_LINES;
-    return `${colors.blue}File: ${config.file}${colors.reset}\n${colors.green}+ New file would be created${colors.reset}\n${colors.gray}Content preview:${colors.reset}\n${preview}${hasMore ? '\n...' : ''}`;
+    return `${colors.blue}File: ${config.file}${colors.reset}\n${
+      colors.green
+    }+ New file would be created${colors.reset}\n${
+      colors.gray
+    }Content preview:${colors.reset}\n${preview}${hasMore ? '\n...' : ''}`;
   }
 
   try {
@@ -198,7 +204,9 @@ export async function getTemplateDiff(
     const diff = generateDiff(currentContent, templateContent);
     return `${colors.blue}File: ${config.file}${colors.reset}\n${diff.join('\n')}`;
   } catch (error) {
-    return `${colors.red}✗ Error: ${error instanceof Error ? error.message : String(error)}${colors.reset}`;
+    return `${colors.red}✗ Error: ${
+      error instanceof Error ? error.message : String(error)
+    }${colors.reset}`;
   }
 }
 
@@ -245,9 +253,15 @@ export async function getCreateDiff(
     const previewLines = templateContent.split('\n').slice(0, PREVIEW_LINES);
     const preview = previewLines.join('\n');
     const hasMore = templateContent.split('\n').length > PREVIEW_LINES;
-    return `${colors.blue}File: ${config.file}${colors.reset}\n${colors.green}+ New file would be created${colors.reset}\n${colors.gray}Content preview:${colors.reset}\n${preview}${hasMore ? '\n...' : ''}`;
+    return `${colors.blue}File: ${config.file}${colors.reset}\n${
+      colors.green
+    }+ New file would be created${colors.reset}\n${
+      colors.gray
+    }Content preview:${colors.reset}\n${preview}${hasMore ? '\n...' : ''}`;
   } catch (error) {
-    return `${colors.red}✗ Error: ${error instanceof Error ? error.message : String(error)}${colors.reset}`;
+    return `${colors.red}✗ Error: ${
+      error instanceof Error ? error.message : String(error)
+    }${colors.reset}`;
   }
 }
 
@@ -285,7 +299,9 @@ export async function getRegexReplaceDiff(
     const diff = generateDiff(content, modifiedContent);
     return `${colors.blue}File: ${config.file}${colors.reset}\n${diff.join('\n')}`;
   } catch (error) {
-    return `${colors.red}✗ Error: ${error instanceof Error ? error.message : String(error)}${colors.reset}`;
+    return `${colors.red}✗ Error: ${
+      error instanceof Error ? error.message : String(error)
+    }${colors.reset}`;
   }
 }
 
@@ -327,7 +343,9 @@ export async function getReplaceInFileDiff(
     const diff = generateDiff(originalContent, content);
     return `${colors.blue}File: ${config.file}${colors.reset}\n${diff.join('\n')}`;
   } catch (error) {
-    return `${colors.red}✗ Error: ${error instanceof Error ? error.message : String(error)}${colors.reset}`;
+    return `${colors.red}✗ Error: ${
+      error instanceof Error ? error.message : String(error)
+    }${colors.reset}`;
   }
 }
 
@@ -350,7 +368,9 @@ export function getDeleteDiff(config: DeleteConfig, initConfig: InitConfig): str
     return `${colors.cyan}→ No files/directories to delete${colors.reset}`;
   }
 
-  return `${colors.red}Would delete:${colors.reset}\n${existingPaths.map((p) => `${colors.red}  - ${p}${colors.reset}`).join('\n')}`;
+  return `${colors.red}Would delete:${colors.reset}\n${existingPaths
+    .map((p) => `${colors.red}  - ${p}${colors.reset}`)
+    .join('\n')}`;
 }
 
 /**
@@ -462,7 +482,9 @@ export async function getTaskDiff(
       }
     }
   } catch (error) {
-    return `${colors.red}✗ Error generating diff: ${error instanceof Error ? error.message : String(error)}${colors.reset}`;
+    return `${colors.red}✗ Error generating diff: ${
+      error instanceof Error ? error.message : String(error)
+    }${colors.reset}`;
   }
 }
 

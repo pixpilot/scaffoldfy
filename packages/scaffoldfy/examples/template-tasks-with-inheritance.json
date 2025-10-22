@@ -1,5 +1,7 @@
 {
-  "extends": ["./base-node-template.json"],
+  "name": "template-with-inheritance",
+  "description": "Demonstrates extending from a base template and overriding tasks",
+  "extends": "./base-node-template.json",
   "tasks": [
     {
       "id": "setup-docker",

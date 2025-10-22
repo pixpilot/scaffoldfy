@@ -182,6 +182,9 @@ export interface TaskDefinition {
  * Configuration file structure for template tasks
  */
 export interface TasksConfiguration {
+  name: string; // Human-readable name for this template
+  description?: string; // Optional detailed description of what this template does
+  dependencies?: string[]; // Optional: Names or identifiers of other templates this template depends on
   extends?: string | string[]; // Path(s) or URL(s) to base template file(s) to inherit from
   variables?: VariableDefinition[]; // Optional top-level global variables available to all tasks
   prompts?: PromptDefinition[]; // Optional top-level global prompts collected once upfront
