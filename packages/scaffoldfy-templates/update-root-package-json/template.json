@@ -1,0 +1,26 @@
+{
+  "$schema": "https://unpkg.com/@pixpilot/scaffoldfy/schema",
+  "description": "Update root package.json with repository information",
+  "name": "update-root-package-json",
+  "dependencies": ["project-info"],
+  "tasks": [
+    {
+      "id": "update-root-package",
+      "name": "Update root package.json",
+      "description": "Update repository information in root package.json",
+      "type": "update-json",
+      "config": {
+        "file": "package.json",
+        "updates": {
+          "name": "{{repoName}}",
+          "author": "{{author}} <{{authorEmail}}>",
+          "repository": {
+            "type": "git",
+            "url": "{{repoUrl}}"
+          },
+          "homepage": "{{baseRepoUrl}}"
+        }
+      }
+    }
+  ]
+}
