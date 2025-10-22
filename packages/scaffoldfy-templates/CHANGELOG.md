@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy-templates
 
+## 0.4.0
+
+### Minor Changes
+
+- add GitHub Actions workflow for automated releases
+
 ## 0.3.0
 
 ### Minor Changes
