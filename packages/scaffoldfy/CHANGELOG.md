@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy
 
+## 0.15.0
+
+### Minor Changes
+
+- Introduced function to ensure plugins are registered before task validation
+
 ## 0.14.0
 
 ### Minor Changes
