@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy-templates
 
+## 0.14.0
+
+### Minor Changes
+
+- bedd5a3: release
+
 ## 0.13.0
 
 ### Minor Changes

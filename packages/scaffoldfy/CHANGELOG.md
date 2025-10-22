@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy
 
+## 0.19.0
+
+### Minor Changes
+
+- bedd5a3: release
+
 ## 0.18.1
 
 ### Patch Changes
