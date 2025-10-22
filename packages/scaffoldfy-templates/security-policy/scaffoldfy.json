@@ -1,0 +1,21 @@
+{
+  "$schema": "https://unpkg.com/@pixpilot/scaffoldfy/schema",
+  "description": "Security policy template with configurable contact email",
+  "name": "security-policy",
+  "dependencies": ["project-info"],
+
+  "prompts": [
+    {
+      "id": "securityEmail",
+      "type": "input",
+      "message": "Security contact email",
+      "default": {
+        "type": "conditional",
+        "condition": "orgName === 'pixpilot'",
+        "ifTrue": "security@pixpilot.com",
+        "ifFalse": "{{authorEmail}}"
+      },
+      "required": true
+    }
+  ]
+}

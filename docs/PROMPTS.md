@@ -482,6 +482,47 @@ This is equivalent to:
 6. **Be mindful of security**: Avoid executing untrusted input
 7. **Use timeouts wisely**: Commands timeout after 10 seconds; keep them fast
 
+## Template Interpolation in Default Values
+
+You can use `{{variable}}` syntax in prompt default values. These will be dynamically interpolated using the current configuration and previously collected prompt/variable values.
+
+### Example
+
+```json
+{
+  "id": "securityEmail",
+  "type": "input",
+  "message": "Security contact email",
+  "default": "{{authorEmail}}",
+  "required": true
+}
+```
+
+If `authorEmail` is available from another prompt or variable, it will be used as the default value.
+
+## Conditional Default Values
+
+You can provide conditional defaults using the `type: "conditional"` format. This allows you to set a default value based on a runtime condition (JavaScript expression).
+
+### Example
+
+```json
+{
+  "id": "securityEmail",
+  "type": "input",
+  "message": "Security contact email",
+  "default": {
+    "type": "conditional",
+    "condition": "orgName === 'pixpilot'",
+    "ifTrue": "security@pixpilot.com",
+    "ifFalse": "{{authorEmail}}"
+  },
+  "required": true
+}
+```
+
+This will use `security@pixpilot.com` if `orgName` is `pixpilot`, otherwise it will use the value of `authorEmail`.
+
 ### Windows Compatibility
 
 For cross-platform compatibility, prefer using Node.js commands or Git commands over shell-specific syntax:

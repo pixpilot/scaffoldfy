@@ -6,6 +6,7 @@ import type { InitConfig, PromptDefinition } from '../types.js';
 import { confirm, input, number, password, select } from '@inquirer/prompts';
 import { PromptValidationError } from '../errors/other.js';
 import { evaluateEnabled, log } from '../utils.js';
+import { resolveDefaultValue } from './resolve-default-value.js';
 
 /**
  * Collect prompt answers from task-defined prompts
@@ -41,7 +42,18 @@ export async function collectPrompts(
       let answer: unknown;
 
       // Get the resolved default value
-      const defaultValue = resolvedDefaults.get(prompt.id);
+      // Re-resolve with current context to support template interpolation
+      let defaultValue = resolvedDefaults.get(prompt.id);
+
+      // If the original default was a string template or the prompt has a default,
+      // re-resolve it with the current context
+      if (prompt.default !== undefined) {
+        defaultValue = await resolveDefaultValue(
+          prompt.default,
+          prompt.id,
+          currentContext,
+        );
+      }
 
       switch (prompt.type) {
         case 'input': {

@@ -39,8 +39,20 @@ export type PromptType = 'input' | 'select' | 'confirm' | 'password' | 'number';
  * Default value types for prompts
  * - 'static': Static value provided directly
  * - 'exec': Execute a command to get the value dynamically
+ * - 'conditional': Choose value based on a condition
  */
-export type DefaultValueType = 'static' | 'exec';
+export type DefaultValueType = 'static' | 'exec' | 'conditional';
+
+/**
+ * Conditional default value configuration
+ * Evaluates a condition and returns different values based on the result
+ */
+export interface ConditionalDefaultConfig<T = string | number | boolean> {
+  type: 'conditional';
+  condition: string; // JavaScript expression to evaluate
+  ifTrue: T | string; // Value if condition is true (can be a template string with {{variables}})
+  ifFalse: T | string; // Value if condition is false (can be a template string with {{variables}})
+}
 
 /**
  * Default value configuration for prompts
@@ -55,8 +67,12 @@ export interface DefaultValueConfig<T = string | number | boolean> {
  * - For simple static values, pass the value directly (e.g., "default-name", 42, true)
  * - For executable defaults, use { type: 'exec', value: 'command' }
  * - For explicit static values, use { type: 'static', value: yourValue }
+ * - For conditional defaults, use { type: 'conditional', condition: 'expression', ifTrue: value, ifFalse: value }
  */
-export type DefaultValue<T = string | number | boolean> = T | DefaultValueConfig<T>;
+export type DefaultValue<T = string | number | boolean> =
+  | T
+  | DefaultValueConfig<T>
+  | ConditionalDefaultConfig<T>;
 
 /**
  * Conditional enabled configuration for prompts and tasks

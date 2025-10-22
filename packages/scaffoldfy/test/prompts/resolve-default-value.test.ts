@@ -24,6 +24,44 @@ describe('executable default values', () => {
     expect(result).toBe('static-value');
   });
 
+  it('should interpolate template variables in string defaults', async () => {
+    const defaultValue: DefaultValue<string> = 'Hello {{name}}!';
+    const context = { name: 'Pixpilot' };
+    const result = await resolveDefaultValue(defaultValue, 'test-prompt', context);
+    expect(result).toBe('Hello Pixpilot!');
+  });
+
+  it('should interpolate multiple variables in string defaults', async () => {
+    const defaultValue: DefaultValue<string> = 'Author: {{author}}, Email: {{email}}';
+    const context = { author: 'Jane', email: 'jane@example.com' };
+    const result = await resolveDefaultValue(defaultValue, 'test-prompt', context);
+    expect(result).toBe('Author: Jane, Email: jane@example.com');
+  });
+
+  it('should resolve conditional default (ifTrue)', async () => {
+    const defaultValue: DefaultValue<string> = {
+      type: 'conditional',
+      condition: 'orgName === "pixpilot"',
+      ifTrue: 'security@pixpilot.com',
+      ifFalse: '{{authorEmail}}',
+    };
+    const context = { orgName: 'pixpilot', authorEmail: 'jane@example.com' };
+    const result = await resolveDefaultValue(defaultValue, 'securityEmail', context);
+    expect(result).toBe('security@pixpilot.com');
+  });
+
+  it('should resolve conditional default (ifFalse with interpolation)', async () => {
+    const defaultValue: DefaultValue<string> = {
+      type: 'conditional',
+      condition: 'orgName === "pixpilot"',
+      ifTrue: 'security@pixpilot.com',
+      ifFalse: '{{authorEmail}}',
+    };
+    const context = { orgName: 'otherorg', authorEmail: 'jane@example.com' };
+    const result = await resolveDefaultValue(defaultValue, 'securityEmail', context);
+    expect(result).toBe('jane@example.com');
+  });
+
   it('should resolve explicit static type defaults', async () => {
     const defaultValue: DefaultValue<string> = {
       type: 'static',
