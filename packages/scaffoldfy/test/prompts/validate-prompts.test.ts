@@ -10,7 +10,7 @@ describe('validatePrompts', () => {
   it('should return no errors for valid prompts', () => {
     const prompts: PromptDefinition[] = [
       {
-        id: 'project-name',
+        id: 'projectName',
         type: 'input',
         message: 'What is your project name?',
         default: 'my-project',
@@ -148,7 +148,7 @@ describe('validatePrompts', () => {
   it('should validate password prompt', () => {
     const prompts: PromptDefinition[] = [
       {
-        id: 'api-key',
+        id: 'apiKey',
         type: 'password',
         message: 'Enter API key',
         required: true,
@@ -159,15 +159,35 @@ describe('validatePrompts', () => {
     expect(errors).toEqual([]);
   });
 
-  it('should allow hyphens and underscores in prompt ID', () => {
+  it('should reject hyphens in prompt ID', () => {
     const prompts: PromptDefinition[] = [
       {
-        id: 'my-prompt_name',
+        id: 'my-prompt-name',
         type: 'input',
         message: 'Test',
       },
       {
-        id: 'another_prompt-id',
+        id: 'another-prompt-id',
+        type: 'confirm',
+        message: 'Confirm?',
+      },
+    ];
+
+    const errors = validatePrompts(prompts);
+    expect(errors.length).toBeGreaterThan(0);
+    expect(errors.some((err) => err.includes('my-prompt-name'))).toBe(true);
+    expect(errors.some((err) => err.includes('another-prompt-id'))).toBe(true);
+  });
+
+  it('should allow underscores in prompt ID', () => {
+    const prompts: PromptDefinition[] = [
+      {
+        id: 'my_prompt_name',
+        type: 'input',
+        message: 'Test',
+      },
+      {
+        id: 'another_prompt_id',
         type: 'confirm',
         message: 'Confirm?',
       },
@@ -175,6 +195,56 @@ describe('validatePrompts', () => {
 
     const errors = validatePrompts(prompts);
     expect(errors).toEqual([]);
+  });
+
+  it('should allow camelCase and PascalCase prompt IDs', () => {
+    const prompts: PromptDefinition[] = [
+      {
+        id: 'myPromptName',
+        type: 'input',
+        message: 'Test',
+      },
+      {
+        id: 'AnotherPromptId',
+        type: 'confirm',
+        message: 'Confirm?',
+      },
+    ];
+
+    const errors = validatePrompts(prompts);
+    expect(errors).toEqual([]);
+  });
+
+  it('should allow dollar sign in prompt ID', () => {
+    const prompts: PromptDefinition[] = [
+      {
+        id: '$myPrompt',
+        type: 'input',
+        message: 'Test',
+      },
+      {
+        id: 'my$Prompt',
+        type: 'confirm',
+        message: 'Confirm?',
+      },
+    ];
+
+    const errors = validatePrompts(prompts);
+    expect(errors).toEqual([]);
+  });
+
+  it('should reject prompt IDs starting with a digit', () => {
+    const prompts: PromptDefinition[] = [
+      {
+        id: '1prompt',
+        type: 'input',
+        message: 'Test',
+      },
+    ];
+
+    const errors = validatePrompts(prompts);
+    expect(errors.length).toBeGreaterThan(0);
+    expect(errors.some((err) => err.includes('1prompt'))).toBe(true);
   });
 
   it('should handle multiple validation errors', () => {

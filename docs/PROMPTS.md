@@ -799,7 +799,7 @@ You can use any JavaScript expression in conditions, including:
 
 Prompts are validated automatically:
 
-- **ID**: Must contain only alphanumeric characters, underscores, and hyphens
+- **ID**: Must be a valid JavaScript identifier (letters, digits, underscores, and `$`; cannot start with a digit or contain hyphens)
 - **ID uniqueness**: All prompt IDs must be unique (top-level and task-level combined)
 - **Required**: If `required: true`, empty values are rejected
 - **Number min/max**: Values must be within specified range

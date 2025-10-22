@@ -37,11 +37,15 @@ describe('validateVariables', () => {
       { id: 'invalid-id-with-dash', value: 'test' },
       { id: 'invalid.id.with.dots', value: 'test' },
       { id: 'invalid id with spaces', value: 'test' },
+      { id: '123startsWithDigit', value: 'test' },
     ];
 
     const errors = validateVariables(variables);
-    expect(errors.length).toBeGreaterThan(0);
-    expect(errors.some((e: string) => e.includes('invalid'))).toBe(true);
+    expect(errors.length).toBe(4); // All 4 should be invalid
+    expect(errors.some((e: string) => e.includes('invalid-id-with-dash'))).toBe(true);
+    expect(errors.some((e: string) => e.includes('invalid.id.with.dots'))).toBe(true);
+    expect(errors.some((e: string) => e.includes('invalid id with spaces'))).toBe(true);
+    expect(errors.some((e: string) => e.includes('123startsWithDigit'))).toBe(true);
   });
 
   it('should accept valid variable ID formats', () => {
@@ -50,6 +54,10 @@ describe('validateVariables', () => {
       { id: 'valid_id_123', value: 'test' },
       { id: '$dollarSign', value: 'test' },
       { id: '_underscore', value: 'test' },
+      { id: 'camelCaseId', value: 'test' },
+      { id: 'PascalCaseId', value: 'test' },
+      { id: 'snake_case_id', value: 'test' },
+      { id: 'id123', value: 'test' }, // digits allowed after first char
     ];
 
     const errors = validateVariables(variables);

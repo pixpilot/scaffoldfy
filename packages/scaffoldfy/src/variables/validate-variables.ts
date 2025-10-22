@@ -21,9 +21,10 @@ export function validateVariables(variables: VariableDefinition[]): string[] {
     seenIds.add(variable.id);
 
     // Validate ID format (must be valid JavaScript identifier)
-    if (!/^[\w$]+$/u.test(variable.id)) {
+    // eslint-disable-next-line regexp/prefer-w
+    if (!/^[a-zA-Z_$][a-zA-Z0-9_$]*$/u.test(variable.id)) {
       errors.push(
-        `Variable ID "${variable.id}" is invalid. Must contain only letters, numbers, underscore, or dollar sign.`,
+        `Variable ID "${variable.id}" is invalid. Must be a valid JavaScript identifier (start with letter, underscore, or $, followed by letters, digits, underscores, or $).`,
       );
     }
 

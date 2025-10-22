@@ -4,7 +4,7 @@
 
 Every prompt needs:
 
-- `id` - Unique identifier (alphanumeric, underscores, hyphens)
+- `id` - Unique identifier (must be a valid JavaScript identifier: letters, digits, underscores, and `$`, cannot start with a digit)
 - `type` - Prompt type (input, password, number, select, confirm)
 - `message` - Question to display to user
 
@@ -158,7 +158,7 @@ Mark prompts as `"global": true` to share values across all tasks:
 ## Validation Rules
 
 - ✅ IDs must be unique across all tasks (except global prompts can be duplicated)
-- ✅ IDs: alphanumeric, underscores, hyphens only
+- ✅ IDs must be valid JavaScript identifiers (letters, digits, underscores, `$`, cannot start with digit or contain hyphens)
 - ✅ Messages cannot be empty
 - ✅ A prompt ID cannot be both global and task-specific
 - ✅ Select must have at least one choice

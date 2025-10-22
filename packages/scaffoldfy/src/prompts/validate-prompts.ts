@@ -20,10 +20,11 @@ export function validatePrompts(prompts: PromptDefinition[]): string[] {
     }
     ids.add(prompt.id);
 
-    // Validate ID format (alphanumeric and underscores only)
-    if (!/^[\w-]+$/u.test(prompt.id)) {
+    // Validate ID format (must be valid JavaScript identifier)
+    // eslint-disable-next-line regexp/prefer-w
+    if (!/^[a-zA-Z_$][a-zA-Z0-9_$]*$/u.test(prompt.id)) {
       errors.push(
-        `Invalid prompt ID "${prompt.id}": must contain only alphanumeric characters, underscores, and hyphens`,
+        `Invalid prompt ID "${prompt.id}": must be a valid JavaScript identifier (start with letter, underscore, or $, followed by letters, digits, underscores, or $)`,
       );
     }
 

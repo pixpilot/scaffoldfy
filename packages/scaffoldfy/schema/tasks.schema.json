@@ -46,8 +46,8 @@
         "properties": {
           "id": {
             "type": "string",
-            "description": "Unique identifier for the variable (must be a valid JavaScript identifier)",
-            "pattern": "^[\\w$]+$"
+            "description": "Unique identifier for the variable (must be a valid JavaScript identifier: start with letter, underscore, or $, followed by letters, digits, underscores, or $)",
+            "pattern": "^[a-zA-Z_$][a-zA-Z0-9_$]*$"
           },
           "value": {
             "description": "Variable value. Can be a static value or an object with 'type' and 'value' properties for executable values.",
@@ -89,8 +89,8 @@
         "properties": {
           "id": {
             "type": "string",
-            "description": "Unique identifier for the prompt value (alphanumeric, underscores, and hyphens only)",
-            "pattern": "^[\\w-]+$"
+            "description": "Unique identifier for the prompt value (must be a valid JavaScript identifier: start with letter, underscore, or $, followed by letters, digits, underscores, or $)",
+            "pattern": "^[a-zA-Z_$][a-zA-Z0-9_$]*$"
           },
           "type": {
             "type": "string",
@@ -243,15 +243,15 @@
           },
           "prompts": {
             "type": "array",
-            "description": "Task-specific prompts collected only when this task runs. For prompts shared across tasks, use top-level prompts instead.",
+            "description": "Task-specific prompts collected when the task is executed. These values are only available to this task.",
             "items": {
               "type": "object",
               "required": ["id", "type", "message"],
               "properties": {
                 "id": {
                   "type": "string",
-                  "description": "Unique identifier for the prompt value (alphanumeric, underscores, and hyphens only)",
-                  "pattern": "^[\\w-]+$"
+                  "description": "Unique identifier for the prompt value (must be a valid JavaScript identifier: start with letter, underscore, or $, followed by letters, digits, underscores, or $)",
+                  "pattern": "^[a-zA-Z_$][a-zA-Z0-9_$]*$"
                 },
                 "type": {
                   "type": "string",
@@ -350,8 +350,8 @@
               "properties": {
                 "id": {
                   "type": "string",
-                  "description": "Unique identifier for the variable (must be a valid JavaScript identifier)",
-                  "pattern": "^[\\w$]+$"
+                  "description": "Unique identifier for the variable (must be a valid JavaScript identifier: start with letter, underscore, or $, followed by letters, digits, underscores, or $)",
+                  "pattern": "^[a-zA-Z_$][a-zA-Z0-9_$]*$"
                 },
                 "value": {
                   "description": "Variable value. Can be a static value or an object with 'type' and 'value' properties for executable values.",
