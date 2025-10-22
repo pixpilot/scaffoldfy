@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy-templates
 
+## 0.10.0
+
+### Minor Changes
+
+- add template interpolation and conditional defaults
+
 ## 0.9.0
 
 ### Minor Changes
