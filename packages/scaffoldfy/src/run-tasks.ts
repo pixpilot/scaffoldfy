@@ -250,10 +250,4 @@ export async function runTasks(
   log('✅ All tasks completed successfully!', 'success');
 
   log(`✓ Completed: ${completedTasks}/${totalTasks} tasks`, 'success');
-
-  if (!options.dryRun) {
-    log('Next steps:', 'info');
-    log('1. Review the changes made to your project', 'info');
-    log('2. Commit the changes to git', 'info');
-  }
 }
