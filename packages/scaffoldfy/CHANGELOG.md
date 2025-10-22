@@ -1,5 +1,16 @@
 # @pixpilot/scaffoldfy
 
+## 0.17.0
+
+### Minor Changes
+
+- make `description`, `required`, and `enabled` fields optional with defaults
+- 6b773bd: new release
+
+### Patch Changes
+
+- update ID validation rules to enforce valid JavaScript identifiers
+
 ## 0.16.0
 
 ### Minor Changes
