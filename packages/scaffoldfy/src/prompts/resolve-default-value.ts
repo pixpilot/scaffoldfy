@@ -89,6 +89,8 @@ export async function resolveDefaultValue<T = string | number | boolean>(
         }`,
         'warn',
       );
+      // Return undefined so the prompt will have no default value
+      // This is safer than returning the entire config object
       return undefined;
     }
   }
@@ -146,6 +148,13 @@ export async function resolveDefaultValue<T = string | number | boolean>(
     }
   } else if (config.type === 'static') {
     return config.value as T;
+  } else if (config.type !== undefined) {
+    // Unknown type specified
+    log(
+      `Prompt "${promptId}": unknown default value type "${config.type}". Expected "static", "exec", or "conditional".`,
+      'error',
+    );
+    return undefined;
   }
 
   // If type is not specified, treat the whole object as the static value
