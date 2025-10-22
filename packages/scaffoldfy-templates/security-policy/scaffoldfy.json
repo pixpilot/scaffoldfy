@@ -17,5 +17,18 @@
       },
       "required": true
     }
+  ],
+
+  "tasks": [
+    {
+      "id": "create-security-policy",
+      "name": "Create SECURITY.md",
+      "description": "Create security policy file with contact email",
+      "type": "template",
+      "config": {
+        "file": "SECURITY.md",
+        "templateFile": "SECURITY.hbs"
+      }
+    }
   ]
 }
