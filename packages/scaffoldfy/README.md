@@ -44,6 +44,25 @@ scaffoldfy --dry-run
 scaffoldfy --force
 ```
 
+Or run without installing using npx:
+
+```sh
+# Basic usage with default task file
+npx @pixpilot/scaffoldfy
+
+# With custom tasks file
+npx @pixpilot/scaffoldfy --tasks-file ./my-tasks.json
+
+# TypeScript tasks file
+npx @pixpilot/scaffoldfy --tasks-ts ./my-tasks.ts
+
+# Preview changes (dry run)
+npx @pixpilot/scaffoldfy --dry-run
+
+# Force re-initialization
+npx @pixpilot/scaffoldfy --force
+```
+
 ### CLI Options
 
 | Option                | Description                                                   |

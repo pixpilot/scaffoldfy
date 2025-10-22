@@ -306,7 +306,7 @@ jobs:
       - uses: actions/setup-node@v3
       - run: npm install
       - name: Test template dry-run
-        run: npx scaffoldfy --tasks-file ./template-tasks.json --dry-run
+        run: npx @pixpilot/scaffoldfy --tasks-file ./template-tasks.json --dry-run
 ```
 
 ## Comparing Before/After

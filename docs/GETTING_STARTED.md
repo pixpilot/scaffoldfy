@@ -16,6 +16,14 @@ Or install globally:
 pnpm add -g @pixpilot/scaffoldfy
 ```
 
+## Using without Installation
+
+You can also run scaffoldfy without installing it using npx:
+
+```sh
+npx @pixpilot/scaffoldfy --tasks-file ./setup/setup-tasks.json
+```
+
 ## Quick Start
 
 ### Interactive Mode

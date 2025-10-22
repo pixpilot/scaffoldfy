@@ -33,6 +33,19 @@ scaffoldfy --tasks-file ./my-tasks.json
 scaffoldfy --dry-run
 ```
 
+Or run without installing using npx:
+
+```sh
+# Basic usage with default task file
+npx @pixpilot/scaffoldfy
+
+# With custom tasks file
+npx @pixpilot/scaffoldfy --tasks-file ./my-tasks.json
+
+# Preview changes (dry run)
+npx @pixpilot/scaffoldfy --dry-run
+```
+
 ## 📚 Documentation
 
 - **[Complete Documentation](https://pixpilot.github.io/scaffoldfy/)** - Full guides and references
