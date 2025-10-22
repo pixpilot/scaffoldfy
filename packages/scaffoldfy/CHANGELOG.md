@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy
 
+## 0.18.1
+
+### Patch Changes
+
+- handle unknown default value types more safely
+
 ## 0.18.0
 
 ### Minor Changes
