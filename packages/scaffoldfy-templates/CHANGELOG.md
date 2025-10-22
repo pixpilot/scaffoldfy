@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy-templates
 
+## 0.5.0
+
+### Minor Changes
+
+- standardize string quotes and improve test readability
+
 ## 0.4.0
 
 ### Minor Changes
