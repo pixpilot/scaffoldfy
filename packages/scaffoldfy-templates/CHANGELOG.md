@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy-templates
 
+## 0.7.0
+
+### Minor Changes
+
+- 6b773bd: new release
+
 ## 0.6.0
 
 ### Minor Changes
