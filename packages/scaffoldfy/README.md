@@ -65,14 +65,15 @@ npx @pixpilot/scaffoldfy --force
 
 ### CLI Options
 
-| Option                | Description                                                   |
-| --------------------- | ------------------------------------------------------------- |
-| `--tasks-file <path>` | Path to JSON task file (default: `./template-tasks.json`)     |
-| `--tasks-ts <path>`   | Path to TypeScript task file (default: `./template-tasks.ts`) |
-| `--dry-run`           | Preview changes without applying them                         |
-| `--force`             | Force re-initialization                                       |
-| `-h, --help`          | Show help message                                             |
-| `-v, --version`       | Show version                                                  |
+| Option                | Description                                                                     |
+| --------------------- | ------------------------------------------------------------------------------- |
+| `--tasks-file <path>` | Path to JSON task file (default: `./template-tasks.json`)                       |
+| `--tasks-ts <path>`   | Path to TypeScript task file (default: `./template-tasks.ts`)                   |
+| `--dry-run`           | Preview changes without applying them                                           |
+| `--force`             | Force re-initialization                                                         |
+| `--no-validate`       | Skip schema validation of task configuration (validation is enabled by default) |
+| `-h, --help`          | Show help message                                                               |
+| `-v, --version`       | Show version                                                                    |
 
 ### Programmatic API
 

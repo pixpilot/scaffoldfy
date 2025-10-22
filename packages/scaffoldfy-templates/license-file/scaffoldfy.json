@@ -1,4 +1,5 @@
 {
+  "$schema": "https://unpkg.com/@pixpilot/scaffoldfy/schema",
   "name": "license-file",
   "description": "Generate a LICENSE file with common open-source licenses",
   "dependencies": ["project-info"],
@@ -30,12 +31,7 @@
       "name": "Create MIT License",
       "description": "Create a LICENSE file with MIT license",
       "type": "template",
-      "required": true,
-      "enabled": {
-        "type": "condition",
-        "condition": "licenseType === 'MIT'"
-      },
-
+      "enabled": "licenseType === 'MIT'",
       "config": {
         "file": "LICENSE",
         "templateFile": "./licenses/mit.hbs"
@@ -46,9 +42,7 @@
       "name": "Create Apache 2.0 License",
       "description": "Create a LICENSE file with Apache 2.0 license",
       "type": "template",
-      "required": true,
-      "enabled": true,
-      "condition": "licenseType === 'Apache-2.0'",
+      "enabled": "licenseType === 'Apache-2.0'",
       "config": {
         "file": "LICENSE",
         "templateFile": "./licenses/apache-2.0.hbs"
@@ -59,9 +53,7 @@
       "name": "Create GPL v3 License",
       "description": "Create a LICENSE file with GPL v3 license",
       "type": "template",
-      "required": true,
-      "enabled": true,
-      "condition": "licenseType === 'GPL-3.0'",
+      "enabled": "licenseType === 'GPL-3.0'",
       "config": {
         "file": "LICENSE",
         "templateFile": "./licenses/gpl-3.0.hbs"
@@ -72,9 +64,7 @@
       "name": "Create GPL v2 License",
       "description": "Create a LICENSE file with GPL v2 license",
       "type": "template",
-      "required": true,
-      "enabled": true,
-      "condition": "licenseType === 'GPL-2.0'",
+      "enabled": "licenseType === 'GPL-2.0'",
       "config": {
         "file": "LICENSE",
         "templateFile": "./licenses/gpl-2.0.hbs"
@@ -85,9 +75,7 @@
       "name": "Create BSD 3-Clause License",
       "description": "Create a LICENSE file with BSD 3-Clause license",
       "type": "template",
-      "required": true,
-      "enabled": true,
-      "condition": "licenseType === 'BSD-3-Clause'",
+      "enabled": "licenseType === 'BSD-3-Clause'",
       "config": {
         "file": "LICENSE",
         "templateFile": "./licenses/bsd-3-clause.hbs"
@@ -98,9 +86,7 @@
       "name": "Create BSD 2-Clause License",
       "description": "Create a LICENSE file with BSD 2-Clause license",
       "type": "template",
-      "required": true,
-      "enabled": true,
-      "condition": "licenseType === 'BSD-2-Clause'",
+      "enabled": "licenseType === 'BSD-2-Clause'",
       "config": {
         "file": "LICENSE",
         "templateFile": "./licenses/bsd-2-clause.hbs"
@@ -111,9 +97,7 @@
       "name": "Create ISC License",
       "description": "Create a LICENSE file with ISC license",
       "type": "template",
-      "required": true,
-      "enabled": true,
-      "condition": "licenseType === 'ISC'",
+      "enabled": "licenseType === 'ISC'",
       "config": {
         "file": "LICENSE",
         "templateFile": "./licenses/isc.hbs"
@@ -124,9 +108,7 @@
       "name": "Create MPL 2.0 License",
       "description": "Create a LICENSE file with MPL 2.0 license",
       "type": "template",
-      "required": true,
-      "enabled": true,
-      "condition": "licenseType === 'MPL-2.0'",
+      "enabled": "licenseType === 'MPL-2.0'",
       "config": {
         "file": "LICENSE",
         "templateFile": "./licenses/mpl-2.0.hbs"
@@ -137,9 +119,7 @@
       "name": "Create AGPL v3 License",
       "description": "Create a LICENSE file with AGPL v3 license",
       "type": "template",
-      "required": true,
-      "enabled": true,
-      "condition": "licenseType === 'AGPL-3.0'",
+      "enabled": "licenseType === 'AGPL-3.0'",
       "config": {
         "file": "LICENSE",
         "templateFile": "./licenses/agpl-3.0.hbs"
@@ -150,9 +130,7 @@
       "name": "Create Unlicense",
       "description": "Create a LICENSE file with Unlicense",
       "type": "template",
-      "required": true,
-      "enabled": true,
-      "condition": "licenseType === 'Unlicense'",
+      "enabled": "licenseType === 'Unlicense'",
       "config": {
         "file": "LICENSE",
         "templateFile": "./licenses/unlicense.hbs"

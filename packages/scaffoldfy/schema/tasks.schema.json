@@ -4,6 +4,7 @@
   "description": "Configuration for template task automation and cleanup",
   "type": "object",
   "required": ["name"],
+  "additionalProperties": false,
   "properties": {
     "name": {
       "type": "string",
@@ -43,6 +44,7 @@
       "items": {
         "type": "object",
         "required": ["id", "value"],
+        "additionalProperties": false,
         "properties": {
           "id": {
             "type": "string",
@@ -86,6 +88,7 @@
       "items": {
         "type": "object",
         "required": ["id", "type", "message"],
+        "additionalProperties": false,
         "properties": {
           "id": {
             "type": "string",
@@ -216,6 +219,7 @@
       "items": {
         "type": "object",
         "required": ["id", "name", "type"],
+        "additionalProperties": false,
         "properties": {
           "id": {
             "type": "string",
@@ -271,12 +275,17 @@
             "enum": ["merge", "replace"],
             "description": "Strategy for merging with base task when extending templates. 'merge' (default) intelligently merges properties, 'replace' completely replaces the base task. Must be specified when task ID conflicts with base template."
           },
+          "$sourceUrl": {
+            "type": "string",
+            "description": "Internal: URL or path of the template file this task came from (for resolving relative paths). This property is automatically added by the template inheritance system."
+          },
           "prompts": {
             "type": "array",
             "description": "Task-specific prompts collected when the task is executed. These values are only available to this task.",
             "items": {
               "type": "object",
               "required": ["id", "type", "message"],
+              "additionalProperties": false,
               "properties": {
                 "id": {
                   "type": "string",
@@ -403,6 +412,7 @@
             "items": {
               "type": "object",
               "required": ["id", "value"],
+              "additionalProperties": false,
               "properties": {
                 "id": {
                   "type": "string",

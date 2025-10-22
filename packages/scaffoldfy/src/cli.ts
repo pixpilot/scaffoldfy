@@ -11,6 +11,7 @@ import process from 'node:process';
 import { Command } from 'commander';
 import { EXIT_CODE_ERROR } from './constants.js';
 import { runWithTasks } from './index.js';
+import { validateTasksSchema } from './schema-validator.js';
 import { loadTasksWithInheritance } from './template-inheritance.js';
 import { log } from './utils.js';
 
@@ -20,6 +21,7 @@ interface CliOptions {
   force?: boolean;
   tasksFile?: string;
   tasksTs?: string;
+  validate?: boolean;
 }
 
 const program = new Command();
@@ -54,6 +56,10 @@ program
     '--tasks-ts <path>',
     'Path to TypeScript file exporting tasks',
     './template-tasks.ts',
+  )
+  .option(
+    '--no-validate',
+    'Skip schema validation of task configuration (validation is enabled by default)',
   )
   .action(async (options: CliOptions) => {
     try {
@@ -104,6 +110,28 @@ program
           tasksFilePath = jsonPath;
 
           try {
+            // Validate schema if validation is enabled (default: true)
+            if (options.validate !== false) {
+              log('Validating task configuration against schema...', 'info');
+
+              // Load raw JSON for validation
+              const rawJson = fs.readFileSync(jsonPath, 'utf-8');
+              const rawConfig = JSON.parse(rawJson) as unknown;
+
+              const validationResult = validateTasksSchema(rawConfig, { silent: false });
+
+              if (!validationResult.valid) {
+                log('', 'error');
+                log(
+                  '💡 You can skip validation with --no-validate flag, but this is not recommended.',
+                  'info',
+                );
+                process.exit(EXIT_CODE_ERROR);
+              }
+
+              log('✓ Schema validation passed', 'success');
+            }
+
             // Use template inheritance loader to support extends
             const config = await loadTasksWithInheritance(jsonPath);
             tasks = config.tasks;

@@ -50,6 +50,34 @@ You can also use TypeScript files for tasks:
 scaffoldfy --tasks-ts ./tasks.ts
 ```
 
+### Schema Validation
+
+By default, all JSON task configuration files are validated against the JSON schema to catch configuration errors early. The schema validation ensures:
+
+- Required fields are present
+- Field types are correct
+- Enum values are valid
+- Configuration structure matches expected format
+
+If validation fails, you'll see detailed error messages pointing to the issues:
+
+```sh
+scaffoldfy --tasks-file ./tasks.json
+# Validating task configuration against schema...
+# ❌ Schema validation failed:
+#
+# The following validation errors were found:
+#
+#   • /tasks/0: Missing required property "type"
+#   • /name: Value must match pattern: ^[a-z\d]+(?:-[a-z\d]+)*$
+```
+
+You can skip validation (not recommended) with the `--no-validate` flag:
+
+```sh
+scaffoldfy --tasks-file ./tasks.json --no-validate
+```
+
 ### Dry Run Mode
 
 Preview what changes would be made without actually applying them:
@@ -70,14 +98,15 @@ scaffoldfy --force
 
 ## CLI Options
 
-| Option                | Description                                                   |
-| --------------------- | ------------------------------------------------------------- |
-| `--tasks-file <path>` | Path to JSON task file (default: `./template-tasks.json`)     |
-| `--tasks-ts <path>`   | Path to TypeScript task file (default: `./template-tasks.ts`) |
-| `--dry-run`           | Preview changes without applying them                         |
-| `--force`             | Force execution even if checks fail                           |
-| `-h, --help`          | Show help message                                             |
-| `-v, --version`       | Show version                                                  |
+| Option                | Description                                                                     |
+| --------------------- | ------------------------------------------------------------------------------- |
+| `--tasks-file <path>` | Path to JSON task file (default: `./template-tasks.json`)                       |
+| `--tasks-ts <path>`   | Path to TypeScript task file (default: `./template-tasks.ts`)                   |
+| `--dry-run`           | Preview changes without applying them                                           |
+| `--force`             | Force execution even if checks fail                                             |
+| `--no-validate`       | Skip schema validation of task configuration (validation is enabled by default) |
+| `-h, --help`          | Show help message                                                               |
+| `-v, --version`       | Show version                                                                    |
 
 ## Programmatic Usage
 
