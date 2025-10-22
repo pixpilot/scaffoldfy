@@ -126,7 +126,7 @@
             ]
           },
           "default": {
-            "description": "Default value for the prompt. Can be a static value or an object with 'type' and 'value' properties for executable defaults.",
+            "description": "Default value for the prompt. Can be a static value, an object with 'type' and 'value' properties for executable defaults, or a conditional default configuration.",
             "oneOf": [
               {
                 "description": "Static default value (string, number, or boolean)"
@@ -143,6 +143,28 @@
                   },
                   "value": {
                     "description": "For 'static' type: the static value. For 'exec' type: the shell command to execute. Commands can be any shell command including git, npm, node, etc. The command output will be trimmed and auto-parsed as JSON, number, or boolean when applicable."
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "description": "Conditional default value configuration",
+                "required": ["type", "condition", "ifTrue", "ifFalse"],
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "enum": ["conditional"],
+                    "description": "Type of default value. 'conditional' for condition-based defaults."
+                  },
+                  "condition": {
+                    "type": "string",
+                    "description": "JavaScript expression to evaluate. Can reference variables, prompts, and config values."
+                  },
+                  "ifTrue": {
+                    "description": "Value to use if condition evaluates to true. Can be a static value or a template string with {{variables}}."
+                  },
+                  "ifFalse": {
+                    "description": "Value to use if condition evaluates to false. Can be a static value or a template string with {{variables}}."
                   }
                 }
               }
@@ -287,7 +309,7 @@
                   ]
                 },
                 "default": {
-                  "description": "Default value for the prompt. Can be a static value or an object with 'type' and 'value' properties for executable defaults.",
+                  "description": "Default value for the prompt. Can be a static value, an object with 'type' and 'value' properties for executable defaults, or a conditional default configuration.",
                   "oneOf": [
                     {
                       "description": "Static default value (string, number, or boolean)"
@@ -304,6 +326,28 @@
                         },
                         "value": {
                           "description": "For 'static' type: the static value. For 'exec' type: the shell command to execute. Commands can be any shell command including git, npm, node, etc. The command output will be trimmed and auto-parsed as JSON, number, or boolean when applicable."
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "description": "Conditional default value configuration",
+                      "required": ["type", "condition", "ifTrue", "ifFalse"],
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": ["conditional"],
+                          "description": "Type of default value. 'conditional' for condition-based defaults."
+                        },
+                        "condition": {
+                          "type": "string",
+                          "description": "JavaScript expression to evaluate. Can reference variables, prompts, and config values."
+                        },
+                        "ifTrue": {
+                          "description": "Value to use if condition evaluates to true. Can be a static value or a template string with {{variables}}."
+                        },
+                        "ifFalse": {
+                          "description": "Value to use if condition evaluates to false. Can be a static value or a template string with {{variables}}."
                         }
                       }
                     }
