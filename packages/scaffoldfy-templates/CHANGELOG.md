@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy-templates
 
+## 0.6.0
+
+### Minor Changes
+
+- update default values for author, bundler, and organization
+
 ## 0.5.0
 
 ### Minor Changes
