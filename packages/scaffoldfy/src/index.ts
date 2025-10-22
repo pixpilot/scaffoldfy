@@ -161,7 +161,7 @@ export {
   resolveDefaultValue,
   validatePrompts,
 } from './prompts/index.js';
-export { executeTask, runTask } from './task-executors.js';
+export { executeTask, registerBuiltInPlugins, runTask } from './task-executors.js';
 export { topologicalSort } from './task-resolver.js';
 export {
   clearTemplateCache,

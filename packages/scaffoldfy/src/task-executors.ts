@@ -17,10 +17,9 @@ import { updateJsonPlugin } from './plugins/update-json/index.js';
 import { log } from './utils.js';
 
 // Register all built-in plugins
-let pluginsRegistered = false;
-
-function registerBuiltInPlugins(): void {
-  if (pluginsRegistered) {
+export function registerBuiltInPlugins(): void {
+  // Check if plugins are already registered by testing for a common plugin
+  if (isPluginTaskType('update-json')) {
     return;
   }
 
@@ -33,8 +32,6 @@ function registerBuiltInPlugins(): void {
   registerPlugin(renamePlugin);
   registerPlugin(gitInitPlugin);
   registerPlugin(execPlugin);
-
-  pluginsRegistered = true;
 }
 
 /**

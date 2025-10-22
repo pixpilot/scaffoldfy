@@ -10,7 +10,7 @@ import {
   resolveAllDefaultValues,
   validatePrompts,
 } from './prompts/index.js';
-import { runTask } from './task-executors.js';
+import { registerBuiltInPlugins, runTask } from './task-executors.js';
 import { topologicalSort } from './task-resolver.js';
 import { evaluateEnabled, log } from './utils.js';
 import { displayValidationErrors, validateAllTasks } from './validation.js';
@@ -37,6 +37,13 @@ export async function runTasks(
     globalPrompts?: PromptDefinition[];
   },
 ): Promise<void> {
+  // ============================================================================
+  // Register Built-in Plugins First
+  // ============================================================================
+  // IMPORTANT: Plugins must be registered before validation, as validation
+  // checks if task types are known (i.e., handled by a registered plugin).
+  registerBuiltInPlugins();
+
   // ============================================================================
   // Early Validation - Before any user input
   // ============================================================================
