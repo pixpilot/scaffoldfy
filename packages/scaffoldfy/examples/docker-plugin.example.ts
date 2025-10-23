@@ -29,7 +29,7 @@ const dockerPlugin = createPlugin(
   async (task: TaskDefinition, config: InitConfig, options: { dryRun: boolean }) => {
     if (options.dryRun) return;
 
-    const dockerConfig = task.config as DockerConfig;
+    const dockerConfig = task.config as unknown as DockerConfig;
 
     // Generate Dockerfile
     const dockerfile = `
@@ -83,7 +83,7 @@ dist
 
     // Generate diff for dry-run mode
     getDiff: async (task: TaskDefinition, config: InitConfig) => {
-      const dockerConfig = task.config as DockerConfig;
+      const dockerConfig = task.config as unknown as DockerConfig;
 
       return `
 Would create the following files:
