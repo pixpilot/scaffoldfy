@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy-templates
 
+## 0.15.0
+
+### Minor Changes
+
+- add script to generate packages section in README.md
+
 ## 0.14.0
 
 ### Minor Changes
