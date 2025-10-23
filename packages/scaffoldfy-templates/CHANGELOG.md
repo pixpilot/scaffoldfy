@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy-templates
 
+## 1.0.0
+
+### Major Changes
+
+- rename template task to write and add file system manipulation tasks
+
 ## 0.15.0
 
 ### Minor Changes
