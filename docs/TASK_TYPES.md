@@ -1120,4 +1120,3 @@ All tasks respect `--dry-run` flag:
 | Reset git history                  | `git-init`                               |
 | Run commands                       | `exec`                                   |
 | Execute only when user agrees      | Any task type (with prompt + `enabled`)  |
-
