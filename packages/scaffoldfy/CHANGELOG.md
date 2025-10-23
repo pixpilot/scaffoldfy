@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy
 
+## 0.19.2
+
+### Patch Changes
+
+- update task config validation to include new task types
+
 ## 0.19.1
 
 ### Patch Changes
