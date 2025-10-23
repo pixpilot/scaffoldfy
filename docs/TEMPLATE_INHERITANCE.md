@@ -246,7 +246,6 @@ The base task is completely ignored, and only the child task definition is used.
       "id": "projectName",
       "type": "input",
       "message": "Enter your awesome project name:",
-      "placeholder": "my-project",
       "override": "merge" // Required when prompt ID conflicts
     }
   ]

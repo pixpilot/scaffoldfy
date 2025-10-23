@@ -102,7 +102,6 @@ export interface BasePrompt {
 export interface InputPrompt extends BasePrompt {
   type: 'input' | 'password';
   default?: DefaultValue<string>;
-  placeholder?: string;
 }
 
 export interface NumberPrompt extends BasePrompt {

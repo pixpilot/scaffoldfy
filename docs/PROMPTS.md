@@ -141,7 +141,6 @@ Collect text input from the user.
   "message": "What is your project name?",
   "default": "my-project",
   "required": true,
-  "placeholder": "Enter project name",
   "enabled": true
 }
 ```
@@ -784,7 +783,6 @@ Using conditional object (verbose):
       "id": "databaseUrl",
       "type": "input",
       "message": "Database connection URL",
-      "placeholder": "postgresql://localhost:5432/mydb",
       "enabled": {
         "condition": "useDatabase === true"
       }

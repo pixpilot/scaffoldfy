@@ -278,10 +278,6 @@
             }
           ]
         },
-        "placeholder": {
-          "type": "string",
-          "description": "Placeholder text (for input prompts)"
-        },
         "min": {
           "type": "number",
           "description": "Minimum value (for number prompts)"
