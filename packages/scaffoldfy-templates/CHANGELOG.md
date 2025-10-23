@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy-templates
 
+## 1.1.0
+
+### Minor Changes
+
+- add executable object support for task enabled conditions
+
 ## 1.0.0
 
 ### Major Changes
