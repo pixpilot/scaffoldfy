@@ -1,5 +1,12 @@
 # @pixpilot/scaffoldfy-templates
 
+## 1.2.0
+
+### Minor Changes
+
+- add new templates for Turbo workspace package generator
+- 5d75108: new release
+
 ## 1.1.0
 
 ### Minor Changes
