@@ -7,6 +7,7 @@
  */
 
 import type {
+  EnabledValue,
   MergeStrategy,
   PromptDefinition,
   TaskDefinition,
@@ -757,6 +758,7 @@ export async function loadTasksWithInheritance(tasksFilePath: string): Promise<{
   tasks: TaskDefinition[];
   variables?: VariableDefinition[];
   prompts?: PromptDefinition[];
+  enabled?: EnabledValue;
 }> {
   log(`Loading tasks from ${tasksFilePath}...`, 'info');
 
@@ -781,6 +783,7 @@ export async function loadTasksWithInheritance(tasksFilePath: string): Promise<{
     tasks: TaskDefinition[];
     variables?: VariableDefinition[];
     prompts?: PromptDefinition[];
+    enabled?: EnabledValue;
   } = {
     tasks: config.tasks ?? [],
   };
@@ -791,6 +794,10 @@ export async function loadTasksWithInheritance(tasksFilePath: string): Promise<{
 
   if (config.variables != null) {
     result.variables = config.variables;
+  }
+
+  if (config.enabled != null) {
+    result.enabled = config.enabled;
   }
 
   return result;

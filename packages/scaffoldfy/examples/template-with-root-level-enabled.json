@@ -1,0 +1,52 @@
+{
+  "$schema": "../schema/tasks.schema.json",
+  "name": "template-with-root-level-enabled",
+  "description": "Example template demonstrating root-level enabled feature with various configurations",
+  "enabled": {
+    "type": "exec",
+    "value": "git rev-parse --is-inside-work-tree"
+  },
+  "prompts": [
+    {
+      "id": "setupGitHooks",
+      "type": "confirm",
+      "message": "Would you like to setup Git hooks?",
+      "default": true
+    }
+  ],
+  "tasks": [
+    {
+      "id": "init-husky",
+      "name": "Initialize Husky",
+      "description": "Setup Husky for Git hooks",
+      "enabled": "setupGitHooks === true",
+      "type": "exec",
+      "config": {
+        "command": "npx husky install"
+      }
+    },
+    {
+      "id": "add-pre-commit",
+      "name": "Add pre-commit hook",
+      "description": "Add a pre-commit hook",
+      "enabled": "setupGitHooks === true",
+      "type": "write",
+      "config": {
+        "file": ".husky/pre-commit",
+        "template": "#!/usr/bin/env sh\n. \"$(dirname -- \"$0\")/_/husky.sh\"\n\nnpm test\n"
+      }
+    },
+    {
+      "id": "update-package-json",
+      "name": "Update package.json",
+      "description": "Add husky prepare script",
+      "type": "update-json",
+      "config": {
+        "file": "package.json",
+        "updates": {
+          "scripts.prepare": "husky install"
+        }
+      }
+    }
+  ]
+}

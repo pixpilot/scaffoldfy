@@ -5,7 +5,7 @@
 import type { InitConfig, PromptDefinition } from '../types.js';
 import { confirm, input, number, password, select } from '@inquirer/prompts';
 import { PromptValidationError } from '../errors/other.js';
-import { evaluateEnabled, log } from '../utils.js';
+import { evaluateEnabledAsync, log } from '../utils.js';
 import { resolveDefaultValue } from './resolve-default-value.js';
 
 /**
@@ -32,7 +32,7 @@ export async function collectPrompts(
     // Check if prompt is enabled (evaluate condition if needed)
     // Use current config merged with collected answers for cascading conditions
     const currentContext = { ...config, ...answers };
-    if (!evaluateEnabled(prompt.enabled, currentContext)) {
+    if (!(await evaluateEnabledAsync(prompt.enabled, currentContext))) {
       // Skip this prompt if it's disabled or condition evaluates to false
       // eslint-disable-next-line no-continue
       continue;

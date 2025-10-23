@@ -1,0 +1,42 @@
+{
+  "$schema": "../schema/tasks.schema.json",
+  "name": "conditional-template-example",
+  "description": "Example showing conditional root-level enabled based on dependency template variables",
+  "dependencies": ["project-info"],
+  "enabled": "useTypeScript === true",
+  "tasks": [
+    {
+      "id": "create-tsconfig",
+      "name": "Create TypeScript configuration",
+      "description": "Create tsconfig.json with strict settings",
+      "type": "write",
+      "config": {
+        "file": "tsconfig.json",
+        "template": "{\n  \"compilerOptions\": {\n    \"strict\": true,\n    \"target\": \"ES2020\",\n    \"module\": \"ESNext\",\n    \"moduleResolution\": \"bundler\",\n    \"esModuleInterop\": true,\n    \"skipLibCheck\": true\n  }\n}\n"
+      }
+    },
+    {
+      "id": "create-tsconfig-build",
+      "name": "Create build TypeScript configuration",
+      "description": "Create tsconfig.build.json for production builds",
+      "type": "write",
+      "config": {
+        "file": "tsconfig.build.json",
+        "template": "{\n  \"extends\": \"./tsconfig.json\",\n  \"exclude\": [\"**/*.test.ts\", \"**/*.spec.ts\"]\n}\n"
+      }
+    },
+    {
+      "id": "update-package-json-scripts",
+      "name": "Update package.json scripts",
+      "description": "Add TypeScript build scripts",
+      "type": "update-json",
+      "config": {
+        "file": "package.json",
+        "updates": {
+          "scripts.build": "tsc -p tsconfig.build.json",
+          "scripts.type-check": "tsc --noEmit"
+        }
+      }
+    }
+  ]
+}

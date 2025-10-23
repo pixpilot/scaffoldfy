@@ -19,6 +19,47 @@
       "type": "string",
       "description": "Detailed description of what this Write does"
     },
+    "enabled": {
+      "description": "Whether this template should be executed. Can be a boolean, a string expression, or an object with executable or conditional configuration (optional, defaults to true). If false or condition evaluates to false, the entire template (including prompts, variables, and tasks) will be skipped.",
+      "default": true,
+      "oneOf": [
+        {
+          "type": "boolean",
+          "description": "Static enabled state"
+        },
+        {
+          "type": "string",
+          "description": "JavaScript expression to evaluate. Template only executes if expression evaluates to true."
+        },
+        {
+          "type": "object",
+          "description": "Conditional enabled configuration",
+          "required": ["condition"],
+          "properties": {
+            "condition": {
+              "type": "string",
+              "description": "JavaScript expression to evaluate. Template only executes if condition evaluates to true. Has access to all variables and config values."
+            }
+          }
+        },
+        {
+          "type": "object",
+          "description": "Executable enabled configuration - determines enabled state by running a command",
+          "required": ["type", "value"],
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["exec"],
+              "description": "Type of enabled value. 'exec' executes a shell command to determine enabled state."
+            },
+            "value": {
+              "type": "string",
+              "description": "Shell command to execute. The command output will be trimmed and parsed as a boolean. Non-empty output or '1', 'true', 'yes' (case-insensitive) evaluates to true."
+            }
+          }
+        }
+      ]
+    },
     "dependencies": {
       "type": "array",
       "items": {
@@ -77,16 +118,43 @@
             "default": true
           },
           "enabled": {
-            "description": "Whether this task should be executed. Can be a boolean, a string expression, or a conditional expression based on variables or prompt values (optional, defaults to true).",
+            "description": "Whether this task should be executed. Can be a boolean, a string expression, or an object with executable or conditional configuration (optional, defaults to true).",
             "default": true,
             "oneOf": [
-              { "type": "boolean", "description": "Static enabled state" },
-              { "type": "string", "description": "JavaScript expression to evaluate" },
+              {
+                "type": "boolean",
+                "description": "Static enabled state"
+              },
+              {
+                "type": "string",
+                "description": "JavaScript expression to evaluate. Task only executes if expression evaluates to true."
+              },
               {
                 "type": "object",
                 "description": "Conditional enabled configuration",
                 "required": ["condition"],
-                "properties": { "condition": { "type": "string" } }
+                "properties": {
+                  "condition": {
+                    "type": "string",
+                    "description": "JavaScript expression to evaluate. Task only executes if condition evaluates to true. Has access to all variables and prompt values."
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "description": "Executable enabled configuration - determines enabled state by running a command",
+                "required": ["type", "value"],
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "enum": ["exec"],
+                    "description": "Type of enabled value. 'exec' executes a shell command to determine enabled state."
+                  },
+                  "value": {
+                    "type": "string",
+                    "description": "Shell command to execute. The command output will be trimmed and parsed as a boolean. Non-empty output or '1', 'true', 'yes' (case-insensitive) evaluates to true."
+                  }
+                }
               }
             ]
           },
@@ -210,7 +278,8 @@
           "description": "Whether the prompt value is required (cannot be empty)"
         },
         "enabled": {
-          "description": "Whether this prompt should be displayed. Can be a boolean, a string expression, or a conditional expression based on variables or other prompt values.",
+          "description": "Whether this prompt should be displayed. Can be a boolean, a string expression, or an object with executable or conditional configuration (optional, defaults to true). If false or condition evaluates to false, the prompt will be skipped.",
+          "default": true,
           "oneOf": [
             {
               "type": "boolean",
@@ -228,6 +297,22 @@
                 "condition": {
                   "type": "string",
                   "description": "JavaScript expression to evaluate. Prompt only displays if condition evaluates to true. Has access to all variables and previously collected prompts."
+                }
+              }
+            },
+            {
+              "type": "object",
+              "description": "Executable enabled configuration - determines enabled state by running a command",
+              "required": ["type", "value"],
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "enum": ["exec"],
+                  "description": "Type of enabled value. 'exec' executes a shell command to determine enabled state."
+                },
+                "value": {
+                  "type": "string",
+                  "description": "Shell command to execute. The command output will be trimmed and parsed as a boolean. Non-empty output or '1', 'true', 'yes' (case-insensitive) evaluates to true."
                 }
               }
             }

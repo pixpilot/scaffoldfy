@@ -91,12 +91,22 @@ export interface ConditionalEnabled {
 }
 
 /**
- * Type for enabled field that can be boolean, string condition, or conditional object
+ * Executable enabled configuration
+ * Determines enabled state by executing a shell command
+ */
+export interface ExecutableEnabled {
+  type: 'exec';
+  value: string; // Shell command to execute
+}
+
+/**
+ * Type for enabled field that can be boolean, string condition, conditional object, or executable
  * - boolean: Simple true/false
  * - string: JavaScript expression to evaluate (shorthand for { condition: "..." })
  * - ConditionalEnabled: Object with condition property
+ * - ExecutableEnabled: Object with type='exec' and value=command
  */
-export type EnabledValue = boolean | string | ConditionalEnabled;
+export type EnabledValue = boolean | string | ConditionalEnabled | ExecutableEnabled;
 
 export interface BasePrompt {
   id: string; // Unique identifier for the prompt value
@@ -218,6 +228,7 @@ export interface TaskDefinition {
 export interface TasksConfiguration {
   name: string; // Human-readable name for this template
   description?: string; // Optional detailed description of what this template does
+  enabled?: EnabledValue; // Optional: whether this entire template should be executed (defaults to true)
   dependencies?: string[]; // Optional: Names or identifiers of other templates this template depends on
   extends?: string | string[]; // Path(s) or URL(s) to base template file(s) to inherit from
   variables?: VariableDefinition[]; // Optional top-level global variables available to all tasks

@@ -66,6 +66,7 @@ program
       let tasks: TaskDefinition[] = [];
       let globalVariables: VariableDefinition[] | undefined;
       let globalPrompts: PromptDefinition[] | undefined;
+      let templateEnabled: import('./types.js').EnabledValue | undefined;
       let tasksFilePath: string | undefined;
 
       // Try to load tasks from TypeScript file first (if specified and exists)
@@ -137,6 +138,7 @@ program
             tasks = config.tasks;
             globalVariables = config.variables;
             globalPrompts = config.prompts;
+            templateEnabled = config.enabled;
 
             if (!Array.isArray(tasks)) {
               log('❌ Invalid tasks file format', 'error');
@@ -234,6 +236,7 @@ program
         tasksFilePath,
         globalVariables,
         globalPrompts,
+        templateEnabled,
       });
     } catch (error) {
       log('❌ CLI execution failed', 'error');

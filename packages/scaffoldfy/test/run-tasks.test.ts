@@ -10,7 +10,7 @@ import { displayTasksDiff } from '../src/dry-run.js';
 import { runTasks } from '../src/run-tasks.js';
 import { runTask } from '../src/task-executors.js';
 import { topologicalSort } from '../src/task-resolver.js';
-import { evaluateEnabled, promptYesNo } from '../src/utils.js';
+import { evaluateEnabled, evaluateEnabledAsync, promptYesNo } from '../src/utils.js';
 import { validateAllTasks } from '../src/validation.js';
 
 // Mock dependencies
@@ -37,6 +37,7 @@ const mockTopologicalSort = vi.mocked(topologicalSort);
 const mockPromptYesNo = vi.mocked(promptYesNo);
 const mockDisplayTasksDiff = vi.mocked(displayTasksDiff);
 const mockEvaluateEnabled = vi.mocked(evaluateEnabled);
+const mockEvaluateEnabledAsync = vi.mocked(evaluateEnabledAsync);
 const mockValidateAllTasks = vi.mocked(validateAllTasks);
 
 const mockConfig: InitConfig = {
@@ -80,6 +81,7 @@ describe('runTasks', () => {
     mockPromptYesNo.mockResolvedValue(true);
     mockDisplayTasksDiff.mockResolvedValue();
     mockEvaluateEnabled.mockReturnValue(true); // Always return true for enabled tasks
+    mockEvaluateEnabledAsync.mockResolvedValue(true); // Always return true for async evaluation
     mockValidateAllTasks.mockReturnValue([]); // Return no validation errors
   });
 
@@ -181,8 +183,16 @@ describe('runTasks', () => {
       },
     ];
 
-    // Mock evaluateEnabled to return the actual enabled value
+    // Mock evaluateEnabled to return the actual enabled value for lazy evaluation
     mockEvaluateEnabled.mockImplementation((enabled) => {
+      if (typeof enabled === 'boolean') {
+        return enabled;
+      }
+      return true; // Default for non-boolean values
+    });
+
+    // Mock evaluateEnabledAsync to return the actual enabled value for final evaluation
+    mockEvaluateEnabledAsync.mockImplementation(async (enabled) => {
       if (typeof enabled === 'boolean') {
         return enabled;
       }
@@ -196,7 +206,8 @@ describe('runTasks', () => {
       tasksFilePath: undefined,
     });
 
-    expect(mockTopologicalSort).toHaveBeenCalledWith(mockTasks); // Only enabled tasks
+    // topologicalSort is called with only the tasks that passed lazy evaluation
+    expect(mockTopologicalSort).toHaveBeenCalledWith(mockTasks);
   });
 
   it('should use lazy evaluation for initial task filtering', async () => {

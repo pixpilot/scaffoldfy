@@ -1,0 +1,15 @@
+{
+  "$schema": "https://unpkg.com/@pixpilot/scaffoldfy/schema",
+  "description": "Project information prompts for pnpm-turbo-monorepo-template",
+  "name": "pixpilot-info",
+  "dependencies": ["project-info"],
+  "variables": [
+    {
+      "id": "pixpilot_project",
+      "value": {
+        "type": "exec",
+        "value": "repoOwner === 'ccpu' || orgName === 'pixpilot'"
+      }
+    }
+  ]
+}

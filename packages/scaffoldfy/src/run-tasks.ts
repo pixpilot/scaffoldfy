@@ -1,6 +1,11 @@
 /* eslint-disable no-await-in-loop */
 /* eslint-disable no-continue */
-import type { PromptDefinition, TaskDefinition, VariableDefinition } from './types.js';
+import type {
+  EnabledValue,
+  PromptDefinition,
+  TaskDefinition,
+  VariableDefinition,
+} from './types.js';
 import process from 'node:process';
 import { createInitialConfig } from './config.js';
 import { displayTasksDiff } from './dry-run.js';
@@ -12,7 +17,7 @@ import {
 } from './prompts/index.js';
 import { registerBuiltInPlugins, runTask } from './task-executors.js';
 import { topologicalSort } from './task-resolver.js';
-import { evaluateEnabled, log } from './utils.js';
+import { evaluateEnabled, evaluateEnabledAsync, log } from './utils.js';
 import { displayValidationErrors, validateAllTasks } from './validation.js';
 import {
   collectVariables,
@@ -35,8 +40,26 @@ export async function runTasks(
     tasksFilePath: string | undefined;
     globalVariables?: VariableDefinition[];
     globalPrompts?: PromptDefinition[];
+    templateEnabled?: EnabledValue;
   },
 ): Promise<void> {
+  // ============================================================================
+  // Check Root-Level Template Enabled
+  // ============================================================================
+  // First check if the entire template is disabled before doing any work
+  // This is evaluated early with initial (potentially empty) config
+  const initialConfig = createInitialConfig();
+
+  // Evaluate template-level enabled (supports exec, conditional, boolean, string)
+  const templateIsEnabled = await evaluateEnabledAsync(
+    options.templateEnabled,
+    initialConfig,
+  );
+
+  if (!templateIsEnabled) {
+    log('⊘ Template is disabled - skipping all execution', 'info');
+    return;
+  }
   // ============================================================================
   // Register Built-in Plugins First
   // ============================================================================
@@ -66,7 +89,7 @@ export async function runTasks(
   log('Resolving task dependencies...', 'info');
   const sortedTasks = topologicalSort(enabledTasks);
 
-  // Create initial empty configuration
+  // Create initial empty configuration (reuse the one we created earlier)
   log("Welcome! Let's execute your tasks.", 'info');
 
   if (options.dryRun) {
@@ -75,7 +98,7 @@ export async function runTasks(
 
   log('This will execute your project tasks based on the defined configuration.', 'info');
 
-  const config = createInitialConfig();
+  const config = initialConfig;
 
   // ============================================================================
   // Process Variables (no user interaction)
@@ -180,9 +203,13 @@ export async function runTasks(
 
   // Re-evaluate enabled tasks now that we have full config with all variables and prompts
   // Filter the already-sorted tasks to only keep enabled ones
-  const finalEnabledTasks = sortedTasks.filter((task) =>
-    evaluateEnabled(task.enabled, config),
-  );
+  // Use async evaluation to support exec-type enabled
+  const finalEnabledTasks = [];
+  for (const task of sortedTasks) {
+    if (await evaluateEnabledAsync(task.enabled, config)) {
+      finalEnabledTasks.push(task);
+    }
+  }
 
   log(
     `${finalEnabledTasks.length} of ${sortedTasks.length} task(s) enabled for execution`,

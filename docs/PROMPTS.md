@@ -712,6 +712,28 @@ This is equivalent to using the conditional object syntax but more concise.
 }
 ```
 
+### Executable Enabled
+
+Run a shell command to determine if the prompt should be displayed:
+
+```json
+{
+  "id": "gitUsername",
+  "type": "input",
+  "message": "Git username",
+  "enabled": {
+    "type": "exec",
+    "value": "git rev-parse --is-inside-work-tree"
+  }
+}
+```
+
+The command output is parsed as a boolean:
+
+- Empty string, `"0"`, `"false"`, or `"no"` (case-insensitive) = `false` (prompt skipped)
+- Everything else = `true` (prompt shown)
+- Failed commands = `false` (prompt skipped)
+
 ### How Conditional Enabled Works
 
 1. Conditions are **JavaScript expressions** evaluated at runtime
@@ -721,9 +743,11 @@ This is equivalent to using the conditional object syntax but more concise.
    - All config values
 3. Prompts are evaluated **in order**, so later prompts can depend on earlier ones
 4. If the condition evaluates to `false`, the prompt is **skipped**
-5. Conditions can be provided as:
+5. Exec commands are executed and their output parsed to determine if prompt should be shown
+6. Conditions can be provided as:
    - **String expression**: `"enabled": "useDatabase === true"` (shorthand)
    - **Conditional object**: `"enabled": { "condition": "useDatabase === true" }` (verbose)
+   - **Executable object**: `"enabled": { "type": "exec", "value": "command" }` (shell command)
 
 ### Examples
 

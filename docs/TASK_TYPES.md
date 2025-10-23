@@ -52,6 +52,7 @@ The `enabled` field can be:
 2. **Simple boolean**: `true` or `false`
 3. **String expression**: Direct JavaScript expression (shorthand for `{ "condition": "..." }`)
 4. **Conditional object**: `{ "condition": "JavaScript expression" }`
+5. **Executable object**: `{ "type": "exec", "value": "shell command" }` - Run a command to determine enabled state
 
 ### Simple Boolean
 
@@ -104,6 +105,31 @@ This is equivalent to using the conditional object syntax but more concise.
 }
 ```
 
+### Executable Enabled
+
+Run a shell command to determine if the task should be enabled:
+
+```json
+{
+  "id": "git-hooks-setup",
+  "name": "Setup Git Hooks",
+  "enabled": {
+    "type": "exec",
+    "value": "git rev-parse --is-inside-work-tree"
+  },
+  "type": "exec",
+  "config": {
+    "command": "npx husky install"
+  }
+}
+```
+
+The command output is parsed as a boolean:
+
+- Empty string, `"0"`, `"false"`, or `"no"` (case-insensitive) = `false`
+- Everything else = `true`
+- Failed commands = `false`
+
 ### How Conditional Enabled Works
 
 1. Conditions are **JavaScript expressions** evaluated at runtime
@@ -117,10 +143,10 @@ This is equivalent to using the conditional object syntax but more concise.
 **Evaluation Timing:**
 
 - Tasks are evaluated **twice** during execution:
-  1. **Initial filter (lazy mode)**: Before prompts are collected. Tasks with conditions referencing undefined prompts are **included** (not filtered out yet).
-  2. **Final filter (strict mode)**: After all prompts and variables are collected. Tasks are evaluated with the full context, and only enabled tasks are executed.
+  1. **Initial filter (lazy mode)**: Before prompts are collected. Tasks with conditions referencing undefined prompts or exec commands are **included** (not filtered out yet).
+  2. **Final filter (strict mode)**: After all prompts and variables are collected. Tasks are evaluated with the full context (including exec command execution), and only enabled tasks are executed.
 
-This two-phase approach allows you to use prompt values in task `enabled` conditions without errors. Tasks referencing prompts that don't exist yet will be temporarily included, then properly filtered once all user input is collected.
+This two-phase approach allows you to use prompt values in task `enabled` conditions without errors. Tasks referencing prompts that don't exist yet or using exec commands will be temporarily included, then properly filtered once all user input is collected and commands are executed.
 
 ### Examples
 

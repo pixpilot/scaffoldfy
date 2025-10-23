@@ -4,9 +4,223 @@ This guide covers the advanced features of **@pixpilot/scaffoldfy** that enable 
 
 ## Table of Contents
 
+- [Template-Level Enabled](#template-level-enabled)
 - [Conditional Execution](#conditional-execution)
 - [Global Prompts](#global-prompts)
 - [Handlebars Templates](#handlebars-templates)
+
+---
+
+## Template-Level Enabled
+
+Control whether an entire template should be executed at the root level. This is useful for creating conditional templates that only run under specific circumstances.
+
+### Overview
+
+The root-level `enabled` property allows you to enable or disable an entire template, including all of its prompts, variables, and tasks. If the template is disabled, execution stops immediately without any user interaction or file operations.
+
+### Basic Usage
+
+#### Simple Boolean
+
+```json
+{
+  "$schema": "https://scaffoldfy.dev/schema/tasks.schema.json",
+  "name": "my-template",
+  "enabled": true,
+  "tasks": [...]
+}
+```
+
+#### String Expression (Shorthand)
+
+```json
+{
+  "$schema": "https://scaffoldfy.dev/schema/tasks.schema.json",
+  "name": "conditional-template",
+  "enabled": "process.env.NODE_ENV === 'development'",
+  "tasks": [...]
+}
+```
+
+#### Conditional Object
+
+```json
+{
+  "$schema": "https://scaffoldfy.dev/schema/tasks.schema.json",
+  "name": "conditional-template",
+  "enabled": {
+    "condition": "projectType === 'monorepo'"
+  },
+  "tasks": [...]
+}
+```
+
+### Executable Enabled
+
+Determine if a template should run by executing a shell command:
+
+```json
+{
+  "$schema": "https://scaffoldfy.dev/schema/tasks.schema.json",
+  "name": "git-template",
+  "enabled": {
+    "type": "exec",
+    "value": "git rev-parse --is-inside-work-tree"
+  },
+  "tasks": [...]
+}
+```
+
+The command output is parsed as a boolean:
+
+- Empty string, `"0"`, `"false"`, or `"no"` (case-insensitive) = `false`
+- Everything else = `true`
+- Failed commands = `false`
+
+### Use Cases
+
+#### 1. Environment-Based Templates
+
+Only run certain templates in specific environments:
+
+```json
+{
+  "name": "development-tools",
+  "enabled": {
+    "type": "exec",
+    "value": "test \"$NODE_ENV\" = \"development\" && echo true || echo false"
+  },
+  "tasks": [
+    {
+      "id": "install-dev-tools",
+      "name": "Install Development Tools",
+      "type": "exec",
+      "config": {
+        "command": "npm install --save-dev prettier eslint"
+      }
+    }
+  ]
+}
+```
+
+#### 2. Dependency-Based Templates
+
+Enable templates only when certain dependencies exist:
+
+```json
+{
+  "name": "react-setup",
+  "description": "Setup React-specific configurations",
+  "enabled": {
+    "type": "exec",
+    "value": "test -f node_modules/react/package.json && echo true || echo false"
+  },
+  "tasks": [...]
+}
+```
+
+#### 3. Conditional Based on Other Templates
+
+Enable templates based on variables from dependency templates:
+
+```json
+{
+  "name": "typescript-config",
+  "description": "TypeScript configuration",
+  "dependencies": ["project-info"],
+  "enabled": "useTypeScript === true",
+  "tasks": [
+    {
+      "id": "create-tsconfig",
+      "name": "Create tsconfig.json",
+      "type": "write",
+      "config": {
+        "file": "tsconfig.json",
+        "template": "{ \"compilerOptions\": { \"strict\": true } }"
+      }
+    }
+  ]
+}
+```
+
+In this example, if the `project-info` template has a prompt `useTypeScript`, this template will only run if the user answered `true`.
+
+#### 4. Git Repository Check
+
+Only run Git-related templates in Git repositories:
+
+```json
+{
+  "name": "git-hooks",
+  "enabled": {
+    "type": "exec",
+    "value": "git rev-parse --git-dir"
+  },
+  "tasks": [
+    {
+      "id": "setup-hooks",
+      "name": "Setup Git Hooks",
+      "type": "exec",
+      "config": {
+        "command": "npx husky install"
+      }
+    }
+  ]
+}
+```
+
+### Evaluation Timing
+
+The template-level `enabled` property is evaluated **before** any other operations:
+
+1. ✅ **Evaluated first** - Before variable resolution
+2. ✅ **Evaluated first** - Before prompt collection
+3. ✅ **Evaluated first** - Before task execution
+4. ✅ **Evaluated first** - Before validation
+
+If the template is disabled, **nothing** from that template will be processed or executed. This makes it efficient for conditional templates.
+
+### Template Variables in Enabled
+
+You can use variables in the `enabled` expression, but be aware that variables are resolved during execution. For exec-type enabled, you can use template interpolation:
+
+```json
+{
+  "name": "conditional-template",
+  "variables": [
+    {
+      "id": "targetEnv",
+      "value": {
+        "type": "exec",
+        "value": "echo $NODE_ENV"
+      }
+    }
+  ],
+  "enabled": "targetEnv === 'production'",
+  "tasks": [...]
+}
+```
+
+However, for early evaluation, prefer using exec-type enabled directly:
+
+```json
+{
+  "name": "conditional-template",
+  "enabled": {
+    "type": "exec",
+    "value": "test \"$NODE_ENV\" = \"production\" && echo true || echo false"
+  },
+  "tasks": [...]
+}
+```
+
+### Best Practices
+
+1. **Use exec for external checks** - When checking file existence, environment variables, or system state
+2. **Use conditions for prompt-based logic** - When the decision depends on user input from dependency templates
+3. **Keep conditions simple** - Complex logic should be in scripts, not conditions
+4. **Document dependencies** - If your template depends on variables from other templates, list them in `dependencies`
 
 ---
 
@@ -830,4 +1044,3 @@ This example:
 - [Template Inheritance](TEMPLATE_INHERITANCE.md) - Compose templates
 - [Plugin System](PLUGINS.md) - Create custom task types
 - [Dry Run Mode](DRY_RUN.md) - Preview changes safely
-

@@ -88,6 +88,7 @@ async function main(customTasks?: TaskDefinition[]) {
  * @param options.tasksFilePath - Path to the tasks file
  * @param options.globalVariables - Optional top-level global variables
  * @param options.globalPrompts - Optional top-level global prompts
+ * @param options.templateEnabled - Optional template-level enabled condition
  */
 export async function runWithTasks(
   customTasks: TaskDefinition[],
@@ -97,6 +98,7 @@ export async function runWithTasks(
     tasksFilePath?: string | undefined;
     globalVariables?: VariableDefinition[] | undefined;
     globalPrompts?: PromptDefinition[] | undefined;
+    templateEnabled?: import('./types.js').EnabledValue | undefined;
   },
 ): Promise<void> {
   try {
@@ -109,6 +111,9 @@ export async function runWithTasks(
       }),
       ...(options?.globalPrompts != null && {
         globalPrompts: options.globalPrompts,
+      }),
+      ...(options?.templateEnabled != null && {
+        templateEnabled: options.templateEnabled,
       }),
     });
   } catch (error) {
