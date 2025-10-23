@@ -1,0 +1,59 @@
+{
+  "$schema": "https://unpkg.com/@pixpilot/scaffoldfy/schema",
+  "description": "Generates packages section in monorepo README by reading package.json files",
+  "name": "pixpilot-generate-packages-section",
+
+  "variables": [
+    {
+      "id": "pixpilot_generate_packages_section_pre_commit_content",
+      "value": {
+        "type": "exec",
+        "value": "node -e \"const fs = require('fs'); const preCommitPath = '.husky/pre-commit'; let content = ''; try { content = fs.readFileSync(preCommitPath, 'utf8').trim(); } catch (e) {} process.stdout.write('pnpm run generate-packages\\n' + (content ? content + '\\n' : ''));\""
+      }
+    }
+  ],
+
+  "tasks": [
+    {
+      "id": "pixpilot-generate-packages-section-file",
+      "name": "Generate Packages Section",
+      "description": "Runs the generate-packages-section.js script to update README.md with package information",
+      "type": "create",
+      "config": {
+        "file": "scripts/generate-packages-section.js",
+        "templateFile": "./generate-packages-section.js"
+      }
+    },
+    {
+      "id": "pixpilot-generate-packages-section-script",
+      "name": "Add generate-packages script to package.json",
+      "description": "Adds the generate-packages script to the root package.json scripts section",
+      "type": "update-json",
+      "config": {
+        "file": "package.json",
+        "updates": {
+          "scripts.generate-packages": "node scripts/generate-packages-section.js"
+        }
+      }
+    },
+    {
+      "id": "pixpilot-generate-packages-section-delete-old-pre-commit",
+      "name": "Delete old pre-commit hook",
+      "description": "Deletes the existing .husky/pre-commit file",
+      "type": "delete",
+      "config": {
+        "paths": [".husky/pre-commit"]
+      }
+    },
+    {
+      "id": "pixpilot-generate-packages-section-create-new-pre-commit",
+      "name": "Create new pre-commit hook",
+      "description": "Creates a new .husky/pre-commit file with generate-packages command",
+      "type": "create",
+      "config": {
+        "file": ".husky/pre-commit",
+        "template": "{{pixpilot_generate_packages_section_pre_commit_content}}"
+      }
+    }
+  ]
+}
