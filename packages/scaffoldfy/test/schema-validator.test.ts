@@ -5,6 +5,7 @@ describe('schema-validator', () => {
   describe('validateTasksSchema', () => {
     it('should validate a valid minimal configuration', () => {
       const config = {
+        $schema: 'https://unpkg.com/@pixpilot/scaffoldfy@latest/schema/tasks.schema.json',
         name: 'test-template',
         tasks: [
           {
@@ -28,6 +29,7 @@ describe('schema-validator', () => {
 
     it('should reject configuration missing required name field', () => {
       const config = {
+        $schema: 'https://unpkg.com/@pixpilot/scaffoldfy@latest/schema/tasks.schema.json',
         tasks: [
           {
             id: 'task-1',
@@ -51,6 +53,7 @@ describe('schema-validator', () => {
 
     it('should reject invalid template name pattern', () => {
       const config = {
+        $schema: 'https://unpkg.com/@pixpilot/scaffoldfy@latest/schema/tasks.schema.json',
         name: 'Invalid Name With Spaces',
         tasks: [],
       };
@@ -62,6 +65,7 @@ describe('schema-validator', () => {
 
     it('should reject task missing required id field', () => {
       const config = {
+        $schema: 'https://unpkg.com/@pixpilot/scaffoldfy@latest/schema/tasks.schema.json',
         name: 'test-template',
         tasks: [
           {
@@ -84,6 +88,7 @@ describe('schema-validator', () => {
 
     it('should reject task with invalid type', () => {
       const config = {
+        $schema: 'https://unpkg.com/@pixpilot/scaffoldfy@latest/schema/tasks.schema.json',
         name: 'test-template',
         tasks: [
           {
@@ -104,6 +109,7 @@ describe('schema-validator', () => {
 
     it('should validate configuration with global variables', () => {
       const config = {
+        $schema: 'https://unpkg.com/@pixpilot/scaffoldfy@latest/schema/tasks.schema.json',
         name: 'test-template',
         variables: [
           {
@@ -133,6 +139,7 @@ describe('schema-validator', () => {
 
     it('should validate configuration with executable variables', () => {
       const config = {
+        $schema: 'https://unpkg.com/@pixpilot/scaffoldfy@latest/schema/tasks.schema.json',
         name: 'test-template',
         variables: [
           {
@@ -165,6 +172,7 @@ describe('schema-validator', () => {
 
     it('should validate template task with inline template', () => {
       const config = {
+        $schema: 'https://unpkg.com/@pixpilot/scaffoldfy@latest/schema/tasks.schema.json',
         name: 'test-template',
         tasks: [
           {
@@ -186,6 +194,7 @@ describe('schema-validator', () => {
 
     it('should validate configuration with global prompts', () => {
       const config = {
+        $schema: 'https://unpkg.com/@pixpilot/scaffoldfy@latest/schema/tasks.schema.json',
         name: 'test-template',
         prompts: [
           {
@@ -223,6 +232,7 @@ describe('schema-validator', () => {
 
     it('should reject prompt with invalid id pattern', () => {
       const config = {
+        $schema: 'https://unpkg.com/@pixpilot/scaffoldfy@latest/schema/tasks.schema.json',
         name: 'test-template',
         prompts: [
           {
@@ -241,6 +251,7 @@ describe('schema-validator', () => {
 
     it('should reject variable with invalid id pattern', () => {
       const config = {
+        $schema: 'https://unpkg.com/@pixpilot/scaffoldfy@latest/schema/tasks.schema.json',
         name: 'test-template',
         variables: [
           {
@@ -258,6 +269,7 @@ describe('schema-validator', () => {
 
     it('should validate template task with templateFile', () => {
       const config = {
+        $schema: 'https://unpkg.com/@pixpilot/scaffoldfy@latest/schema/tasks.schema.json',
         name: 'test-template',
         tasks: [
           {
@@ -279,6 +291,7 @@ describe('schema-validator', () => {
 
     it('should validate configuration with task dependencies', () => {
       const config = {
+        $schema: 'https://unpkg.com/@pixpilot/scaffoldfy@latest/schema/tasks.schema.json',
         name: 'test-template',
         tasks: [
           {
@@ -314,6 +327,7 @@ describe('schema-validator', () => {
 
     it('should validate exec task configuration', () => {
       const config = {
+        $schema: 'https://unpkg.com/@pixpilot/scaffoldfy@latest/schema/tasks.schema.json',
         name: 'test-template',
         tasks: [
           {
@@ -335,6 +349,7 @@ describe('schema-validator', () => {
 
     it('should validate delete task configuration', () => {
       const config = {
+        $schema: 'https://unpkg.com/@pixpilot/scaffoldfy@latest/schema/tasks.schema.json',
         name: 'test-template',
         tasks: [
           {
@@ -355,6 +370,7 @@ describe('schema-validator', () => {
 
     it('should validate rename task configuration', () => {
       const config = {
+        $schema: 'https://unpkg.com/@pixpilot/scaffoldfy@latest/schema/tasks.schema.json',
         name: 'test-template',
         tasks: [
           {
@@ -376,6 +392,7 @@ describe('schema-validator', () => {
 
     it('should validate git-init task configuration', () => {
       const config = {
+        $schema: 'https://unpkg.com/@pixpilot/scaffoldfy@latest/schema/tasks.schema.json',
         name: 'test-template',
         tasks: [
           {
@@ -398,6 +415,7 @@ describe('schema-validator', () => {
 
     it('should validate configuration with conditional enabled', () => {
       const config = {
+        $schema: 'https://unpkg.com/@pixpilot/scaffoldfy@latest/schema/tasks.schema.json',
         name: 'test-template',
         tasks: [
           {
@@ -422,6 +440,7 @@ describe('schema-validator', () => {
 
     it('should validate configuration with template inheritance', () => {
       const config = {
+        $schema: 'https://unpkg.com/@pixpilot/scaffoldfy@latest/schema/tasks.schema.json',
         name: 'test-template',
         extends: 'base-template.json',
         tasks: [
@@ -446,6 +465,7 @@ describe('schema-validator', () => {
 
     it('should validate configuration with array of extends', () => {
       const config = {
+        $schema: 'https://unpkg.com/@pixpilot/scaffoldfy@latest/schema/tasks.schema.json',
         name: 'test-template',
         extends: ['base-template-1.json', 'base-template-2.json'],
         tasks: [],
@@ -458,6 +478,7 @@ describe('schema-validator', () => {
 
     it('should reject task with additional unknown properties', () => {
       const config = {
+        $schema: 'https://unpkg.com/@pixpilot/scaffoldfy@latest/schema/tasks.schema.json',
         name: 'test-template',
         tasks: [
           {
@@ -483,6 +504,7 @@ describe('schema-validator', () => {
 
     it('should reject configuration with additional unknown top-level properties', () => {
       const config = {
+        $schema: 'https://unpkg.com/@pixpilot/scaffoldfy@latest/schema/tasks.schema.json',
         name: 'test-template',
         tasks: [],
         unknownField: 'should not be here',
@@ -496,6 +518,7 @@ describe('schema-validator', () => {
 
     it('should reject variable with additional unknown properties', () => {
       const config = {
+        $schema: 'https://unpkg.com/@pixpilot/scaffoldfy@latest/schema/tasks.schema.json',
         name: 'test-template',
         variables: [
           {
@@ -515,6 +538,7 @@ describe('schema-validator', () => {
 
     it('should reject prompt with additional unknown properties', () => {
       const config = {
+        $schema: 'https://unpkg.com/@pixpilot/scaffoldfy@latest/schema/tasks.schema.json',
         name: 'test-template',
         prompts: [
           {
