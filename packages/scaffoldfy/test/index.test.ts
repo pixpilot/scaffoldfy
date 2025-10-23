@@ -43,15 +43,18 @@ describe('jSON Schema Validation', () => {
   });
 
   it('should have config schemas for all task types', () => {
-    const configSchemas = schema.properties.tasks.items.properties.config.oneOf;
+    const configSchemas = Object.values(schema.$defs).filter(
+      (def: any) => def.title && def.title.endsWith('Config'),
+    ) as { title: string; required: string[] }[];
 
-    // Should have 8 config schemas (one for each task type)
+    // Should have 9 config schemas (one for each task type)
     expect(configSchemas).toHaveLength(9);
 
     // Verify each config schema has required properties
     const expectedConfigs = [
       { title: 'Update JSON Config', required: ['file', 'updates'] },
       { title: 'Template Config', required: ['file'] },
+      { title: 'Create Config', required: ['file'] },
       {
         title: 'Regex Replace Config',
         required: ['file', 'pattern', 'replacement'],
@@ -67,13 +70,11 @@ describe('jSON Schema Validation', () => {
     ];
 
     for (const expected of expectedConfigs) {
-      const configSchema = configSchemas.find(
-        (cs: { title: string }) => cs.title === expected.title,
-      );
+      const configSchema = configSchemas.find((cs) => cs.title === expected.title);
 
       expect(configSchema, `Missing config schema: ${expected.title}`).toBeDefined();
       expect(
-        configSchema.required,
+        configSchema!.required,
         `Missing required fields for: ${expected.title}`,
       ).toEqual(expected.required);
     }
@@ -85,12 +86,11 @@ describe('jSON Schema Validation', () => {
     expect(requiredProps).toContain('id');
     expect(requiredProps).toContain('name');
     expect(requiredProps).toContain('type');
+    expect(requiredProps).toContain('config');
     // description, required, and enabled are now optional with defaults
     expect(requiredProps).not.toContain('description');
     expect(requiredProps).not.toContain('required');
     expect(requiredProps).not.toContain('enabled');
-    // 'config' is now optional to allow tasks with only prompts
-    expect(requiredProps).not.toContain('config');
   });
 });
 
