@@ -1,5 +1,12 @@
 # @pixpilot/scaffoldfy
 
+## 0.19.1
+
+### Patch Changes
+
+- add `$schema` to required properties in tasks schema
+- cast task.config as unknown before DockerConfig
+
 ## 0.19.0
 
 ### Minor Changes
