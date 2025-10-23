@@ -69,7 +69,7 @@ You can define prompts at the **top level** of your configuration file. These pr
       "description": "Generate README file",
       "required": true,
       "enabled": true,
-      "type": "template",
+      "type": "write",
       "config": {
         "file": "README.md",
         "template": "# {{projectName}}\n\nAuthor: {{author}}"
@@ -100,7 +100,7 @@ You can also define prompts within individual tasks. These prompts are **task-sp
       "description": "Create .env file",
       "required": false,
       "enabled": true,
-      "type": "template",
+      "type": "write",
       "prompts": [
         {
           "id": "apiUrl",
@@ -643,7 +643,7 @@ Here's a complete example showing how to use prompts with executable defaults in
       "description": "Create .env file with API credentials",
       "required": false,
       "enabled": true,
-      "type": "template",
+      "type": "write",
       "prompts": [
         {
           "id": "apiUrl",
@@ -883,7 +883,7 @@ This ensures users provide common information upfront before task-specific detai
 Prompt values are automatically merged into the configuration object and can be used anywhere template interpolation is supported:
 
 - `{{promptId}}` - Access prompt values in config via template interpolation
-- Works in all task types (update-json, template, regex-replace, etc.)
+- Works in all task types (update-json, write, regex-replace, etc.)
 - Values are available alongside variable values
 - **Top-level prompts** are available to all tasks
 - **Task-specific prompts** are only available within their task

@@ -9,7 +9,7 @@
       "description": "This will fail because the ID 'projectName' conflicts with the prompt below",
       "required": true,
       "enabled": true,
-      "type": "template",
+      "type": "write",
       "config": {
         "file": "README.md",
         "template": "# {{projectName}}"

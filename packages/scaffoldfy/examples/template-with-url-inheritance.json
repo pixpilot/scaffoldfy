@@ -10,7 +10,7 @@
       "description": "Generate a custom README that extends the base template",
       "required": true,
       "enabled": true,
-      "type": "template",
+      "type": "write",
       "config": {
         "file": "README.md",
         "template": "# {{projectName}}\n\nBy {{author}}\n\n## Description\n\nThis project extends a remote base template.\n\n## Features\n\n- Extends base Node.js template from GitHub\n- Adds custom project-specific tasks\n- Demonstrates URL-based template inheritance\n\n## Repository\n\n{{repoUrl}}"
@@ -22,7 +22,7 @@
       "description": "Initialize a CHANGELOG file",
       "required": false,
       "enabled": true,
-      "type": "template",
+      "type": "write",
       "config": {
         "file": "CHANGELOG.md",
         "template": "# Changelog\n\nAll notable changes to this project will be documented in this file.\n\n## [Unreleased]\n\n### Added\n- Initial project setup"

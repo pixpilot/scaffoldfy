@@ -11,8 +11,8 @@ import type {
   ReplaceInFileConfig,
   TaskDefinition,
   TaskType,
-  TemplateConfig,
   UpdateJsonConfig,
+  WriteConfig,
 } from '../src/types.js';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -29,7 +29,7 @@ describe('jSON Schema Validation', () => {
     // These should match TaskType from types.ts
     const expectedTypes: TaskType[] = [
       'update-json',
-      'template',
+      'write',
       'create',
       'regex-replace',
       'replace-in-file',
@@ -53,7 +53,7 @@ describe('jSON Schema Validation', () => {
     // Verify each config schema has required properties
     const expectedConfigs = [
       { title: 'Update JSON Config', required: ['file', 'updates'] },
-      { title: 'Template Config', required: ['file'] },
+      { title: 'Write Config', required: ['file'] },
       { title: 'Create Config', required: ['file'] },
       {
         title: 'Regex Replace Config',
@@ -108,8 +108,8 @@ describe('task Type Validation', () => {
     expect(config.updates).toBeDefined();
   });
 
-  it('should validate TemplateConfig', () => {
-    const config: TemplateConfig = {
+  it('should validate WriteConfig', () => {
+    const config: WriteConfig = {
       file: 'README.md',
       template: '# {{repoName}}',
     };
@@ -267,7 +267,7 @@ describe('jSON Task Loading', () => {
         config: { file: 'test.json', updates: { key: 'value' } },
       },
       {
-        type: 'template',
+        type: 'write',
         config: { file: 'test.md', template: '# {{title}}' },
       },
       {

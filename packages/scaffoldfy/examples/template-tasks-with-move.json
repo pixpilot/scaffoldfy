@@ -1,0 +1,33 @@
+{
+  "tasks": [
+    {
+      "id": "create-temp-file",
+      "name": "Create temporary file",
+      "type": "write",
+      "config": {
+        "file": "temp/original.txt",
+        "template": "This file will be moved to a new location"
+      }
+    },
+    {
+      "id": "move-file",
+      "name": "Move file to new location",
+      "type": "move",
+      "config": {
+        "from": "temp/original.txt",
+        "to": "final/relocated.txt"
+      },
+      "dependencies": ["create-temp-file"]
+    },
+    {
+      "id": "move-directory",
+      "name": "Move entire directory",
+      "type": "move",
+      "config": {
+        "from": "temp",
+        "to": "archived/temp"
+      },
+      "dependencies": ["move-file"]
+    }
+  ]
+}

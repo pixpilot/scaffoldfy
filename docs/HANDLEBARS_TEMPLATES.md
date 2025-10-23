@@ -70,7 +70,7 @@ is a modern TypeScript project.
   "description": "Create a fresh README for the new project",
   "required": true,
   "enabled": true,
-  "type": "template",
+  "type": "write",
   "config": {
     "file": "README.md",
     "templateFile": "templates/readme.hbs"
@@ -88,7 +88,7 @@ When using inline templates or template files that don't end in `.hbs`, simple `
 {
   "id": "simple-readme",
   "name": "Simple README",
-  "type": "template",
+  "type": "write",
   "config": {
     "file": "README.md",
     "template": "# {{projectName}}\n\nAuthor: {{author}}\nRepository: {{repoUrl}}"
@@ -113,7 +113,7 @@ Repository: {{repoUrl}}
 {
   "id": "simple-readme-file",
   "name": "Simple README from File",
-  "type": "template",
+  "type": "write",
   "config": {
     "file": "README.md",
     "templateFile": "templates/simple-readme.txt"
@@ -246,7 +246,7 @@ project-root/
       "description": "Create README using Handlebars template",
       "required": true,
       "enabled": true,
-      "type": "template",
+      "type": "write",
       "config": {
         "file": "README.md",
         "templateFile": ".scaffoldfy/templates/readme.hbs"
@@ -258,7 +258,7 @@ project-root/
       "description": "Generate package.json from simple template",
       "required": true,
       "enabled": true,
-      "type": "template",
+      "type": "write",
       "config": {
         "file": "package.json",
         "templateFile": ".scaffoldfy/templates/package-json.hbs"
@@ -270,7 +270,7 @@ project-root/
       "description": "Create simple license file",
       "required": false,
       "enabled": true,
-      "type": "template",
+      "type": "write",
       "config": {
         "file": "LICENSE",
         "template": "MIT License\n\nCopyright (c) {{author}}\n\nPermission is hereby granted..."
@@ -400,3 +400,4 @@ You cannot specify both options:
 - [Template Task Types](./TASK_TYPES.md#template)
 - [Prompts Documentation](./PROMPTS.md)
 - [Examples Directory](../examples/)
+

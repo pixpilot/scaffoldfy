@@ -4,7 +4,7 @@ A flexible and powerful task automation utility for project setup, cleanup, and 
 
 ## Features
 
-- 🔄 **9 Task Types** - update-json, template, regex-replace, replace-in-file, delete, conditional-delete, rename, git-init, exec
+- 🔄 **9 Task Types** - update-json, write, regex-replace, replace-in-file, delete, conditional-delete, rename, git-init, exec
 - 🧩 **Template Inheritance** - Extend base templates for code reuse
 - 🔍 **Dry-Run Mode with Diff** - Preview exact changes before applying
 - 🔌 **Plugin System** - Create custom task types and lifecycle hooks

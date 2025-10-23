@@ -184,7 +184,7 @@ describe('plugin system', () => {
         description: 'Test task',
         required: true,
         enabled: true,
-        type: 'custom-task' as 'template',
+        type: 'custom-task' as 'write',
         config: { test: true },
       };
 
@@ -209,7 +209,7 @@ describe('plugin system', () => {
         description: 'Test',
         required: true,
         enabled: true,
-        type: 'unknown' as 'template',
+        type: 'unknown' as 'write',
         config: {},
       };
 
@@ -246,7 +246,7 @@ describe('plugin system', () => {
         description: 'Test',
         required: true,
         enabled: true,
-        type: 'custom-task' as 'template',
+        type: 'custom-task' as 'write',
         config: {},
       };
 
@@ -280,7 +280,7 @@ describe('plugin system', () => {
         description: 'Test',
         required: true,
         enabled: true,
-        type: 'custom-task' as 'template',
+        type: 'custom-task' as 'write',
         config: {},
       };
 
@@ -317,7 +317,7 @@ describe('plugin system', () => {
         description: 'Test',
         required: true,
         enabled: true,
-        type: 'custom-task' as 'template',
+        type: 'custom-task' as 'write',
         config: {},
       };
 
@@ -334,7 +334,7 @@ describe('plugin system', () => {
         description: 'Test',
         required: true,
         enabled: true,
-        type: 'unknown' as 'template',
+        type: 'unknown' as 'write',
         config: {},
       };
 
@@ -359,7 +359,7 @@ describe('plugin system', () => {
         description: 'Test',
         required: true,
         enabled: true,
-        type: 'custom-task' as 'template',
+        type: 'custom-task' as 'write',
         config: {},
       };
 
@@ -425,7 +425,7 @@ describe('plugin system', () => {
         description: 'Test',
         required: true,
         enabled: true,
-        type: 'template',
+        type: 'write',
         config: {},
       };
 
@@ -454,7 +454,7 @@ describe('plugin system', () => {
         description: 'Test',
         required: true,
         enabled: true,
-        type: 'template',
+        type: 'write',
         config: {},
       };
 

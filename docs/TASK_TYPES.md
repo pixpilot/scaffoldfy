@@ -30,7 +30,7 @@ Every task has the following properties:
 {
   "id": "my-task",
   "name": "My Task",
-  "type": "template",
+  "type": "write",
   "config": {
     "file": "README.md",
     "template": "# My Project"
@@ -60,7 +60,7 @@ The `enabled` field can be:
   "id": "my-task",
   "name": "My Task",
   "enabled": true,
-  "type": "template",
+  "type": "write",
   "config": {
     "file": "README.md",
     "template": "# My Project"
@@ -77,7 +77,7 @@ You can use a string directly as a condition expression:
   "id": "typescript-setup",
   "name": "Setup TypeScript",
   "enabled": "useTypeScript === true",
-  "type": "template",
+  "type": "write",
   "config": {
     "file": "tsconfig.json",
     "template": "{ \"compilerOptions\": {} }"
@@ -96,7 +96,7 @@ This is equivalent to using the conditional object syntax but more concise.
   "enabled": {
     "condition": "useTypeScript === true"
   },
-  "type": "template",
+  "type": "write",
   "config": {
     "file": "tsconfig.json",
     "template": "{ \"compilerOptions\": {} }"
@@ -143,7 +143,7 @@ Using string expression (shorthand):
       "id": "setup-typescript",
       "name": "Setup TypeScript",
       "enabled": "useTypeScript === true",
-      "type": "template",
+      "type": "write",
       "config": {
         "file": "tsconfig.json",
         "template": "{ \"compilerOptions\": {} }"
@@ -172,7 +172,7 @@ Using conditional object (verbose):
       "enabled": {
         "condition": "useTypeScript === true"
       },
-      "type": "template",
+      "type": "write",
       "config": {
         "file": "tsconfig.json",
         "template": "{ \"compilerOptions\": {} }"
@@ -191,7 +191,7 @@ Using string expression:
   "id": "setup-ci",
   "name": "Setup CI/CD",
   "enabled": "includeCI === true && (platform === 'github' || platform === 'gitlab')",
-  "type": "template",
+  "type": "write",
   "config": {
     "file": ".github/workflows/ci.yml",
     "template": "name: CI"
@@ -208,7 +208,7 @@ Using conditional object:
   "enabled": {
     "condition": "includeCI === true && (platform === 'github' || platform === 'gitlab')"
   },
-  "type": "template",
+  "type": "write",
   "config": {
     "file": ".github/workflows/ci.yml",
     "template": "name: CI"
@@ -311,7 +311,7 @@ interface Config {
 
 ```json
 {
-  "type": "template",
+  "type": "write",
   "config": {
     "file": "README.md",
     "template": "# {{projectName}}\n\nAuthor: {{author}}\n\nRepository: {{repoUrl}}"
@@ -323,7 +323,7 @@ interface Config {
 
 ```json
 {
-  "type": "template",
+  "type": "write",
   "config": {
     "file": "CONTRIBUTING.md",
     "template": "# Contributing Guide\n\nThank you for contributing!",
@@ -653,6 +653,271 @@ interface Config {
 
 ---
 
+## move
+
+Move files or directories from one location to another.
+
+### Configuration
+
+```typescript
+interface Config {
+  from: string; // Source path
+  to: string; // Destination path
+  condition?: string; // Optional: only execute if condition evaluates to true
+}
+```
+
+### Example
+
+```json
+{
+  "type": "move",
+  "config": {
+    "from": "templates/example.config.js",
+    "to": "config/{{projectName}}.config.js"
+  }
+}
+```
+
+### Conditional Example
+
+```json
+{
+  "type": "move",
+  "config": {
+    "from": "temp/generated-files",
+    "to": "src/generated",
+    "condition": "useGenerated === true"
+  }
+}
+```
+
+### Features
+
+- Template variable interpolation in paths
+- Works with files and directories
+- Creates parent directories if needed
+- Skips if source doesn't exist
+- Original file is removed (moved, not copied)
+- **Optional condition:** JavaScript expression evaluation (skips task if false)
+
+---
+
+## copy
+
+Copy files or directories from one location to another. Unlike `move`, the original files remain intact.
+
+### Configuration
+
+```typescript
+interface Config {
+  from: string; // Source path
+  to: string; // Destination path
+  condition?: string; // Optional: only execute if condition evaluates to true
+}
+```
+
+### Example
+
+```json
+{
+  "type": "copy",
+  "config": {
+    "from": "templates/base-structure",
+    "to": "src/"
+  }
+}
+```
+
+### Conditional Example
+
+```json
+{
+  "type": "copy",
+  "config": {
+    "from": "examples/sample-files",
+    "to": "examples/",
+    "condition": "includeExamples === true"
+  }
+}
+```
+
+### Features
+
+- Template variable interpolation in paths
+- Works with files and directories
+- Recursive directory copying
+- Creates parent directories if needed
+- Skips if source doesn't exist
+- Original files remain intact (copied, not moved)
+- **Optional condition:** JavaScript expression evaluation (skips task if false)
+
+---
+
+## append
+
+Append content to existing files. Useful for adding entries to `.gitignore`, `README.md`, or other configuration files.
+
+### Configuration
+
+```typescript
+interface Config {
+  file: string; // Target file path
+  content?: string; // Inline content (supports {{variable}} syntax)
+  template?: string; // Alias for content
+  templateFile?: string; // Path to external template file (.hbs files use Handlebars)
+  newline?: boolean; // Add newline before appending (default: true)
+  condition?: string; // Optional: only execute if condition evaluates to true
+}
+```
+
+### Example
+
+```json
+{
+  "type": "append",
+  "config": {
+    "file": ".gitignore",
+    "content": "\n# Custom ignores\n*.local\n.env\n"
+  }
+}
+```
+
+### With Template Variables
+
+```json
+{
+  "type": "append",
+  "config": {
+    "file": "README.md",
+    "template": "\n## {{projectName}}\n\nCreated by {{author}}\n"
+  }
+}
+```
+
+### With Template File
+
+```json
+{
+  "type": "append",
+  "config": {
+    "file": "CHANGELOG.md",
+    "templateFile": "templates/changelog-entry.md"
+  }
+}
+```
+
+### Without Newline
+
+```json
+{
+  "type": "append",
+  "config": {
+    "file": "inline-data.txt",
+    "content": ", more data",
+    "newline": false
+  }
+}
+```
+
+### Conditional Example
+
+```json
+{
+  "type": "append",
+  "config": {
+    "file": ".gitignore",
+    "content": "\n# IDE files\n.vscode/\n.idea/\n",
+    "condition": "includeIDEIgnores === true"
+  }
+}
+```
+
+### Features
+
+- Template variable interpolation in content
+- Support for both inline content and template files
+- Handlebars support for `.hbs` template files
+- Creates file if it doesn't exist
+- Automatically adds newline before content if file doesn't end with one (unless `newline: false`)
+- Support for both `content` and `template` fields (aliases)
+- **Optional condition:** JavaScript expression evaluation (skips task if false)
+
+---
+
+## mkdir
+
+Create directory structure. Useful for setting up project scaffolding.
+
+### Configuration
+
+```typescript
+interface Config {
+  path: string; // Directory path to create
+  condition?: string; // Optional: only execute if condition evaluates to true
+}
+```
+
+### Example
+
+```json
+{
+  "type": "mkdir",
+  "config": {
+    "path": "src/components/ui"
+  }
+}
+```
+
+### Multiple Directories Example
+
+Use multiple tasks to create several directories:
+
+```json
+{
+  "tasks": [
+    {
+      "id": "create-src",
+      "name": "Create src directory",
+      "type": "mkdir",
+      "config": {
+        "path": "src"
+      }
+    },
+    {
+      "id": "create-tests",
+      "name": "Create tests directory",
+      "type": "mkdir",
+      "config": {
+        "path": "tests"
+      }
+    }
+  ]
+}
+```
+
+### Conditional Example
+
+```json
+{
+  "type": "mkdir",
+  "config": {
+    "path": "src/e2e-tests",
+    "condition": "includeE2ETests === true"
+  }
+}
+```
+
+### Features
+
+- Template variable interpolation in paths
+- Recursive directory creation (creates parent directories automatically)
+- Handles existing directories gracefully (no error)
+- Cross-platform path support
+- **Optional condition:** JavaScript expression evaluation (skips task if false)
+
+---
+
 ## git-init
 
 Initialize a new git repository.
@@ -839,7 +1104,7 @@ All tasks respect `--dry-run` flag:
 | Use Case                           | Task Type                                |
 | ---------------------------------- | ---------------------------------------- |
 | Update package.json                | `update-json`                            |
-| Create new files (overwrite ok)    | `template`                               |
+| Create new files (overwrite ok)    | `write`                                  |
 | Create new files (don't overwrite) | `create`                                 |
 | Create from external template      | `create` (with `templateFile`)           |
 | Create with Handlebars template    | `create` (with `.hbs` file)              |
@@ -848,6 +1113,11 @@ All tasks respect `--dry-run` flag:
 | Remove files/folders               | `delete`                                 |
 | Conditional operations             | Any task type (with `enabled.condition`) |
 | Rename/move files                  | `rename`                                 |
+| Move files (relocate)              | `move`                                   |
+| Copy files/folders                 | `copy`                                   |
+| Append to existing files           | `append`                                 |
+| Create directories                 | `mkdir`                                  |
 | Reset git history                  | `git-init`                               |
 | Run commands                       | `exec`                                   |
 | Execute only when user agrees      | Any task type (with prompt + `enabled`)  |
+

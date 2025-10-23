@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "Template Tasks Configuration",
-  "description": "Configuration for template task automation and cleanup",
+  "title": "Write Tasks Configuration",
+  "description": "Configuration for Write task automation and cleanup",
   "type": "object",
   "required": ["$schema", "name"],
   "additionalProperties": false,
@@ -17,28 +17,28 @@
     },
     "description": {
       "type": "string",
-      "description": "Detailed description of what this template does"
+      "description": "Detailed description of what this Write does"
     },
     "dependencies": {
       "type": "array",
       "items": {
         "type": "string"
       },
-      "description": "Names or identifiers of other templates that this template depends on"
+      "description": "Names or identifiers of other templates that this Write depends on"
     },
     "extends": {
-      "description": "Base template file(s) to extend from. Can be a local path or URL (http/https). Supports single path or array of paths.",
+      "description": "Base Write file(s) to extend from. Can be a local path or URL (http/https). Supports single path or array of paths.",
       "oneOf": [
         {
           "type": "string",
-          "description": "Single base template path or URL"
+          "description": "Single base Write path or URL"
         },
         {
           "type": "array",
           "items": {
             "type": "string"
           },
-          "description": "Array of base template paths or URLs"
+          "description": "Array of base Write paths or URLs"
         }
       ]
     },
@@ -110,7 +110,7 @@
             "type": "string",
             "enum": [
               "update-json",
-              "template",
+              "write",
               "create",
               "regex-replace",
               "replace-in-file",
@@ -135,8 +135,8 @@
           },
           {
             "properties": {
-              "type": { "const": "template" },
-              "config": { "$ref": "#/$defs/config-template" }
+              "type": { "const": "write" },
+              "config": { "$ref": "#/$defs/config-write" }
             }
           },
           {
@@ -269,10 +269,10 @@
                   "description": "JavaScript expression to evaluate. Can reference variables, prompts, and config values."
                 },
                 "ifTrue": {
-                  "description": "Value to use if condition evaluates to true. Can be a static value or a template string with {{variables}}."
+                  "description": "Value to use if condition evaluates to true. Can be a static value or a Write string with {{variables}}."
                 },
                 "ifFalse": {
-                  "description": "Value to use if condition evaluates to false. Can be a static value or a template string with {{variables}}."
+                  "description": "Value to use if condition evaluates to false. Can be a static value or a Write string with {{variables}}."
                 }
               }
             }
@@ -405,8 +405,8 @@
       },
       "required": ["file", "updates"]
     },
-    "config-template": {
-      "title": "Template Config",
+    "config-write": {
+      "title": "Write Config",
       "type": "object",
       "additionalProperties": false,
       "properties": {
@@ -446,13 +446,13 @@
           "type": "string",
           "description": "Path to the file to create (will not overwrite if file already exists)"
         },
-        "template": {
+        "write": {
           "type": "string",
-          "description": "Inline template string with {{variable}} placeholders. Cannot be used with templateFile."
+          "description": "Inline Write string with {{variable}} placeholders. Cannot be used with templateFile."
         },
         "templateFile": {
           "type": "string",
-          "description": "Path to external template file (relative to project root). Files with .hbs extension automatically use Handlebars templating. Cannot be used with template."
+          "description": "Path to external Write file (relative to project root). Files with .hbs extension automatically use Handlebars templating. Cannot be used with template."
         },
         "condition": {
           "type": "string",
@@ -462,7 +462,7 @@
       "required": ["file"],
       "oneOf": [
         {
-          "required": ["template"]
+          "required": ["write"]
         },
         {
           "required": ["templateFile"]

@@ -98,7 +98,7 @@ describe('optional task fields', () => {
       name: 'Mixed Task',
       description: 'Has description',
       // required and enabled are omitted (will default to true)
-      type: 'template',
+      type: 'write',
       config: {
         file: 'README.md',
         template: '# Project',

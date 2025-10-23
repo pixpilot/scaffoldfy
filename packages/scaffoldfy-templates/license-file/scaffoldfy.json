@@ -30,7 +30,7 @@
       "id": "create-mit-license",
       "name": "Create MIT License",
       "description": "Create a LICENSE file with MIT license",
-      "type": "template",
+      "type": "write",
       "enabled": "licenseType === 'MIT'",
       "config": {
         "file": "LICENSE",
@@ -41,7 +41,7 @@
       "id": "create-apache-license",
       "name": "Create Apache 2.0 License",
       "description": "Create a LICENSE file with Apache 2.0 license",
-      "type": "template",
+      "type": "write",
       "enabled": "licenseType === 'Apache-2.0'",
       "config": {
         "file": "LICENSE",
@@ -52,7 +52,7 @@
       "id": "create-gpl3-license",
       "name": "Create GPL v3 License",
       "description": "Create a LICENSE file with GPL v3 license",
-      "type": "template",
+      "type": "write",
       "enabled": "licenseType === 'GPL-3.0'",
       "config": {
         "file": "LICENSE",
@@ -63,7 +63,7 @@
       "id": "create-gpl2-license",
       "name": "Create GPL v2 License",
       "description": "Create a LICENSE file with GPL v2 license",
-      "type": "template",
+      "type": "write",
       "enabled": "licenseType === 'GPL-2.0'",
       "config": {
         "file": "LICENSE",
@@ -74,7 +74,7 @@
       "id": "create-bsd3-license",
       "name": "Create BSD 3-Clause License",
       "description": "Create a LICENSE file with BSD 3-Clause license",
-      "type": "template",
+      "type": "write",
       "enabled": "licenseType === 'BSD-3-Clause'",
       "config": {
         "file": "LICENSE",
@@ -85,7 +85,7 @@
       "id": "create-bsd2-license",
       "name": "Create BSD 2-Clause License",
       "description": "Create a LICENSE file with BSD 2-Clause license",
-      "type": "template",
+      "type": "write",
       "enabled": "licenseType === 'BSD-2-Clause'",
       "config": {
         "file": "LICENSE",
@@ -96,7 +96,7 @@
       "id": "create-isc-license",
       "name": "Create ISC License",
       "description": "Create a LICENSE file with ISC license",
-      "type": "template",
+      "type": "write",
       "enabled": "licenseType === 'ISC'",
       "config": {
         "file": "LICENSE",
@@ -107,7 +107,7 @@
       "id": "create-mpl-license",
       "name": "Create MPL 2.0 License",
       "description": "Create a LICENSE file with MPL 2.0 license",
-      "type": "template",
+      "type": "write",
       "enabled": "licenseType === 'MPL-2.0'",
       "config": {
         "file": "LICENSE",
@@ -118,7 +118,7 @@
       "id": "create-agpl-license",
       "name": "Create AGPL v3 License",
       "description": "Create a LICENSE file with AGPL v3 license",
-      "type": "template",
+      "type": "write",
       "enabled": "licenseType === 'AGPL-3.0'",
       "config": {
         "file": "LICENSE",
@@ -129,7 +129,7 @@
       "id": "create-unlicense",
       "name": "Create Unlicense",
       "description": "Create a LICENSE file with Unlicense",
-      "type": "template",
+      "type": "write",
       "enabled": "licenseType === 'Unlicense'",
       "config": {
         "file": "LICENSE",

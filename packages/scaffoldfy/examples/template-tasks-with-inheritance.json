@@ -9,7 +9,7 @@
       "description": "Create Dockerfile and docker-compose.yml",
       "required": false,
       "enabled": true,
-      "type": "template",
+      "type": "write",
       "prompts": [
         {
           "id": "nodeVersion",
@@ -42,7 +42,7 @@
       "description": "Create environment variables file",
       "required": true,
       "enabled": true,
-      "type": "template",
+      "type": "write",
       "prompts": [
         {
           "id": "dbUrl",
@@ -68,7 +68,7 @@
       "description": "Create project-specific README",
       "required": true,
       "enabled": true,
-      "type": "template",
+      "type": "write",
       "config": {
         "file": "README.md",
         "template": "# {{projectName}}\n\n> Built with template inheritance\n\nAuthor: {{author}}\n\n## Getting Started\n\n```bash\nnpm install\nnpm run dev\n```\n\n## Environment Variables\n\nSee `.env` file for configuration.\n\n## Docker\n\nBuild and run with Docker:\n\n```bash\ndocker-compose up\n```"

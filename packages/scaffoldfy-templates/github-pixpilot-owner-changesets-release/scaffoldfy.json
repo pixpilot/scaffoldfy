@@ -9,7 +9,7 @@
       "description": "Adds a GitHub Actions workflow for Changesets-based releases",
       "required": true,
       "enabled": true,
-      "type": "template",
+      "type": "write",
       "config": {
         "templateFile": "release.yml",
         "file": ".github/workflows/release.yml",

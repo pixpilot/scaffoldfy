@@ -3,26 +3,34 @@
  */
 
 // Import and re-export config types from plugins
+import type { AppendConfig } from './plugins/append/types.js';
+import type { CopyConfig } from './plugins/copy/types.js';
 import type { CreateConfig } from './plugins/create/types.js';
 import type { DeleteConfig } from './plugins/delete/types.js';
 import type { ExecConfig } from './plugins/exec/types.js';
 import type { GitInitConfig } from './plugins/git-init/types.js';
+import type { MkdirConfig } from './plugins/mkdir/types.js';
+import type { MoveConfig } from './plugins/move/types.js';
 import type { RegexReplaceConfig } from './plugins/regex-replace/types.js';
 import type { RenameConfig } from './plugins/rename/types.js';
 import type { ReplaceInFileConfig } from './plugins/replace-in-file/types.js';
-import type { TemplateConfig } from './plugins/template/types.js';
 import type { UpdateJsonConfig } from './plugins/update-json/types.js';
+import type { WriteConfig } from './plugins/write/types.js';
 
 export type {
+  AppendConfig,
+  CopyConfig,
   CreateConfig,
   DeleteConfig,
   ExecConfig,
   GitInitConfig,
+  MkdirConfig,
+  MoveConfig,
   RegexReplaceConfig,
   RenameConfig,
   ReplaceInFileConfig,
-  TemplateConfig,
   UpdateJsonConfig,
+  WriteConfig,
 };
 
 export interface InitConfig {
@@ -148,14 +156,18 @@ export type ConditionExpression = string;
 
 export type TaskType =
   | 'update-json'
-  | 'template'
+  | 'write'
   | 'create'
   | 'regex-replace'
   | 'replace-in-file'
   | 'delete'
   | 'rename'
   | 'git-init'
-  | 'exec';
+  | 'exec'
+  | 'move'
+  | 'copy'
+  | 'append'
+  | 'mkdir';
 
 export interface RollbackConfig {
   type: TaskType;
@@ -179,7 +191,7 @@ export interface TaskDefinition {
   // Task-specific configuration object, validated at runtime
   config:
     | UpdateJsonConfig
-    | TemplateConfig
+    | WriteConfig
     | CreateConfig
     | RegexReplaceConfig
     | ReplaceInFileConfig
@@ -187,6 +199,10 @@ export interface TaskDefinition {
     | RenameConfig
     | GitInitConfig
     | ExecConfig
+    | MoveConfig
+    | CopyConfig
+    | AppendConfig
+    | MkdirConfig
     | Record<string, unknown>;
   dependencies?: string[]; // IDs of tasks that must run before this one
   rollback?: RollbackConfig; // How to rollback if something fails

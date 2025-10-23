@@ -167,7 +167,7 @@ const customTasks: TaskDefinition[] = [
     description: 'Generate project README',
     required: true,
     enabled: true,
-    type: 'template',
+    type: 'write',
     config: {
       file: 'README.md',
       template: `# {{projectName}}
@@ -430,7 +430,7 @@ Here's a complete example that sets up a Node.js project:
       "description": "Generate project README file",
       "required": true,
       "enabled": true,
-      "type": "template",
+      "type": "write",
       "config": {
         "file": "README.md",
         "template": "# {{projectName}}\n\n{{description}}\n\n## License\n\n{{license}}"
@@ -512,3 +512,4 @@ Now that you're familiar with the basics, explore these topics:
 - 📚 Browse the [full documentation](README.md)
 - 🐛 [Report issues](https://github.com/pixpilot/scaffoldfy/issues)
 - 💬 Ask questions in [discussions](https://github.com/pixpilot/scaffoldfy/discussions)
+

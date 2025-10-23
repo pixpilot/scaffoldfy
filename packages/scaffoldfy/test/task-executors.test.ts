@@ -11,8 +11,8 @@ import type { GitInitConfig } from '../src/plugins/git-init/types.js';
 import type { RegexReplaceConfig } from '../src/plugins/regex-replace/types.js';
 import type { RenameConfig } from '../src/plugins/rename/types.js';
 import type { ReplaceInFileConfig } from '../src/plugins/replace-in-file/types.js';
-import type { TemplateConfig } from '../src/plugins/template/types.js';
 import type { UpdateJsonConfig } from '../src/plugins/update-json/types.js';
+import type { WriteConfig } from '../src/plugins/write/types.js';
 import type { InitConfig } from '../src/types.js';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -23,8 +23,8 @@ import { executeGitInit } from '../src/plugins/git-init/executor.js';
 import { executeRegexReplace } from '../src/plugins/regex-replace/executor.js';
 import { executeRename } from '../src/plugins/rename/executor.js';
 import { executeReplaceInFile } from '../src/plugins/replace-in-file/executor.js';
-import { executeTemplate } from '../src/plugins/template/executor.js';
 import { executeUpdateJson } from '../src/plugins/update-json/executor.js';
+import { executeWrite } from '../src/plugins/write/executor.js';
 
 const TEST_DIR = path.join(process.cwd(), '__test_executors__');
 
@@ -244,15 +244,15 @@ describe('task Executors', () => {
     });
   });
 
-  describe('executeTemplate', () => {
+  describe('executeWrite', () => {
     it('should create file with interpolated template', async () => {
       const testFile = 'README.md';
-      const config: TemplateConfig = {
+      const config: WriteConfig = {
         file: testFile,
         template: '# {{projectName}}\n\nAuthor: {{author}}',
       };
 
-      await executeTemplate(config, mockConfig);
+      await executeWrite(config, mockConfig);
 
       const content = fs.readFileSync(testFile, 'utf-8');
       expect(content).toContain('# test-repo');
@@ -263,12 +263,12 @@ describe('task Executors', () => {
       const testFile = 'README.md';
       fs.writeFileSync(testFile, 'Old content');
 
-      const config: TemplateConfig = {
+      const config: WriteConfig = {
         file: testFile,
         template: 'New content for {{projectName}}',
       };
 
-      await executeTemplate(config, mockConfig);
+      await executeWrite(config, mockConfig);
 
       const content = fs.readFileSync(testFile, 'utf-8');
       expect(content).toBe('New content for test-repo');
@@ -276,13 +276,13 @@ describe('task Executors', () => {
 
     it('should execute when condition is true', async () => {
       const testFile = 'test.md';
-      const config: TemplateConfig = {
+      const config: WriteConfig = {
         file: testFile,
         template: 'Created file',
         condition: 'true',
       };
 
-      await executeTemplate(config, mockConfig);
+      await executeWrite(config, mockConfig);
 
       expect(fs.existsSync(testFile)).toBe(true);
       expect(fs.readFileSync(testFile, 'utf-8')).toBe('Created file');
@@ -290,13 +290,13 @@ describe('task Executors', () => {
 
     it('should not execute when condition is false', async () => {
       const testFile = 'test.md';
-      const config: TemplateConfig = {
+      const config: WriteConfig = {
         file: testFile,
         template: 'Should not be created',
         condition: 'false',
       };
 
-      await executeTemplate(config, mockConfig);
+      await executeWrite(config, mockConfig);
 
       expect(fs.existsSync(testFile)).toBe(false);
     });
@@ -308,12 +308,12 @@ describe('task Executors', () => {
       // Create template file using simple {{var}} syntax
       fs.writeFileSync(templateFile, 'Repo: {{projectName}}\nAuthor: {{author}}');
 
-      const config: TemplateConfig = {
+      const config: WriteConfig = {
         file: outputFile,
         templateFile,
       };
 
-      await executeTemplate(config, mockConfig);
+      await executeWrite(config, mockConfig);
 
       const content = fs.readFileSync(outputFile, 'utf-8');
       expect(content).toContain('Repo: test-repo');
@@ -321,23 +321,23 @@ describe('task Executors', () => {
     });
 
     it('should throw error if neither template nor templateFile is provided', async () => {
-      const config: TemplateConfig = {
+      const config: WriteConfig = {
         file: 'test.md',
       };
 
-      await expect(executeTemplate(config, mockConfig)).rejects.toThrow(
+      await expect(executeWrite(config, mockConfig)).rejects.toThrow(
         'Template task requires either "template" (inline) or "templateFile"',
       );
     });
 
     it('should throw error if both template and templateFile are provided', async () => {
-      const config: TemplateConfig = {
+      const config: WriteConfig = {
         file: 'test.md',
         template: 'inline template',
         templateFile: 'template.hbs',
       };
 
-      await expect(executeTemplate(config, mockConfig)).rejects.toThrow(
+      await expect(executeWrite(config, mockConfig)).rejects.toThrow(
         'Template task cannot have both "template" and "templateFile"',
       );
     });

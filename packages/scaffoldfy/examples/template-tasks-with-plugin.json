@@ -23,7 +23,7 @@
       "description": "Add Docker instructions to README",
       "required": false,
       "enabled": true,
-      "type": "template",
+      "type": "write",
       "dependencies": ["setup-docker"],
       "config": {
         "file": "README.md",

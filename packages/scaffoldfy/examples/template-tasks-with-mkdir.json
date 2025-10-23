@@ -1,0 +1,62 @@
+{
+  "prompts": [
+    {
+      "id": "includeTests",
+      "type": "confirm",
+      "message": "Include test directory?",
+      "default": true
+    },
+    {
+      "id": "includeDocs",
+      "type": "confirm",
+      "message": "Include documentation directory?",
+      "default": true
+    }
+  ],
+  "tasks": [
+    {
+      "id": "create-src",
+      "name": "Create source directory",
+      "type": "mkdir",
+      "config": {
+        "path": "src"
+      }
+    },
+    {
+      "id": "create-components",
+      "name": "Create components directory",
+      "type": "mkdir",
+      "config": {
+        "path": "src/components/ui"
+      },
+      "dependencies": ["create-src"]
+    },
+    {
+      "id": "create-utils",
+      "name": "Create utils directory",
+      "type": "mkdir",
+      "config": {
+        "path": "src/utils"
+      },
+      "dependencies": ["create-src"]
+    },
+    {
+      "id": "create-tests",
+      "name": "Create tests directory",
+      "type": "mkdir",
+      "config": {
+        "path": "tests/unit",
+        "condition": "includeTests === true"
+      }
+    },
+    {
+      "id": "create-docs",
+      "name": "Create documentation directory",
+      "type": "mkdir",
+      "config": {
+        "path": "docs",
+        "condition": "includeDocs === true"
+      }
+    }
+  ]
+}

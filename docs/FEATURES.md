@@ -78,7 +78,7 @@ Combine conditional execution with interactive prompts for dynamic behavior:
       "global": true
     }
   ],
-  "type": "template",
+  "type": "write",
   "config": {
     "file": "tsconfig.json",
     "templateFile": ".templates/tsconfig.hbs",
@@ -127,7 +127,7 @@ Combine multiple conditions with logical operators:
 
 ```json
 {
-  "type": "template",
+  "type": "write",
   "config": {
     "file": ".github/workflows/ci.yml",
     "templateFile": ".templates/ci-advanced.hbs",
@@ -190,7 +190,7 @@ When using `--dry-run`, you'll see which tasks would be skipped:
       "global": true
     }
   ],
-  "type": "template",
+  "type": "write",
   "config": {
     "file": ".env",
     "templateFile": ".templates/env-production.hbs",
@@ -261,7 +261,7 @@ Once defined as global, use the values in any subsequent task:
 ```json
 {
   "id": "create-readme",
-  "type": "template",
+  "type": "write",
   "config": {
     "file": "README.md",
     "template": "# {{projectName}}\n\nVersion: {{version}}"
@@ -272,7 +272,7 @@ Once defined as global, use the values in any subsequent task:
 ```json
 {
   "id": "create-changelog",
-  "type": "template",
+  "type": "write",
   "config": {
     "file": "CHANGELOG.md",
     "template": "# Changelog for {{projectName}}\n\n## [{{version}}]"
@@ -408,7 +408,7 @@ Starting initialization tasks...
     {
       "id": "setup-typescript",
       "name": "Setup TypeScript",
-      "type": "template",
+      "type": "write",
       "config": {
         "file": "tsconfig.json",
         "templateFile": ".templates/tsconfig.hbs",
@@ -418,7 +418,7 @@ Starting initialization tasks...
     {
       "id": "create-readme",
       "name": "Create README",
-      "type": "template",
+      "type": "write",
       "config": {
         "file": "README.md",
         "template": "# {{projectName}}\n\nTypeScript: {{useTypeScript}}"
@@ -450,7 +450,7 @@ Scaffoldfy automatically uses Handlebars for template files ending in `.hbs`. Th
 
 ```json
 {
-  "type": "template",
+  "type": "write",
   "config": {
     "file": "README.md",
     "templateFile": ".templates/readme.hbs"
@@ -490,7 +490,7 @@ Use it in your task:
 
 ```json
 {
-  "type": "template",
+  "type": "write",
   "config": {
     "file": "README.md",
     "templateFile": ".templates/readme.hbs"
@@ -689,7 +689,7 @@ project-root/
           "global": true
         }
       ],
-      "type": "template",
+      "type": "write",
       "config": {
         "file": "package.json",
         "templateFile": ".templates/package-json.hbs"
@@ -698,7 +698,7 @@ project-root/
     {
       "id": "create-readme",
       "name": "Create README",
-      "type": "template",
+      "type": "write",
       "config": {
         "file": "README.md",
         "templateFile": ".templates/readme.hbs"
@@ -707,7 +707,7 @@ project-root/
     {
       "id": "setup-typescript",
       "name": "Setup TypeScript",
-      "type": "template",
+      "type": "write",
       "config": {
         "file": "tsconfig.json",
         "templateFile": ".templates/tsconfig.hbs",
@@ -796,7 +796,7 @@ The real power comes from combining these features:
           "global": true
         }
       ],
-      "type": "template",
+      "type": "write",
       "config": {
         "file": "package.json",
         "templateFile": ".templates/package-{{framework}}.hbs"
@@ -804,7 +804,7 @@ The real power comes from combining these features:
     },
     {
       "id": "setup-typescript",
-      "type": "template",
+      "type": "write",
       "config": {
         "file": "tsconfig.json",
         "templateFile": ".templates/tsconfig-{{framework}}.hbs",
@@ -830,3 +830,4 @@ This example:
 - [Template Inheritance](TEMPLATE_INHERITANCE.md) - Compose templates
 - [Plugin System](PLUGINS.md) - Create custom task types
 - [Dry Run Mode](DRY_RUN.md) - Preview changes safely
+

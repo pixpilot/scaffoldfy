@@ -5,15 +5,19 @@
 import type { InitConfig, TaskDefinition } from './types.js';
 import process from 'node:process';
 import { executePluginTask, isPluginTaskType, registerPlugin } from './plugin.js';
+import { appendPlugin } from './plugins/append/index.js';
+import { copyPlugin } from './plugins/copy/index.js';
 import { createPlugin } from './plugins/create/index.js';
 import { deletePlugin } from './plugins/delete/index.js';
 import { execPlugin } from './plugins/exec/index.js';
 import { gitInitPlugin } from './plugins/git-init/index.js';
+import { mkdirPlugin } from './plugins/mkdir/index.js';
+import { movePlugin } from './plugins/move/index.js';
 import { regexReplacePlugin } from './plugins/regex-replace/index.js';
 import { renamePlugin } from './plugins/rename/index.js';
 import { replaceInFilePlugin } from './plugins/replace-in-file/index.js';
-import { templatePlugin } from './plugins/template/index.js';
 import { updateJsonPlugin } from './plugins/update-json/index.js';
+import { writePlugin } from './plugins/write/index.js';
 import { log } from './utils.js';
 
 // Register all built-in plugins
@@ -24,7 +28,7 @@ export function registerBuiltInPlugins(): void {
   }
 
   registerPlugin(updateJsonPlugin);
-  registerPlugin(templatePlugin);
+  registerPlugin(writePlugin);
   registerPlugin(createPlugin);
   registerPlugin(regexReplacePlugin);
   registerPlugin(replaceInFilePlugin);
@@ -32,6 +36,10 @@ export function registerBuiltInPlugins(): void {
   registerPlugin(renamePlugin);
   registerPlugin(gitInitPlugin);
   registerPlugin(execPlugin);
+  registerPlugin(movePlugin);
+  registerPlugin(copyPlugin);
+  registerPlugin(appendPlugin);
+  registerPlugin(mkdirPlugin);
 }
 
 /**

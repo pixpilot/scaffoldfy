@@ -9,7 +9,7 @@
       "description": "Update the turbo generator configuration with user settings",
       "required": true,
       "enabled": true,
-      "type": "template",
+      "type": "write",
       "prompts": [
         {
           "id": "defaultBundler",

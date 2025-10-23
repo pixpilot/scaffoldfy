@@ -82,7 +82,7 @@
       "description": "Generate README.md file with project information",
       "required": true,
       "enabled": true,
-      "type": "template",
+      "type": "write",
       "dependencies": ["setup-package-json"],
       "variables": [
         {
@@ -101,7 +101,7 @@
       "description": "Generate LICENSE file using variables",
       "required": false,
       "enabled": true,
-      "type": "template",
+      "type": "write",
       "config": {
         "file": "LICENSE",
         "template": "{{defaultLicense}} License\n\nCopyright (c) {{currentYear}} {{gitUserName}}\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n"
@@ -113,7 +113,7 @@
       "description": "Generate environment variables example file",
       "required": false,
       "enabled": true,
-      "type": "template",
+      "type": "write",
       "variables": [
         {
           "id": "defaultPort",

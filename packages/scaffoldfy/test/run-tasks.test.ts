@@ -65,7 +65,7 @@ const mockTasks: TaskDefinition[] = [
     description: 'Second task',
     required: false,
     enabled: true,
-    type: 'template',
+    type: 'write',
     config: {},
     dependencies: ['task1'],
   },
@@ -209,7 +209,7 @@ describe('runTasks', () => {
         enabled: {
           condition: 'addSecurityFile === true',
         },
-        type: 'template' as const,
+        type: 'write' as const,
         config: {},
       },
     ];

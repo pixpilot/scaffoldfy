@@ -66,7 +66,7 @@ Task-scoped variables are defined within a specific task's `variables` array. Th
 {
   "id": "create-readme",
   "name": "Create README",
-  "type": "template",
+  "type": "write",
   "variables": [
     {
       "id": "readmeTemplate",
@@ -179,7 +179,7 @@ Variables are available in all template contexts using `{{variableName}}` syntax
 
 ```json
 {
-  "type": "template",
+  "type": "write",
   "config": {
     "file": "LICENSE",
     "template": "MIT License\n\nCopyright (c) {{currentYear}} {{gitUserName}}"
@@ -380,7 +380,7 @@ Example:
     {
       "id": "task1",
       "name": "Task 1",
-      "type": "template",
+      "type": "write",
       "variables": [
         {
           "id": "template",
@@ -513,3 +513,4 @@ See [`examples/template-tasks-with-variables.json`](../packages/scaffoldfy/examp
 - [Template Syntax](./HANDLEBARS_TEMPLATES.md) - Using variables in templates
 - [Task Types](./TASK_TYPES.md) - Different task configurations
 - [Getting Started](./GETTING_STARTED.md) - Basic usage guide
+

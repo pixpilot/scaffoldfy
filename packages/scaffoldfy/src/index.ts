@@ -130,6 +130,7 @@ export async function runWithTasks(
 
 export {
   displayTasksDiff,
+  getCreateDiff,
   getDeleteDiff,
   getExecDiff,
   getGitInitDiff,
@@ -137,8 +138,8 @@ export {
   getRenameDiff,
   getReplaceInFileDiff,
   getTaskDiff,
-  getTemplateDiff,
   getUpdateJsonDiff,
+  getWriteDiff,
 } from './dry-run.js';
 export {
   callHook,
@@ -170,6 +171,14 @@ export {
   loadTemplate,
   mergeTemplates,
 } from './template-inheritance.js';
+export {
+  getTemplateSourceDescription,
+  hasInlineTemplate,
+  hasTemplateFile,
+  processTemplate,
+  shouldUseHandlebars,
+  validateTemplateConfig,
+} from './template-utils.js';
 export type * from './types.js';
 export {
   evaluateCondition,

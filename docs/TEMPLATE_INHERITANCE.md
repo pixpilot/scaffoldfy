@@ -55,7 +55,7 @@ Extend it in your template:
       "description": "Remove template instructions",
       "required": true,
       "enabled": true,
-      "type": "template",
+      "type": "write",
       "config": {
         "file": "README.md",
         "template": "# {{projectName}}\n\nYour project description here."
@@ -161,7 +161,7 @@ When using `override: "merge"` for tasks:
   "description": "Base setup",
   "required": true,
   "enabled": true,
-  "type": "template",
+  "type": "write",
   "config": {
     "file": "README.md",
     "templateFile": "./base-readme.hbs"
@@ -179,7 +179,7 @@ When using `override: "merge"` for tasks:
   "description": "Enhanced setup with more features",
   "required": true,
   "enabled": true,
-  "type": "template",
+  "type": "write",
   "config": {
     "file": "README.md",
     "template": "# {{projectName}}\n\nCustom readme"
@@ -392,7 +392,7 @@ When a remote template extends another template using a relative path, the path 
       "description": "Common task",
       "required": true,
       "enabled": true,
-      "type": "template",
+      "type": "write",
       "config": {}
     }
   ]
@@ -432,7 +432,7 @@ You can mix local file paths and remote URLs in your template inheritance:
       "description": "Project-specific task",
       "required": true,
       "enabled": true,
-      "type": "template",
+      "type": "write",
       "config": {}
     }
   ]
@@ -494,7 +494,7 @@ When you extend a remote template that contains tasks with `templateFile` refere
       "description": "Generate tsconfig.json",
       "required": true,
       "enabled": true,
-      "type": "template",
+      "type": "write",
       "config": {
         "file": "tsconfig.json",
         "templateFile": "./tsconfig.hbs"
@@ -506,7 +506,7 @@ When you extend a remote template that contains tasks with `templateFile` refere
       "description": "Generate README.md",
       "required": true,
       "enabled": true,
-      "type": "template",
+      "type": "write",
       "config": {
         "file": "README.md",
         "templateFile": "../shared/readme.hbs"
@@ -573,7 +573,7 @@ You can combine remote templates with local template files, though remote templa
       "description": "Use local template file",
       "required": true,
       "enabled": true,
-      "type": "template",
+      "type": "write",
       "config": {
         "file": "output.txt",
         "templateFile": "./local-template.hbs"
@@ -645,7 +645,7 @@ When overriding a task, dependencies and prompts are intelligently merged:
       "description": "Task with dependencies",
       "required": true,
       "enabled": true,
-      "type": "template",
+      "type": "write",
       "config": {},
       "dependencies": ["task-a"],
       "prompts": [
@@ -669,7 +669,7 @@ When overriding a task, dependencies and prompts are intelligently merged:
       "description": "Enhanced version",
       "required": true,
       "enabled": true,
-      "type": "template",
+      "type": "write",
       "config": { "enhanced": true },
       "dependencies": ["task-b", "task-c"],
       "prompts": [
@@ -759,7 +759,7 @@ Starting from version 2.1, Scaffoldfy validates that all IDs are unique across t
       "description": "Initialize the project",
       "required": true,
       "enabled": true,
-      "type": "template",
+      "type": "write",
       "config": {}
     }
   ],
@@ -792,7 +792,7 @@ All IDs are unique: `setup-project`, `currentYear`, and `projectName`.
       "description": "Setup task",
       "required": true,
       "enabled": true,
-      "type": "template",
+      "type": "write",
       "config": {}
     }
   ],
@@ -833,7 +833,7 @@ The validation also applies when templates are merged through inheritance:
       "description": "Task",
       "required": true,
       "enabled": true,
-      "type": "template",
+      "type": "write",
       "config": {}
     }
   ]
@@ -856,7 +856,7 @@ Note that overriding items of the **same type** is allowed and intentional:
       "description": "Base setup task",
       "required": true,
       "enabled": true,
-      "type": "template",
+      "type": "write",
       "config": {}
     }
   ]
@@ -872,7 +872,7 @@ Note that overriding items of the **same type** is allowed and intentional:
       "description": "Customized setup",
       "required": true,
       "enabled": true,
-      "type": "template",
+      "type": "write",
       "config": { "custom": true }
     }
   ]
@@ -1040,7 +1040,7 @@ Create and share public templates:
       "description": "Project-specific configuration",
       "required": true,
       "enabled": true,
-      "type": "template",
+      "type": "write",
       "config": {
         "file": "package.json",
         "template": "templates/package.hbs"
@@ -1133,3 +1133,4 @@ Combine organization templates with project-specific local templates:
 6. **Monitor Changes**: If using branch references (like `main`), monitor for breaking changes
 
 7. **Access Control**: For private templates, use authenticated URLs or host on secure servers
+

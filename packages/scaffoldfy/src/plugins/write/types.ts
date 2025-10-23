@@ -1,10 +1,10 @@
 /**
- * template plugin types
+ * write plugin types
  */
 
 import type { ConditionExpression } from '../../types.js';
 
-export interface TemplateConfig {
+export interface WriteConfig {
   file: string;
   template?: string; // Inline template string (supports simple {{variable}} syntax)
   templateFile?: string; // Path to external template file (relative to project root). .hbs files use Handlebars automatically

@@ -4,6 +4,7 @@
 
 import type { TaskDefinition } from './types.js';
 import { isPluginTaskType } from './plugin.js';
+import { validateTemplateConfig } from './template-utils.js';
 import { log } from './utils.js';
 
 /**
@@ -19,10 +20,10 @@ export function validateAllTasks(tasks: TaskDefinition[]): string[] {
     // Validate plugin exists for task type
     if (!isPluginTaskType(task.type)) {
       errors.push(`Task "${task.id}" (${task.name}): Unknown task type "${task.type}"`);
-    } else if (task.type === 'template') {
-      // Validate template tasks specifically
-      const templateErrors = validateTemplateTask(task);
-      errors.push(...templateErrors);
+    } else if (task.type === 'write') {
+      // Validate write tasks specifically
+      const writeErrors = validateWriteTask(task);
+      errors.push(...writeErrors);
     }
 
     // Add more task-type-specific validations here as needed
@@ -32,33 +33,30 @@ export function validateAllTasks(tasks: TaskDefinition[]): string[] {
 }
 
 /**
- * Validate template task configuration
+ * Validate write task configuration
  */
-function validateTemplateTask(task: TaskDefinition): string[] {
+function validateWriteTask(task: TaskDefinition): string[] {
   const errors: string[] = [];
   const config = task.config as Record<string, unknown>;
 
-  const hasInlineTemplate = config['template'] != null && config['template'] !== '';
-  const hasTemplateFile = config['templateFile'] != null && config['templateFile'] !== '';
+  const template =
+    typeof config['template'] === 'string' ? config['template'] : undefined;
+  const templateFile =
+    typeof config['templateFile'] === 'string' ? config['templateFile'] : undefined;
 
-  // Must have either template or templateFile
-  if (!hasInlineTemplate && !hasTemplateFile) {
-    errors.push(
-      `Task "${task.id}" (${task.name}): Template task requires either "template" (inline) or "templateFile" (file path) to be specified`,
-    );
-  }
+  const validation = validateTemplateConfig({
+    ...(template !== undefined && { template }),
+    ...(templateFile !== undefined && { templateFile }),
+  });
 
-  // Cannot have both template and templateFile
-  if (hasInlineTemplate && hasTemplateFile) {
-    errors.push(
-      `Task "${task.id}" (${task.name}): Template task cannot have both "template" and "templateFile" specified. Use one or the other.`,
-    );
+  if (!validation.isValid && validation.error != null && validation.error !== '') {
+    errors.push(`Task "${task.id}" (${task.name}): ${validation.error}`);
   }
 
   // Must have file property
   if (config['file'] == null || config['file'] === '') {
     errors.push(
-      `Task "${task.id}" (${task.name}): Template task requires "file" property to specify the output file path`,
+      `Task "${task.id}" (${task.name}): Write task requires "file" property to specify the output file path`,
     );
   }
 

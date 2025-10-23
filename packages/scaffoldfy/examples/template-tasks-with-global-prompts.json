@@ -78,7 +78,7 @@
       "description": "Create README with project information (uses global prompts)",
       "required": true,
       "enabled": true,
-      "type": "template",
+      "type": "write",
       "dependencies": ["configure-project"],
       "config": {
         "file": "README.md",
@@ -91,7 +91,7 @@
       "description": "Generate LICENSE file (uses global prompts)",
       "required": false,
       "enabled": true,
-      "type": "template",
+      "type": "write",
       "config": {
         "file": "LICENSE",
         "template": "{{license}} License\n\nCopyright (c) 2025 {{author}}\n\nProject: {{projectName}}\n"
@@ -140,7 +140,7 @@
       "description": "Create initial CHANGELOG (uses global prompts)",
       "required": false,
       "enabled": true,
-      "type": "template",
+      "type": "write",
       "config": {
         "file": "CHANGELOG.md",
         "template": "# Changelog\n\nAll notable changes to {{projectName}} will be documented in this file.\n\n## [{{projectVersion}}] - 2025-10-19\n\n### Added\n\n- Initial release\n"

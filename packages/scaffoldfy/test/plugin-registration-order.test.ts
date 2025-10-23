@@ -28,7 +28,7 @@ describe('plugin registration order', () => {
         description: 'A test task',
         required: true,
         enabled: true,
-        type: 'template',
+        type: 'write',
         config: {
           file: 'test.md',
           template: 'Test content',
@@ -39,7 +39,7 @@ describe('plugin registration order', () => {
     // Without registering plugins, validation should fail
     const errors = validateAllTasks(tasks);
     expect(errors).toHaveLength(1);
-    expect(errors[0]).toContain('Unknown task type "template"');
+    expect(errors[0]).toContain('Unknown task type "write"');
   });
 
   it('should pass validation when plugins are registered first', () => {
@@ -53,7 +53,7 @@ describe('plugin registration order', () => {
         description: 'A test task',
         required: true,
         enabled: true,
-        type: 'template',
+        type: 'write',
         config: {
           file: 'test.md',
           template: 'Test content',
@@ -71,7 +71,7 @@ describe('plugin registration order', () => {
     registerBuiltInPlugins();
 
     const builtInTaskTypes = [
-      'template',
+      'write',
       'update-json',
       'create',
       'delete',
@@ -110,7 +110,7 @@ describe('plugin registration order', () => {
         description: 'Create README file',
         required: true,
         enabled: true,
-        type: 'template',
+        type: 'write',
         config: {
           file: 'README.md',
           template: 'Test',

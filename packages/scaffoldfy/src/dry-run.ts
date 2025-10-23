@@ -6,22 +6,31 @@
  */
 
 import type {
+  AppendConfig,
+  CopyConfig,
   CreateConfig,
   DeleteConfig,
   ExecConfig,
   GitInitConfig,
   InitConfig,
+  MkdirConfig,
+  MoveConfig,
   RegexReplaceConfig,
   RenameConfig,
   ReplaceInFileConfig,
   TaskDefinition,
-  TemplateConfig,
   UpdateJsonConfig,
+  WriteConfig,
 } from './types.js';
 import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
 import { promisify } from 'node:util';
+import {
+  getTemplateSourceDescription,
+  hasInlineTemplate,
+  processTemplate,
+} from './template-utils.js';
 import { evaluateCondition, interpolateTemplate, setNestedProperty } from './utils.js';
 
 const readFile = promisify(fs.readFile);
@@ -162,10 +171,10 @@ export async function getUpdateJsonDiff(
 }
 
 /**
- * Get diff for template task
+ * Get diff for write task
  */
-export async function getTemplateDiff(
-  config: TemplateConfig,
+export async function getWriteDiff(
+  config: WriteConfig,
   initConfig: InitConfig,
 ): Promise<string> {
   // Check condition
@@ -216,6 +225,7 @@ export async function getTemplateDiff(
 export async function getCreateDiff(
   config: CreateConfig,
   initConfig: InitConfig,
+  task?: TaskDefinition,
 ): Promise<string> {
   // Check condition
   if (config.condition != null && config.condition !== '') {
@@ -232,32 +242,26 @@ export async function getCreateDiff(
     return `${colors.cyan}→ File already exists, would be skipped: ${config.file}${colors.reset}`;
   }
 
-  // Validate that either template or templateFile is provided
-  const hasInlineTemplate = config.template != null && config.template !== '';
-  const hasTemplateFile = config.templateFile != null && config.templateFile !== '';
-
-  if (!hasInlineTemplate && !hasTemplateFile) {
-    return `${colors.red}✗ No template content provided for file: ${config.file}${colors.reset}`;
-  }
-
   try {
-    let templateContent: string;
+    // Use the template-utils to check if we have inline or file
+    const inline = hasInlineTemplate(config);
 
-    if (hasInlineTemplate) {
-      templateContent = interpolateTemplate(config.template!, initConfig);
-    } else {
-      // For dry run, we just show that an external template would be used
-      return `${colors.blue}File: ${config.file}${colors.reset}\n${colors.green}+ New file would be created from template: ${config.templateFile}${colors.reset}`;
+    if (inline) {
+      // Process inline template to show preview
+      const templateContent = await processTemplate(config, initConfig, task);
+      const previewLines = templateContent.split('\n').slice(0, PREVIEW_LINES);
+      const preview = previewLines.join('\n');
+      const hasMore = templateContent.split('\n').length > PREVIEW_LINES;
+      return `${colors.blue}File: ${config.file}${colors.reset}\n${
+        colors.green
+      }+ New file would be created${colors.reset}\n${
+        colors.gray
+      }Content preview:${colors.reset}\n${preview}${hasMore ? '\n...' : ''}`;
     }
 
-    const previewLines = templateContent.split('\n').slice(0, PREVIEW_LINES);
-    const preview = previewLines.join('\n');
-    const hasMore = templateContent.split('\n').length > PREVIEW_LINES;
-    return `${colors.blue}File: ${config.file}${colors.reset}\n${
-      colors.green
-    }+ New file would be created${colors.reset}\n${
-      colors.gray
-    }Content preview:${colors.reset}\n${preview}${hasMore ? '\n...' : ''}`;
+    // For external template files, show source description
+    const sourceDesc = getTemplateSourceDescription(config);
+    return `${colors.blue}File: ${config.file}${colors.reset}\n${colors.green}+ New file would be created from ${sourceDesc}${colors.reset}`;
   } catch (error) {
     return `${colors.red}✗ Error: ${
       error instanceof Error ? error.message : String(error)
@@ -449,6 +453,134 @@ export function getExecDiff(config: ExecConfig, initConfig: InitConfig): string 
 }
 
 /**
+ * Get diff for move task
+ */
+export function getMoveDiff(config: MoveConfig, initConfig: InitConfig): string {
+  // Check condition
+  if (config.condition != null && config.condition !== '') {
+    const shouldExecute = evaluateCondition(config.condition, initConfig);
+    if (!shouldExecute) {
+      return `${colors.yellow}⊘ Condition not met - task would be skipped${colors.reset}`;
+    }
+  }
+
+  const from = interpolateTemplate(config.from, initConfig);
+  const to = interpolateTemplate(config.to, initConfig);
+  const fromPath = path.join(process.cwd(), from);
+  const toPath = path.join(process.cwd(), to);
+
+  if (!fs.existsSync(fromPath)) {
+    return `${colors.red}✗ Source not found: ${from}${colors.reset}`;
+  }
+
+  if (fs.existsSync(toPath)) {
+    return `${colors.yellow}⚠ Destination already exists: ${to}${colors.reset}\n${colors.cyan}Would move: ${from} → ${to}${colors.reset}`;
+  }
+
+  return `${colors.cyan}Would move: ${from} → ${to}${colors.reset}`;
+}
+
+/**
+ * Get diff for copy task
+ */
+export function getCopyDiff(config: CopyConfig, initConfig: InitConfig): string {
+  // Check condition
+  if (config.condition != null && config.condition !== '') {
+    const shouldExecute = evaluateCondition(config.condition, initConfig);
+    if (!shouldExecute) {
+      return `${colors.yellow}⊘ Condition not met - task would be skipped${colors.reset}`;
+    }
+  }
+
+  const from = interpolateTemplate(config.from, initConfig);
+  const to = interpolateTemplate(config.to, initConfig);
+  const fromPath = path.join(process.cwd(), from);
+  const toPath = path.join(process.cwd(), to);
+
+  if (!fs.existsSync(fromPath)) {
+    return `${colors.red}✗ Source not found: ${from}${colors.reset}`;
+  }
+
+  const stats = fs.statSync(fromPath);
+  const type = stats.isDirectory() ? 'directory' : 'file';
+
+  if (fs.existsSync(toPath)) {
+    return `${colors.yellow}⚠ Destination already exists: ${to}${colors.reset}\n${colors.cyan}Would copy ${type}: ${from} → ${to}${colors.reset}`;
+  }
+
+  return `${colors.cyan}Would copy ${type}: ${from} → ${to}${colors.reset}`;
+}
+
+/**
+ * Get diff for append task
+ */
+export async function getAppendDiff(
+  config: AppendConfig,
+  initConfig: InitConfig,
+  task?: TaskDefinition,
+): Promise<string> {
+  // Check condition
+  if (config.condition != null && config.condition !== '') {
+    const shouldExecute = evaluateCondition(config.condition, initConfig);
+    if (!shouldExecute) {
+      return `${colors.yellow}⊘ Condition not met - task would be skipped${colors.reset}`;
+    }
+  }
+
+  const filePath = path.join(process.cwd(), config.file);
+
+  // Normalize config for template processing
+  const normalizedConfig: { template?: string; templateFile?: string } = {};
+  if (config.content != null) {
+    normalizedConfig.template = config.content;
+  } else if (config.template != null) {
+    normalizedConfig.template = config.template;
+  }
+  if (config.templateFile != null) {
+    normalizedConfig.templateFile = config.templateFile;
+  }
+
+  try {
+    const content = await processTemplate(normalizedConfig, initConfig, task);
+    const previewLines = content.split('\n').slice(0, PREVIEW_LINES);
+    const preview = previewLines.join('\n');
+    const hasMore = content.split('\n').length > PREVIEW_LINES;
+
+    if (fs.existsSync(filePath)) {
+      return `${colors.blue}File: ${config.file}${colors.reset}\n${colors.green}+ Would append content${colors.reset}\n${colors.gray}Content preview:${colors.reset}\n${preview}${hasMore ? '\n...' : ''}`;
+    }
+
+    return `${colors.blue}File: ${config.file}${colors.reset}\n${colors.green}+ New file would be created with content${colors.reset}\n${colors.gray}Content preview:${colors.reset}\n${preview}${hasMore ? '\n...' : ''}`;
+  } catch (error) {
+    return `${colors.red}✗ Error: ${
+      error instanceof Error ? error.message : String(error)
+    }${colors.reset}`;
+  }
+}
+
+/**
+ * Get diff for mkdir task
+ */
+export function getMkdirDiff(config: MkdirConfig, initConfig: InitConfig): string {
+  // Check condition
+  if (config.condition != null && config.condition !== '') {
+    const shouldExecute = evaluateCondition(config.condition, initConfig);
+    if (!shouldExecute) {
+      return `${colors.yellow}⊘ Condition not met - task would be skipped${colors.reset}`;
+    }
+  }
+
+  const dirPath = interpolateTemplate(config.path, initConfig);
+  const fullPath = path.join(process.cwd(), dirPath);
+
+  if (fs.existsSync(fullPath)) {
+    return `${colors.cyan}→ Directory already exists: ${dirPath}${colors.reset}`;
+  }
+
+  return `${colors.green}+ Would create directory: ${dirPath}${colors.reset}`;
+}
+
+/**
  * Get diff for any task type
  */
 export async function getTaskDiff(
@@ -459,10 +591,10 @@ export async function getTaskDiff(
     switch (task.type) {
       case 'update-json':
         return await getUpdateJsonDiff(task.config as UpdateJsonConfig, initConfig);
-      case 'template':
-        return await getTemplateDiff(task.config as TemplateConfig, initConfig);
+      case 'write':
+        return await getWriteDiff(task.config as WriteConfig, initConfig);
       case 'create':
-        return await getCreateDiff(task.config as CreateConfig, initConfig);
+        return await getCreateDiff(task.config as CreateConfig, initConfig, task);
       case 'regex-replace':
         return await getRegexReplaceDiff(task.config as RegexReplaceConfig, initConfig);
       case 'replace-in-file':
@@ -471,6 +603,14 @@ export async function getTaskDiff(
         return getDeleteDiff(task.config as DeleteConfig, initConfig);
       case 'rename':
         return getRenameDiff(task.config as RenameConfig, initConfig);
+      case 'move':
+        return getMoveDiff(task.config as MoveConfig, initConfig);
+      case 'copy':
+        return getCopyDiff(task.config as CopyConfig, initConfig);
+      case 'append':
+        return await getAppendDiff(task.config as AppendConfig, initConfig, task);
+      case 'mkdir':
+        return getMkdirDiff(task.config as MkdirConfig, initConfig);
       case 'git-init':
         return getGitInitDiff(task.config as GitInitConfig);
       case 'exec':

@@ -178,7 +178,7 @@ describe('schema-validator', () => {
           {
             id: 'task-1',
             name: 'Create file',
-            type: 'template',
+            type: 'write',
             config: {
               file: 'test.txt',
               template: 'Hello {{name}}',
@@ -275,7 +275,7 @@ describe('schema-validator', () => {
           {
             id: 'task-1',
             name: 'Create file',
-            type: 'template',
+            type: 'write',
             config: {
               file: 'test.txt',
               templateFile: 'templates/test.hbs',

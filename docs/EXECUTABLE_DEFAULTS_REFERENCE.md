@@ -276,3 +276,4 @@ For maximum compatibility across Windows, macOS, and Linux, use Node.js commands
 4. **Test on multiple platforms**: Windows, macOS, and Linux may behave differently
 5. **Use JSON output when possible**: Commands that output JSON are automatically parsed
 6. **Remember the 10-second timeout**: Commands must complete within 10 seconds
+

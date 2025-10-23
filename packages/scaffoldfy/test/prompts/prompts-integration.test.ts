@@ -146,7 +146,7 @@ describe('prompts integration with tasks', () => {
       description: 'Configure API credentials',
       required: true,
       enabled: true,
-      type: 'template',
+      type: 'write',
       prompts: [
         {
           id: 'apiKey',

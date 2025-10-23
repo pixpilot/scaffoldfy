@@ -9,7 +9,7 @@
       "id": "pixpilot-copilot-instructions",
       "name": "Create copilot-instructions.md",
       "description": "Create copilot-instructions.md file with Pixpilot Copilot instructions",
-      "type": "template",
+      "type": "write",
       "config": {
         "file": "copilot-instructions.md",
         "templateFile": "copilot-instructions.md"

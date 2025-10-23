@@ -8,7 +8,7 @@
       "description": "Create a fresh README using inline template",
       "required": true,
       "enabled": true,
-      "type": "template",
+      "type": "write",
       "config": {
         "file": "README.md",
         "template": "# {{projectName}}\n\n> Created by {{author}}\n\n## Repository\n\n- Owner: {{owner}}\n- URL: {{repoUrl}}\n"
@@ -20,7 +20,7 @@
       "description": "Create a fresh README using external template file",
       "required": true,
       "enabled": false,
-      "type": "template",
+      "type": "write",
       "config": {
         "file": "README.md",
         "templateFile": "examples/templates/readme.hbs"
@@ -32,7 +32,7 @@
       "description": "Simple template using {{var}} syntax without Handlebars",
       "required": true,
       "enabled": false,
-      "type": "template",
+      "type": "write",
       "config": {
         "file": "SIMPLE.md",
         "template": "# {{projectName}}\nAuthor: {{author}}\n"
@@ -44,7 +44,7 @@
       "description": "Simple template from file using {{var}} syntax without Handlebars",
       "required": true,
       "enabled": false,
-      "type": "template",
+      "type": "write",
       "config": {
         "file": "OUTPUT.md",
         "templateFile": "examples/templates/readme.hbs"

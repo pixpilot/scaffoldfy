@@ -18,6 +18,6 @@ export const createPlugin: TaskPlugin = {
     if (options.dryRun) {
       return;
     }
-    await executeCreate(task.config as CreateConfig, config);
+    await executeCreate(task.config as CreateConfig, config, task);
   },
 };

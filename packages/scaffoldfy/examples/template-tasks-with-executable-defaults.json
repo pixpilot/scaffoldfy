@@ -86,7 +86,7 @@
       "description": "Create README with project information",
       "required": true,
       "enabled": true,
-      "type": "template",
+      "type": "write",
       "prompts": [
         {
           "id": "description",

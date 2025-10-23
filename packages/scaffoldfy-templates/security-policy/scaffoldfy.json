@@ -36,7 +36,7 @@
       "id": "create-security-policy",
       "name": "Create SECURITY.md",
       "description": "Create security policy file with contact email",
-      "type": "template",
+      "type": "write",
       "enabled": {
         "type": "condition",
         "condition": "addSecurityFile === true"
