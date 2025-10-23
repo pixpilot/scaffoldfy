@@ -2,8 +2,8 @@
   "$schema": "https://unpkg.com/@pixpilot/scaffoldfy/schema",
   "description": "Security policy template with configurable contact email",
   "name": "security-policy",
-  "dependencies": ["project-info"],
-
+  "dependencies": ["project-info", "pixpilot-info"],
+  "enabled": "pixpilot_project",
   "tasks": [
     {
       "id": "pixpilot-copilot-instructions",
