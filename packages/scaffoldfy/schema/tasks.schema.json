@@ -3,9 +3,13 @@
   "title": "Template Tasks Configuration",
   "description": "Configuration for template task automation and cleanup",
   "type": "object",
-  "required": ["name"],
+  "required": ["$schema", "name"],
   "additionalProperties": false,
   "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "JSON Schema dialect identifier"
+    },
     "name": {
       "type": "string",
       "description": "Unique identifier name for this template. Must contain only lowercase letters, digits, and hyphens. Cannot start or end with a hyphen.",
