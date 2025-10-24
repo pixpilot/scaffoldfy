@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy
 
+## 0.23.0
+
+### Minor Changes
+
+- Implement lazy evaluation for template enabled conditions
+
 ## 0.22.0
 
 ### Minor Changes
