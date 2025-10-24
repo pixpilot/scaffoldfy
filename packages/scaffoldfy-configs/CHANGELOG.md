@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy-configs
 
+## 0.4.0
+
+### Minor Changes
+
+- add task to clean up temporary setup files
+
 ## 0.3.1
 
 ### Patch Changes
