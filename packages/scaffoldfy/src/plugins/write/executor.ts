@@ -57,5 +57,11 @@ export async function executeWrite(
   // Process the template using the utility
   const content = await processTemplate(config, initConfig, task);
 
+  // Ensure directory exists
+  const dir = path.dirname(filePath);
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
+  }
+
   await writeFile(filePath, content);
 }
