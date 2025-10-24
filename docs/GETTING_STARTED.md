@@ -517,4 +517,3 @@ Now that you're familiar with the basics, explore these topics:
 - 📚 Browse the [full documentation](README.md)
 - 🐛 [Report issues](https://github.com/pixpilot/scaffoldfy/issues)
 - 💬 Ask questions in [discussions](https://github.com/pixpilot/scaffoldfy/discussions)
-

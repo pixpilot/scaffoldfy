@@ -18,6 +18,7 @@ This directory contains the documentation for Scaffoldfy, configured for GitHub 
 ## 🚀 How It Works
 
 GitHub Pages automatically:
+
 1. Converts all `.md` files to HTML
 2. Applies the `default.html` layout to each page
 3. Renders the shared sidebar navigation on every page
@@ -40,6 +41,7 @@ To add a new documentation page:
 4. Add a link to the new page in `_layouts/default.html` sidebar navigation
 
 Example:
+
 ```markdown
 ---
 layout: default
@@ -57,10 +59,10 @@ To update the navigation menu, edit `_layouts/default.html` and modify the sideb
 
 ```html
 <nav class="sidebar">
-    <h2>Your Section</h2>
-    <ul>
-        <li><a href="YOUR_FILE.html">Link Text</a></li>
-    </ul>
+  <h2>Your Section</h2>
+  <ul>
+    <li><a href="YOUR_FILE.html">Link Text</a></li>
+  </ul>
 </nav>
 ```
 
@@ -95,12 +97,12 @@ Or simply push to GitHub and view at your GitHub Pages URL.
 
 ## 📦 Key Features
 
-✅ **Shared Navigation** - Single sidebar menu for all pages  
-✅ **No Build Process** - GitHub Pages handles everything  
-✅ **Active Page Highlighting** - Current page is highlighted in sidebar  
-✅ **Mobile Responsive** - Works on all devices  
-✅ **Simple Markdown** - Write docs in plain Markdown  
-✅ **Easy to Update** - Edit navigation in one place  
+✅ **Shared Navigation** - Single sidebar menu for all pages
+✅ **No Build Process** - GitHub Pages handles everything
+✅ **Active Page Highlighting** - Current page is highlighted in sidebar
+✅ **Mobile Responsive** - Works on all devices
+✅ **Simple Markdown** - Write docs in plain Markdown
+✅ **Easy to Update** - Edit navigation in one place
 
 ## 🔄 Updating Documentation
 
@@ -120,29 +122,32 @@ Or simply push to GitHub and view at your GitHub Pages URL.
 ## 🐛 Troubleshooting
 
 **Navigation not showing?**
+
 - Check that front matter includes `layout: default`
 - Verify `_config.yml` exists
 - Wait 1-2 minutes for GitHub Pages to rebuild
 
 **Links not working?**
+
 - Use `.html` extension in links, not `.md`
 - Use relative paths (no leading `/`)
 - Check for typos in filenames
 
 **Styling not applying?**
+
 - Clear browser cache
 - Check `_layouts/default.html` exists
 - Verify front matter in `.md` files
 
 ## 📄 Files Overview
 
-| File | Purpose |
-|------|---------|
+| File                    | Purpose                             |
+| ----------------------- | ----------------------------------- |
 | `_layouts/default.html` | Shared layout template with sidebar |
-| `_config.yml` | GitHub Pages configuration |
-| `index.md` | Homepage (landing page) |
-| `QUICK_REFERENCE.md` | Fast-start guide for users |
-| `*.md` | Individual documentation pages |
+| `_config.yml`           | GitHub Pages configuration          |
+| `index.md`              | Homepage (landing page)             |
+| `QUICK_REFERENCE.md`    | Fast-start guide for users          |
+| `*.md`                  | Individual documentation pages      |
 
 ---
 

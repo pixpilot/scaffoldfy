@@ -61,7 +61,7 @@ import { scaffoldfy } from '@pixpilot/scaffoldfy';
 await scaffoldfy({
   templateFile: './template.json',
   cwd: process.cwd(),
-  dryRun: false
+  dryRun: false,
 });
 ```
 
@@ -338,7 +338,7 @@ import { scaffoldfy } from '@pixpilot/scaffoldfy';
 
 // Initialize with default options
 await scaffoldfy({
-  templateFile: './template.json'
+  templateFile: './template.json',
 });
 ```
 
@@ -348,9 +348,9 @@ await scaffoldfy({
 await scaffoldfy({
   templateFile: './template.json',
   cwd: '/path/to/project',
-  dryRun: true,        // Preview mode
-  verbose: true,       // Detailed logging
-  silent: false        // Show output
+  dryRun: true, // Preview mode
+  verbose: true, // Detailed logging
+  silent: false, // Show output
 });
 ```
 
@@ -362,7 +362,7 @@ import { myCustomPlugin } from './my-plugin';
 
 await scaffoldfy({
   templateFile: './template.json',
-  plugins: [myCustomPlugin]
+  plugins: [myCustomPlugin],
 });
 ```
 
@@ -371,7 +371,7 @@ await scaffoldfy({
 ```typescript
 try {
   await scaffoldfy({
-    templateFile: './template.json'
+    templateFile: './template.json',
   });
   console.log('✅ Initialization successful!');
 } catch (error) {

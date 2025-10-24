@@ -11,6 +11,7 @@ Every prompt needs:
 #---
 layout: default
 title: Prompts Quick Reference - Scaffoldfy
+
 ---
 
 # Prompts Quick Reference
@@ -177,4 +178,3 @@ Mark prompts as `"global": true` to share values across all tasks:
   - `examples/template-tasks-with-prompts.json`
   - `examples/template-tasks-with-global-prompts.json`
 - Feature summary: `PROMPTS_FEATURE.md`
-

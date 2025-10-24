@@ -119,25 +119,25 @@ Welcome to the official documentation for **@pixpilot/scaffoldfy** (formerly sca
 
 ## 🎯 Common Use Cases
 
-**Setting up a new project?**  
+**Setting up a new project?**
 → [Getting Started Guide](GETTING_STARTED.html) + [Task Types Reference](TASK_TYPES.html)
 
-**Need user input?**  
+**Need user input?**
 → [Interactive Prompts](PROMPTS.html) + [Prompts Cheat Sheet](PROMPTS_QUICK_REFERENCE.html)
 
-**Need dynamic values without user input?**  
+**Need dynamic values without user input?**
 → [Variables](VARIABLES.html)
 
-**Building complex templates?**  
+**Building complex templates?**
 → [Template Inheritance](TEMPLATE_INHERITANCE.html) + [Handlebars Templates](HANDLEBARS_TEMPLATES.html)
 
-**Want to preview changes first?**  
+**Want to preview changes first?**
 → [Dry Run Mode](DRY_RUN.html)
 
-**Extending with custom functionality?**  
+**Extending with custom functionality?**
 → [Plugin System](PLUGINS.html)
 
-**Using conditional logic?**  
+**Using conditional logic?**
 → [Advanced Features Guide](FEATURES.html)
 
 ---

@@ -376,4 +376,3 @@ Get diff string for a single task.
 - `getExecDiff(config, initConfig): string`
 
 All functions return formatted diff strings with color codes for terminal output.
-

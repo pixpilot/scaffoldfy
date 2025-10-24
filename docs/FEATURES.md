@@ -1305,4 +1305,3 @@ This example:
 - [Template Inheritance](TEMPLATE_INHERITANCE.md) - Compose templates
 - [Plugin System](PLUGINS.md) - Create custom task types
 - [Dry Run Mode](DRY_RUN.md) - Preview changes safely
-

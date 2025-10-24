@@ -10,6 +10,7 @@ Follow these simple steps to deploy your new documentation site.
 ## ✅ Pre-Deployment Checklist
 
 ### 1. Verify Files Are Committed
+
 ```bash
 # Check status
 git status
@@ -25,6 +26,7 @@ git push origin main
 ```
 
 ### 2. Files That Should Exist
+
 - ✅ `docs/_layouts/default.html` - Layout with sidebar
 - ✅ `docs/_config.yml` - GitHub Pages config
 - ✅ `docs/index.md` - Homepage
@@ -34,17 +36,20 @@ git push origin main
 ## 🚀 Enable GitHub Pages
 
 ### Step 1: Go to Repository Settings
+
 1. Navigate to your GitHub repository
 2. Click **Settings** (top navigation)
 3. Scroll down to **Pages** section (left sidebar)
 
 ### Step 2: Configure Source
+
 1. **Source**: Select "Deploy from a branch"
 2. **Branch**: Select `main` (or your default branch)
 3. **Folder**: Select `/docs`
 4. Click **Save**
 
 ### Step 3: Wait for Deployment
+
 - GitHub Pages will build your site (takes 1-2 minutes)
 - You'll see a message: "Your site is live at https://pixpilot.github.io/scaffoldfy/"
 - Wait for the green checkmark ✅
@@ -52,6 +57,7 @@ git push origin main
 ## 🔍 Verify Deployment
 
 ### Test Your Site
+
 1. Visit: `https://pixpilot.github.io/scaffoldfy/`
 2. Check that:
    - ✅ Left sidebar navigation appears
@@ -62,7 +68,9 @@ git push origin main
    - ✅ All documentation pages load
 
 ### Test Navigation
+
 Click through each section:
+
 - [ ] 🚀 Getting Started
   - [ ] Overview
   - [ ] Quick Reference
@@ -85,6 +93,7 @@ Click through each section:
 ## 🐛 Troubleshooting
 
 ### Site Not Loading?
+
 ```
 Common fixes:
 1. Wait 2-3 minutes (GitHub Pages needs time to build)
@@ -95,6 +104,7 @@ Common fixes:
 ```
 
 ### Navigation Not Showing?
+
 ```
 Check:
 1. Does _layouts/default.html exist?
@@ -104,6 +114,7 @@ Check:
 ```
 
 ### Links Not Working?
+
 ```
 Verify:
 1. Links use .html extension (not .md)
@@ -112,6 +123,7 @@ Verify:
 ```
 
 ### Styling Issues?
+
 ```
 1. Clear browser cache
 2. Check _layouts/default.html has <style> section
@@ -121,12 +133,14 @@ Verify:
 ## 📊 Build Status
 
 ### Check Build Status
+
 1. Go to **Actions** tab in your repository
 2. Look for "pages build and deployment" workflow
 3. Should show green checkmark ✅
 4. If red X, click to see error details
 
 ### Force Rebuild
+
 ```bash
 # Make a small change and commit
 git commit --allow-empty -m "Trigger GitHub Pages rebuild"
@@ -136,13 +150,16 @@ git push
 ## 🎯 Post-Deployment Tasks
 
 ### Update Repository Description
+
 1. Go to repository homepage
 2. Click ⚙️ (settings gear) next to "About"
 3. Add website: `https://pixpilot.github.io/scaffoldfy/`
 4. Check "Use your GitHub Pages website"
 
 ### Update Main README.md
+
 Add a documentation link to your main README:
+
 ```markdown
 ## 📚 Documentation
 
@@ -155,7 +172,9 @@ https://pixpilot.github.io/scaffoldfy/
 ```
 
 ### Share the Link
+
 Update these places with your docs link:
+
 - [ ] Package.json `homepage` field
 - [ ] Repository description
 - [ ] README.md
@@ -165,6 +184,7 @@ Update these places with your docs link:
 ## 📝 Making Updates
 
 ### To Update Content
+
 ```bash
 # 1. Edit the .md file
 vim docs/GETTING_STARTED.md
@@ -179,6 +199,7 @@ git push
 ```
 
 ### To Update Navigation
+
 ```bash
 # 1. Edit the layout file
 vim docs/_layouts/default.html
@@ -194,6 +215,7 @@ git push
 ```
 
 ### To Add New Page
+
 ```bash
 # 1. Create new markdown file
 cat > docs/NEW_FEATURE.md << 'EOF'
@@ -226,12 +248,14 @@ Your documentation is now live! 🎉
 - ✅ Zero build configuration
 
 ### Next Steps
+
 1. Share the documentation link
 2. Update package.json with homepage URL
 3. Announce to users
 4. Keep documentation updated
 
 ### Getting Help
+
 - 📖 [Documentation Setup Guide](DOCUMENTATION_SETUP.html)
 - 📝 [Implementation Summary](IMPLEMENTATION_SUMMARY.html)
 - 🎨 [Visual Overview](VISUAL_OVERVIEW.html)

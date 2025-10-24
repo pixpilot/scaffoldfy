@@ -1138,4 +1138,3 @@ Combine organization templates with project-specific local templates:
 6. **Monitor Changes**: If using branch references (like `main`), monitor for breaking changes
 
 7. **Access Control**: For private templates, use authenticated URLs or host on secure servers
-

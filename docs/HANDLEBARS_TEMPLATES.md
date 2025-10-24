@@ -405,4 +405,3 @@ You cannot specify both options:
 - [Template Task Types](./TASK_TYPES.md#template)
 - [Prompts Documentation](./PROMPTS.md)
 - [Examples Directory](../examples/)
-
