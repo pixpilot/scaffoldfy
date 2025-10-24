@@ -1,5 +1,7 @@
 /**
  * Tests for variable validation
+ * Note: Most validation is now handled by JSON Schema (AJV).
+ * This only tests duplicate ID detection, which JSON Schema cannot validate.
  */
 
 import type { VariableDefinition } from '../../src/types.js';
@@ -9,7 +11,7 @@ import { describe, expect, it } from 'vitest';
 import { validateVariables } from '../../src/variables/validate-variables.js';
 
 describe('validateVariables', () => {
-  it('should pass validation for valid variables', () => {
+  it('should pass validation for valid variables with no duplicates', () => {
     const variables: VariableDefinition[] = [
       { id: 'var1', value: 'test' },
       { id: 'var2', value: 123 },
@@ -32,98 +34,19 @@ describe('validateVariables', () => {
     expect(errors).toContain('Duplicate variable ID: "duplicateId"');
   });
 
-  it('should reject invalid variable ID formats', () => {
+  it('should detect multiple duplicate variable IDs', () => {
     const variables: VariableDefinition[] = [
-      { id: 'invalid-id-with-dash', value: 'test' },
-      { id: 'invalid.id.with.dots', value: 'test' },
-      { id: 'invalid id with spaces', value: 'test' },
-      { id: '123startsWithDigit', value: 'test' },
+      { id: 'dup1', value: 'value1' },
+      { id: 'dup1', value: 'value2' },
+      { id: 'unique', value: 'value3' },
+      { id: 'dup2', value: 'value4' },
+      { id: 'dup2', value: 'value5' },
     ];
 
     const errors = validateVariables(variables);
-    expect(errors.length).toBe(4); // All 4 should be invalid
-    expect(errors.some((e: string) => e.includes('invalid-id-with-dash'))).toBe(true);
-    expect(errors.some((e: string) => e.includes('invalid.id.with.dots'))).toBe(true);
-    expect(errors.some((e: string) => e.includes('invalid id with spaces'))).toBe(true);
-    expect(errors.some((e: string) => e.includes('123startsWithDigit'))).toBe(true);
-  });
-
-  it('should accept valid variable ID formats', () => {
-    const variables: VariableDefinition[] = [
-      { id: 'validId', value: 'test' },
-      { id: 'valid_id_123', value: 'test' },
-      { id: '$dollarSign', value: 'test' },
-      { id: '_underscore', value: 'test' },
-      { id: 'camelCaseId', value: 'test' },
-      { id: 'PascalCaseId', value: 'test' },
-      { id: 'snake_case_id', value: 'test' },
-      { id: 'id123', value: 'test' }, // digits allowed after first char
-    ];
-
-    const errors = validateVariables(variables);
-    expect(errors).toEqual([]);
-  });
-
-  it('should reject variables without values', () => {
-    const variables = [{ id: 'noValue' }] as unknown as VariableDefinition[];
-
-    const errors = validateVariables(variables);
-    expect(errors).toContain('Variable "noValue" must have a value');
-  });
-
-  it('should validate exec type requires string command', () => {
-    const variables: VariableDefinition[] = [
-      { id: 'invalidExec', value: { type: 'exec', value: 123 } as never },
-    ];
-
-    const errors = validateVariables(variables);
-    expect(
-      errors.some((e: string) => e.includes('exec type must have a string command')),
-    ).toBe(true);
-  });
-
-  it('should validate value objects must have type field', () => {
-    const variables = [
-      { id: 'noType', value: { value: 'test' } },
-    ] as unknown as VariableDefinition[];
-
-    const errors = validateVariables(variables);
-    expect(errors.some((e: string) => e.includes('must have a "type" field'))).toBe(true);
-  });
-
-  it('should validate type must be static, exec, or conditional', () => {
-    const variables = [
-      { id: 'invalidType', value: { type: 'invalid', value: 'test' } },
-    ] as unknown as VariableDefinition[];
-
-    const errors = validateVariables(variables);
-    expect(
-      errors.some((e: string) =>
-        e.includes('type must be "static", "exec", or "conditional"'),
-      ),
-    ).toBe(true);
-  });
-
-  it('should validate value config must have value field', () => {
-    const variables = [
-      { id: 'noValue', value: { type: 'static' } },
-    ] as unknown as VariableDefinition[];
-
-    const errors = validateVariables(variables);
-    expect(errors.some((e: string) => e.includes('must have a "value" field'))).toBe(
-      true,
-    );
-  });
-
-  it('should handle global variables', () => {
-    const variables: VariableDefinition[] = [
-      { id: 'globalVar', value: 'test' },
-      { id: 'localVar', value: 'test' },
-      { id: 'defaultVar', value: 'test' },
-    ];
-
-    const errors = validateVariables(variables);
-    expect(errors).toEqual([]);
+    expect(errors.length).toBe(2);
+    expect(errors).toContain('Duplicate variable ID: "dup1"');
+    expect(errors).toContain('Duplicate variable ID: "dup2"');
   });
 
   it('should handle empty array', () => {

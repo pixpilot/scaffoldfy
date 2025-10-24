@@ -444,6 +444,21 @@
                 {
                   "if": {
                     "properties": {
+                      "type": { "const": "exec" }
+                    }
+                  },
+                  "then": {
+                    "properties": {
+                      "value": {
+                        "type": "string",
+                        "description": "Shell command to execute"
+                      }
+                    }
+                  }
+                },
+                {
+                  "if": {
+                    "properties": {
                       "type": { "const": "conditional" }
                     }
                   },
