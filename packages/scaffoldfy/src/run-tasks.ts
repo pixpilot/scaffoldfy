@@ -291,8 +291,11 @@ export async function runTasks(
       debug(`Calling afterTask hook for task: ${task.name}`);
       await callHook('afterTask', task, config);
     } else {
-      failedTasks++;
-      failedTaskNames.push(task.name);
+      // Only count as failure if task is required (defaults to true)
+      if (task.required !== false) {
+        failedTasks++;
+        failedTaskNames.push(task.name);
+      }
 
       // Call onError hook
       debug(`Calling onError hook for task: ${task.name}`);
@@ -569,8 +572,11 @@ export async function runTemplatesSequentially(
       completedTasks++;
       await callHook('afterTask', task, config);
     } else {
-      failedTasks++;
-      failedTaskNames.push(task.name);
+      // Only count as failure if task is required (defaults to true)
+      if (task.required !== false) {
+        failedTasks++;
+        failedTaskNames.push(task.name);
+      }
       await callHook('onError', new Error(`Task ${task.name} failed`), task);
 
       // Log warning but continue execution
