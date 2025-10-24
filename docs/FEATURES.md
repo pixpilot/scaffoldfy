@@ -1,3 +1,8 @@
+---
+layout: default
+title: Advanced Features - Scaffoldfy
+---
+
 # Advanced Features
 
 This guide covers the advanced features of **@pixpilot/scaffoldfy** that enable powerful and flexible template automation.

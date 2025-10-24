@@ -1,3 +1,8 @@
+---
+layout: default
+title: Task Types Reference - Scaffoldfy
+---
+
 # Task Types Reference
 
 Complete reference for all available task types in scaffoldfy.

@@ -1,3 +1,8 @@
+---
+layout: default
+title: Handlebars Templates - Scaffoldfy
+---
+
 # Template Tasks with Handlebars
 
 The `template` task type supports powerful templating capabilities using [Handlebars](https://handlebarsjs.com/), enabling you to generate files from templates with advanced features like conditionals, loops, and helpers.

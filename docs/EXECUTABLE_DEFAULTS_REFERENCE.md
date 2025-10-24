@@ -1,3 +1,8 @@
+---
+layout: default
+title: Executable Defaults Reference - Scaffoldfy
+---
+
 # Executable Default Values - Quick Reference
 
 This document provides quick examples of executable default values for common use cases.

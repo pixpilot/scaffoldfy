@@ -1,3 +1,8 @@
+---
+layout: default
+title: Template Inheritance - Scaffoldfy
+---
+
 # Template Inheritance
 
 Template inheritance allows you to extend base templates, promoting code reuse and modularity in your template configurations. Templates can be loaded from local file paths or remote URLs (HTTP/HTTPS).

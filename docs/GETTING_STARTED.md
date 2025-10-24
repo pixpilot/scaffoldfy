@@ -1,4 +1,9 @@
-# Getting Started
+---
+layout: default
+title: Getting Started - Scaffoldfy
+---
+
+# Getting Started with scaffoldfy
 
 This guide will help you get started with **@pixpilot/scaffoldfy** (formerly scaffoldfy) - a flexible and powerful task automation utility for project setup, cleanup, and configuration tasks.
 

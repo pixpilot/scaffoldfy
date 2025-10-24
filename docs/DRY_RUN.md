@@ -1,4 +1,9 @@
-# Dry-Run Mode with Diff Preview
+---
+layout: default
+title: Dry Run Mode - Scaffoldfy
+---
+
+# Dry Run Mode
 
 Dry-run mode allows you to preview exactly what changes would be made to your project before actually applying them. This is invaluable for understanding template behavior and avoiding unwanted changes.
 

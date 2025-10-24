@@ -1,3 +1,8 @@
+---
+layout: default
+title: Interactive Prompts - Scaffoldfy
+---
+
 # Using Prompts in scaffoldfy
 
 scaffoldfy supports prompts at both the top level (global) and within individual tasks. This allows you to collect user input dynamically and use those values throughout your task configurations.

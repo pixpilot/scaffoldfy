@@ -1,3 +1,8 @@
+---
+layout: default
+title: Variables - Scaffoldfy
+---
+
 # Variables
 
 Variables provide a way to define reusable values in your template configuration **without requiring user interaction**. Unlike [prompts](./PROMPTS.md), which collect user input interactively, variables are resolved automatically from static values or executable commands.

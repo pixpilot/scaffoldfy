@@ -1,6 +1,25 @@
+---
+layout: default
+title: Scaffoldfy Documentation - Home
+---
+
 # Scaffoldfy Documentation
 
 Welcome to the official documentation for **@pixpilot/scaffoldfy** (formerly scaffoldfy) - a flexible and powerful template initialization utility for automating project setup, cleanup, and configuration tasks.
+
+> **📝 Note**: This documentation is available at [GitHub Pages](https://pixpilot.github.io/scaffoldfy/) with a convenient navigation sidebar.
+
+---
+
+## 🚀 Quick Start
+
+**New to Scaffoldfy?** Start here:
+
+1. **[Quick Reference](QUICK_REFERENCE.html)** - Essential commands and examples to get started in minutes
+2. **[Getting Started Guide](GETTING_STARTED.html)** - Detailed installation and setup instructions
+3. **[Task Types Reference](TASK_TYPES.html)** - Learn about all 9 available task types
+
+---
 
 ## 📚 Table of Contents
 

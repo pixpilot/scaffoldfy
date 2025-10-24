@@ -1,3 +1,8 @@
+---
+layout: default
+title: Plugin System - Scaffoldfy
+---
+
 # Plugin System
 
 The plugin system allows you to extend `scaffoldfy` with custom task types, enabling specialized operations beyond the built-in task types.

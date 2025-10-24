@@ -8,7 +8,12 @@ Every prompt needs:
 - `type` - Prompt type (input, password, number, select, confirm)
 - `message` - Question to display to user
 
-## Prompt Types Quick Reference
+#---
+layout: default
+title: Prompts Quick Reference - Scaffoldfy
+---
+
+# Prompts Quick Reference
 
 ### Input
 
