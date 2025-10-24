@@ -3,18 +3,29 @@
   "description": "Pixpilot workspace package generator template for pnpm + Turbo monorepo. Provides project info prompts and config tasks.",
   "name": "github-pixpilot-owner-changesets-release",
   "dependencies": ["pixpilot-info"],
-  "enabled": "pixpilot_project == true",
   "tasks": [
     {
-      "id": "github-pixpilot-admin-changesets-release-create",
+      "id": "pixpilot-admin-changesets-release-create",
       "name": "Setup Changesets Release Workflow",
       "description": "Adds a GitHub Actions workflow for Changesets-based releases",
-      "required": true,
-      "enabled": true,
+      "enabled": "pixpilot_project == true",
       "type": "write",
       "config": {
         "templateFile": "release.yml",
         "file": ".github/workflows/release.yml"
+      }
+    },
+    {
+      "id": "changesets-release-cleanup",
+      "name": "Cleanup Changesets Release Workflow",
+      "description": "Removes Pixpilot owner condition from Changesets release workflow",
+      "enabled": "pixpilot_project != true",
+      "type": "regex-replace",
+      "config": {
+        "file": ".github/workflows/release.yml",
+        "pattern": "^\\s*if: \\$\\{\\{ !endsWith\\(github\\.repository, 'pnpm-turbo-monorepo-template'\\) \\}\\}\\s*$",
+        "flags": "gm",
+        "replacement": ""
       }
     }
   ]
