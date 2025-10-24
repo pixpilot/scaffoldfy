@@ -115,6 +115,7 @@ export interface BasePrompt {
   required?: boolean; // If true, value must be provided (not empty)
   enabled?: EnabledValue; // If false or condition evaluates to false, prompt is skipped
   override?: MergeStrategy; // Strategy for merging with base prompt: 'merge' (default, intelligent) or 'replace' (complete override)
+  $templateEnabled?: EnabledValue; // Internal: Enabled condition of the template this prompt came from (for lazy evaluation)
 }
 
 export interface InputPrompt extends BasePrompt {
@@ -153,6 +154,7 @@ export interface VariableDefinition {
   id: string; // Unique identifier for the variable
   value: DefaultValue; // The value of the variable (static or executable)
   override?: MergeStrategy; // Strategy for merging with base variable: 'merge' (default, intelligent) or 'replace' (complete override)
+  $templateEnabled?: EnabledValue; // Internal: Enabled condition of the template this variable came from (for lazy evaluation)
 }
 
 /**
@@ -220,6 +222,7 @@ export interface TaskDefinition {
   variables?: VariableDefinition[]; // Optional task-scoped variables (not available to other tasks)
   override?: MergeStrategy; // Strategy for merging with base task: 'merge' (default, intelligent) or 'replace' (complete override)
   $sourceUrl?: string; // Internal: URL or path of the template file this task came from (for resolving relative paths)
+  $templateEnabled?: EnabledValue; // Internal: Enabled condition of the template this task came from (for lazy evaluation)
 }
 
 /**

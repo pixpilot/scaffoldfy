@@ -39,24 +39,37 @@ export function validateVariables(variables: VariableDefinition[]): string[] {
       !Array.isArray(variable.value) &&
       variable.value !== null
     ) {
-      const config = variable.value as { type?: string; value?: unknown };
+      const config = variable.value as {
+        type?: string;
+        value?: unknown;
+        condition?: string;
+        ifTrue?: unknown;
+        ifFalse?: unknown;
+      };
 
       // Check if type is provided
       if (config.type == null || config.type === '') {
         errors.push(
-          `Variable "${variable.id}": value object must have a "type" field ("static" or "exec")`,
+          `Variable "${variable.id}": value object must have a "type" field ("static", "exec", or "conditional")`,
         );
       }
 
       // Validate type
-      else if (config.type !== 'static' && config.type !== 'exec') {
+      else if (
+        config.type !== 'static' &&
+        config.type !== 'exec' &&
+        config.type !== 'conditional'
+      ) {
         errors.push(
-          `Variable "${variable.id}": type must be "static" or "exec", got "${config.type}"`,
+          `Variable "${variable.id}": type must be "static", "exec", or "conditional", got "${config.type}"`,
         );
       }
 
-      // Check if value is provided
-      if (config.value === undefined || config.value === null) {
+      // For static and exec types, check if value is provided
+      if (
+        (config.type === 'static' || config.type === 'exec') &&
+        (config.value === undefined || config.value === null)
+      ) {
         errors.push(`Variable "${variable.id}": value config must have a "value" field`);
       }
 
@@ -65,6 +78,30 @@ export function validateVariables(variables: VariableDefinition[]): string[] {
         errors.push(
           `Variable "${variable.id}": exec type must have a string command as value`,
         );
+      }
+
+      // For conditional type, validate required fields
+      if (config.type === 'conditional') {
+        if (
+          config.condition === undefined ||
+          config.condition === null ||
+          config.condition === '' ||
+          typeof config.condition !== 'string'
+        ) {
+          errors.push(
+            `Variable "${variable.id}": conditional type must have a "condition" field with a string expression`,
+          );
+        }
+        if (config.ifTrue === undefined) {
+          errors.push(
+            `Variable "${variable.id}": conditional type must have an "ifTrue" field`,
+          );
+        }
+        if (config.ifFalse === undefined) {
+          errors.push(
+            `Variable "${variable.id}": conditional type must have an "ifFalse" field`,
+          );
+        }
       }
     }
   }

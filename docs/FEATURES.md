@@ -6,6 +6,7 @@ This guide covers the advanced features of **@pixpilot/scaffoldfy** that enable 
 
 - [Template-Level Enabled](#template-level-enabled)
 - [Conditional Execution](#conditional-execution)
+- [Conditional Variables](#conditional-variables)
 - [Global Prompts](#global-prompts)
 - [Handlebars Templates](#handlebars-templates)
 
@@ -28,7 +29,7 @@ The root-level `enabled` property allows you to enable or disable an entire temp
   "$schema": "https://scaffoldfy.dev/schema/tasks.schema.json",
   "name": "my-template",
   "enabled": true,
-  "tasks": [...]
+  "tasks": []
 }
 ```
 
@@ -39,7 +40,7 @@ The root-level `enabled` property allows you to enable or disable an entire temp
   "$schema": "https://scaffoldfy.dev/schema/tasks.schema.json",
   "name": "conditional-template",
   "enabled": "process.env.NODE_ENV === 'development'",
-  "tasks": [...]
+  "tasks": []
 }
 ```
 
@@ -52,7 +53,7 @@ The root-level `enabled` property allows you to enable or disable an entire temp
   "enabled": {
     "condition": "projectType === 'monorepo'"
   },
-  "tasks": [...]
+  "tasks": []
 }
 ```
 
@@ -68,7 +69,7 @@ Determine if a template should run by executing a shell command:
     "type": "exec",
     "value": "git rev-parse --is-inside-work-tree"
   },
-  "tasks": [...]
+  "tasks": []
 }
 ```
 
@@ -116,7 +117,7 @@ Enable templates only when certain dependencies exist:
     "type": "exec",
     "value": "test -f node_modules/react/package.json && echo true || echo false"
   },
-  "tasks": [...]
+  "tasks": []
 }
 ```
 
@@ -172,14 +173,76 @@ Only run Git-related templates in Git repositories:
 
 ### Evaluation Timing
 
-The template-level `enabled` property is evaluated **before** any other operations:
+The template-level `enabled` property evaluation depends on the context:
+
+**For Main Templates:**
 
 1. ✅ **Evaluated first** - Before variable resolution
 2. ✅ **Evaluated first** - Before prompt collection
 3. ✅ **Evaluated first** - Before task execution
 4. ✅ **Evaluated first** - Before validation
 
-If the template is disabled, **nothing** from that template will be processed or executed. This makes it efficient for conditional templates.
+If the main template is disabled, **nothing** from that template will be processed or executed.
+
+**For Extended Templates (via `extends`):**
+
+Extended templates use **lazy evaluation**, meaning their `enabled` condition is evaluated sequentially during execution with access to previous values:
+
+1. **Prompts**: Each prompt from an extended template is evaluated before asking - has access to all previous prompt answers
+2. **Variables**: Each variable from an extended template is evaluated before resolving - has access to all prompts + previous variables
+3. **Tasks**: Each task from an extended template is evaluated before execution - has access to all prompts and variables
+
+This allows extended templates to be conditionally enabled based on user input or computed values from dependency templates.
+
+### Example: Conditional Extended Template
+
+```json
+{
+  "name": "pixpilot-info",
+  "dependencies": ["project-info"],
+  "variables": [
+    {
+      "id": "pixpilot_project",
+      "value": {
+        "type": "conditional",
+        "condition": "repoOwner === 'pixpilots' || orgName === 'pixpilots'",
+        "ifTrue": true,
+        "ifFalse": false
+      }
+    }
+  ]
+}
+```
+
+```json
+{
+  "name": "pixpilot-copilot-instructions",
+  "dependencies": ["pixpilot-info"],
+  "enabled": {
+    "condition": "pixpilot_project == true"
+  },
+  "tasks": [
+    {
+      "id": "create-copilot-instructions",
+      "name": "Create Copilot Instructions",
+      "type": "write",
+      "config": {
+        "file": ".github/copilot-instructions.md",
+        "templateFile": "copilot-instructions.md"
+      }
+    }
+  ]
+}
+```
+
+In this example:
+
+1. `project-info` template asks for `repoOwner` and `orgName`
+2. `pixpilot-info` template computes `pixpilot_project` variable based on those answers
+3. `pixpilot-copilot-instructions` template is only enabled if `pixpilot_project` is `true`
+4. The tasks, prompts, and variables from disabled templates are automatically skipped
+
+This makes it efficient for conditional templates and enables powerful template composition patterns.
 
 ### Template Variables in Enabled
 
@@ -198,7 +261,7 @@ You can use variables in the `enabled` expression, but be aware that variables a
     }
   ],
   "enabled": "targetEnv === 'production'",
-  "tasks": [...]
+  "tasks": []
 }
 ```
 
@@ -211,7 +274,7 @@ However, for early evaluation, prefer using exec-type enabled directly:
     "type": "exec",
     "value": "test \"$NODE_ENV\" = \"production\" && echo true || echo false"
   },
-  "tasks": [...]
+  "tasks": []
 }
 ```
 
@@ -412,6 +475,199 @@ When using `--dry-run`, you'll see which tasks would be skipped:
   }
 }
 ```
+
+---
+
+## Conditional Variables
+
+Create dynamic variables that evaluate expressions and return different values based on conditions. This enables intelligent automation that adapts to user input or system state.
+
+### Overview
+
+Conditional variables evaluate JavaScript expressions and return different values based on whether the condition is true or false. They have access to:
+
+- Other variables (static or executable)
+- Prompt values (user input)
+- Any value in the configuration context
+
+### Basic Syntax
+
+```json
+{
+  "id": "variableName",
+  "value": {
+    "type": "conditional",
+    "condition": "expression === 'value'",
+    "ifTrue": "value when true",
+    "ifFalse": "value when false"
+  }
+}
+```
+
+### Properties
+
+| Property    | Type   | Required | Description                            |
+| ----------- | ------ | -------- | -------------------------------------- |
+| `type`      | string | Yes      | Must be `"conditional"`                |
+| `condition` | string | Yes      | JavaScript expression to evaluate      |
+| `ifTrue`    | any    | Yes      | Value returned when condition is true  |
+| `ifFalse`   | any    | Yes      | Value returned when condition is false |
+
+### Evaluation Timing
+
+Conditional variables are resolved in **two passes**:
+
+1. **First pass**: Before prompts - resolves non-conditional variables
+2. **Second pass**: After prompts - resolves conditional variables with full context
+
+This allows conditional variables to reference prompt values.
+
+### Common Use Cases
+
+#### 1. Derive Boolean Flags
+
+```json
+{
+  "variables": [
+    {
+      "id": "pixpilot_project",
+      "value": {
+        "type": "conditional",
+        "condition": "repoOwner === 'pixpilot' || orgName === 'pixpilot'",
+        "ifTrue": true,
+        "ifFalse": false
+      }
+    }
+  ]
+}
+```
+
+#### 2. Choose Configuration Files
+
+```json
+{
+  "variables": [
+    {
+      "id": "configFile",
+      "value": {
+        "type": "conditional",
+        "condition": "language === 'typescript'",
+        "ifTrue": "tsconfig.json",
+        "ifFalse": "jsconfig.json"
+      }
+    }
+  ]
+}
+```
+
+#### 3. Set Different Values Based on Environment
+
+```json
+{
+  "variables": [
+    {
+      "id": "apiEndpoint",
+      "value": {
+        "type": "conditional",
+        "condition": "environment === 'production'",
+        "ifTrue": "https://api.prod.example.com",
+        "ifFalse": "https://api.dev.example.com"
+      }
+    }
+  ]
+}
+```
+
+### Dynamic Template Enabling
+
+Combine conditional variables with template-level `enabled` to create templates that automatically activate based on project context:
+
+**Template: pixpilot-info** (derives the flag)
+
+```json
+{
+  "name": "pixpilot-info",
+  "dependencies": ["project-info"],
+  "variables": [
+    {
+      "id": "pixpilot_project",
+      "value": {
+        "type": "conditional",
+        "condition": "repoOwner === 'pixpilot' || orgName === 'pixpilot'",
+        "ifTrue": true,
+        "ifFalse": false
+      }
+    }
+  ]
+}
+```
+
+**Template: pixpilot-copilot-instructions** (uses the flag)
+
+```json
+{
+  "name": "pixpilot-copilot-instructions",
+  "dependencies": ["project-info", "pixpilot-info"],
+  "enabled": {
+    "condition": "pixpilot_project == true"
+  },
+  "tasks": [
+    {
+      "id": "create-copilot-instructions",
+      "name": "Create Copilot Instructions",
+      "type": "write",
+      "config": {
+        "file": ".github/copilot-instructions.md",
+        "templateFile": "copilot-instructions.md"
+      }
+    }
+  ]
+}
+```
+
+**Result**: The `pixpilot-copilot-instructions` template only runs when the repository owner or organization is "pixpilot".
+
+### Complex Conditions
+
+Conditional variables support complex JavaScript expressions:
+
+```json
+{
+  "variables": [
+    {
+      "id": "shouldUseYarn",
+      "value": {
+        "type": "conditional",
+        "condition": "packageManager === 'yarn' && nodeVersion >= 14",
+        "ifTrue": true,
+        "ifFalse": false
+      }
+    },
+    {
+      "id": "installCommand",
+      "value": {
+        "type": "conditional",
+        "condition": "shouldUseYarn",
+        "ifTrue": "yarn install",
+        "ifFalse": "npm install"
+      }
+    }
+  ]
+}
+```
+
+### Best Practices
+
+1. **Keep conditions simple**: Use clear, readable expressions
+2. **Document the logic**: Add comments in `description` field
+3. **Chain dependencies**: Let conditional variables build on each other
+4. **Fail gracefully**: Provide sensible default values in `ifFalse`
+
+### Related Features
+
+- See [Variables](./VARIABLES.md) for complete variable documentation
+- See [Template-Level Enabled](#template-level-enabled) for controlling entire templates
+- See [Conditional Execution](#conditional-execution) for task-level conditions
 
 ---
 
@@ -1044,3 +1300,4 @@ This example:
 - [Template Inheritance](TEMPLATE_INHERITANCE.md) - Compose templates
 - [Plugin System](PLUGINS.md) - Create custom task types
 - [Dry Run Mode](DRY_RUN.md) - Preview changes safely
+

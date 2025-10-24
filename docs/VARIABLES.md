@@ -171,6 +171,119 @@ Examples:
 }
 ```
 
+### Conditional Values
+
+Conditional variables evaluate an expression and return different values based on the result. This is useful for deriving values based on other variables or prompts:
+
+```json
+{
+  "id": "pixpilot_project",
+  "value": {
+    "type": "conditional",
+    "condition": "repoOwner === 'pixpilot' || orgName === 'pixpilot'",
+    "ifTrue": true,
+    "ifFalse": false
+  }
+}
+```
+
+#### Conditional Variable Properties
+
+| Property    | Type   | Required | Description                                  |
+| ----------- | ------ | -------- | -------------------------------------------- |
+| `type`      | string | Yes      | Must be `"conditional"`                      |
+| `condition` | string | Yes      | JavaScript expression to evaluate            |
+| `ifTrue`    | any    | Yes      | Value to use if condition evaluates to true  |
+| `ifFalse`   | any    | Yes      | Value to use if condition evaluates to false |
+
+#### Condition Expressions
+
+The `condition` field supports JavaScript expressions that can reference:
+
+- **Other variables**: Access any previously defined variables
+- **Prompt values**: Access values from user prompts
+- **Operators**: `===`, `!==`, `&&`, `||`, `!`, `>`, `<`, `>=`, `<=`, etc.
+
+Examples:
+
+```json
+{
+  "variables": [
+    {
+      "id": "useTypeScript",
+      "value": {
+        "type": "conditional",
+        "condition": "language === 'typescript'",
+        "ifTrue": true,
+        "ifFalse": false
+      }
+    },
+    {
+      "id": "configFile",
+      "value": {
+        "type": "conditional",
+        "condition": "useTypeScript",
+        "ifTrue": "tsconfig.json",
+        "ifFalse": "jsconfig.json"
+      }
+    },
+    {
+      "id": "isMonorepo",
+      "value": {
+        "type": "conditional",
+        "condition": "projectType === 'monorepo' || hasWorkspaces",
+        "ifTrue": true,
+        "ifFalse": false
+      }
+    }
+  ]
+}
+```
+
+#### Evaluation Timing
+
+Conditional variables are resolved in **two passes**:
+
+1. **First pass** (before prompts): Non-conditional variables are resolved
+2. **Second pass** (after prompts): Conditional variables are resolved with access to prompt values
+
+This allows conditional variables to depend on user input from prompts.
+
+#### Dynamic Template Enabling
+
+Conditional variables are particularly useful with template-level `enabled` fields to dynamically enable/disable entire templates:
+
+```json
+{
+  "name": "pixpilot-copilot-instructions",
+  "dependencies": ["project-info", "pixpilot-info"],
+  "enabled": {
+    "condition": "pixpilot_project == true"
+  },
+  "tasks": [...]
+}
+```
+
+Where `pixpilot-info` template defines:
+
+```json
+{
+  "name": "pixpilot-info",
+  "dependencies": ["project-info"],
+  "variables": [
+    {
+      "id": "pixpilot_project",
+      "value": {
+        "type": "conditional",
+        "condition": "repoOwner === 'pixpilot' || orgName === 'pixpilot'",
+        "ifTrue": true,
+        "ifFalse": false
+      }
+    }
+  ]
+}
+```
+
 ## Using Variables in Tasks
 
 Variables are available in all template contexts using `{{variableName}}` syntax:
@@ -513,4 +626,3 @@ See [`examples/template-tasks-with-variables.json`](../packages/scaffoldfy/examp
 - [Template Syntax](./HANDLEBARS_TEMPLATES.md) - Using variables in templates
 - [Task Types](./TASK_TYPES.md) - Different task configurations
 - [Getting Started](./GETTING_STARTED.md) - Basic usage guide
-

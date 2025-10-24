@@ -470,8 +470,28 @@ export function mergeTemplates(templates: TasksConfiguration[]): TasksConfigurat
   // Use a Map to handle prompt overriding by ID
   const promptMap = new Map<string, PromptDefinition>();
 
+  // Track template enabled conditions for lazy evaluation
+  const templateEnabledMap: Record<string, EnabledValue> = {};
+
   // Process templates in order (earlier templates have lower priority)
   for (const template of templates) {
+    // Store the template's enabled condition (if any)
+    if (template.enabled != null) {
+      templateEnabledMap[template.name] = template.enabled;
+    }
+
+    // Skip templates that are explicitly disabled (enabled: false)
+    // Note: undefined or true means enabled
+    // Only skip if it's the literal boolean false (not conditional expressions)
+    if (template.enabled === false) {
+      log(
+        `⊘ Skipping disabled template "${template.name}" - its tasks, prompts, and variables will not be included`,
+        'info',
+      );
+      // eslint-disable-next-line no-continue
+      continue;
+    }
+
     // Merge top-level prompts if present
     if (template.prompts != null) {
       for (const prompt of template.prompts) {
@@ -481,10 +501,19 @@ export function mergeTemplates(templates: TasksConfiguration[]): TasksConfigurat
             throw IdConflictError.forPrompt(prompt.id);
           }
           const existingPrompt = promptMap.get(prompt.id)!;
-          promptMap.set(prompt.id, mergePrompt(existingPrompt, prompt));
+          const mergedPrompt = mergePrompt(existingPrompt, prompt);
+          // Add template enabled condition for lazy evaluation
+          if (template.enabled != null) {
+            mergedPrompt.$templateEnabled = template.enabled;
+          }
+          promptMap.set(prompt.id, mergedPrompt);
         } else {
-          // New prompt, add it
-          promptMap.set(prompt.id, { ...prompt });
+          // New prompt, add it with template enabled condition
+          const newPrompt = { ...prompt };
+          if (template.enabled != null) {
+            newPrompt.$templateEnabled = template.enabled;
+          }
+          promptMap.set(prompt.id, newPrompt);
         }
       }
     }
@@ -498,10 +527,19 @@ export function mergeTemplates(templates: TasksConfiguration[]): TasksConfigurat
             throw IdConflictError.forVariable(variable.id);
           }
           const existingVariable = variableMap.get(variable.id)!;
-          variableMap.set(variable.id, mergeVariable(existingVariable, variable));
+          const mergedVariable = mergeVariable(existingVariable, variable);
+          // Add template enabled condition for lazy evaluation
+          if (template.enabled != null) {
+            mergedVariable.$templateEnabled = template.enabled;
+          }
+          variableMap.set(variable.id, mergedVariable);
         } else {
-          // New variable, add it
-          variableMap.set(variable.id, { ...variable });
+          // New variable, add it with template enabled condition
+          const newVariable = { ...variable };
+          if (template.enabled != null) {
+            newVariable.$templateEnabled = template.enabled;
+          }
+          variableMap.set(variable.id, newVariable);
         }
       }
     }
@@ -519,10 +557,19 @@ export function mergeTemplates(templates: TasksConfiguration[]): TasksConfigurat
           );
         }
         const existingTask = taskMap.get(task.id)!;
-        taskMap.set(task.id, mergeTask(existingTask, task));
+        const mergedTask = mergeTask(existingTask, task);
+        // Add template enabled condition for lazy evaluation
+        if (template.enabled != null) {
+          mergedTask.$templateEnabled = template.enabled;
+        }
+        taskMap.set(task.id, mergedTask);
       } else {
-        // New task, add it
-        taskMap.set(task.id, { ...task });
+        // New task, add it with template enabled condition
+        const newTask = { ...task };
+        if (template.enabled != null) {
+          newTask.$templateEnabled = template.enabled;
+        }
+        taskMap.set(task.id, newTask);
       }
     }
   }
@@ -550,6 +597,10 @@ export function mergeTemplates(templates: TasksConfiguration[]): TasksConfigurat
 
   if (lastTemplate.dependencies != null) {
     result.dependencies = lastTemplate.dependencies;
+  }
+
+  if (lastTemplate.enabled != null) {
+    result.enabled = lastTemplate.enabled;
   }
 
   // Add prompts if any exist

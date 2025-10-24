@@ -44,16 +44,18 @@ export async function runTasks(
   },
 ): Promise<void> {
   // ============================================================================
-  // Check Root-Level Template Enabled
+  // Check Root-Level Template Enabled (Early Check with Lazy Mode)
   // ============================================================================
   // First check if the entire template is disabled before doing any work
-  // This is evaluated early with initial (potentially empty) config
+  // Use lazy mode to allow conditions that reference variables/prompts
+  // (they will be re-evaluated later after variables/prompts are collected)
   const initialConfig = createInitialConfig();
 
-  // Evaluate template-level enabled (supports exec, conditional, boolean, string)
+  // Evaluate template-level enabled (lazy mode returns true for undefined variables)
   const templateIsEnabled = await evaluateEnabledAsync(
     options.templateEnabled,
     initialConfig,
+    { lazy: true },
   );
 
   if (!templateIsEnabled) {
@@ -129,9 +131,10 @@ export async function runTasks(
       process.exit(1);
     }
 
-    // Resolve all variable values (execute commands in parallel)
+    // Resolve non-conditional variable values first (execute commands in parallel)
+    // Conditional variables will be resolved after prompts are collected
     log('Resolving variable values...', 'info');
-    const resolvedVariableValues = await resolveAllVariableValues(allVariables);
+    const resolvedVariableValues = await resolveAllVariableValues(allVariables, config);
 
     // Collect all variable values and merge into config
     const variableValues = collectVariables(allVariables, resolvedVariableValues);
@@ -201,11 +204,79 @@ export async function runTasks(
     }
   }
 
+  // ============================================================================
+  // Re-resolve Conditional Variables (after prompts are collected)
+  // ============================================================================
+  // Now that we have all prompt values in config, resolve conditional variables
+  if (allVariables.length > 0) {
+    // Check if there are any conditional variables
+    const conditionalVariables = allVariables.filter((v) => {
+      if (typeof v.value === 'object' && v.value !== null && !Array.isArray(v.value)) {
+        const valueConfig = v.value as { type?: string };
+        return valueConfig.type === 'conditional';
+      }
+      return false;
+    });
+
+    if (conditionalVariables.length > 0) {
+      log('Re-resolving conditional variables with prompt values...', 'info');
+      const resolvedConditionalValues = await resolveAllVariableValues(
+        conditionalVariables,
+        config,
+      );
+
+      // Merge conditional variable values into config
+      const conditionalValues = collectVariables(
+        conditionalVariables,
+        resolvedConditionalValues,
+      );
+      Object.assign(config, conditionalValues);
+
+      if (Object.keys(conditionalValues).length > 0) {
+        log(
+          `✓ Resolved ${Object.keys(conditionalValues).length} conditional variable(s)`,
+          'success',
+        );
+      }
+    }
+  }
+
+  // ============================================================================
+  // Re-check Template-Level Enabled (After All Variables Resolved)
+  // ============================================================================
+  // Now that we have the full config with all variables and prompts,
+  // re-evaluate the template-level enabled field in case it depends on variables
+  const templateIsEnabledAfterConfig = await evaluateEnabledAsync(
+    options.templateEnabled,
+    config,
+  );
+
+  if (!templateIsEnabledAfterConfig) {
+    log(
+      '⊘ Template is disabled after variable resolution - skipping all execution',
+      'info',
+    );
+    return;
+  }
+
   // Re-evaluate enabled tasks now that we have full config with all variables and prompts
   // Filter the already-sorted tasks to only keep enabled ones
   // Use async evaluation to support exec-type enabled
   const finalEnabledTasks = [];
   for (const task of sortedTasks) {
+    // First check if the template this task belongs to is enabled
+    if (task.$templateEnabled != null) {
+      const taskTemplateIsEnabled = await evaluateEnabledAsync(
+        task.$templateEnabled,
+        config,
+      );
+      if (!taskTemplateIsEnabled) {
+        // Skip this task if its template is disabled
+        continue;
+      }
+    }
+
+    // Then check if the task itself is enabled
     if (await evaluateEnabledAsync(task.enabled, config)) {
       finalEnabledTasks.push(task);
     }

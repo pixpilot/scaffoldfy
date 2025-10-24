@@ -321,6 +321,243 @@ describe('template inheritance', () => {
       const merged = mergeTemplates([template]);
       expect(merged).toEqual(template);
     });
+
+    it('should preserve enabled field from last template when merging', () => {
+      const template1: TasksConfiguration = {
+        name: 'base-template',
+        enabled: true,
+        tasks: [
+          {
+            id: 'task1',
+            name: 'Task 1',
+            description: 'Test',
+            required: true,
+            enabled: true,
+            type: 'write',
+            config: {},
+          },
+        ],
+      };
+
+      const template2: TasksConfiguration = {
+        name: 'child-template',
+        enabled: false, // This should be preserved in the merged result
+        tasks: [
+          {
+            id: 'task2',
+            name: 'Task 2',
+            description: 'Test',
+            required: true,
+            enabled: true,
+            type: 'delete',
+            config: {},
+          },
+        ],
+      };
+
+      const merged = mergeTemplates([template1, template2]);
+
+      expect(merged.enabled).toBe(false);
+    });
+
+    it('should preserve enabled field as undefined when not specified in last template', () => {
+      const template1: TasksConfiguration = {
+        name: 'base-template',
+        enabled: false,
+        tasks: [
+          {
+            id: 'task1',
+            name: 'Task 1',
+            description: 'Test',
+            required: true,
+            enabled: true,
+            type: 'write',
+            config: {},
+          },
+        ],
+      };
+
+      const template2: TasksConfiguration = {
+        name: 'child-template',
+        // enabled not specified, should be undefined
+        tasks: [
+          {
+            id: 'task2',
+            name: 'Task 2',
+            description: 'Test',
+            required: true,
+            enabled: true,
+            type: 'delete',
+            config: {},
+          },
+        ],
+      };
+
+      const merged = mergeTemplates([template1, template2]);
+
+      expect(merged.enabled).toBeUndefined();
+    });
+
+    it('should preserve string expression enabled field', () => {
+      const template1: TasksConfiguration = {
+        name: 'base-template',
+        enabled: true,
+        tasks: [],
+      };
+
+      const template2: TasksConfiguration = {
+        name: 'child-template',
+        enabled: 'projectType === "monorepo"',
+        tasks: [],
+      };
+
+      const merged = mergeTemplates([template1, template2]);
+
+      expect(merged.enabled).toBe('projectType === "monorepo"');
+    });
+
+    it('should preserve conditional enabled field', () => {
+      const template1: TasksConfiguration = {
+        name: 'base-template',
+        enabled: true,
+        tasks: [],
+      };
+
+      const template2: TasksConfiguration = {
+        name: 'child-template',
+        enabled: { condition: 'useTypeScript === true' },
+        tasks: [],
+      };
+
+      const merged = mergeTemplates([template1, template2]);
+
+      expect(merged.enabled).toEqual({ condition: 'useTypeScript === true' });
+    });
+
+    it('should preserve executable enabled field', () => {
+      const template1: TasksConfiguration = {
+        name: 'base-template',
+        enabled: true,
+        tasks: [],
+      };
+
+      const template2: TasksConfiguration = {
+        name: 'child-template',
+        enabled: { type: 'exec', value: 'node -e "console.log(true)"' },
+        tasks: [],
+      };
+
+      const merged = mergeTemplates([template1, template2]);
+
+      expect(merged.enabled).toEqual({
+        type: 'exec',
+        value: 'node -e "console.log(true)"',
+      });
+    });
+
+    it('should skip tasks from templates with enabled: false', () => {
+      const template1: TasksConfiguration = {
+        name: 'enabled-template',
+        enabled: true,
+        tasks: [
+          {
+            id: 'task1',
+            name: 'Task 1',
+            description: 'From enabled template',
+            required: true,
+            enabled: true,
+            type: 'write',
+            config: {},
+          },
+        ],
+      };
+
+      const template2: TasksConfiguration = {
+        name: 'disabled-template',
+        enabled: false, // This template's tasks should be skipped
+        tasks: [
+          {
+            id: 'task2',
+            name: 'Task 2',
+            description: 'From disabled template',
+            required: true,
+            enabled: true,
+            type: 'delete',
+            config: {},
+          },
+        ],
+      };
+
+      const template3: TasksConfiguration = {
+        name: 'another-enabled-template',
+        tasks: [
+          {
+            id: 'task3',
+            name: 'Task 3',
+            description: 'From another enabled template',
+            required: true,
+            enabled: true,
+            type: 'write',
+            config: {},
+          },
+        ],
+      };
+
+      const merged = mergeTemplates([template1, template2, template3]);
+
+      // Only tasks from template1 and template3 should be present
+      expect(merged.tasks).toHaveLength(2);
+      expect(merged.tasks!.find((t) => t.id === 'task1')).toBeDefined();
+      expect(merged.tasks!.find((t) => t.id === 'task2')).toBeUndefined(); // task2 should be skipped
+      expect(merged.tasks!.find((t) => t.id === 'task3')).toBeDefined();
+    });
+
+    it('should skip prompts and variables from templates with enabled: false', () => {
+      const template1: TasksConfiguration = {
+        name: 'enabled-template',
+        prompts: [
+          {
+            id: 'prompt1',
+            type: 'input',
+            message: 'Prompt 1',
+          },
+        ],
+        variables: [
+          {
+            id: 'var1',
+            value: 'value1',
+          },
+        ],
+        tasks: [],
+      };
+
+      const template2: TasksConfiguration = {
+        name: 'disabled-template',
+        enabled: false,
+        prompts: [
+          {
+            id: 'prompt2',
+            type: 'input',
+            message: 'Prompt 2',
+          },
+        ],
+        variables: [
+          {
+            id: 'var2',
+            value: 'value2',
+          },
+        ],
+        tasks: [],
+      };
+
+      const merged = mergeTemplates([template1, template2]);
+
+      // Only prompts and variables from template1 should be present
+      expect(merged.prompts).toHaveLength(1);
+      expect(merged.prompts![0]?.id).toBe('prompt1');
+      expect(merged.variables).toHaveLength(1);
+      expect(merged.variables![0]?.id).toBe('var1');
+    });
   });
 
   describe('loadAndMergeTemplate', () => {
@@ -505,6 +742,74 @@ describe('template inheritance', () => {
       expect(merged.tasks).toBeDefined();
       expect(merged.tasks).toHaveLength(1);
       expect(merged.tasks![0]?.id).toBe('base');
+    });
+
+    it('should preserve enabled field from child template when extending', async () => {
+      const baseConfig: TasksConfiguration = {
+        name: 'base-template',
+        enabled: true,
+        tasks: [
+          {
+            id: 'task1',
+            name: 'Task 1',
+            description: 'Test',
+            required: true,
+            enabled: true,
+            type: 'write',
+            config: {},
+          },
+        ],
+      };
+
+      const childConfig: TasksConfiguration = {
+        name: 'child-template',
+        extends: 'base.json',
+        enabled: false, // This should be preserved AND its tasks should be skipped
+        tasks: [
+          {
+            id: 'task2',
+            name: 'Task 2',
+            description: 'Test',
+            required: true,
+            enabled: true,
+            type: 'delete',
+            config: {},
+          },
+        ],
+      };
+
+      createTemplateFile('base.json', baseConfig);
+      const childPath = createTemplateFile('child.json', childConfig);
+
+      const merged = await loadAndMergeTemplate(childPath);
+
+      // The enabled field should be preserved from the child template
+      expect(merged.enabled).toBe(false);
+      // Only the base template's task should be included (child's task is skipped)
+      expect(merged.tasks).toHaveLength(1);
+      expect(merged.tasks![0]?.id).toBe('task1');
+    });
+
+    it('should preserve complex enabled field when extending', async () => {
+      const baseConfig: TasksConfiguration = {
+        name: 'base-template',
+        enabled: true,
+        tasks: [],
+      };
+
+      const childConfig: TasksConfiguration = {
+        name: 'child-template',
+        extends: 'base.json',
+        enabled: { condition: 'projectType === "monorepo"' },
+        tasks: [],
+      };
+
+      createTemplateFile('base.json', baseConfig);
+      const childPath = createTemplateFile('child.json', childConfig);
+
+      const merged = await loadAndMergeTemplate(childPath);
+
+      expect(merged.enabled).toEqual({ condition: 'projectType === "monorepo"' });
     });
   });
 

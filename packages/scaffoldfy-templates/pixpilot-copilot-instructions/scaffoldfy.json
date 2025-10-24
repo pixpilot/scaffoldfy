@@ -3,7 +3,9 @@
   "description": "Security policy template with configurable contact email",
   "name": "security-policy",
   "dependencies": ["project-info", "pixpilot-info"],
-  "enabled": "pixpilot_project",
+  "enabled": {
+    "condition": "pixpilot_project == true"
+  },
   "tasks": [
     {
       "id": "pixpilot-copilot-instructions",

@@ -91,14 +91,16 @@ describe('validateVariables', () => {
     expect(errors.some((e: string) => e.includes('must have a "type" field'))).toBe(true);
   });
 
-  it('should validate type must be static or exec', () => {
+  it('should validate type must be static, exec, or conditional', () => {
     const variables = [
       { id: 'invalidType', value: { type: 'invalid', value: 'test' } },
     ] as unknown as VariableDefinition[];
 
     const errors = validateVariables(variables);
     expect(
-      errors.some((e: string) => e.includes('type must be "static" or "exec"')),
+      errors.some((e: string) =>
+        e.includes('type must be "static", "exec", or "conditional"'),
+      ),
     ).toBe(true);
   });
 

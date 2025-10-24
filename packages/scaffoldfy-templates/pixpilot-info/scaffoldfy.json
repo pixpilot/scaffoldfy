@@ -7,8 +7,10 @@
     {
       "id": "pixpilot_project",
       "value": {
-        "type": "exec",
-        "value": "repoOwner === 'ccpu' || orgName === 'pixpilot'"
+        "type": "conditional",
+        "condition": "repoOwner === 'ccpu' || repoOwner === 'pixpilot' || orgName === 'pixpilot'",
+        "ifTrue": true,
+        "ifFalse": false
       }
     }
   ]

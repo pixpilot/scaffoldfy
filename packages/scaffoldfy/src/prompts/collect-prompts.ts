@@ -29,6 +29,20 @@ export async function collectPrompts(
   }
 
   for (const prompt of prompts) {
+    // First check if the template this prompt belongs to is enabled
+    // This allows lazy evaluation - templates can be conditionally enabled based on previous prompts
+    if (prompt.$templateEnabled != null) {
+      const templateIsEnabled = await evaluateEnabledAsync(prompt.$templateEnabled, {
+        ...config,
+        ...answers,
+      });
+      if (!templateIsEnabled) {
+        // Skip this prompt if its template is disabled
+        // eslint-disable-next-line no-continue
+        continue;
+      }
+    }
+
     // Check if prompt is enabled (evaluate condition if needed)
     // Use current config merged with collected answers for cascading conditions
     const currentContext = { ...config, ...answers };

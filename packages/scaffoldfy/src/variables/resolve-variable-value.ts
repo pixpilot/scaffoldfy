@@ -2,19 +2,21 @@
  * Resolve a variable value that may be static or executable
  */
 
-import type { DefaultValue } from '../types.js';
+import type { DefaultValue, InitConfig } from '../types.js';
 import { execSync } from 'node:child_process';
 import { log } from '../utils.js';
 
 /**
- * Resolve a variable value that may be static or executable
+ * Resolve a variable value that may be static, executable, or conditional
  * @param value - The variable value configuration
  * @param variableId - The variable ID for error reporting
+ * @param context - Optional context for evaluating conditional values
  * @returns The resolved variable value
  */
 export async function resolveVariableValue<T = string | number | boolean>(
   value: DefaultValue<T>,
   variableId: string,
+  context?: InitConfig,
 ): Promise<T | undefined> {
   if (value === undefined || value === null) {
     return undefined;
@@ -26,7 +28,56 @@ export async function resolveVariableValue<T = string | number | boolean>(
   }
 
   // Check if it's a DefaultValueConfig
-  const config = value as { type?: string; value?: unknown };
+  const config = value as {
+    type?: string;
+    value?: unknown;
+    condition?: string;
+    ifTrue?: unknown;
+    ifFalse?: unknown;
+  };
+
+  if (config.type === 'conditional') {
+    // Handle conditional variables
+    if (!context) {
+      log(
+        `Variable "${variableId}": conditional value requires context but none provided`,
+        'warn',
+      );
+      return undefined;
+    }
+
+    if (typeof config.condition !== 'string') {
+      log(
+        `Variable "${variableId}": conditional value must have a string condition`,
+        'error',
+      );
+      return undefined;
+    }
+
+    try {
+      // Evaluate the condition
+      const { evaluateCondition, interpolateTemplate } = await import('../utils.js');
+      const conditionResult = evaluateCondition(config.condition, context);
+
+      // Get the appropriate value based on condition
+      let selectedValue = conditionResult ? config.ifTrue : config.ifFalse;
+
+      // If the selected value is a string with template variables, interpolate it
+      if (typeof selectedValue === 'string' && /\{\{\w+\}\}/u.test(selectedValue)) {
+        selectedValue = interpolateTemplate(selectedValue, context);
+      }
+
+      return selectedValue as T;
+    } catch (error) {
+      log(
+        `Variable "${variableId}": failed to evaluate conditional value: ${
+          error instanceof Error ? error.message : 'Unknown error'
+        }`,
+        'warn',
+      );
+      return undefined;
+    }
+  }
 
   if (config.type === 'exec') {
     const command = config.value;
