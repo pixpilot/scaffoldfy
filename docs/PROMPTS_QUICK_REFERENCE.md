@@ -132,12 +132,12 @@ Values are available via template interpolation:
 | ---------- | ------------------------------ | ---------------------------------------- |
 | `id`       | all                            | Unique identifier for the value          |
 | `type`     | all                            | input, password, number, select, confirm |
-| `message`  | all                            | Question text                      |
-| `required` | all                            | Force non-empty value              |
-| `default`  | input, number, select, confirm | Default value                      |
-| `min`      | number                         | Minimum value                      |
-| `max`      | number                         | Maximum value                      |
-| `choices`  | select                         | Array of {name, value} objects     |
+| `message`  | all                            | Question text                            |
+| `required` | all                            | Force non-empty value                    |
+| `default`  | input, number, select, confirm | Default value                            |
+| `min`      | number                         | Minimum value                            |
+| `max`      | number                         | Maximum value                            |
+| `choices`  | select                         | Array of {name, value} objects           |
 
 ## Root-Level Prompts
 
