@@ -29,7 +29,7 @@ pnpm add @pixpilot/scaffoldfy
 scaffoldfy
 
 # With custom tasks file
-scaffoldfy --tasks-file ./my-tasks.json
+scaffoldfy --config ./my-tasks.json
 
 # Preview changes (dry run)
 scaffoldfy --dry-run
@@ -42,7 +42,7 @@ Or run without installing using npx:
 npx @pixpilot/scaffoldfy
 
 # With custom tasks file
-npx @pixpilot/scaffoldfy --tasks-file ./my-tasks.json
+npx @pixpilot/scaffoldfy --config ./my-tasks.json
 
 # Preview changes (dry run)
 npx @pixpilot/scaffoldfy --dry-run

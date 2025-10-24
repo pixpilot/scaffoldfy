@@ -26,7 +26,7 @@ pnpm add -g @pixpilot/scaffoldfy
 You can also run scaffoldfy without installing it using npx:
 
 ```sh
-npx @pixpilot/scaffoldfy --tasks-file ./setup/setup-tasks.json
+npx @pixpilot/scaffoldfy --config ./setup/setup-tasks.json
 ```
 
 ## Quick Start
@@ -39,20 +39,18 @@ The simplest way to use the tool - it will prompt you for configuration:
 scaffoldfy
 ```
 
-### With JSON Tasks File
+### With Configuration File
 
-Define your tasks in a JSON file and pass it to the CLI:
+Define your tasks in a JSON or TypeScript file and pass it to the CLI:
 
 ```sh
-scaffoldfy --tasks-file ./tasks.json
+scaffoldfy --config ./tasks.json
 ```
 
-### With TypeScript Tasks File
-
-You can also use TypeScript files for tasks:
+Or with TypeScript:
 
 ```sh
-scaffoldfy --tasks-ts ./tasks.ts
+scaffoldfy --config ./tasks.ts
 ```
 
 ### Schema Validation
@@ -67,7 +65,7 @@ By default, all JSON task configuration files are validated against the JSON sch
 If validation fails, you'll see detailed error messages pointing to the issues:
 
 ```sh
-scaffoldfy --tasks-file ./tasks.json
+scaffoldfy --config ./tasks.json
 # Validating task configuration against schema...
 # ❌ Schema validation failed:
 #
@@ -80,7 +78,7 @@ scaffoldfy --tasks-file ./tasks.json
 You can skip validation (not recommended) with the `--no-validate` flag:
 
 ```sh
-scaffoldfy --tasks-file ./tasks.json --no-validate
+scaffoldfy --config ./tasks.json --no-validate
 ```
 
 ### Dry Run Mode
@@ -88,7 +86,7 @@ scaffoldfy --tasks-file ./tasks.json --no-validate
 Preview what changes would be made without actually applying them:
 
 ```sh
-scaffoldfy --tasks-file ./tasks.json --dry-run
+scaffoldfy --config ./tasks.json --dry-run
 ```
 
 Learn more: [Dry Run Mode Documentation](DRY_RUN.md)
@@ -103,15 +101,14 @@ scaffoldfy --force
 
 ## CLI Options
 
-| Option                | Description                                                                     |
-| --------------------- | ------------------------------------------------------------------------------- |
-| `--tasks-file <path>` | Path to JSON task file (default: `./template-tasks.json`)                       |
-| `--tasks-ts <path>`   | Path to TypeScript task file (default: `./template-tasks.ts`)                   |
-| `--dry-run`           | Preview changes without applying them                                           |
-| `--force`             | Force execution even if checks fail                                             |
-| `--no-validate`       | Skip schema validation of task configuration (validation is enabled by default) |
-| `-h, --help`          | Show help message                                                               |
-| `-v, --version`       | Show version                                                                    |
+| Option            | Description                                                                     |
+| ----------------- | ------------------------------------------------------------------------------- |
+| `--config <path>` | Path to config file (JSON or TypeScript, default: `./template-tasks.json`)      |
+| `--dry-run`       | Preview changes without applying them                                           |
+| `--force`         | Force execution even if checks fail                                             |
+| `--no-validate`   | Skip schema validation of task configuration (validation is enabled by default) |
+| `-h, --help`      | Show help message                                                               |
+| `-v, --version`   | Show version                                                                    |
 
 ## Programmatic Usage
 
@@ -477,7 +474,7 @@ Here's a complete example that sets up a Node.js project:
 
 Make sure you're either:
 
-- Passing `--tasks-file` with a valid JSON file path
+- Passing `--config` with a valid JSON or TypeScript file path
 - Calling `runWithTasks()` with a non-empty tasks array
 
 ### "Circular dependency detected" error

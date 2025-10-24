@@ -923,16 +923,16 @@ The CLI automatically handles template inheritance from both local files and rem
 
 ```bash
 # Load template from local file with inheritance
-scaffoldfy --tasks-file ./my-template.json
+scaffoldfy --config ./my-template.json
 
 # Load template from remote URL
-scaffoldfy --tasks-file https://example.com/templates/project-setup.json
+scaffoldfy --config https://example.com/templates/project-setup.json
 
 # Dry run to see all inherited and merged tasks
-scaffoldfy --tasks-file ./my-template.json --dry-run
+scaffoldfy --config ./my-template.json --dry-run
 
 # Dry run with remote template
-scaffoldfy --tasks-file https://raw.githubusercontent.com/org/templates/main/base.json --dry-run
+scaffoldfy --config https://raw.githubusercontent.com/org/templates/main/base.json --dry-run
 ```
 
 ## API Reference

@@ -983,11 +983,11 @@ export const config: TasksConfiguration = {
 Run initialization with prompts:
 
 ```bash
-# Using JSON file (default)
-scaffoldfy --tasks-file ./template-tasks.json
+# Using config file (JSON or TypeScript)
+scaffoldfy --config ./template-tasks.json
 
-# Using TypeScript file
-scaffoldfy --tasks-ts ./template-tasks.ts
+# Or with TypeScript
+scaffoldfy --config ./template-tasks.ts
 
 # Dry run to preview
 scaffoldfy --dry-run

@@ -34,7 +34,7 @@ pnpm add @pixpilot/scaffoldfy
 scaffoldfy
 
 # With custom tasks file
-scaffoldfy --tasks-file ./my-tasks.json
+scaffoldfy --config ./my-tasks.json
 
 # Preview changes (dry run)
 scaffoldfy --dry-run
@@ -47,7 +47,7 @@ Or run without installing using npx:
 npx @pixpilot/scaffoldfy
 
 # With custom tasks file
-npx @pixpilot/scaffoldfy --tasks-file ./my-tasks.json
+npx @pixpilot/scaffoldfy --config ./my-tasks.json
 
 # Preview changes (dry run)
 npx @pixpilot/scaffoldfy --dry-run
@@ -55,14 +55,13 @@ npx @pixpilot/scaffoldfy --dry-run
 
 ### CLI Options
 
-| Option                | Description                                                                     |
-| --------------------- | ------------------------------------------------------------------------------- |
-| `--tasks-file <path>` | Path to JSON task file (default: `./template-tasks.json`)                       |
-| `--tasks-ts <path>`   | Path to TypeScript task file (default: `./template-tasks.ts`)                   |
-| `--dry-run`           | Preview changes without applying them                                           |
-| `--no-validate`       | Skip schema validation of task configuration (validation is enabled by default) |
-| `-h, --help`          | Show help message                                                               |
-| `-v, --version`       | Show version                                                                    |
+| Option            | Description                                                                     |
+| ----------------- | ------------------------------------------------------------------------------- |
+| `--config <path>` | Path to config file (JSON or TypeScript, default: `./template-tasks.json`)      |
+| `--dry-run`       | Preview changes without applying them                                           |
+| `--no-validate`   | Skip schema validation of task configuration (validation is enabled by default) |
+| `-h, --help`      | Show help message                                                               |
+| `-v, --version`   | Show version                                                                    |
 
 ### Programmatic API
 
@@ -270,7 +269,7 @@ You can extend multiple templates, override tasks by ID, and merge dependencies 
 Preview exactly what will change before applying:
 
 ```bash
-scaffoldfy --tasks-file ./tasks.json --dry-run
+scaffoldfy --config ./tasks.json --dry-run
 ```
 
 See color-coded diffs for all file modifications, deletions, and additions.

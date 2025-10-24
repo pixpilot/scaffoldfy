@@ -44,11 +44,11 @@ async function main(customTasks?: TaskDefinition[]) {
 
     if (tasks.length === 0) {
       log(
-        '⚠️  No tasks defined. Use --tasks-file to specify tasks or call runWithTasks() programmatically.',
+        '⚠️  No tasks defined. Use --config to specify tasks or call runWithTasks() programmatically.',
         'warn',
       );
 
-      log('Example: scaffoldfy --tasks-file ./tasks.json', 'info');
+      log('Example: scaffoldfy --config ./tasks.json', 'info');
 
       process.exit(1);
     }

@@ -22,10 +22,10 @@ With dry-run mode, you can:
 
 ```bash
 # Preview changes without applying them
-scaffoldfy --tasks-file ./template-tasks.json --dry-run
+scaffoldfy --config ./template-tasks.json --dry-run
 
 # Preview with inherited templates
-scaffoldfy --tasks-file ./my-template.json --dry-run
+scaffoldfy --config ./my-template.json --dry-run
 ```
 
 ### Programmatic
@@ -311,7 +311,7 @@ jobs:
       - uses: actions/setup-node@v3
       - run: npm install
       - name: Test template dry-run
-        run: npx @pixpilot/scaffoldfy --tasks-file ./template-tasks.json --dry-run
+        run: npx @pixpilot/scaffoldfy --config ./template-tasks.json --dry-run
 ```
 
 ## Comparing Before/After
@@ -325,10 +325,10 @@ git add .
 git commit -m "Before template"
 
 # Run dry-run to preview
-scaffoldfy --tasks-file ./template.json --dry-run
+scaffoldfy --config ./template.json --dry-run
 
 # If satisfied, apply for real
-scaffoldfy --tasks-file ./template.json
+scaffoldfy --config ./template.json
 
 # See what actually changed
 git diff

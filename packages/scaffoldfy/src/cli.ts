@@ -19,8 +19,7 @@ import { log } from './utils.js';
 interface CliOptions {
   dryRun?: boolean;
   force?: boolean;
-  tasksFile?: string;
-  tasksTs?: string;
+  config?: string;
   validate?: boolean;
 }
 
@@ -48,14 +47,9 @@ program
   .option('--dry-run', 'Run in dry mode without making any changes')
   .option('--force', 'Force execution even if checks fail')
   .option(
-    '--tasks-file <path>',
-    'Path to JSON file containing task definitions',
+    '--config <path>',
+    'Path to task configuration file (JSON or TypeScript)',
     './template-tasks.json',
-  )
-  .option(
-    '--tasks-ts <path>',
-    'Path to TypeScript file exporting tasks',
-    './template-tasks.ts',
   )
   .option(
     '--no-validate',
@@ -69,115 +63,116 @@ program
       let templateEnabled: import('./types.js').EnabledValue | undefined;
       let tasksFilePath: string | undefined;
 
-      // Try to load tasks from TypeScript file first (if specified and exists)
-      if (options.tasksTs != null && options.tasksTs !== '') {
-        const tsPath = path.resolve(process.cwd(), options.tasksTs);
+      // Load config file (supports both .json and .ts/.mjs)
+      if (options.config != null && options.config !== '') {
+        const configPath = path.resolve(process.cwd(), options.config);
 
-        if (fs.existsSync(tsPath)) {
-          log(`Loading tasks from TypeScript file: ${options.tasksTs}`, 'info');
-          tasksFilePath = tsPath;
+        if (fs.existsSync(configPath)) {
+          tasksFilePath = configPath;
+          const isTypeScript = configPath.endsWith('.ts') || configPath.endsWith('.mts');
 
-          try {
-            // Dynamic import for ES modules
-            const tasksModule = (await import(tsPath)) as {
-              default?: TaskDefinition[];
-              tasks?: TaskDefinition[];
-            };
-            tasks = tasksModule.default ?? tasksModule.tasks ?? [];
+          // Try TypeScript/ESM file
+          if (isTypeScript) {
+            log(`Loading tasks from TypeScript file: ${options.config}`, 'info');
 
-            if (!Array.isArray(tasks) || tasks.length === 0) {
-              log('⚠️  No tasks found in TypeScript file or invalid format', 'warn');
-              log(
-                'Expected default export or named export "tasks" with TaskDefinition[]',
-                'info',
-              );
-            }
-          } catch (error) {
-            log(`Failed to load TypeScript tasks file: ${options.tasksTs}`, 'error');
-            if (error instanceof Error) {
-              log(`  Error: ${error.message}`, 'error');
-            }
+            try {
+              // Dynamic import for ES modules
+              const tasksModule = (await import(configPath)) as {
+                default?: TaskDefinition[];
+                tasks?: TaskDefinition[];
+              };
+              tasks = tasksModule.default ?? tasksModule.tasks ?? [];
 
-            process.exit(EXIT_CODE_ERROR);
-          }
-        }
-      }
-
-      // Fall back to JSON file if no tasks loaded from TypeScript
-      if (tasks.length === 0 && options.tasksFile != null && options.tasksFile !== '') {
-        const jsonPath = path.resolve(process.cwd(), options.tasksFile);
-
-        if (fs.existsSync(jsonPath)) {
-          tasksFilePath = jsonPath;
-
-          try {
-            // Validate schema if validation is enabled (default: true)
-            if (options.validate !== false) {
-              log('Validating task configuration against schema...', 'info');
-
-              // Load raw JSON for validation
-              const rawJson = fs.readFileSync(jsonPath, 'utf-8');
-              const rawConfig = JSON.parse(rawJson) as unknown;
-
-              const validationResult = validateTasksSchema(rawConfig, { silent: false });
-
-              if (!validationResult.valid) {
-                log('', 'error');
+              if (!Array.isArray(tasks) || tasks.length === 0) {
+                log('⚠️  No tasks found in TypeScript file or invalid format', 'warn');
                 log(
-                  '💡 You can skip validation with --no-validate flag, but this is not recommended.',
+                  'Expected default export or named export "tasks" with TaskDefinition[]',
                   'info',
                 );
-                process.exit(EXIT_CODE_ERROR);
               }
-
-              log('✓ Schema validation passed', 'success');
-            }
-
-            // Use template inheritance loader to support extends
-            // Use sequential mode to process templates one at a time
-            const config = await loadTasksWithInheritance(jsonPath, { sequential: true });
-
-            // If we have templates (sequential mode), run them sequentially
-            if (config.templates != null && config.templates.length > 0) {
-              log('Using sequential template processing mode', 'info');
-              const { runTemplatesSequentially } = await import('./run-tasks.js');
-              const { createInitialConfig } = await import('./config.js');
-
-              await runTemplatesSequentially(
-                config.templates,
-                {
-                  dryRun: options.dryRun ?? false,
-                  force: options.force ?? false,
-                  tasksFilePath: jsonPath,
-                },
-                createInitialConfig(),
-              );
-
-              process.exit(0);
-            }
-
-            // Otherwise use the traditional merged approach
-            tasks = config.tasks;
-            globalVariables = config.variables;
-            globalPrompts = config.prompts;
-            templateEnabled = config.enabled;
-
-            if (!Array.isArray(tasks)) {
-              log('❌ Invalid tasks file format', 'error');
-              log('Expected JSON with { "tasks": [...] } structure', 'info');
+            } catch (error) {
+              log(`Failed to load TypeScript config file: ${options.config}`, 'error');
+              if (error instanceof Error) {
+                log(`  Error: ${error.message}`, 'error');
+              }
 
               process.exit(EXIT_CODE_ERROR);
             }
-          } catch (error) {
-            log(`Failed to load JSON tasks file: ${options.tasksFile}`, 'error');
-            if (error instanceof Error) {
-              log(`  Error: ${error.message}`, 'error');
-            }
+          } else {
+            // JSON file
+            try {
+              // Validate schema if validation is enabled (default: true)
+              if (options.validate !== false) {
+                log('Validating task configuration against schema...', 'info');
 
-            process.exit(EXIT_CODE_ERROR);
+                // Load raw JSON for validation
+                const rawJson = fs.readFileSync(configPath, 'utf-8');
+                const rawConfig = JSON.parse(rawJson) as unknown;
+
+                const validationResult = validateTasksSchema(rawConfig, {
+                  silent: false,
+                });
+
+                if (!validationResult.valid) {
+                  log('', 'error');
+                  log(
+                    '💡 You can skip validation with --no-validate flag, but this is not recommended.',
+                    'info',
+                  );
+                  process.exit(EXIT_CODE_ERROR);
+                }
+
+                log('✓ Schema validation passed', 'success');
+              }
+
+              // Use template inheritance loader to support extends
+              // Use sequential mode to process templates one at a time
+              const config = await loadTasksWithInheritance(configPath, {
+                sequential: true,
+              });
+
+              // If we have templates (sequential mode), run them sequentially
+              if (config.templates != null && config.templates.length > 0) {
+                log('Using sequential template processing mode', 'info');
+                const { runTemplatesSequentially } = await import('./run-tasks.js');
+                const { createInitialConfig } = await import('./config.js');
+
+                await runTemplatesSequentially(
+                  config.templates,
+                  {
+                    dryRun: options.dryRun ?? false,
+                    force: options.force ?? false,
+                    tasksFilePath: configPath,
+                  },
+                  createInitialConfig(),
+                );
+
+                process.exit(0);
+              }
+
+              // Otherwise use the traditional merged approach
+              tasks = config.tasks;
+              globalVariables = config.variables;
+              globalPrompts = config.prompts;
+              templateEnabled = config.enabled;
+
+              if (!Array.isArray(tasks)) {
+                log('❌ Invalid config file format', 'error');
+                log('Expected JSON with { "tasks": [...] } structure', 'info');
+
+                process.exit(EXIT_CODE_ERROR);
+              }
+            } catch (error) {
+              log(`Failed to load JSON config file: ${options.config}`, 'error');
+              if (error instanceof Error) {
+                log(`  Error: ${error.message}`, 'error');
+              }
+
+              process.exit(EXIT_CODE_ERROR);
+            }
           }
         } else {
-          log(`Tasks file not found: ${options.tasksFile}`, 'warn');
+          log(`Config file not found: ${options.config}`, 'warn');
         }
       }
 
@@ -193,8 +188,7 @@ program
         log('Please provide tasks using one of these methods:', 'info');
         log('  1. Create a template-tasks.json file in the current directory', 'info');
         log('  2. Create a template-tasks.ts file in the current directory', 'info');
-        log('  3. Use --tasks-file option to specify a different JSON file', 'info');
-        log('  4. Use --tasks-ts option to specify a different TypeScript file', 'info');
+        log('  3. Use --config option to specify a different config file', 'info');
 
         log('Example JSON structure:', 'info');
         const JSON_INDENT = 2;

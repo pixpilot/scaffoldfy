@@ -9,7 +9,6 @@ title: Quick Reference - Scaffoldfy
 
 ## Table of Contents
 
-- [Installation](#installation)
 - [Basic Usage](#basic-usage)
 - [Essential Task Types](#essential-task-types)
 - [Quick Prompt Examples](#quick-prompt-examples)
@@ -19,49 +18,50 @@ title: Quick Reference - Scaffoldfy
 
 ---
 
-## Installation
+## Basic Usage
+
+### 🚀 Quick Start with npx (No Installation Required)
 
 ```bash
-# Install globally for CLI usage
-npm install -g @pixpilot/scaffoldfy
+# Run any template directly with npx (fastest way!)
+npx @pixpilot/scaffoldfy
 
-# Or install locally in your project
-npm install --save-dev @pixpilot/scaffoldfy
+# With custom tasks file
+npx @pixpilot/scaffoldfy --config ./my-tasks.json
 
-# Or use with pnpm
-pnpm add -D @pixpilot/scaffoldfy
+# Preview changes first (recommended)
+npx @pixpilot/scaffoldfy --dry-run
+
+# With TypeScript tasks file
+npx @pixpilot/scaffoldfy --config ./my-tasks.ts
 ```
-
----
-
-## Basic Usage
 
 ### CLI
 
 ```bash
-# Initialize from a template file
-scaffoldfy init ./template.json
+# Basic usage with default task file (./template-tasks.json)
+scaffoldfy
 
-# Initialize from a remote template
-scaffoldfy init https://example.com/template.json
+# With custom tasks file
+scaffoldfy --config ./my-tasks.json
 
 # Preview changes without applying (dry-run mode)
-scaffoldfy init ./template.json --dry-run
+scaffoldfy --dry-run
 
-# Initialize from a TypeScript template
-scaffoldfy init ./template.ts
+# With TypeScript task file
+scaffoldfy --config ./my-tasks.ts
 ```
 
 ### Programmatic API
 
 ```typescript
-import { scaffoldfy } from '@pixpilot/scaffoldfy';
+import { runWithTasks } from '@pixpilot/scaffoldfy';
 
-// Run initialization
-await scaffoldfy({
-  templateFile: './template.json',
-  cwd: process.cwd(),
+// Run tasks
+await runWithTasks(tasks, {
   dryRun: false,
+  force: false,
+  tasksFilePath: './template-tasks.json',
 });
 ```
 
@@ -301,30 +301,60 @@ await scaffoldfy({
 
 ## CLI Commands
 
+### Quick npx Commands (No Installation)
+
+```bash
+# Run with default config (fastest way!)
+npx @pixpilot/scaffoldfy
+
+# With custom config file
+npx @pixpilot/scaffoldfy --config ./my-tasks.json
+
+# Dry run (preview changes)
+npx @pixpilot/scaffoldfy --dry-run
+```
+
+### Installation (Optional)
+
+**Optional:** You can use npx (above) without installing anything. Or install for repeated use:
+
+```bash
+# Install globally for CLI usage
+npm install -g @pixpilot/scaffoldfy
+
+# Or install locally in your project
+npm install --save-dev @pixpilot/scaffoldfy
+
+# Or use with pnpm
+pnpm add -D @pixpilot/scaffoldfy
+```
+
 ### Basic Commands
 
 ```bash
-# Initialize with a template
-scaffoldfy init <template-file>
+# Run with default config
+scaffoldfy
+
+# With custom config file
+scaffoldfy --config ./my-tasks.json
 
 # Dry run (preview changes)
-scaffoldfy init <template-file> --dry-run
+scaffoldfy --dry-run
 
 # Show version
 scaffoldfy --version
 
 # Show help
 scaffoldfy --help
-scaffoldfy init --help
 ```
 
 ### Options
 
 ```bash
+--config <path>    # Path to config file (JSON or TypeScript, default: ./template-tasks.json)
 --dry-run          # Preview changes without applying them
---cwd <path>       # Set working directory (default: current directory)
---no-color         # Disable colored output
---verbose          # Show detailed output
+--no-validate      # Skip schema validation
+--force            # Force execution even if checks fail
 ```
 
 ---
@@ -334,48 +364,41 @@ scaffoldfy init --help
 ### Basic Usage
 
 ```typescript
-import { scaffoldfy } from '@pixpilot/scaffoldfy';
+import { runWithTasks } from '@pixpilot/scaffoldfy';
 
-// Initialize with default options
-await scaffoldfy({
-  templateFile: './template.json',
+// Run with tasks array
+await runWithTasks(tasks, {
+  dryRun: false,
+  force: false,
+  tasksFilePath: './template-tasks.json',
 });
 ```
 
 ### With Options
 
 ```typescript
-await scaffoldfy({
-  templateFile: './template.json',
-  cwd: '/path/to/project',
+await runWithTasks(tasks, {
   dryRun: true, // Preview mode
-  verbose: true, // Detailed logging
-  silent: false, // Show output
-});
-```
-
-### With Plugins
-
-```typescript
-import { scaffoldfy } from '@pixpilot/scaffoldfy';
-import { myCustomPlugin } from './my-plugin';
-
-await scaffoldfy({
-  templateFile: './template.json',
-  plugins: [myCustomPlugin],
+  force: false, // Don't force execution
+  tasksFilePath: './my-tasks.json',
+  globalVariables: [], // Optional global variables
+  globalPrompts: [], // Optional global prompts
 });
 ```
 
 ### Error Handling
 
 ```typescript
+import { runWithTasks } from '@pixpilot/scaffoldfy';
+
 try {
-  await scaffoldfy({
-    templateFile: './template.json',
+  await runWithTasks(tasks, {
+    dryRun: false,
+    tasksFilePath: './template-tasks.json',
   });
-  console.log('✅ Initialization successful!');
+  console.log('✅ Tasks completed successfully!');
 } catch (error) {
-  console.error('❌ Initialization failed:', error.message);
+  console.error('❌ Task execution failed:', error.message);
 }
 ```
 
@@ -440,5 +463,5 @@ Check the `examples/` directory for complete working templates:
 **Ready to start?** Run your first template:
 
 ```bash
-scaffoldfy init ./template.json --dry-run
+scaffoldfy --dry-run
 ```
