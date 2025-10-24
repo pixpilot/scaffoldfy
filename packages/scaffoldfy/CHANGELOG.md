@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy
 
+## 0.24.1
+
+### Patch Changes
+
+- remove built-in global configuration property
+
 ## 0.24.0
 
 ### Minor Changes
