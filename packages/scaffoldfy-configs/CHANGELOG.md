@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy-configs
 
+## 0.3.0
+
+### Minor Changes
+
+- update task IDs and enable conditions for Changesets workflows
+
 ## 0.2.1
 
 ### Patch Changes
