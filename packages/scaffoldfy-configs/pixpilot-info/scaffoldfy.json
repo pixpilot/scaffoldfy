@@ -8,7 +8,7 @@
       "id": "pixpilot_project",
       "value": {
         "type": "conditional",
-        "condition": "repoOwner === 'ccpu' || repoOwner === 'pixpilot'",
+        "condition": "repoOwner === 'ccpu' || repoOwner === 'pixpilot' || orgName === 'PixPilot' || orgName === 'pixpilot'",
         "ifTrue": true,
         "ifFalse": false
       }

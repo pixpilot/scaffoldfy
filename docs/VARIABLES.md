@@ -227,7 +227,7 @@ Conditional variables are particularly useful with template-level `enabled` fiel
   "enabled": {
     "condition": "pixpilot_project == true"
   },
-  "tasks": [...]
+  "tasks": []
 }
 ```
 

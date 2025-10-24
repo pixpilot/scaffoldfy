@@ -3,9 +3,7 @@
   "description": "Pixpilot workspace package generator template for pnpm + Turbo monorepo. Provides project info prompts and config tasks.",
   "name": "github-pixpilot-owner-changesets-release",
   "dependencies": ["pixpilot-info"],
-  "enabled": {
-    "condition": "pixpilot_project == true"
-  },
+  "enabled": "pixpilot_project == true",
   "tasks": [
     {
       "id": "github-pixpilot-admin-changesets-release-create",
