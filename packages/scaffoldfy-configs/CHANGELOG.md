@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy-configs
 
+## 0.3.1
+
+### Patch Changes
+
+- update file path for copilot instructions
+
 ## 0.3.0
 
 ### Minor Changes
