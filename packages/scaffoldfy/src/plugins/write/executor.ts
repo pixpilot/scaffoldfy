@@ -22,6 +22,8 @@ export async function executeWrite(
   initConfig: InitConfig,
   task?: TaskDefinition,
 ): Promise<void> {
+  const { allowCreate = true } = config;
+
   // Check condition if specified
   if (config.condition != null && config.condition !== '') {
     const shouldExecute = evaluateCondition(config.condition, initConfig);
@@ -32,6 +34,15 @@ export async function executeWrite(
   }
 
   const filePath = path.join(process.cwd(), config.file);
+
+  const fileExists = fs.existsSync(filePath);
+  if (!fileExists) {
+    if (allowCreate === false) {
+      throw new Error(`Write task failed: file does not exist (${config.file})`);
+    }
+
+    log(`File not found, creating new file: ${config.file}`, 'info');
+  }
 
   // Validate that either template or templateFile is provided
   const validation = validateTemplateConfig(config);

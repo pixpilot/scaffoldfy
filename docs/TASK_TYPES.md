@@ -330,6 +330,7 @@ interface Config {
   file: string; // Path to file to create/overwrite
   template: string; // Template string with {{variables}}
   condition?: string; // Optional: only execute if condition evaluates to true
+  allowCreate?: boolean; // Optional: whether to allow creating the file if it doesn't exist (default: true)
 }
 ```
 
@@ -358,12 +359,26 @@ interface Config {
 }
 ```
 
+### Prevent File Creation Example
+
+```json
+{
+  "type": "write",
+  "config": {
+    "file": "existing-file.md",
+    "template": "This will only be written if the file already exists",
+    "allowCreate": false
+  }
+}
+```
+
 ### Features
 
 - Full template variable interpolation
 - Creates directories if needed
 - Overwrites existing files
 - **Optional condition:** JavaScript expression evaluation (skips task if false)
+- **Optional allowCreate:** Control whether to create files that don't exist (default: true)
 
 ---
 
@@ -443,28 +458,6 @@ When using a `.hbs` file, Handlebars syntax is automatically used. Otherwise, si
 - Creates parent directories if needed
 - Skips if file already exists (won't overwrite)
 - **Optional condition:** JavaScript expression evaluation (skips task if false)
-
-### Difference from `template` Task
-
-| Feature            | `template`                | `create`                |
-| ------------------ | ------------------------- | ----------------------- |
-| Purpose            | Create or overwrite files | Create new files only   |
-| Overwrite existing | Yes                       | No (skips if exists)    |
-| Inline content     | `template` property       | `template` property     |
-| External templates | Not supported             | `templateFile` property |
-| Handlebars support | No                        | Yes (for `.hbs` files)  |
-
-Use `create` when you want to:
-
-- Create files from external template files
-- Use Handlebars templates
-- Avoid accidentally overwriting existing files
-
-Use `template` when you want to:
-
-- Overwrite existing files
-- Use only inline templates
-- Simple variable interpolation
 
 ---
 

@@ -341,6 +341,33 @@ describe('task Executors', () => {
         'Template task cannot have both "template" and "templateFile"',
       );
     });
+
+    it('should throw error if allowCreate is false and file does not exist', async () => {
+      const testFile = 'nonexistent.md';
+      const config: WriteConfig = {
+        file: testFile,
+        template: 'This should not be created',
+        allowCreate: false,
+      };
+
+      await expect(executeWrite(config, mockConfig)).rejects.toThrow(
+        `Write task failed: file does not exist (${testFile})`,
+      );
+    });
+
+    it('should create file when allowCreate is true (default)', async () => {
+      const testFile = 'newfile.md';
+      const config: WriteConfig = {
+        file: testFile,
+        template: 'Created successfully',
+        allowCreate: true,
+      };
+
+      await executeWrite(config, mockConfig);
+
+      expect(fs.existsSync(testFile)).toBe(true);
+      expect(fs.readFileSync(testFile, 'utf-8')).toBe('Created successfully');
+    });
   });
 
   describe('executeRegexReplace', () => {
