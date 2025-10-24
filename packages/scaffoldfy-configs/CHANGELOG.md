@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy-configs
 
+## 0.2.1
+
+### Patch Changes
+
+- simplify 'enabled' property in scaffoldfy configurations
+
 ## 0.2.0
 
 ### Minor Changes
