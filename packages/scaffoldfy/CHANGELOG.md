@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy
 
+## 0.26.0
+
+### Minor Changes
+
+- simplify CLI with unified --config option
+
 ## 0.25.0
 
 ### Minor Changes
