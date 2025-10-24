@@ -1,10 +1,12 @@
 # @pixpilot/scaffoldfy
 
+[![Documentation](https://img.shields.io/badge/docs-pixpilot.github.io/scaffoldfy-blue)](https://pixpilot.github.io/scaffoldfy/)
+
 A flexible and powerful task automation utility for project setup, cleanup, and configuration.
 
 ## Features
 
-- 🔄 **9 Task Types** - update-json, write, regex-replace, replace-in-file, delete, conditional-delete, rename, git-init, exec
+- 🔄 **13 Task Types** - update-json, template, create, regex-replace, replace-in-file, delete, rename, move, copy, append, mkdir, git-init, exec
 - 🧩 **Template Inheritance** - Extend base templates for code reuse
 - 🔍 **Dry-Run Mode with Diff** - Preview exact changes before applying
 - 🔌 **Plugin System** - Create custom task types and lifecycle hooks
@@ -34,14 +36,8 @@ scaffoldfy
 # With custom tasks file
 scaffoldfy --tasks-file ./my-tasks.json
 
-# TypeScript tasks file
-scaffoldfy --tasks-ts ./my-tasks.ts
-
 # Preview changes (dry run)
 scaffoldfy --dry-run
-
-# Force re-initialization
-scaffoldfy --force
 ```
 
 Or run without installing using npx:
@@ -53,14 +49,8 @@ npx @pixpilot/scaffoldfy
 # With custom tasks file
 npx @pixpilot/scaffoldfy --tasks-file ./my-tasks.json
 
-# TypeScript tasks file
-npx @pixpilot/scaffoldfy --tasks-ts ./my-tasks.ts
-
 # Preview changes (dry run)
 npx @pixpilot/scaffoldfy --dry-run
-
-# Force re-initialization
-npx @pixpilot/scaffoldfy --force
 ```
 
 ### CLI Options
@@ -70,7 +60,6 @@ npx @pixpilot/scaffoldfy --force
 | `--tasks-file <path>` | Path to JSON task file (default: `./template-tasks.json`)                       |
 | `--tasks-ts <path>`   | Path to TypeScript task file (default: `./template-tasks.ts`)                   |
 | `--dry-run`           | Preview changes without applying them                                           |
-| `--force`             | Force re-initialization                                                         |
 | `--no-validate`       | Skip schema validation of task configuration (validation is enabled by default) |
 | `-h, --help`          | Show help message                                                               |
 | `-v, --version`       | Show version                                                                    |
@@ -89,36 +78,38 @@ await runWithTasks(tasks, {
 
 ### Task Types
 
-9 built-in task types for common operations:
+13 built-in task types for common operations:
 
-| Type                 | Purpose                                            |
-| -------------------- | -------------------------------------------------- |
-| `update-json`        | Update JSON files (supports nested properties)     |
-| `template`           | Create files from templates (simple or Handlebars) |
-| `regex-replace`      | Find and replace with regex                        |
-| `replace-in-file`    | Simple find and replace                            |
-| `delete`             | Remove files/directories                           |
-| `conditional-delete` | Remove based on conditions                         |
-| `rename`             | Rename or move files                               |
-| `git-init`           | Initialize git repository                          |
-| `exec`               | Execute shell commands                             |
+| Type              | Purpose                                            |
+| ----------------- | -------------------------------------------------- |
+| `update-json`     | Update JSON files (supports nested properties)     |
+| `template`        | Create files from templates (simple or Handlebars) |
+| `create`          | Create new files with optional content             |
+| `regex-replace`   | Find and replace with regex                        |
+| `replace-in-file` | Simple find and replace                            |
+| `delete`          | Remove files/directories                           |
+| `rename`          | Rename or move files                               |
+| `move`            | Move files or directories                          |
+| `copy`            | Copy files or directories                          |
+| `append`          | Append content to existing files                   |
+| `mkdir`           | Create directories                                 |
+| `git-init`        | Initialize git repository                          |
+| `exec`            | Execute shell commands                             |
 
 📖 **[Complete Task Types Reference →](https://pixpilot.github.io/scaffoldfy/TASK_TYPES.html)**
 
 ### Interactive Prompts
 
-Collect custom user input directly in your task definitions:
+Collect user input at the root level - prompts are collected once before tasks run and available to all tasks:
 
 ```json
 {
-  "id": "setup",
   "prompts": [
     {
       "id": "projectName",
       "type": "input",
       "message": "What is your project name?",
-      "required": true,
-      "global": true
+      "required": true
     },
     {
       "id": "useTypeScript",
@@ -127,38 +118,72 @@ Collect custom user input directly in your task definitions:
       "default": true
     }
   ],
-  "config": {
-    "file": "package.json",
-    "updates": {
-      "name": "{{projectName}}"
+  "tasks": [
+    {
+      "id": "setup",
+      "name": "Setup Project",
+      "type": "update-json",
+      "config": {
+        "file": "package.json",
+        "updates": {
+          "name": "{{projectName}}"
+        }
+      }
     }
-  }
+  ]
 }
 ```
 
 **Supported prompt types:** `input`, `password`, `number`, `select`, `confirm`
 
-**Global prompts:** Mark prompts with `"global": true` to share values across all tasks
+**Root-level only:** Prompts are defined at the root level, collected once upfront, and available to all tasks
 
 💬 **[Full Prompts Guide →](https://pixpilot.github.io/scaffoldfy/PROMPTS.html)** | 📋 **[Quick Reference →](https://pixpilot.github.io/scaffoldfy/PROMPTS_QUICK_REFERENCE.html)**
 
-### Template Variables
+### Variables
 
-Use `{{variable}}` syntax anywhere in your task configs:
+Define reusable values without user interaction - automatically resolved from static values or executable commands:
 
 ```json
 {
-  "updates": {
-    "name": "{{projectName}}",
-    "author": "{{author}}",
-    "repository": "{{repoUrl}}"
-  }
+  "variables": [
+    {
+      "id": "currentYear",
+      "value": {
+        "type": "exec",
+        "value": "node -e \"console.log(new Date().getFullYear())\""
+      }
+    },
+    {
+      "id": "gitUserName",
+      "value": {
+        "type": "exec",
+        "value": "git config user.name"
+      }
+    },
+    {
+      "id": "defaultLicense",
+      "value": "MIT"
+    }
+  ],
+  "tasks": [
+    {
+      "id": "update-license",
+      "type": "template",
+      "config": {
+        "file": "LICENSE",
+        "template": "Copyright {{currentYear}} {{gitUserName}}\n\nLicense: {{defaultLicense}}"
+      }
+    }
+  ]
 }
 ```
 
-**All variables come from prompts:** Define prompts with `"global": true` to create variables available across all tasks.
+**Use in tasks:** Reference variables using `{{variable}}` syntax: `{{currentYear}}`, `{{gitUserName}}`, `{{defaultLicense}}`
 
-**Example:** `{{projectName}}`, `{{author}}`, `{{repoUrl}}`, `{{port}}`, etc.
+**Variable types:** Static values, executable commands (with auto-parsing), or conditional expressions
+
+📌 **[Complete Variables Guide →](https://pixpilot.github.io/scaffoldfy/VARIABLES.html)**
 
 ### Handlebars Templates
 
@@ -292,63 +317,96 @@ Control execution order:
 
 ## Example Configuration
 
-### Simple Example
+### Complete Example with Prompts and Variables
 
 ```json
 {
+  "prompts": [
+    {
+      "id": "projectName",
+      "type": "input",
+      "message": "What is your project name?",
+      "required": true
+    },
+    {
+      "id": "author",
+      "type": "input",
+      "message": "Who is the author?",
+      "default": {
+        "type": "exec",
+        "value": "git config user.name"
+      }
+    },
+    {
+      "id": "useTypeScript",
+      "type": "confirm",
+      "message": "Use TypeScript?",
+      "default": true
+    }
+  ],
+  "variables": [
+    {
+      "id": "currentYear",
+      "value": {
+        "type": "exec",
+        "value": "node -e \"console.log(new Date().getFullYear())\""
+      }
+    },
+    {
+      "id": "license",
+      "value": "MIT"
+    }
+  ],
   "tasks": [
     {
       "id": "update-package",
       "name": "Update package.json",
-      "description": "Update repository information",
-      "required": true,
-      "enabled": true,
+      "description": "Set project metadata",
       "type": "update-json",
       "config": {
         "file": "package.json",
         "updates": {
           "name": "{{projectName}}",
-          "author": "{{author}}"
+          "author": "{{author}}",
+          "license": "{{license}}"
         }
+      }
+    },
+    {
+      "id": "create-readme",
+      "name": "Create README",
+      "description": "Generate README file",
+      "type": "template",
+      "config": {
+        "file": "README.md",
+        "template": "# {{projectName}}\n\nAuthor: {{author}}\nCopyright {{currentYear}}"
       }
     }
   ]
 }
 ```
 
-### With Prompts
+### Simple Example
 
 ```json
 {
+  "prompts": [
+    {
+      "id": "projectName",
+      "type": "input",
+      "message": "Project name?",
+      "required": true
+    }
+  ],
   "tasks": [
     {
-      "id": "setup-project",
-      "name": "Setup Project",
-      "description": "Configure project settings",
-      "required": true,
-      "enabled": true,
+      "id": "update-package",
+      "name": "Update package.json",
       "type": "update-json",
-      "prompts": [
-        {
-          "id": "projectName",
-          "type": "input",
-          "message": "Project name?",
-          "required": true
-        },
-        {
-          "id": "includeTests",
-          "type": "confirm",
-          "message": "Include tests?",
-          "default": true
-        }
-      ],
       "config": {
         "file": "package.json",
         "updates": {
-          "name": "{{projectName}}",
-          "scripts": {
-            "test": "{{includeTests ? 'vitest' : 'echo \"No tests\"'}}"
-          }
+          "name": "{{projectName}}"
         }
       }
     }
@@ -365,7 +423,7 @@ Control execution order:
 ### Quick Links
 
 - **[Getting Started](https://pixpilot.github.io/scaffoldfy/GETTING_STARTED.html)** - Installation, CLI usage, and examples
-- **[Task Types Reference](https://pixpilot.github.io/scaffoldfy/TASK_TYPES.html)** - All 9 built-in task types
+- **[Task Types Reference](https://pixpilot.github.io/scaffoldfy/TASK_TYPES.html)** - All 13 built-in task types
 - **[Interactive Prompts](https://pixpilot.github.io/scaffoldfy/PROMPTS.html)** - Collect user input
 - **[Variables](https://pixpilot.github.io/scaffoldfy/VARIABLES.html)** - Reusable values without user interaction
 - **[Advanced Features](https://pixpilot.github.io/scaffoldfy/FEATURES.html)** - Conditional execution, global prompts, Handlebars
