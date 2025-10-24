@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy-templates
 
+## 1.3.0
+
+### Minor Changes
+
+- add update license task to license-file template
+
 ## 1.2.0
 
 ### Minor Changes
