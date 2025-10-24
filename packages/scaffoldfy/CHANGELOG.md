@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy
 
+## 0.28.0
+
+### Minor Changes
+
+- enhance validation for 'exec' type commands
+
 ## 0.27.0
 
 ### Minor Changes
