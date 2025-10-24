@@ -28,88 +28,10 @@ import {
   TemplateParseError,
   TemplateResolutionError,
 } from './errors/index.js';
+import { topologicalSortTemplates } from './topological-sort.js';
 import { debug, log } from './utils.js';
 
 const readFile = promisify(fs.readFile);
-
-/**
- * Topologically sort templates based on their dependencies
- * Templates that are depended upon come first
- * @param templates - Array of templates to sort
- * @returns Sorted array of templates
- */
-function topologicalSortTemplates(templates: TasksConfiguration[]): TasksConfiguration[] {
-  // If all templates have unique names, use name-based sorting
-  // If there are duplicate names, just return templates in order (can't sort by name)
-  const nameToTemplates = new Map<string, TasksConfiguration[]>();
-  for (const template of templates) {
-    const existing = nameToTemplates.get(template.name) || [];
-    existing.push(template);
-    nameToTemplates.set(template.name, existing);
-  }
-
-  // Check if all templates have unique names
-  const hasDuplicateNames = Array.from(nameToTemplates.values()).some(
-    (arr) => arr.length > 1,
-  );
-
-  if (hasDuplicateNames) {
-    // Cannot do topological sort with duplicate names
-    // Just return templates in the order they were loaded
-    return templates;
-  }
-
-  // All names are unique, proceed with topological sort
-  const sorted: TasksConfiguration[] = [];
-  const visited = new Set<string>();
-  const visiting = new Set<string>();
-
-  // Create a map of template name to template for quick lookup
-  const templateMap = new Map<string, TasksConfiguration>();
-  for (const template of templates) {
-    templateMap.set(template.name, template);
-  }
-
-  function visit(templateName: string): void {
-    if (visited.has(templateName)) {
-      return;
-    }
-
-    if (visiting.has(templateName)) {
-      // Circular dependency detected
-      throw CircularDependencyError.forTemplateDependencies(
-        Array.from(visiting),
-        templateName,
-      );
-    }
-
-    visiting.add(templateName);
-
-    const template = templateMap.get(templateName);
-    if (template != null) {
-      // Visit all dependencies first
-      if (template.dependencies != null && template.dependencies.length > 0) {
-        for (const depName of template.dependencies) {
-          visit(depName);
-        }
-      }
-    }
-
-    visiting.delete(templateName);
-    visited.add(templateName);
-
-    if (template != null) {
-      sorted.push(template);
-    }
-  }
-
-  // Visit all templates
-  for (const template of templates) {
-    visit(template.name);
-  }
-
-  return sorted;
-}
 
 /**
  * Conflicting field groups for different task types

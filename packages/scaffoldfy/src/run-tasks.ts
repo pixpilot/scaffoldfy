@@ -271,6 +271,7 @@ export async function runTasks(
   let completedTasks = 0;
   let failedTasks = 0;
   const completedTaskIds: string[] = [];
+  const failedTaskNames: string[] = [];
 
   for (let i = 0; i < finalEnabledTasks.length; i++) {
     const task = finalEnabledTasks[i];
@@ -289,27 +290,23 @@ export async function runTasks(
       // Call afterTask hook
       debug(`Calling afterTask hook for task: ${task.name}`);
       await callHook('afterTask', task, config);
-    } else if (task.required ?? true) {
-      // Default to true if undefined
-      failedTasks++;
-
-      // Call onError hook
-      debug(`Calling onError hook for task: ${task.name}`);
-      await callHook('onError', new Error(`Task ${task.name} failed`), task);
-
-      break; // Stop on required task failure
     } else {
-      warn('⚠️  Non-critical task failed, continuing...');
+      failedTasks++;
+      failedTaskNames.push(task.name);
 
       // Call onError hook
       debug(`Calling onError hook for task: ${task.name}`);
       await callHook('onError', new Error(`Task ${task.name} failed`), task);
+
+      // Log warning but continue execution
+      warn(`⚠️  Task "${task.name}" failed, continuing with remaining tasks...`);
     }
   }
 
   if (failedTasks > 0) {
-    log(`Task execution failed with ${failedTasks} critical error(s)`, 'error');
+    log(`\n❌ Task execution completed with ${failedTasks} error(s)`, 'error');
     log(`Completed: ${completedTasks}/${totalTasks} tasks`, 'info');
+    log(`Failed tasks: ${failedTaskNames.join(', ')}`, 'error');
     process.exit(1);
   }
 
@@ -552,6 +549,7 @@ export async function runTemplatesSequentially(
 
   let completedTasks = 0;
   let failedTasks = 0;
+  const failedTaskNames: string[] = [];
 
   for (let i = 0; i < sortedTasks.length; i++) {
     const task = sortedTasks[i];
@@ -570,22 +568,22 @@ export async function runTemplatesSequentially(
     if (success) {
       completedTasks++;
       await callHook('afterTask', task, config);
-    } else if (task.required ?? true) {
-      failedTasks++;
-      await callHook('onError', new Error(`Task ${task.name} failed`), task);
-      log(`❌ Critical task failed: ${task.name}`, 'error');
-      break; // Stop on critical failure
     } else {
-      log(`⚠️  Non-critical task failed: ${task.name}, continuing...`, 'warn');
+      failedTasks++;
+      failedTaskNames.push(task.name);
       await callHook('onError', new Error(`Task ${task.name} failed`), task);
+
+      // Log warning but continue execution
+      warn(`⚠️  Task "${task.name}" failed, continuing with remaining tasks...`);
     }
   }
 
   await callHook('afterAll', config);
 
   if (failedTasks > 0) {
-    log(`\nTask execution failed with ${failedTasks} critical error(s)`, 'error');
+    log(`\n❌ Task execution completed with ${failedTasks} error(s)`, 'error');
     log(`Completed: ${completedTasks}/${sortedTasks.length} tasks`, 'info');
+    log(`Failed tasks: ${failedTaskNames.join(', ')}`, 'error');
     process.exit(1);
   }
 
