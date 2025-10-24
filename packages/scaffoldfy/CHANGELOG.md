@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy
 
+## 0.24.0
+
+### Minor Changes
+
+- Implement topological sorting for template dependencies
+
 ## 0.23.0
 
 ### Minor Changes
