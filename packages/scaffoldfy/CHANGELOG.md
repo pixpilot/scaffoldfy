@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy
 
+## 0.25.0
+
+### Minor Changes
+
+- update task types and documentation
+
 ## 0.24.1
 
 ### Patch Changes
