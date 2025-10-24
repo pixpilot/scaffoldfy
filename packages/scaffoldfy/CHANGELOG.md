@@ -1,5 +1,12 @@
 # @pixpilot/scaffoldfy
 
+## 0.22.0
+
+### Minor Changes
+
+- unit tests for various plugins: regex-replace, rename, replace-in-file, and write
+- add allowCreate option to control file creation behavior
+
 ## 0.21.0
 
 ### Minor Changes
