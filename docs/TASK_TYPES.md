@@ -512,7 +512,7 @@ interface Config {
 ### Features
 
 - Full regex support
-- Optional flags (global, case-insensitive, multiline)
+- Optional flags (case-insensitive, multiline)
 - Template variables in replacement strings
 - **Optional condition:** JavaScript expression evaluation (skips task if false)
 

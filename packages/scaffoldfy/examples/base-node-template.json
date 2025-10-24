@@ -14,20 +14,19 @@
           "id": "projectName",
           "type": "input",
           "message": "Project name",
-          "global": true,
+
           "required": true
         },
         {
           "id": "author",
           "type": "input",
-          "message": "Author name",
-          "global": true
+          "message": "Author name"
         },
         {
           "id": "repoUrl",
           "type": "input",
           "message": "Repository URL",
-          "global": true,
+
           "default": {
             "type": "exec",
             "value": "git config --get remote.origin.url"

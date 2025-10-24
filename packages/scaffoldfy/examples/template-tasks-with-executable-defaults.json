@@ -19,8 +19,7 @@
             "type": "exec",
             "value": "node -p \"require('path').basename(process.cwd())\""
           },
-          "required": true,
-          "global": true
+          "required": true
         },
         {
           "id": "authorName",
@@ -29,8 +28,7 @@
           "default": {
             "type": "exec",
             "value": "git config user.name"
-          },
-          "global": true
+          }
         },
         {
           "id": "authorEmail",
@@ -39,8 +37,7 @@
           "default": {
             "type": "exec",
             "value": "git config user.email"
-          },
-          "global": true
+          }
         },
         {
           "id": "packageManager",
@@ -54,8 +51,7 @@
           "default": {
             "type": "exec",
             "value": "command -v pnpm > /dev/null && echo 'pnpm' || (command -v yarn > /dev/null && echo 'yarn' || echo 'npm')"
-          },
-          "global": true
+          }
         },
         {
           "id": "nodeVersion",
