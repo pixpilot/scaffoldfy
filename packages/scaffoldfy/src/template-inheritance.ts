@@ -28,7 +28,7 @@ import {
   TemplateParseError,
   TemplateResolutionError,
 } from './errors/index.js';
-import { log } from './utils.js';
+import { debug, log } from './utils.js';
 
 const readFile = promisify(fs.readFile);
 
@@ -922,13 +922,13 @@ export async function loadTasksWithInheritance(
   enabled?: EnabledValue;
   templates?: TasksConfiguration[];
 }> {
-  log(`Loading tasks from ${tasksFilePath}...`, 'info');
+  debug(`Loading tasks from ${tasksFilePath}...`);
 
   // If sequential mode, load templates without merging
   if (options?.sequential === true) {
     const templates = await loadTemplatesInOrder(tasksFilePath);
 
-    log(`Loaded ${templates.length} template(s) for sequential processing`, 'info');
+    debug(`Loaded ${templates.length} template(s) for processing`);
 
     return {
       tasks: [],

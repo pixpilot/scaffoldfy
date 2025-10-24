@@ -6,7 +6,7 @@
  */
 
 import type { InitConfig, PluginHooks, TaskDefinition, TaskPlugin } from './types.js';
-import { log } from './utils.js';
+import { debug, log } from './utils.js';
 
 /**
  * Registry of installed plugins
@@ -64,11 +64,10 @@ export function registerPlugin(plugin: TaskPlugin): void {
     taskTypeToPlugin.set(taskType, plugin.name);
   }
 
-  log(
-    `✓ Registered plugin: ${plugin.name}${
+  debug(
+    `Registered plugin: ${plugin.name}${
       plugin.version != null ? ` v${plugin.version}` : ''
     }`,
-    'info',
   );
 }
 

@@ -99,6 +99,29 @@ Force execution even if checks fail:
 scaffoldfy --force
 ```
 
+### Debug Mode
+
+Enable debug logging to see detailed information about what's happening:
+
+```sh
+scaffoldfy --config ./tasks.json --debug
+```
+
+Debug mode provides verbose output including:
+
+- Variable resolution details
+- Task dependency resolution
+- Plugin hook executions
+- Template processing steps
+- Detailed error messages
+
+This is particularly useful for:
+
+- Troubleshooting configuration issues
+- Understanding task execution order
+- Debugging template inheritance
+- Verifying variable and prompt values
+
 ## CLI Options
 
 | Option            | Description                                                                     |

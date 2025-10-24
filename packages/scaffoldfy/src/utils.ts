@@ -83,6 +83,7 @@ export async function promptYesNo(
 
 /**
  * Log message with colored output
+ * @deprecated Use logger functions from logger.ts instead
  */
 export function log(
   message: string,
@@ -105,6 +106,15 @@ export function log(
   const reset = '\x1B[0m';
   console.log(`${colors[type]}${symbols[type]} ${message}${reset}`);
 }
+
+// Re-export logger functions for convenience
+export {
+  debug,
+  error as logError,
+  info as logInfo,
+  success as logSuccess,
+  warn as logWarn,
+} from './logger.js';
 
 /**
  * Interpolate template variables in a string

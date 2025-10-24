@@ -11,6 +11,7 @@ import process from 'node:process';
 import { Command } from 'commander';
 import { EXIT_CODE_ERROR } from './constants.js';
 import { runWithTasks } from './index.js';
+import { debug, setDebugMode } from './logger.js';
 import { validateTasksSchema } from './schema-validator.js';
 import { loadTasksWithInheritance } from './template-inheritance.js';
 import { log } from './utils.js';
@@ -21,6 +22,7 @@ interface CliOptions {
   force?: boolean;
   config?: string;
   validate?: boolean;
+  debug?: boolean;
 }
 
 const program = new Command();
@@ -55,7 +57,13 @@ program
     '--no-validate',
     'Skip schema validation of task configuration (validation is enabled by default)',
   )
+  .option('--debug', 'Enable debug logging for verbose output')
   .action(async (options: CliOptions) => {
+    // Set debug mode globally if --debug flag is present
+    if (options.debug === true) {
+      setDebugMode(true);
+    }
+
     try {
       let tasks: TaskDefinition[] = [];
       let globalVariables: VariableDefinition[] | undefined;
@@ -103,7 +111,7 @@ program
             try {
               // Validate schema if validation is enabled (default: true)
               if (options.validate !== false) {
-                log('Validating task configuration against schema...', 'info');
+                debug('Validating task configuration against schema...');
 
                 // Load raw JSON for validation
                 const rawJson = fs.readFileSync(configPath, 'utf-8');
@@ -122,7 +130,7 @@ program
                   process.exit(EXIT_CODE_ERROR);
                 }
 
-                log('✓ Schema validation passed', 'success');
+                log('Configuration validated', 'success');
               }
 
               // Use template inheritance loader to support extends
@@ -133,7 +141,6 @@ program
 
               // If we have templates (sequential mode), run them sequentially
               if (config.templates != null && config.templates.length > 0) {
-                log('Using sequential template processing mode', 'info');
                 const { runTemplatesSequentially } = await import('./run-tasks.js');
                 const { createInitialConfig } = await import('./config.js');
 

@@ -81,10 +81,10 @@ export async function runTask(
   try {
     log(`[${taskNumber}/${totalTasks}] Running: ${task.name}...`, 'info');
     await executeTask(task, config, dryRun);
-    log(`✓ ${task.name}`, 'success');
+    log(`[${taskNumber}/${totalTasks}] Completed: ${task.name}...`, 'success');
     return true;
   } catch (error) {
-    log(`✗ Failed: ${task.name}`, 'error');
+    log(`Failed: ${task.name}`, 'error');
 
     // Better error context
     if (error instanceof Error) {

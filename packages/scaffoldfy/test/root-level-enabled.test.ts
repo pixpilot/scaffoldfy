@@ -7,6 +7,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 describe('root-level template enabled', () => {
   const mockLog = vi.fn();
+  const mockInfo = vi.fn();
   let runTasks: typeof import('../src/run-tasks.js').runTasks;
   let evaluateEnabledAsync: typeof import('../src/utils/evaluate-enabled.js').evaluateEnabledAsync;
 
@@ -20,6 +21,16 @@ describe('root-level template enabled', () => {
       return {
         ...actual,
         log: mockLog,
+      };
+    });
+
+    // Mock logger
+    vi.doMock('../src/logger.js', async () => {
+      const actual =
+        await vi.importActual<typeof import('../src/logger.js')>('../src/logger.js');
+      return {
+        ...actual,
+        info: mockInfo,
       };
     });
 
@@ -157,9 +168,8 @@ describe('root-level template enabled', () => {
       });
 
       // Should log that template is disabled
-      expect(mockLog).toHaveBeenCalledWith(
+      expect(mockInfo).toHaveBeenCalledWith(
         expect.stringContaining('Template is disabled'),
-        'info',
       );
 
       // Should not proceed to task execution
@@ -235,9 +245,8 @@ describe('root-level template enabled', () => {
       });
 
       // Should log that template is disabled
-      expect(mockLog).toHaveBeenCalledWith(
+      expect(mockInfo).toHaveBeenCalledWith(
         expect.stringContaining('Template is disabled'),
-        'info',
       );
     });
 
@@ -282,9 +291,8 @@ describe('root-level template enabled', () => {
         templateEnabled: { condition: '1 === 2' }, // False condition
       });
 
-      expect(mockLog).toHaveBeenCalledWith(
+      expect(mockInfo).toHaveBeenCalledWith(
         expect.stringContaining('Template is disabled'),
-        'info',
       );
     });
   });

@@ -9,6 +9,7 @@ import type {
 import process from 'node:process';
 import { createInitialConfig } from './config.js';
 import { displayTasksDiff } from './dry-run.js';
+import { debug, info, success as logSuccess, warn } from './logger.js';
 import { callHook } from './plugin.js';
 import {
   collectPrompts,
@@ -17,7 +18,7 @@ import {
 } from './prompts/index.js';
 import { registerBuiltInPlugins, runTask } from './task-executors.js';
 import { topologicalSort } from './task-resolver.js';
-import { evaluateEnabled, evaluateEnabledAsync, log } from './utils.js';
+import { evaluateEnabled, evaluateEnabledAsync, log, logInfo } from './utils.js';
 import { displayValidationErrors, validateAllTasks } from './validation.js';
 import {
   collectVariables,
@@ -59,7 +60,7 @@ export async function runTasks(
   );
 
   if (!templateIsEnabled) {
-    log('⊘ Template is disabled - skipping all execution', 'info');
+    info('⊘ Template is disabled - skipping all execution');
     return;
   }
   // ============================================================================
@@ -67,18 +68,19 @@ export async function runTasks(
   // ============================================================================
   // IMPORTANT: Plugins must be registered before validation, as validation
   // checks if task types are known (i.e., handled by a registered plugin).
+  debug('Registering built-in plugins...');
   registerBuiltInPlugins();
 
   // ============================================================================
   // Early Validation - Before any user input
   // ============================================================================
-  log('Validating task configurations...', 'info');
+  debug('Validating task configurations...');
   const validationErrors = validateAllTasks(tasks);
   if (validationErrors.length > 0) {
     displayValidationErrors(validationErrors);
     process.exit(1);
   }
-  log('✓ All tasks validated successfully', 'success');
+  debug('All tasks validated successfully');
 
   // Get enabled tasks (evaluate conditional enabled)
   // Use lazy evaluation - tasks with conditions referencing prompts will be included
@@ -88,17 +90,18 @@ export async function runTasks(
   );
 
   // Sort tasks by dependencies
-  log('Resolving task dependencies...', 'info');
+  debug('Resolving task dependencies...');
   const sortedTasks = topologicalSort(enabledTasks);
+  debug(`Sorted ${sortedTasks.length} task(s) by dependencies`);
 
   // Create initial empty configuration (reuse the one we created earlier)
-  log("Welcome! Let's execute your tasks.", 'info');
+  info("Welcome! Let's execute your tasks.");
 
   if (options.dryRun) {
-    log('🔍 DRY RUN MODE - No changes will be made', 'warn');
+    warn('🔍 DRY RUN MODE - No changes will be made');
   }
 
-  log('This will execute your project tasks based on the defined configuration.', 'info');
+  info('This will execute your project tasks based on the defined configuration.');
 
   const config = initialConfig;
 
@@ -122,7 +125,7 @@ export async function runTasks(
 
     // Resolve non-conditional variable values first (execute commands in parallel)
     // Conditional variables will be resolved after prompts are collected
-    log('Resolving variable values...', 'info');
+    debug('Resolving variable values...');
     const resolvedVariableValues = await resolveAllVariableValues(allVariables, config, {
       skipConditional: true,
     });
@@ -133,7 +136,7 @@ export async function runTasks(
 
     // Log resolved variables if any
     if (Object.keys(variableValues).length > 0) {
-      log(`✓ Resolved ${Object.keys(variableValues).length} variable(s)`, 'success');
+      debug(`Resolved ${Object.keys(variableValues).length} variable(s)`);
     }
   }
 
@@ -156,12 +159,12 @@ export async function runTasks(
     }
 
     // Pre-resolve all default values (execute commands in parallel)
-    log('Resolving prompt default values...', 'info');
+    debug('Resolving prompt default values...');
     const resolvedDefaults = await resolveAllDefaultValues(allPrompts);
 
     // Collect top-level prompts (always global)
     if (topLevelPrompts.length > 0) {
-      log('📋 Collecting prompts (available to all tasks):', 'info');
+      info('📋 Collecting prompts (available to all tasks):');
 
       const globalAnswers = await collectPrompts(
         topLevelPrompts,
@@ -188,7 +191,7 @@ export async function runTasks(
     });
 
     if (conditionalVariables.length > 0) {
-      log('Re-resolving conditional variables with prompt values...', 'info');
+      debug('Re-resolving conditional variables with prompt values...');
       const resolvedConditionalValues = await resolveAllVariableValues(
         conditionalVariables,
         config,
@@ -202,9 +205,8 @@ export async function runTasks(
       Object.assign(config, conditionalValues);
 
       if (Object.keys(conditionalValues).length > 0) {
-        log(
-          `✓ Resolved ${Object.keys(conditionalValues).length} conditional variable(s)`,
-          'success',
+        debug(
+          `Resolved ${Object.keys(conditionalValues).length} conditional variable(s)`,
         );
       }
     }
@@ -221,10 +223,7 @@ export async function runTasks(
   );
 
   if (!templateIsEnabledAfterConfig) {
-    log(
-      '⊘ Template is disabled after variable resolution - skipping all execution',
-      'info',
-    );
+    info('⊘ Template is disabled after variable resolution - skipping all execution');
     return;
   }
 
@@ -259,14 +258,12 @@ export async function runTasks(
   // If dry-run mode, show diff and exit
   if (options.dryRun) {
     await displayTasksDiff(finalEnabledTasks, config);
-    log('🔍 Dry run completed - no changes were made', 'info');
-    log('Run without --dry-run to apply changes', 'info');
+    info('🔍 Dry run completed - no changes were made');
+    info('Run without --dry-run to apply changes');
     return;
   }
-
-  log('Starting task execution...', 'info');
-
   // Call beforeAll hook
+  debug('Calling beforeAll hook...');
   await callHook('beforeAll', config);
 
   // Execute all enabled tasks
@@ -280,44 +277,49 @@ export async function runTasks(
     if (task == null) continue; // Skip if task is undefined
 
     // Call beforeTask hook
+    debug(`Calling beforeTask hook for task: ${task.name}`);
     await callHook('beforeTask', task, config);
 
-    const success = await runTask(task, config, i + 1, totalTasks, options.dryRun);
+    const taskSuccess = await runTask(task, config, i + 1, totalTasks, options.dryRun);
 
-    if (success) {
+    if (taskSuccess) {
       completedTasks++;
       completedTaskIds.push(task.id);
 
       // Call afterTask hook
+      debug(`Calling afterTask hook for task: ${task.name}`);
       await callHook('afterTask', task, config);
     } else if (task.required ?? true) {
       // Default to true if undefined
       failedTasks++;
 
       // Call onError hook
+      debug(`Calling onError hook for task: ${task.name}`);
       await callHook('onError', new Error(`Task ${task.name} failed`), task);
 
       break; // Stop on required task failure
     } else {
-      log('⚠️  Non-critical task failed, continuing...', 'warn');
+      warn('⚠️  Non-critical task failed, continuing...');
 
       // Call onError hook
+      debug(`Calling onError hook for task: ${task.name}`);
       await callHook('onError', new Error(`Task ${task.name} failed`), task);
     }
   }
 
   if (failedTasks > 0) {
-    log(`❌ Task execution failed with ${failedTasks} critical error(s)`, 'error');
-    log(`✓ Completed: ${completedTasks}/${totalTasks} tasks`, 'info');
+    log(`Task execution failed with ${failedTasks} critical error(s)`, 'error');
+    log(`Completed: ${completedTasks}/${totalTasks} tasks`, 'info');
     process.exit(1);
   }
 
   // Call afterAll hook
+  debug('Calling afterAll hook...');
   await callHook('afterAll', config);
 
-  log('✅ All tasks completed successfully!', 'success');
+  logSuccess('✅ All tasks completed successfully!');
 
-  log(`✓ Completed: ${completedTasks}/${totalTasks} tasks`, 'success');
+  logSuccess(` Completed: ${completedTasks}/${totalTasks} tasks`);
 }
 
 /**
@@ -337,10 +339,11 @@ export async function runTemplatesSequentially(
   },
   config: import('./types.js').InitConfig = {},
 ): Promise<void> {
-  log('Running templates with sequential variable/prompt resolution...', 'info');
-  log(`Total templates to process: ${templates.length}`, 'info');
+  debug('Running templates with sequential variable/prompt resolution...');
+  debug(`Total templates to process: ${templates.length}`);
 
   // Register built-in plugins first
+  debug('Registering built-in plugins...');
   registerBuiltInPlugins();
 
   const SEPARATOR_LENGTH = 60;
@@ -349,43 +352,39 @@ export async function runTemplatesSequentially(
   // ============================================================================
   // PHASE 1: Process Variables and Prompts Sequentially
   // ============================================================================
-  log('\n📋 Phase 1: Resolving variables and prompts from all templates...', 'info');
+  console.log('');
+  info('📋 Collecting input...');
+  console.log('');
 
   for (let templateIndex = 0; templateIndex < templates.length; templateIndex++) {
     const template = templates[templateIndex];
     if (template == null) continue;
 
     const separatorLine = '='.repeat(SEPARATOR_LENGTH);
-    log(`\n${separatorLine}`, 'info');
-    log(
+    debug(`\n${separatorLine}`);
+    debug(
       `Processing template ${templateIndex + 1}/${templates.length}: "${template.name}"`,
-      'info',
     );
-    log(separatorLine, 'info');
+    debug(separatorLine);
 
     // Debug: Show current config keys
-    if (process.env['DEBUG'] != null) {
-      log(`Current config keys: ${Object.keys(config).join(', ')}`, 'info');
-    }
+    debug(`Current config keys: ${Object.keys(config).join(', ')}`);
 
     // Check if this template is enabled
     // Now we have the full context from previous templates
     const templateIsEnabled = await evaluateEnabledAsync(template.enabled, config);
 
     if (!templateIsEnabled) {
-      log(`⊘ Template "${template.name}" is disabled - skipping`, 'info');
-      if (template.enabled != null && process.env['DEBUG'] != null) {
-        log(`  Enabled condition: ${JSON.stringify(template.enabled)}`, 'info');
-      }
+      info(`⊘ Template "${template.name}" is disabled - skipping`);
+      debug(`  Enabled condition: ${JSON.stringify(template.enabled)}`);
       continue;
     }
 
     // Process variables for this template
     const templateVariables = template.variables ?? [];
     if (templateVariables.length > 0) {
-      log(
+      debug(
         `Processing ${templateVariables.length} variable(s) for template "${template.name}"...`,
-        'info',
       );
 
       // Validate variables
@@ -430,27 +429,24 @@ export async function runTemplatesSequentially(
         Object.assign(config, conditionalValues);
 
         if (conditionalValuesCount > 0) {
-          log(`✓ Resolved ${conditionalValuesCount} conditional variable(s)`, 'success');
-          if (process.env['DEBUG'] != null) {
-            for (const [key, value] of Object.entries(conditionalValues)) {
-              log(`  ${key} = ${JSON.stringify(value)}`, 'info');
-            }
+          debug(`Resolved ${conditionalValuesCount} conditional variable(s)`);
+          for (const [key, value] of Object.entries(conditionalValues)) {
+            debug(`  ${key} = ${JSON.stringify(value)}`);
           }
         }
       }
 
       const totalResolved = Object.keys(variableValues).length + conditionalValuesCount;
       if (totalResolved > 0) {
-        log(`✓ Total variables resolved for template: ${totalResolved}`, 'success');
+        debug(`Total variables resolved for template: ${totalResolved}`);
       }
     }
 
     // Process prompts for this template
     const templatePrompts = template.prompts ?? [];
     if (templatePrompts.length > 0) {
-      log(
+      debug(
         `Processing ${templatePrompts.length} prompt(s) for template "${template.name}"...`,
-        'info',
       );
 
       // Validate prompts
@@ -474,15 +470,14 @@ export async function runTemplatesSequentially(
       // Merge into config
       Object.assign(config, promptAnswers);
 
-      log(`✓ Collected ${Object.keys(promptAnswers).length} prompt answer(s)`, 'success');
+      debug(`Collected ${Object.keys(promptAnswers).length} prompt answer(s)`);
     }
 
     // Re-check template enabled condition after variables and prompts are resolved
     const templateStillEnabled = await evaluateEnabledAsync(template.enabled, config);
     if (!templateStillEnabled) {
-      log(
+      info(
         `⊘ Template "${template.name}" became disabled after variable/prompt resolution - skipping tasks`,
-        'info',
       );
       continue;
     }
@@ -490,9 +485,8 @@ export async function runTemplatesSequentially(
     // Collect tasks from this template (don't execute yet)
     const templateTasks = template.tasks ?? [];
     if (templateTasks.length > 0) {
-      log(
+      debug(
         `Found ${templateTasks.length} task(s) in template "${template.name}" (will execute later)`,
-        'info',
       );
       // Add tasks to the collection for later execution
       allTasks.push(...templateTasks);
@@ -502,14 +496,12 @@ export async function runTemplatesSequentially(
   // ============================================================================
   // PHASE 2: Validate and Filter All Tasks
   // ============================================================================
-  log('\n🔧 Phase 2: Validating and filtering all collected tasks...', 'info');
+  debug('\n🔧 Validating and filtering all collected tasks...');
 
   if (allTasks.length === 0) {
     log('No tasks found in any template', 'info');
     return;
   }
-
-  log(`Total tasks collected: ${allTasks.length}`, 'info');
 
   // Validate all tasks
   const validationErrors = validateAllTasks(allTasks);
@@ -517,7 +509,9 @@ export async function runTemplatesSequentially(
     displayValidationErrors(validationErrors);
     process.exit(1);
   }
-  log('✓ All tasks validated successfully', 'success');
+
+  console.log('');
+  log('🛠️  Preparing tasks...', 'info');
 
   // Filter enabled tasks (now we have full config with all variables/prompts)
   const enabledTasks = [];
@@ -526,8 +520,10 @@ export async function runTemplatesSequentially(
       enabledTasks.push(task);
     }
   }
-
-  log(`${enabledTasks.length} of ${allTasks.length} task(s) enabled`, 'info');
+  console.log('');
+  log(`Found ${allTasks.length} tasks (${enabledTasks.length} enabled)`, 'info');
+  log('All tasks validated successfully', 'success');
+  // Already logged above with the new format
 
   if (enabledTasks.length === 0) {
     log('No enabled tasks to execute', 'info');
@@ -541,15 +537,16 @@ export async function runTemplatesSequentially(
   // PHASE 3: Execute All Tasks Together
   // ============================================================================
   if (options.dryRun) {
-    log('\n🔍 Phase 3: Dry run - showing task changes...', 'info');
+    log('\n🔍 Dry run - showing task changes...', 'info');
     await displayTasksDiff(sortedTasks, config);
     log('\n🔍 Dry run completed - no changes were made', 'info');
     log('Run without --dry-run to apply changes', 'info');
     return;
   }
 
-  log('\n⚙️  Phase 3: Executing all tasks...', 'info');
-  log(`Starting task execution (${sortedTasks.length} tasks)...`, 'info');
+  console.log('');
+  logInfo('⚙️  Executing tasks...');
+  console.log('');
 
   await callHook('beforeAll', config);
 
@@ -587,11 +584,10 @@ export async function runTemplatesSequentially(
   await callHook('afterAll', config);
 
   if (failedTasks > 0) {
-    log(`\n❌ Task execution failed with ${failedTasks} critical error(s)`, 'error');
-    log(`✓ Completed: ${completedTasks}/${sortedTasks.length} tasks`, 'info');
+    log(`\nTask execution failed with ${failedTasks} critical error(s)`, 'error');
+    log(`Completed: ${completedTasks}/${sortedTasks.length} tasks`, 'info');
     process.exit(1);
   }
 
-  log('\n✅ All tasks completed successfully!', 'success');
-  log(`✓ Completed: ${completedTasks}/${sortedTasks.length} tasks`, 'success');
+  log(`Completed: ${completedTasks}/${sortedTasks.length} tasks`, 'success');
 }
