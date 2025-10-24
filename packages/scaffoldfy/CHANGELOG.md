@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy
 
+## 0.27.0
+
+### Minor Changes
+
+- add debug logging functionality
+
 ## 0.26.0
 
 ### Minor Changes
