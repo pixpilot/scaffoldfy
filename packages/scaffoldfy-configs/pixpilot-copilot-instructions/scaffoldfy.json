@@ -11,7 +11,7 @@
       "description": "Create copilot-instructions.md file with Pixpilot Copilot instructions",
       "type": "write",
       "config": {
-        "file": "copilot-instructions.md",
+        "file": ".github/copilot-instructions.md",
         "templateFile": "copilot-instructions.md"
       }
     }
