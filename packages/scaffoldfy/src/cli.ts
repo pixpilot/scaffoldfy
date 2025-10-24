@@ -134,7 +134,29 @@ program
             }
 
             // Use template inheritance loader to support extends
-            const config = await loadTasksWithInheritance(jsonPath);
+            // Use sequential mode to process templates one at a time
+            const config = await loadTasksWithInheritance(jsonPath, { sequential: true });
+
+            // If we have templates (sequential mode), run them sequentially
+            if (config.templates != null && config.templates.length > 0) {
+              log('Using sequential template processing mode', 'info');
+              const { runTemplatesSequentially } = await import('./run-tasks.js');
+              const { createInitialConfig } = await import('./config.js');
+
+              await runTemplatesSequentially(
+                config.templates,
+                {
+                  dryRun: options.dryRun ?? false,
+                  force: options.force ?? false,
+                  tasksFilePath: jsonPath,
+                },
+                createInitialConfig(),
+              );
+
+              process.exit(0);
+            }
+
+            // Otherwise use the traditional merged approach
             tasks = config.tasks;
             globalVariables = config.variables;
             globalPrompts = config.prompts;

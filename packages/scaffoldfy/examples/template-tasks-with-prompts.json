@@ -1,7 +1,53 @@
 {
   "$schema": "../schema/tasks.schema.json",
-  "name": "template-with-task-prompts",
-  "description": "Demonstrates using task-scoped prompts for interactive configuration",
+  "name": "template-with-prompts",
+  "description": "Demonstrates using root-level prompts for interactive configuration",
+  "prompts": [
+    {
+      "id": "projectName",
+      "type": "input",
+      "message": "What is your project name?",
+      "default": "my-awesome-app",
+      "required": true
+    },
+    {
+      "id": "projectDescription",
+      "type": "input",
+      "message": "Project description",
+      "default": "An awesome application"
+    },
+    {
+      "id": "projectVersion",
+      "type": "input",
+      "message": "Initial version",
+      "default": "0.1.0"
+    },
+    {
+      "id": "useTypeScript",
+      "type": "confirm",
+      "message": "Use TypeScript?",
+      "default": true
+    },
+    {
+      "id": "includeTests",
+      "type": "confirm",
+      "message": "Include test setup?",
+      "default": true
+    },
+    {
+      "id": "license",
+      "type": "select",
+      "message": "Select a license",
+      "choices": [
+        { "name": "MIT", "value": "MIT" },
+        { "name": "Apache-2.0", "value": "Apache-2.0" },
+        { "name": "GPL-3.0", "value": "GPL-3.0" },
+        { "name": "ISC", "value": "ISC" },
+        { "name": "Unlicense", "value": "Unlicense" }
+      ],
+      "default": "MIT"
+    }
+  ],
   "tasks": [
     {
       "id": "configure-project",
@@ -10,52 +56,6 @@
       "required": true,
       "enabled": true,
       "type": "update-json",
-      "prompts": [
-        {
-          "id": "projectName",
-          "type": "input",
-          "message": "What is your project name?",
-          "default": "my-awesome-app",
-          "required": true
-        },
-        {
-          "id": "projectDescription",
-          "type": "input",
-          "message": "Project description",
-          "default": "An awesome application"
-        },
-        {
-          "id": "projectVersion",
-          "type": "input",
-          "message": "Initial version",
-          "default": "0.1.0"
-        },
-        {
-          "id": "useTypeScript",
-          "type": "confirm",
-          "message": "Use TypeScript?",
-          "default": true
-        },
-        {
-          "id": "includeTests",
-          "type": "confirm",
-          "message": "Include test setup?",
-          "default": true
-        },
-        {
-          "id": "license",
-          "type": "select",
-          "message": "Select a license",
-          "choices": [
-            { "name": "MIT", "value": "MIT" },
-            { "name": "Apache-2.0", "value": "Apache-2.0" },
-            { "name": "GPL-3.0", "value": "GPL-3.0" },
-            { "name": "ISC", "value": "ISC" },
-            { "name": "Unlicense", "value": "Unlicense" }
-          ],
-          "default": "MIT"
-        }
-      ],
       "config": {
         "file": "package.json",
         "updates": {

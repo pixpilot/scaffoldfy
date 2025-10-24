@@ -132,17 +132,16 @@ Values are available via template interpolation:
 | ---------- | ------------------------------ | ---------------------------------------- |
 | `id`       | all                            | Unique identifier for the value          |
 | `type`     | all                            | input, password, number, select, confirm |
-| `message`  | all                            | Question text                            |
-| `required` | all                            | Force non-empty value                    |
-| `global`   | all                            | If true, value is available to all tasks |
-| `default`  | input, number, select, confirm | Default value                            |
-| `min`      | number                         | Minimum value                            |
-| `max`      | number                         | Maximum value                            |
-| `choices`  | select                         | Array of {name, value} objects           |
+| `message`  | all                            | Question text                      |
+| `required` | all                            | Force non-empty value              |
+| `default`  | input, number, select, confirm | Default value                      |
+| `min`      | number                         | Minimum value                      |
+| `max`      | number                         | Maximum value                      |
+| `choices`  | select                         | Array of {name, value} objects     |
 
-## Global Prompts
+## Root-Level Prompts
 
-Mark prompts as `"global": true` to share values across all tasks:
+All prompts are defined at the root level and are available to all tasks:
 
 ```json
 {
@@ -150,23 +149,22 @@ Mark prompts as `"global": true` to share values across all tasks:
     {
       "id": "projectName",
       "type": "input",
-      "message": "Project name?",
-      "global": true
+      "message": "Project name?"
     }
-  ]
+  ],
+  "tasks": []
 }
 ```
 
-- Global prompts are collected once at the beginning
-- Values are available to all tasks, not just the task where defined
+- Prompts are collected once at the beginning
+- Values are available to all tasks
 - Useful for project-wide settings (name, version, author, etc.)
 
 ## Validation Rules
 
-- ✅ IDs must be unique across all tasks (except global prompts can be duplicated)
+- ✅ IDs must be unique across all prompts
 - ✅ IDs must be valid JavaScript identifiers (letters, digits, underscores, `$`, cannot start with digit or contain hyphens)
 - ✅ Messages cannot be empty
-- ✅ A prompt ID cannot be both global and task-specific
 - ✅ Select must have at least one choice
 - ✅ Number min must be ≤ max
 - ✅ Required prompts reject empty values
@@ -176,5 +174,4 @@ Mark prompts as `"global": true` to share values across all tasks:
 - Full documentation: `docs/PROMPTS.md`
 - Example files:
   - `examples/template-tasks-with-prompts.json`
-  - `examples/template-tasks-with-global-prompts.json`
 - Feature summary: `PROMPTS_FEATURE.md`

@@ -28,14 +28,11 @@ Variables are useful for:
 
 ## Variable Definition
 
-Variables can be defined at two levels:
+Variables are defined at the root level of the configuration and are available to all tasks.
 
-1. **Top-level (global) variables**: Defined at the top level of the configuration, available to all tasks
-2. **Task-scoped variables**: Defined within a specific task, available only to that task
+### Root-Level Variables
 
-### Top-Level (Global) Variables
-
-Top-level variables are defined in the `variables` array at the root of your configuration. They are automatically available to **all tasks**.
+Root-level variables are defined in the `variables` array at the root of your configuration. They are available to **all tasks**.
 
 ```json
 {
@@ -59,44 +56,9 @@ Top-level variables are defined in the `variables` array at the root of your con
 
 In this example:
 
-- `variables` array is defined at the top level (same level as `tasks`)
-- All variables are **automatically global** and available to all tasks
-- No need for a `global` property
-
-### Task-Scoped Variables
-
-Task-scoped variables are defined within a specific task's `variables` array. They are only available to that particular task.
-
-```json
-{
-  "id": "create-readme",
-  "name": "Create README",
-  "type": "write",
-  "variables": [
-    {
-      "id": "readmeTemplate",
-      "value": "standard"
-    },
-    {
-      "id": "badgeStyle",
-      "value": {
-        "type": "exec",
-        "value": "echo flat-square"
-      }
-    }
-  ],
-  "config": {
-    "file": "README.md",
-    "template": "# {{projectName}}\n\nTemplate: {{readmeTemplate}}\nBadge Style: {{badgeStyle}}"
-  }
-}
-```
-
-In this example:
-
-- `variables` array is defined within the task
-- These variables are **task-scoped** and only available to this specific task
-- Task-scoped variables are not available to other tasks
+- `variables` array is defined at the root level (same level as `tasks`)
+- All variables are available to all tasks
+- Variables are resolved once before any tasks run
 
 ## Variable Types
 
@@ -472,49 +434,11 @@ In this example:
 
 ## Variable Scoping
 
-### Top-Level (Global) Variables
+### Root-Level Variables
 
-- Defined at the top level in the `variables` array
+- Defined at the root level in the `variables` array
 - Available to **all tasks**
 - Resolved only once before any tasks run
-
-### Task-Scoped Variables
-
-- Defined within a specific task's `variables` array
-- Available **only to that task**
-- Can override top-level variables with the same ID
-
-Example:
-
-```json
-{
-  "variables": [
-    {
-      "id": "template",
-      "value": "default"
-    }
-  ],
-  "tasks": [
-    {
-      "id": "task1",
-      "name": "Task 1",
-      "type": "write",
-      "variables": [
-        {
-          "id": "template",
-          "value": "custom"
-        }
-      ],
-      "config": {
-        "file": "output.txt",
-        "template": "Value: {{template}}"
-      }
-    }
-  ]
-}
-```
-
-In `task1`, `{{template}}` will be `"custom"`, overriding the global value.
 
 ## Error Handling
 

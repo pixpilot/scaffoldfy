@@ -36,7 +36,7 @@ Welcome to the official documentation for **@pixpilot/scaffoldfy** (formerly sca
 
 ### Advanced Features
 
-- **[Advanced Features Guide](FEATURES.md)** - Conditional execution, global prompts, and Handlebars templates
+- **[Advanced Features Guide](FEATURES.md)** - Conditional execution, variables, and Handlebars templates
 - **[Template Inheritance](TEMPLATE_INHERITANCE.md)** - Extend and compose templates for code reuse
 - **[Handlebars Templates](HANDLEBARS_TEMPLATES.md)** - Advanced templating with conditionals, loops, and helpers
 - **[Plugin System](PLUGINS.md)** - Create custom task types and lifecycle hooks

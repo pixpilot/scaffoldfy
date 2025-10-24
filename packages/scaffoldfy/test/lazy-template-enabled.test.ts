@@ -328,4 +328,95 @@ describe('lazy template enabled evaluation', () => {
       // The test validates that task with $templateEnabled is evaluated with variable values
     });
   });
+
+  describe('conditional variables resolution timing', () => {
+    it('should skip conditional variables in first pass and resolve after prompts', async () => {
+      const variables: VariableDefinition[] = [
+        {
+          id: 'staticVar',
+          value: { type: 'static', value: 'static-value' },
+        },
+        {
+          id: 'conditionalVar',
+          value: {
+            type: 'conditional',
+            condition: 'promptValue === "test"',
+            ifTrue: 'condition-true',
+            ifFalse: 'condition-false',
+          },
+        },
+      ];
+
+      // First pass - should skip conditional variables
+      const firstPass = await resolveAllVariableValues(
+        variables,
+        {},
+        { skipConditional: true },
+      );
+
+      // Static variable should be resolved
+      expect(firstPass.has('staticVar')).toBe(true);
+      expect(firstPass.get('staticVar')).toBe('static-value');
+
+      // Conditional variable should be skipped
+      expect(firstPass.has('conditionalVar')).toBe(false);
+
+      // Second pass - with prompt values, should resolve conditional
+      const secondPass = await resolveAllVariableValues(variables, {
+        promptValue: 'test',
+      });
+
+      // Both should be resolved now
+      expect(secondPass.has('staticVar')).toBe(true);
+      expect(secondPass.has('conditionalVar')).toBe(true);
+      expect(secondPass.get('conditionalVar')).toBe('condition-true');
+    });
+
+    it('should not throw error when conditional variable references undefined prompt in first pass', async () => {
+      const variables: VariableDefinition[] = [
+        {
+          id: 'conditionalVar',
+          value: {
+            type: 'conditional',
+            condition: 'repoOwner === "ccpu"',
+            ifTrue: true,
+            ifFalse: false,
+          },
+        },
+      ];
+
+      // This should NOT throw an error even though repoOwner is undefined
+      // because we're skipping conditional variables
+      const firstPass = await resolveAllVariableValues(
+        variables,
+        {},
+        { skipConditional: true },
+      );
+
+      // Conditional variable should be skipped
+      expect(firstPass.has('conditionalVar')).toBe(false);
+    });
+
+    it('should resolve conditional variable after prompts are available', async () => {
+      const variables: VariableDefinition[] = [
+        {
+          id: 'pixpilot_project',
+          value: {
+            type: 'conditional',
+            condition: 'repoOwner === "pixpilot"',
+            ifTrue: true,
+            ifFalse: false,
+          },
+        },
+      ];
+
+      // Simulate what happens after prompts are collected
+      const resolved = await resolveAllVariableValues(variables, {
+        repoOwner: 'pixpilot',
+      });
+
+      expect(resolved.has('pixpilot_project')).toBe(true);
+      expect(resolved.get('pixpilot_project')).toBe(true);
+    });
+  });
 });

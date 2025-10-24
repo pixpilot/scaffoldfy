@@ -397,7 +397,7 @@ try {
 - **File paths**: Always use forward slashes `/` even on Windows
 - **JSON escaping**: Escape quotes in JSON: `\"` or use template files
 - **Task order**: Tasks run in array order unless dependencies specified
-- **Prompt IDs**: Must be unique across global and task-scoped prompts
+- **Prompt IDs**: Must be unique across all prompts
 
 ### 📦 Template File Formats
 

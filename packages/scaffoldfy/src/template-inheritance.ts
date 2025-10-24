@@ -33,6 +33,85 @@ import { log } from './utils.js';
 const readFile = promisify(fs.readFile);
 
 /**
+ * Topologically sort templates based on their dependencies
+ * Templates that are depended upon come first
+ * @param templates - Array of templates to sort
+ * @returns Sorted array of templates
+ */
+function topologicalSortTemplates(templates: TasksConfiguration[]): TasksConfiguration[] {
+  // If all templates have unique names, use name-based sorting
+  // If there are duplicate names, just return templates in order (can't sort by name)
+  const nameToTemplates = new Map<string, TasksConfiguration[]>();
+  for (const template of templates) {
+    const existing = nameToTemplates.get(template.name) || [];
+    existing.push(template);
+    nameToTemplates.set(template.name, existing);
+  }
+
+  // Check if all templates have unique names
+  const hasDuplicateNames = Array.from(nameToTemplates.values()).some(
+    (arr) => arr.length > 1,
+  );
+
+  if (hasDuplicateNames) {
+    // Cannot do topological sort with duplicate names
+    // Just return templates in the order they were loaded
+    return templates;
+  }
+
+  // All names are unique, proceed with topological sort
+  const sorted: TasksConfiguration[] = [];
+  const visited = new Set<string>();
+  const visiting = new Set<string>();
+
+  // Create a map of template name to template for quick lookup
+  const templateMap = new Map<string, TasksConfiguration>();
+  for (const template of templates) {
+    templateMap.set(template.name, template);
+  }
+
+  function visit(templateName: string): void {
+    if (visited.has(templateName)) {
+      return;
+    }
+
+    if (visiting.has(templateName)) {
+      // Circular dependency detected
+      throw CircularDependencyError.forTemplateDependencies(
+        Array.from(visiting),
+        templateName,
+      );
+    }
+
+    visiting.add(templateName);
+
+    const template = templateMap.get(templateName);
+    if (template != null) {
+      // Visit all dependencies first
+      if (template.dependencies != null && template.dependencies.length > 0) {
+        for (const depName of template.dependencies) {
+          visit(depName);
+        }
+      }
+    }
+
+    visiting.delete(templateName);
+    visited.add(templateName);
+
+    if (template != null) {
+      sorted.push(template);
+    }
+  }
+
+  // Visit all templates
+  for (const template of templates) {
+    visit(template.name);
+  }
+
+  return sorted;
+}
+
+/**
  * Conflicting field groups for different task types
  * These fields cannot coexist in the same config
  */
@@ -259,17 +338,21 @@ export async function loadTemplate(
 }
 
 /**
- * Recursively load and merge templates
+ * Load all templates recursively (without merging)
  * @param templatePath - Path or URL to the template file
- * @param baseDir - Base directory or URL for resolving relative paths in extends
- * @param visitedPaths - Set of already visited paths
- * @returns Merged template configuration
+ * @param baseDir - Base directory or URL for resolving relative paths
+ * @param visitedPaths - Set of already visited paths (for deduplication)
+ * @param visitingPaths - Set of paths currently being visited (for circular detection)
+ * @param allTemplates - Array to collect all loaded templates
+ * @returns Array of all loaded templates (unmerged)
  */
-export async function loadAndMergeTemplate(
+async function loadAllTemplatesRecursive(
   templatePath: string,
-  baseDir?: string,
-  visitedPaths: Set<string> = new Set(),
-): Promise<TasksConfiguration> {
+  baseDir: string | undefined,
+  visitedPaths: Set<string>,
+  visitingPaths: Set<string>,
+  allTemplates: TasksConfiguration[],
+): Promise<void> {
   // Check if templatePath is a URL
   const isRemote = isUrl(templatePath);
 
@@ -290,42 +373,96 @@ export async function loadAndMergeTemplate(
     resolvedPath = path.resolve(process.cwd(), templatePath);
   }
 
-  // Check for circular dependencies before loading
+  // Check if we've already completely loaded this path
   if (visitedPaths.has(resolvedPath)) {
-    throw CircularDependencyError.forTemplateInheritance(visitedPaths, resolvedPath);
+    return;
   }
 
-  // Add current path to visited set
-  visitedPaths.add(resolvedPath);
+  // Check for circular dependencies
+  if (visitingPaths.has(resolvedPath)) {
+    throw CircularDependencyError.forTemplateInheritance(visitingPaths, resolvedPath);
+  }
 
-  // Load the current template (don't pass visitedPaths to avoid double-checking)
+  // Add to visiting paths
+  visitingPaths.add(resolvedPath);
+
+  // Load the current template
   const config = await loadTemplate(resolvedPath);
 
-  // If no extends, return as is
-  if (config.extends == null || config.extends === '') {
-    return config;
-  }
-
-  // Get the directory or base URL of the current template for resolving relative extends
+  // Get the directory or base URL for resolving relative extends
   const currentBase = isUrl(resolvedPath)
-    ? new URL('.', resolvedPath).href // For URLs, get the base URL
-    : path.dirname(resolvedPath); // For paths, get the directory
+    ? new URL('.', resolvedPath).href
+    : path.dirname(resolvedPath);
 
-  // Process extends (can be string or array)
-  const extendsList = Array.isArray(config.extends) ? config.extends : [config.extends];
+  // If template has extends, load them first (recursively)
+  if (config.extends != null && config.extends !== '') {
+    const extendsList = Array.isArray(config.extends) ? config.extends : [config.extends];
 
-  // Load all base templates
-  const baseConfigs: TasksConfiguration[] = [];
-
-  /* eslint-disable no-await-in-loop */
-  for (const extendsPath of extendsList) {
-    const baseConfig = await loadAndMergeTemplate(extendsPath, currentBase, visitedPaths);
-    baseConfigs.push(baseConfig);
+    /* eslint-disable no-await-in-loop */
+    for (const extendsPath of extendsList) {
+      await loadAllTemplatesRecursive(
+        extendsPath,
+        currentBase,
+        visitedPaths,
+        visitingPaths,
+        allTemplates,
+      );
+    }
+    /* eslint-enable no-await-in-loop */
   }
-  /* eslint-enable no-await-in-loop */
 
-  // Merge all base configurations and the current one
-  return mergeTemplates([...baseConfigs, config]);
+  // Remove from visiting paths and add to visited
+  visitingPaths.delete(resolvedPath);
+  visitedPaths.add(resolvedPath);
+
+  // Add current template to the collection
+  allTemplates.push(config);
+}
+
+/**
+ * Load all templates in dependency order without merging
+ * @param templatePath - Path or URL to the template file
+ * @param baseDir - Base directory or URL for resolving relative paths in extends
+ * @param visitedPaths - Set of already visited paths
+ * @returns Array of sorted templates (in dependency order, ready for sequential processing)
+ */
+export async function loadTemplatesInOrder(
+  templatePath: string,
+  baseDir?: string,
+  visitedPaths: Set<string> = new Set(),
+): Promise<TasksConfiguration[]> {
+  // Collect all templates first (without merging)
+  const allTemplates: TasksConfiguration[] = [];
+  const visitingPaths = new Set<string>();
+  await loadAllTemplatesRecursive(
+    templatePath,
+    baseDir,
+    visitedPaths,
+    visitingPaths,
+    allTemplates,
+  );
+
+  // Sort templates topologically based on their dependencies
+  return topologicalSortTemplates(allTemplates);
+}
+
+/**
+ * Recursively load and merge templates
+ * @param templatePath - Path or URL to the template file
+ * @param baseDir - Base directory or URL for resolving relative paths in extends
+ * @param visitedPaths - Set of already visited paths
+ * @returns Merged template configuration
+ */
+export async function loadAndMergeTemplate(
+  templatePath: string,
+  baseDir?: string,
+  visitedPaths: Set<string> = new Set(),
+): Promise<TasksConfiguration> {
+  // Use the new loadTemplatesInOrder function
+  const sortedTemplates = await loadTemplatesInOrder(templatePath, baseDir, visitedPaths);
+
+  // Merge sorted templates
+  return mergeTemplates(sortedTemplates);
 }
 
 /**
@@ -736,36 +873,6 @@ function mergeTask(base: TaskDefinition, override: TaskDefinition): TaskDefiniti
     mergedConfig = (override.config ?? base.config) as Record<string, unknown>;
   }
 
-  // Merge prompts arrays (override prompts with same ID)
-  let mergedPrompts = base.prompts ? [...base.prompts] : undefined;
-  if (override.prompts && override.prompts.length > 0) {
-    if (!mergedPrompts) {
-      mergedPrompts = [...override.prompts];
-    } else {
-      // Replace prompts with matching IDs, add new ones
-      const promptMap = new Map(mergedPrompts.map((p) => [p.id, p]));
-      for (const prompt of override.prompts) {
-        promptMap.set(prompt.id, prompt);
-      }
-      mergedPrompts = Array.from(promptMap.values());
-    }
-  }
-
-  // Merge variables arrays (override variables with same ID)
-  let mergedVariables = base.variables ? [...base.variables] : undefined;
-  if (override.variables && override.variables.length > 0) {
-    if (!mergedVariables) {
-      mergedVariables = [...override.variables];
-    } else {
-      // Replace variables with matching IDs, add new ones
-      const variableMap = new Map(mergedVariables.map((v) => [v.id, v]));
-      for (const variable of override.variables) {
-        variableMap.set(variable.id, variable);
-      }
-      mergedVariables = Array.from(variableMap.values());
-    }
-  }
-
   // Merge dependencies arrays
   const mergedDependencies = [
     ...(base.dependencies ?? []),
@@ -781,8 +888,6 @@ function mergeTask(base: TaskDefinition, override: TaskDefinition): TaskDefiniti
     ...base,
     ...override,
     config: mergedConfig,
-    ...(mergedPrompts != null && { prompts: mergedPrompts }),
-    ...(mergedVariables != null && { variables: mergedVariables }),
     ...(uniqueDependencies != null && { dependencies: uniqueDependencies }),
     ...(sourceUrl != null && { $sourceUrl: sourceUrl }),
   } as Record<string, unknown>;
@@ -803,16 +908,35 @@ export function clearTemplateCache(): void {
 /**
  * Load tasks from a configuration file with template inheritance support
  * @param tasksFilePath - Path to the tasks configuration file
+ * @param options - Optional configuration
+ * @param options.sequential - If true, return templates as separate items for sequential processing
  * @returns Task configuration with tasks, optional variables, and optional prompts
  */
-export async function loadTasksWithInheritance(tasksFilePath: string): Promise<{
+export async function loadTasksWithInheritance(
+  tasksFilePath: string,
+  options?: { sequential?: boolean },
+): Promise<{
   tasks: TaskDefinition[];
   variables?: VariableDefinition[];
   prompts?: PromptDefinition[];
   enabled?: EnabledValue;
+  templates?: TasksConfiguration[];
 }> {
   log(`Loading tasks from ${tasksFilePath}...`, 'info');
 
+  // If sequential mode, load templates without merging
+  if (options?.sequential === true) {
+    const templates = await loadTemplatesInOrder(tasksFilePath);
+
+    log(`Loaded ${templates.length} template(s) for sequential processing`, 'info');
+
+    return {
+      tasks: [],
+      templates,
+    };
+  }
+
+  // Otherwise, use the traditional merged approach
   const config = await loadAndMergeTemplate(tasksFilePath);
 
   log(`Loaded ${config.tasks?.length ?? 0} task(s)`, 'info');

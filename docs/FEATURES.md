@@ -12,7 +12,6 @@ This guide covers the advanced features of **@pixpilot/scaffoldfy** that enable 
 - [Template-Level Enabled](#template-level-enabled)
 - [Conditional Execution](#conditional-execution)
 - [Conditional Variables](#conditional-variables)
-- [Global Prompts](#global-prompts)
 - [Handlebars Templates](#handlebars-templates)
 
 ---
@@ -341,8 +340,8 @@ Conditions are JavaScript expressions that have access to all configuration vari
 **Available Variables:**
 
 - Built-in config variables: `projectName`, `author`, `repoUrl`, etc.
-- Prompt values: Any variable defined through prompts
-- Global prompt values: Available across all tasks
+- Root-level prompt values: Available to all tasks
+- Root-level variable values: Available to all tasks
 
 ### Using with Prompts
 
@@ -350,22 +349,25 @@ Combine conditional execution with interactive prompts for dynamic behavior:
 
 ```json
 {
-  "id": "setup-typescript",
   "prompts": [
     {
       "id": "useTypeScript",
       "type": "confirm",
       "message": "Use TypeScript?",
-      "default": true,
-      "global": true
+      "default": true
     }
   ],
-  "type": "write",
-  "config": {
-    "file": "tsconfig.json",
-    "templateFile": ".templates/tsconfig.hbs",
-    "condition": "useTypeScript === true"
-  }
+  "tasks": [
+    {
+      "id": "setup-typescript",
+      "type": "write",
+      "config": {
+        "file": "tsconfig.json",
+        "templateFile": ".templates/tsconfig.hbs",
+        "condition": "useTypeScript === true"
+      }
+    }
+  ]
 }
 ```
 
@@ -431,7 +433,7 @@ When using `--dry-run`, you'll see which tasks would be skipped:
 ### Best Practices
 
 1. **Keep conditions simple** - Complex logic is harder to debug
-2. **Use global prompts** - Share condition variables across tasks
+2. **Use root-level prompts** - All prompts are available to all tasks
 3. **Document conditions** - Add clear descriptions explaining why tasks are conditional
 4. **Test both paths** - Run with conditions true and false to verify behavior
 5. **Use meaningful prompt IDs** - Make conditions self-documenting (e.g., `enableFeatureX`)
@@ -442,7 +444,6 @@ When using `--dry-run`, you'll see which tasks would be skipped:
 
 ```json
 {
-  "id": "cleanup-template-files",
   "prompts": [
     {
       "id": "cleanupTemplate",
@@ -451,11 +452,16 @@ When using `--dry-run`, you'll see which tasks would be skipped:
       "default": true
     }
   ],
-  "type": "delete",
-  "config": {
-    "paths": [".templates", "template-tasks.json"],
-    "condition": "cleanupTemplate === true"
-  }
+  "tasks": [
+    {
+      "id": "cleanup-template-files",
+      "type": "delete",
+      "config": {
+        "paths": [".templates", "template-tasks.json"],
+        "condition": "cleanupTemplate === true"
+      }
+    }
+  ]
 }
 ```
 
@@ -468,16 +474,20 @@ When using `--dry-run`, you'll see which tasks would be skipped:
       "id": "environment",
       "type": "select",
       "message": "Deployment environment?",
-      "choices": ["development", "staging", "production"],
-      "global": true
+      "choices": ["development", "staging", "production"]
     }
   ],
-  "type": "write",
-  "config": {
-    "file": ".env",
-    "templateFile": ".templates/env-production.hbs",
-    "condition": "environment === 'production'"
-  }
+  "tasks": [
+    {
+      "id": "create-env",
+      "type": "write",
+      "config": {
+        "file": ".env",
+        "templateFile": ".templates/env-production.hbs",
+        "condition": "environment === 'production'"
+      }
+    }
+  ]
 }
 ```
 
@@ -673,241 +683,6 @@ Conditional variables support complex JavaScript expressions:
 - See [Variables](./VARIABLES.md) for complete variable documentation
 - See [Template-Level Enabled](#template-level-enabled) for controlling entire templates
 - See [Conditional Execution](#conditional-execution) for task-level conditions
-
----
-
-## Global Prompts
-
-Share prompt values across all tasks for better user experience and cleaner configuration.
-
-### Overview
-
-By default, prompt values are only available within the task where they're defined. Global prompts allow you to mark any prompt with `"global": true"` so its value is available to **all tasks** throughout the initialization process.
-
-### Why Use Global Prompts?
-
-**Without Global Prompts:**
-
-- Same question asked multiple times (poor UX)
-- Values can't be shared between tasks
-- Redundant prompt definitions
-
-**With Global Prompts:**
-
-- Ask once, use everywhere
-- Cleaner configuration
-- Better user experience
-
-### Basic Usage
-
-```json
-{
-  "id": "init-package",
-  "prompts": [
-    {
-      "id": "projectName",
-      "type": "input",
-      "message": "What is your project name?",
-      "required": true,
-      "global": true
-    },
-    {
-      "id": "version",
-      "type": "input",
-      "message": "Initial version?",
-      "default": "0.1.0",
-      "global": true
-    }
-  ],
-  "config": {
-    "file": "package.json",
-    "updates": {
-      "name": "{{projectName}}",
-      "version": "{{version}}"
-    }
-  }
-}
-```
-
-### Using Global Values in Other Tasks
-
-Once defined as global, use the values in any subsequent task:
-
-```json
-{
-  "id": "create-readme",
-  "type": "write",
-  "config": {
-    "file": "README.md",
-    "template": "# {{projectName}}\n\nVersion: {{version}}"
-  }
-}
-```
-
-```json
-{
-  "id": "create-changelog",
-  "type": "write",
-  "config": {
-    "file": "CHANGELOG.md",
-    "template": "# Changelog for {{projectName}}\n\n## [{{version}}]"
-  }
-}
-```
-
-### User Experience
-
-Global prompts are clearly labeled when collected:
-
-```
-📋 Global prompts (available to all tasks):
-? What is your project name? my-awesome-app
-? Initial version? 1.0.0
-? Choose a license: MIT
-
-📋 Task-specific prompts:
-? Enable debug mode? Yes
-? Port number? 3000
-
-Starting initialization tasks...
-```
-
-### Validation Rules
-
-1. **Unique IDs**: Prompt IDs must be unique unless they're all marked as global
-2. **No conflicts**: A prompt ID cannot be both global and task-specific
-3. **Standard validation**: All standard prompt validation rules still apply
-
-### Common Use Cases
-
-**Project metadata:**
-
-```json
-{
-  "prompts": [
-    {
-      "id": "projectName",
-      "type": "input",
-      "message": "Project name?",
-      "required": true,
-      "global": true
-    },
-    {
-      "id": "description",
-      "type": "input",
-      "message": "Project description?",
-      "global": true
-    },
-    {
-      "id": "license",
-      "type": "select",
-      "message": "Choose a license:",
-      "choices": ["MIT", "Apache-2.0", "GPL-3.0"],
-      "default": "MIT",
-      "global": true
-    }
-  ]
-}
-```
-
-**Feature flags:**
-
-```json
-{
-  "prompts": [
-    {
-      "id": "useTypeScript",
-      "type": "confirm",
-      "message": "Use TypeScript?",
-      "default": true,
-      "global": true
-    },
-    {
-      "id": "enableTesting",
-      "type": "confirm",
-      "message": "Include testing setup?",
-      "default": true,
-      "global": true
-    },
-    {
-      "id": "enableCI",
-      "type": "confirm",
-      "message": "Setup CI/CD?",
-      "default": false,
-      "global": true
-    }
-  ]
-}
-```
-
-### Best Practices
-
-1. **Use for shared values** - Project name, version, author, license, etc.
-2. **Feature flags as global** - When multiple tasks depend on the same feature choice
-3. **Collect early** - Global prompts are collected first, before any tasks run
-4. **Clear naming** - Use descriptive IDs that make sense across tasks
-5. **Document dependencies** - Note which tasks use which global prompts
-
-### Complete Example
-
-```json
-{
-  "tasks": [
-    {
-      "id": "project-setup",
-      "name": "Project Setup",
-      "prompts": [
-        {
-          "id": "projectName",
-          "type": "input",
-          "message": "Project name?",
-          "required": true,
-          "global": true
-        },
-        {
-          "id": "useTypeScript",
-          "type": "confirm",
-          "message": "Use TypeScript?",
-          "default": true,
-          "global": true
-        }
-      ],
-      "type": "update-json",
-      "config": {
-        "file": "package.json",
-        "updates": {
-          "name": "{{projectName}}"
-        }
-      }
-    },
-    {
-      "id": "setup-typescript",
-      "name": "Setup TypeScript",
-      "type": "write",
-      "config": {
-        "file": "tsconfig.json",
-        "templateFile": ".templates/tsconfig.hbs",
-        "condition": "useTypeScript === true"
-      }
-    },
-    {
-      "id": "create-readme",
-      "name": "Create README",
-      "type": "write",
-      "config": {
-        "file": "README.md",
-        "template": "# {{projectName}}\n\nTypeScript: {{useTypeScript}}"
-      }
-    }
-  ]
-}
-```
-
-In this example:
-
-- `projectName` and `useTypeScript` are prompted once at the start
-- All three tasks can use these values
-- The TypeScript setup is conditional based on the global prompt
 
 ---
 
@@ -1131,39 +906,35 @@ project-root/
 
 ```json
 {
+  "prompts": [
+    {
+      "id": "projectName",
+      "type": "input",
+      "message": "Project name?",
+      "required": true
+    },
+    {
+      "id": "description",
+      "type": "input",
+      "message": "Description?"
+    },
+    {
+      "id": "useTypeScript",
+      "type": "confirm",
+      "message": "Use TypeScript?",
+      "default": true
+    },
+    {
+      "id": "enableTesting",
+      "type": "confirm",
+      "message": "Include testing?",
+      "default": true
+    }
+  ],
   "tasks": [
     {
       "id": "collect-info",
       "name": "Collect Project Info",
-      "prompts": [
-        {
-          "id": "projectName",
-          "type": "input",
-          "message": "Project name?",
-          "required": true,
-          "global": true
-        },
-        {
-          "id": "description",
-          "type": "input",
-          "message": "Description?",
-          "global": true
-        },
-        {
-          "id": "useTypeScript",
-          "type": "confirm",
-          "message": "Use TypeScript?",
-          "default": true,
-          "global": true
-        },
-        {
-          "id": "enableTesting",
-          "type": "confirm",
-          "message": "Include testing?",
-          "default": true,
-          "global": true
-        }
-      ],
       "type": "write",
       "config": {
         "file": "package.json",
@@ -1234,7 +1005,7 @@ project-root/
 **Missing variables?**
 
 - Verify prompt IDs match template variables
-- Check that prompts are marked as `global` if used across tasks
+- All root-level prompts are available to all tasks
 - Ensure built-in variables are spelled correctly
 
 ### Learn More
@@ -1252,25 +1023,23 @@ The real power comes from combining these features:
 
 ```json
 {
+  "prompts": [
+    {
+      "id": "framework",
+      "type": "select",
+      "message": "Choose framework:",
+      "choices": ["react", "vue", "svelte"]
+    },
+    {
+      "id": "useTypeScript",
+      "type": "confirm",
+      "message": "Use TypeScript?",
+      "default": true
+    }
+  ],
   "tasks": [
     {
       "id": "setup",
-      "prompts": [
-        {
-          "id": "framework",
-          "type": "select",
-          "message": "Choose framework:",
-          "choices": ["react", "vue", "svelte"],
-          "global": true
-        },
-        {
-          "id": "useTypeScript",
-          "type": "confirm",
-          "message": "Use TypeScript?",
-          "default": true,
-          "global": true
-        }
-      ],
       "type": "write",
       "config": {
         "file": "package.json",
@@ -1292,7 +1061,7 @@ The real power comes from combining these features:
 
 This example:
 
-- Uses **global prompts** for shared values (`framework`, `useTypeScript`)
+- Uses **root-level prompts** for shared values (`framework`, `useTypeScript`)
 - Uses **conditional execution** to only setup TypeScript when needed
 - Uses **Handlebars templates** with conditionals and dynamic file selection
 - Creates a flexible, user-friendly template initialization

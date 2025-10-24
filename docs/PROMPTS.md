@@ -5,7 +5,7 @@ title: Interactive Prompts - Scaffoldfy
 
 # Using Prompts in scaffoldfy
 
-scaffoldfy supports prompts at both the top level (global) and within individual tasks. This allows you to collect user input dynamically and use those values throughout your task configurations.
+Scaffoldfy supports prompts at the root level to collect user input dynamically. Prompts are collected once before any tasks run, and their values are available to all tasks throughout your configuration.
 
 ## Overview
 
@@ -15,16 +15,15 @@ Prompts enable you to:
 - Support different input types (text, numbers, selections, confirmations, passwords)
 - Define default values and validation rules
 - Execute commands to generate dynamic default values (e.g., git branch, npm version, node version)
-- Use prompt values in task configs via template interpolation
-- Define **top-level (global) prompts** collected once upfront
-- Define **task-specific prompts** collected only when that task runs
+- Use prompt values in task configs via template interpolation `{{promptId}}`
+- Define **root-level prompts** collected once upfront and available to all tasks
 - Conditionally enable/disable prompts based on runtime conditions
 
-## Top-Level (Global) Prompts
+## Root-Level Prompts
 
-You can define prompts at the **top level** of your configuration file. These prompts are **always global** and are collected **once upfront** before any tasks run. Their values are available to **all tasks**.
+You can define prompts at the **root level** of your configuration file. These prompts are collected **once upfront** before any tasks run. Their values are available to **all tasks**.
 
-### Example: Top-Level Prompts
+### Example: Root-Level Prompts
 
 ```json
 {
@@ -90,50 +89,11 @@ In this example:
 - All prompts are collected **once** before any tasks run
 - Values are available to **all tasks** using `{{projectName}}`, `{{author}}`, `{{useTypeScript}}`
 
-## Task-Level Prompts
+---
 
-You can also define prompts within individual tasks. These prompts are **task-specific** and are only collected when that particular task runs. Their values are available **only within that task**.
+## Prompt Types
 
-### Example: Task-Level Prompts
-
-```json
-{
-  "tasks": [
-    {
-      "id": "setup-env",
-      "name": "Setup Environment",
-      "description": "Create .env file",
-      "required": false,
-      "enabled": true,
-      "type": "write",
-      "prompts": [
-        {
-          "id": "apiUrl",
-          "type": "input",
-          "message": "API URL",
-          "default": "https://api.example.com"
-        },
-        {
-          "id": "apiSecret",
-          "type": "password",
-          "message": "API Secret Key",
-          "required": true
-        }
-      ],
-      "config": {
-        "file": ".env",
-        "template": "API_URL={{apiUrl}}\nAPI_SECRET={{apiSecret}}\n"
-      }
-    }
-  ]
-}
-```
-
-In this example:
-
-- `apiUrl` and `apiSecret` are task-specific prompts
-- They are only collected when the `setup-env` task runs
-- They are **not available** to other tasks
+Scaffoldfy supports five prompt types:
 
 ### 1. Input Prompt
 
@@ -674,7 +634,7 @@ Here's a complete example showing how to use prompts with executable defaults in
 
 ## Conditional Enabled for Prompts
 
-Both top-level and task-level prompts support a conditional `enabled` field. This allows you to dynamically show or hide prompts based on runtime conditions.
+Root-level prompts support a conditional `enabled` field. This allows you to dynamically show or hide prompts based on runtime conditions.
 
 ### Simple Boolean
 
@@ -744,7 +704,7 @@ The command output is parsed as a boolean:
 1. Conditions are **JavaScript expressions** evaluated at runtime
 2. The expression has access to:
    - All previously collected prompt values
-   - All variable values (both global and task-scoped)
+   - All variable values
    - All config values
 3. Prompts are evaluated **in order**, so later prompts can depend on earlier ones
 4. If the condition evaluates to `false`, the prompt is **skipped**
@@ -901,11 +861,11 @@ Using conditional object:
 
 When you run initialization:
 
-1. **Top-level (global) prompts** are collected first, in the order they're defined
-2. **Task-specific prompts** are collected when each task runs
-3. Within each level, prompts are evaluated in order, respecting `enabled` conditions
+1. **Root-level prompts** are collected first, in the order they're defined
+2. Prompts are evaluated in order, respecting `enabled` conditions
+3. All prompts are collected before any tasks run
 
-This ensures users provide common information upfront before task-specific details.
+This ensures users provide all necessary information upfront before task execution begins.
 
 ## Using Prompt Values
 
@@ -914,8 +874,7 @@ Prompt values are automatically merged into the configuration object and can be 
 - `{{promptId}}` - Access prompt values in config via template interpolation
 - Works in all task types (update-json, write, regex-replace, etc.)
 - Values are available alongside variable values
-- **Top-level prompts** are available to all tasks
-- **Task-specific prompts** are only available within their task
+- **All prompts** are available to all tasks
 
 ### Using Prompt Values in Conditions
 
@@ -963,7 +922,7 @@ You can use any JavaScript expression in conditions, including:
 Prompts are validated automatically:
 
 - **ID**: Must be a valid JavaScript identifier (letters, digits, underscores, and `$`; cannot start with a digit or contain hyphens)
-- **ID uniqueness**: All prompt IDs must be unique (top-level and task-level combined)
+- **ID uniqueness**: All prompt IDs must be unique
 - **Required**: If `required: true`, empty values are rejected
 - **Number min/max**: Values must be within specified range
 - **Select choices**: At least one choice must be provided
@@ -972,35 +931,38 @@ Prompts are validated automatically:
 
 ## TypeScript Support
 
-For TypeScript task files (`template-tasks.ts`), you can use typed prompt definitions:
+For TypeScript task configuration files (`template-tasks.ts`), you can use typed configurations:
 
 ```typescript
-import type { TaskDefinition } from '@pixpilot/scaffoldfy';
+import type { TasksConfiguration } from '@pixpilot/scaffoldfy';
 
-export const tasks: TaskDefinition[] = [
-  {
-    id: 'setup',
-    name: 'Setup',
-    description: 'Project setup',
-    required: true,
-    enabled: true,
-    type: 'update-json',
-    prompts: [
-      {
-        id: 'projectName',
-        type: 'input',
-        message: 'Project name?',
-        required: true,
-      },
-    ],
-    config: {
-      file: 'package.json',
-      updates: {
-        name: '{{projectName}}',
+export const config: TasksConfiguration = {
+  name: 'my-template',
+  prompts: [
+    {
+      id: 'projectName',
+      type: 'input',
+      message: 'Project name?',
+      required: true,
+    },
+  ],
+  tasks: [
+    {
+      id: 'setup',
+      name: 'Setup',
+      description: 'Project setup',
+      required: true,
+      enabled: true,
+      type: 'update-json',
+      config: {
+        file: 'package.json',
+        updates: {
+          name: '{{projectName}}',
+        },
       },
     },
-  },
-];
+  ],
+};
 ```
 
 ## Best Practices
@@ -1008,13 +970,13 @@ export const tasks: TaskDefinition[] = [
 1. **Use descriptive IDs**: Choose clear, semantic IDs like `apiKey` instead of `key1`
 2. **Provide defaults**: Always provide sensible defaults when possible
 3. **Use executable defaults for context**: Let the environment suggest intelligent defaults (e.g., git user name, current directory)
-4. **Define shared prompts at top level**: If multiple tasks need the same value, define it in the top-level `prompts` array
+4. **Define all prompts at root level**: All prompts should be defined in the top-level `prompts` array and are available to all tasks
 5. **Use conditional enabled**: Show/hide prompts based on user choices to create dynamic workflows
 6. **Validate inputs**: Use `required`, `min`, `max` to ensure valid data
 7. **Keep it simple**: Don't overwhelm users with too many prompts
 8. **Test executable defaults**: Ensure commands work across different platforms
 9. **Handle command failures gracefully**: Don't rely solely on executable defaults for required prompts
-10. **Order matters**: Later prompts can depend on earlier ones, so order them logically
+10. **Order matters**: Later prompts can depend on earlier ones (in conditions), so order them logically
 
 ## CLI Usage
 

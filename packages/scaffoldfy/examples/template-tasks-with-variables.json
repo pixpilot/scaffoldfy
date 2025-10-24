@@ -1,43 +1,66 @@
 {
   "$schema": "../schema/tasks.schema.json",
   "name": "template-with-variables",
-  "description": "Demonstrates using global and task-scoped variables for configuration",
+  "description": "Demonstrates using root-level variables for configuration",
   "variables": [
     {
       "id": "currentYear",
       "value": {
         "type": "exec",
         "value": "node -e \"console.log(new Date().getFullYear())\""
-      },
-      "global": true
+      }
     },
     {
       "id": "gitUserName",
       "value": {
         "type": "exec",
         "value": "git config user.name"
-      },
-      "global": true
+      }
     },
     {
       "id": "gitUserEmail",
       "value": {
         "type": "exec",
         "value": "git config user.email"
-      },
-      "global": true
+      }
     },
     {
       "id": "nodeVersion",
       "value": {
         "type": "exec",
         "value": "node --version"
-      },
-      "global": true
+      }
     },
     {
       "id": "defaultLicense",
       "value": "MIT"
+    },
+    {
+      "id": "readmeTemplate",
+      "value": "standard"
+    },
+    {
+      "id": "defaultPort",
+      "value": 3000
+    },
+    {
+      "id": "defaultHost",
+      "value": "localhost"
+    }
+  ],
+  "prompts": [
+    {
+      "id": "projectName",
+      "type": "input",
+      "message": "What is your project name?",
+      "default": "my-awesome-project",
+      "required": true
+    },
+    {
+      "id": "projectDescription",
+      "type": "input",
+      "message": "Project description",
+      "default": "An awesome project"
     }
   ],
   "tasks": [
@@ -48,23 +71,6 @@
       "required": true,
       "enabled": true,
       "type": "update-json",
-      "prompts": [
-        {
-          "id": "projectName",
-          "type": "input",
-          "message": "What is your project name?",
-          "default": "my-awesome-project",
-          "required": true,
-          "global": true
-        },
-        {
-          "id": "projectDescription",
-          "type": "input",
-          "message": "Project description",
-          "default": "An awesome project",
-          "global": true
-        }
-      ],
       "config": {
         "file": "package.json",
         "updates": {
@@ -84,12 +90,6 @@
       "enabled": true,
       "type": "write",
       "dependencies": ["setup-package-json"],
-      "variables": [
-        {
-          "id": "readmeTemplate",
-          "value": "standard"
-        }
-      ],
       "config": {
         "file": "README.md",
         "template": "# {{projectName}}\n\n{{projectDescription}}\n\n## Installation\n\nRequires Node.js {{nodeVersion}}\n\n```bash\nnpm install\n```\n\n## Author\n\n{{gitUserName}} ({{gitUserEmail}})\n\n## License\n\n{{defaultLicense}} © {{currentYear}} {{gitUserName}}\n\n## Template\n\nTemplate type: {{readmeTemplate}}\n"
@@ -114,16 +114,6 @@
       "required": false,
       "enabled": true,
       "type": "write",
-      "variables": [
-        {
-          "id": "defaultPort",
-          "value": 3000
-        },
-        {
-          "id": "defaultHost",
-          "value": "localhost"
-        }
-      ],
       "config": {
         "file": ".env.example",
         "template": "# Environment Configuration\n# Generated for {{projectName}} (Node {{nodeVersion}})\n\nPORT={{defaultPort}}\nHOST={{defaultHost}}\nNODE_ENV=development\n\n# Author: {{gitUserName}}\n# Year: {{currentYear}}\n"

@@ -3,7 +3,9 @@
   "description": "Generates packages section in monorepo README by reading package.json files",
   "name": "pixpilot-generate-packages-section",
   "dependencies": ["pixpilot-info"],
-  "enabled": "pixpilot_project",
+  "enabled": {
+    "condition": "pixpilot_project == true"
+  },
   "variables": [
     {
       "id": "pixpilot_generate_packages_section_pre_commit_content",

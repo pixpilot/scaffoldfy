@@ -1,0 +1,12 @@
+{
+  "$schema": "https://unpkg.com/@pixpilot/scaffoldfy/schema",
+  "description": "Test with false condition - should skip tasks",
+  "name": "pixpilot-info-false",
+  "dependencies": ["project-info"],
+  "variables": [
+    {
+      "id": "pixpilot_project",
+      "value": false
+    }
+  ]
+}

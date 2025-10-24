@@ -59,7 +59,7 @@ Welcome to the official documentation for **@pixpilot/scaffoldfy** (formerly sca
 
 <div style="padding: 15px; background: #f6f8fa; border-radius: 6px; margin: 15px 0;">
   <strong><a href="FEATURES.html">🎨 Advanced Features</a></strong><br>
-  <em>Conditional execution, global prompts, and Handlebars templates</em>
+  <em>Conditional execution, variables, and Handlebars templates</em>
 </div>
 
 <div style="padding: 15px; background: #f6f8fa; border-radius: 6px; margin: 15px 0;">

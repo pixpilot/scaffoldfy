@@ -169,11 +169,6 @@
             "description": "Strategy for merging with base task when extending templates"
           },
           "$sourceUrl": { "type": "string" },
-          "prompts": { "type": "array", "items": { "$ref": "#/$defs/promptItem" } },
-          "variables": {
-            "type": "array",
-            "items": { "$ref": "#/$defs/taskVariableItem" }
-          },
           "type": {
             "type": "string",
             "enum": [
@@ -464,73 +459,6 @@
           "type": "string",
           "enum": ["merge", "replace"],
           "description": "Strategy for merging with base variable when extending templates. 'merge' (default) replaces the value, 'replace' completely replaces the variable. Must be specified when variable ID conflicts with base template."
-        }
-      }
-    },
-    "taskVariableItem": {
-      "type": "object",
-      "required": ["id", "value"],
-      "additionalProperties": false,
-      "properties": {
-        "id": {
-          "type": "string",
-          "description": "Unique identifier for the variable (must be a valid JavaScript identifier: start with letter, underscore, or $, followed by letters, digits, underscores, or $)",
-          "pattern": "^[a-zA-Z_$][a-zA-Z0-9_$]*$"
-        },
-        "value": {
-          "description": "Variable value. Can be a static value or an object with 'type' and 'value' properties for executable values, or a conditional configuration.",
-          "oneOf": [
-            {
-              "description": "Static value (string, number, or boolean)"
-            },
-            {
-              "type": "object",
-              "description": "Value configuration for static, executable, or conditional values",
-              "required": ["type"],
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "enum": ["static", "exec", "conditional"],
-                  "description": "Type of value. 'static' for explicit static values, 'exec' for command execution, 'conditional' for condition-based values."
-                },
-                "value": {
-                  "description": "For 'static' type: the static value. For 'exec' type: the shell command to execute. Commands output will be trimmed and auto-parsed as JSON, number, or boolean when applicable. Not used for 'conditional' type."
-                },
-                "condition": {
-                  "type": "string",
-                  "description": "For 'conditional' type: JavaScript expression to evaluate. Can reference other variables, prompts, and config values."
-                },
-                "ifTrue": {
-                  "description": "For 'conditional' type: Value to use if condition evaluates to true. Can be a static value or a template string with {{variables}}."
-                },
-                "ifFalse": {
-                  "description": "For 'conditional' type: Value to use if condition evaluates to false. Can be a static value or a template string with {{variables}}."
-                }
-              },
-              "allOf": [
-                {
-                  "if": {
-                    "properties": {
-                      "type": { "enum": ["static", "exec"] }
-                    }
-                  },
-                  "then": {
-                    "required": ["value"]
-                  }
-                },
-                {
-                  "if": {
-                    "properties": {
-                      "type": { "const": "conditional" }
-                    }
-                  },
-                  "then": {
-                    "required": ["condition", "ifTrue", "ifFalse"]
-                  }
-                }
-              ]
-            }
-          ]
         }
       }
     },

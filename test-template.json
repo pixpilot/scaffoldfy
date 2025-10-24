@@ -1,0 +1,10 @@
+{
+  "$schema": "https://unpkg.com/@pixpilot/scaffoldfy/schema",
+  "name": "test-sequential-templates",
+  "description": "Test sequential template processing",
+  "extends": [
+    "./packages/scaffoldfy-configs/project-info/scaffoldfy.json",
+    "./packages/scaffoldfy-configs/pixpilot-info/scaffoldfy.json",
+    "./packages/scaffoldfy-configs/pixpilot-copilot-instructions/scaffoldfy.json"
+  ]
+}

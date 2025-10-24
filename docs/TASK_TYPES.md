@@ -25,8 +25,6 @@ Every task has the following properties:
 - **`config`** (object): Task-specific configuration (varies by task type)
 - **`dependencies`** (string[]): IDs of tasks that must run before this one
 - **`rollback`** (object): How to rollback if something fails
-- **`prompts`** (array): Task-scoped prompts to collect before running task
-- **`variables`** (array): Task-scoped variables (not available to other tasks)
 - **`override`** (string): Merge strategy when extending templates (`'merge'` or `'replace'`)
 
 ### Minimal Task Example
@@ -139,8 +137,8 @@ The command output is parsed as a boolean:
 
 1. Conditions are **JavaScript expressions** evaluated at runtime
 2. The expression has access to:
-   - All prompt values (both top-level and task-level)
-   - All variable values (both global and task-scoped)
+   - All root-level prompt values
+   - All root-level variable values
    - All config values
 3. If the condition evaluates to `false`, the task is **completely skipped**
 4. If the condition evaluates to `true`, the task proceeds normally

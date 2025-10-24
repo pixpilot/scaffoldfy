@@ -82,8 +82,6 @@ describe('optional task fields', () => {
     expect(task.required).toBeUndefined();
     expect(task.enabled).toBeUndefined();
     expect(task.dependencies).toBeUndefined();
-    expect(task.prompts).toBeUndefined();
-    expect(task.variables).toBeUndefined();
 
     // Required fields are present
     expect(task.id).toBe('minimal-task');

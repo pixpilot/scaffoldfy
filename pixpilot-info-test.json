@@ -1,14 +1,14 @@
 {
   "$schema": "https://unpkg.com/@pixpilot/scaffoldfy/schema",
-  "description": "Project information prompts for pnpm-turbo-monorepo-template",
-  "name": "pixpilot-info",
+  "description": "Test pixpilot info - modified condition for testing",
+  "name": "pixpilot-info-test",
   "dependencies": ["project-info"],
   "variables": [
     {
       "id": "pixpilot_project",
       "value": {
         "type": "conditional",
-        "condition": "repoOwner === 'ccpu' || repoOwner === 'pixpilot'",
+        "condition": "repoOwner === 'pixpilot'",
         "ifTrue": true,
         "ifFalse": false
       }

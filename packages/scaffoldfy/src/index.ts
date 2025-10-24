@@ -167,6 +167,7 @@ export {
   resolveDefaultValue,
   validatePrompts,
 } from './prompts/index.js';
+export { runTasks, runTemplatesSequentially } from './run-tasks.js';
 export { executeTask, registerBuiltInPlugins, runTask } from './task-executors.js';
 export { topologicalSort } from './task-resolver.js';
 export {
@@ -174,6 +175,7 @@ export {
   loadAndMergeTemplate,
   loadTasksWithInheritance,
   loadTemplate,
+  loadTemplatesInOrder,
   mergeTemplates,
 } from './template-inheritance.js';
 export {

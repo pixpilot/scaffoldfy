@@ -218,8 +218,6 @@ export interface TaskDefinition {
     | Record<string, unknown>;
   dependencies?: string[]; // IDs of tasks that must run before this one
   rollback?: RollbackConfig; // How to rollback if something fails
-  prompts?: PromptDefinition[]; // Optional task-scoped prompts to collect before running task
-  variables?: VariableDefinition[]; // Optional task-scoped variables (not available to other tasks)
   override?: MergeStrategy; // Strategy for merging with base task: 'merge' (default, intelligent) or 'replace' (complete override)
   $sourceUrl?: string; // Internal: URL or path of the template file this task came from (for resolving relative paths)
   $templateEnabled?: EnabledValue; // Internal: Enabled condition of the template this task came from (for lazy evaluation)

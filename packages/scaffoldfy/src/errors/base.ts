@@ -50,4 +50,18 @@ export class CircularDependencyError extends ScaffoldfyError {
     const message = `Circular dependency detected involving task: ${taskId}`;
     return new CircularDependencyError(message, [taskId]);
   }
+
+  /**
+   * Create a circular dependency error for template dependencies
+   */
+  static forTemplateDependencies(
+    visitingChain: string[],
+    templateName: string,
+  ): CircularDependencyError {
+    const dependencyChain = [...visitingChain, templateName];
+    const message = `Circular dependency detected in template dependencies: ${dependencyChain.join(
+      ' -> ',
+    )}`;
+    return new CircularDependencyError(message, dependencyChain);
+  }
 }

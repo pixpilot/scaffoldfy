@@ -231,12 +231,26 @@ await runWithTasks(customTasks);
 
 ### With Interactive Prompts
 
-Add user prompts to collect custom input:
+Add user prompts at the root level to collect custom input:
 
 ```json
 {
   "name": "project-setup-with-prompts",
   "description": "Configure project with interactive prompts",
+  "prompts": [
+    {
+      "id": "projectName",
+      "type": "input",
+      "message": "What is your project name?",
+      "required": true
+    },
+    {
+      "id": "useTypeScript",
+      "type": "confirm",
+      "message": "Use TypeScript?",
+      "default": true
+    }
+  ],
   "tasks": [
     {
       "id": "setup",
@@ -245,21 +259,6 @@ Add user prompts to collect custom input:
       "required": true,
       "enabled": true,
       "type": "update-json",
-      "prompts": [
-        {
-          "id": "projectName",
-          "type": "input",
-          "message": "What is your project name?",
-          "required": true,
-          "global": true
-        },
-        {
-          "id": "useTypeScript",
-          "type": "confirm",
-          "message": "Use TypeScript?",
-          "default": true
-        }
-      ],
       "config": {
         "file": "package.json",
         "updates": {
@@ -359,7 +358,7 @@ Built-in variables available for interpolation in any task config:
 - `{{repoUrl}}` - Base repository URL (without .git)
 - `{{orgName}}` - Organization name with @ prefix
 
-You can also use any custom variables defined through prompts:
+You can also define custom variables through root-level prompts:
 
 ```json
 {
@@ -371,13 +370,20 @@ You can also use any custom variables defined through prompts:
       "default": 3000
     }
   ],
-  "config": {
-    "file": "config.json",
-    "updates": {
-      "port": "{{port}}",
-      "author": "{{author}}"
+  "tasks": [
+    {
+      "id": "configure",
+      "name": "Configure",
+      "type": "update-json",
+      "config": {
+        "file": "config.json",
+        "updates": {
+          "port": "{{port}}",
+          "author": "{{author}}"
+        }
+      }
     }
-  }
+  ]
 }
 ```
 
@@ -388,37 +394,35 @@ Here's a complete example that sets up a Node.js project:
 ```json
 {
   "$schema": "./node_modules/@pixpilot/scaffoldfy/schema/tasks.schema.json",
+  "name": "node-project-setup",
+  "prompts": [
+    {
+      "id": "projectName",
+      "type": "input",
+      "message": "Project name?",
+      "required": true
+    },
+    {
+      "id": "description",
+      "type": "input",
+      "message": "Project description?"
+    },
+    {
+      "id": "license",
+      "type": "select",
+      "message": "Choose a license:",
+      "choices": ["MIT", "Apache-2.0", "GPL-3.0", "BSD-3-Clause"],
+      "default": "MIT"
+    }
+  ],
   "tasks": [
     {
       "id": "project-info",
       "name": "Project Information",
-      "description": "Collect project details",
+      "description": "Update package.json with project details",
       "required": true,
       "enabled": true,
       "type": "update-json",
-      "prompts": [
-        {
-          "id": "projectName",
-          "type": "input",
-          "message": "Project name?",
-          "required": true,
-          "global": true
-        },
-        {
-          "id": "description",
-          "type": "input",
-          "message": "Project description?",
-          "global": true
-        },
-        {
-          "id": "license",
-          "type": "select",
-          "message": "Choose a license:",
-          "choices": ["MIT", "Apache-2.0", "GPL-3.0", "BSD-3-Clause"],
-          "default": "MIT",
-          "global": true
-        }
-      ],
       "config": {
         "file": "package.json",
         "updates": {
@@ -463,10 +467,9 @@ Here's a complete example that sets up a Node.js project:
 4. **Mark critical tasks as required** - Essential tasks are `required: true` by default. Set `required: false` for optional tasks that shouldn't stop execution on failure
 5. **Document your tasks** - Write clear names and descriptions for maintainability
 6. **Version your task files** - Keep task definitions in version control alongside your project
-7. **Use global prompts** - Mark prompts with `"global": true` for values needed across multiple tasks
-8. **Leverage the schema** - Add `$schema` to JSON files for IDE autocomplete and validation
-9. **Test with different inputs** - Try various configuration values to ensure robustness
-10. **Preview changes** - Use dry-run mode to verify behavior before execution
+7. **Leverage the schema** - Add `$schema` to JSON files for IDE autocomplete and validation
+8. **Test with different inputs** - Try various configuration values to ensure robustness
+9. **Preview changes** - Use dry-run mode to verify behavior before execution
 
 ## Troubleshooting
 
@@ -490,8 +493,7 @@ A task lists a dependency that doesn't exist. Verify that all task IDs in `depen
 Ensure you're using the correct syntax: `{{variableName}}` and that the variable:
 
 - Is a built-in variable (like `projectName`, `author`, etc.)
-- Or is defined in a prompt with the matching `id`
-- Or is marked as `global: true` if used in a different task
+- Or is defined in a root-level prompt with the matching `id`
 
 ### File not found errors
 

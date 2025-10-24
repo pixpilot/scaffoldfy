@@ -1,0 +1,10 @@
+{
+  "$schema": "https://unpkg.com/@pixpilot/scaffoldfy/schema",
+  "name": "test-disabled-template",
+  "description": "Test that disabled templates don't execute tasks",
+  "extends": [
+    "./packages/scaffoldfy-configs/project-info/scaffoldfy.json",
+    "./pixpilot-info-false.json",
+    "./packages/scaffoldfy-configs/pixpilot-copilot-instructions/scaffoldfy.json"
+  ]
+}
