@@ -1,14 +1,14 @@
 {
-  "name": "@pixpilot/scaffoldfy-templates",
+  "name": "@pixpilot/scaffoldfy-configs",
   "type": "module",
-  "version": "1.4.0",
+  "version": "0.0.0",
   "packageManager": "pnpm@10.17.0",
   "author": "PixPilot <m.doaie@hotmail.com>",
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/pixpilot/scaffoldfy.git",
-    "directory": "packages/scaffoldfy-templates"
+    "directory": "packages/scaffoldfy-configs"
   },
   "keywords": [
     "scaffoldfy",

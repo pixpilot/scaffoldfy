@@ -148,7 +148,7 @@ importers:
         specifier: catalog:dev
         version: 5.9.3
 
-  packages/scaffoldfy-templates:
+  packages/scaffoldfy-configs:
     devDependencies:
       '@internal/eslint-config':
         specifier: workspace:*
