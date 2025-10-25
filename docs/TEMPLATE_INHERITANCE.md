@@ -258,7 +258,7 @@ The base task is completely ignored, and only the child task definition is used.
 
 ## Templates with Only Prompts/Variables
 
-Starting from version 2.0, the `tasks` array is optional. This allows you to create base templates that only provide shared prompts and variables for child templates to use.
+The `tasks` array is optional. This allows you to create base templates that only provide shared prompts and variables for child templates to use.
 
 ### Use Case
 
