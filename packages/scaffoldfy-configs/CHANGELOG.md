@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy-configs
 
+## 0.4.6
+
+### Patch Changes
+
+- update default value for author name prompt
+
 ## 0.4.5
 
 ### Patch Changes
