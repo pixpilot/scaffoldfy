@@ -13,7 +13,6 @@ title: Quick Reference - Scaffoldfy
 - [Essential Task Types](#essential-task-types)
 - [Quick Prompt Examples](#quick-prompt-examples)
 - [Common Patterns](#common-patterns)
-- [CLI Commands](#cli-commands)
 - [Programmatic API](#programmatic-api)
 
 ---
