@@ -40,7 +40,7 @@ Templates can be defined in two ways:
 
 **Template file** (`templates/readme.hbs`):
 
-```handlebars
+```hbs
 #
 {{projectName}}
 
@@ -130,7 +130,7 @@ Repository: {{repoUrl}}
 
 ### Conditionals
 
-```handlebars
+```hbs
 {{#if author}}
   Author:
   {{author}}
@@ -143,7 +143,7 @@ Repository: {{repoUrl}}
 
 ### Loops
 
-```handlebars
+```hbs
 ## Packages
 
 {{#each packages}}
@@ -154,7 +154,7 @@ Repository: {{repoUrl}}
 
 ### Else Blocks
 
-```handlebars
+```hbs
 {{#if description}}
   {{description}}
 {{else}}
@@ -164,7 +164,7 @@ Repository: {{repoUrl}}
 
 ### Comments
 
-```handlebars
+```hbs
 {{! This is a comment and won't appear in the output }}
 ```
 
@@ -287,7 +287,7 @@ project-root/
 
 **Handlebars template** (`.scaffoldfy/templates/readme.hbs`):
 
-````handlebars
+````hbs
 #
 {{projectName}}
 
