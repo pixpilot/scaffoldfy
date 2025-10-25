@@ -1,5 +1,18 @@
 # @pixpilot/scaffoldfy-configs
 
+## 0.5.0
+
+### Minor Changes
+
+- add JSON schema validation for scaffoldfy templates
+- add interpolate type for variable values and enhance conditional logic
+- fa6937c: new release
+
+### Patch Changes
+
+- replace `log` with `debug` for command execution errors
+- c85cfa5: new release
+
 ## 0.4.6
 
 ### Patch Changes

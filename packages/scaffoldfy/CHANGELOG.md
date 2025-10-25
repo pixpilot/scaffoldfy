@@ -1,5 +1,18 @@
 # @pixpilot/scaffoldfy
 
+## 0.30.0
+
+### Minor Changes
+
+- add JSON schema validation for scaffoldfy templates
+- fa6937c: new release
+
+### Patch Changes
+
+- update project setup to enable build configuration
+- replace `log` with `debug` for command execution errors
+- c85cfa5: new release
+
 ## 0.29.2
 
 ### Patch Changes
