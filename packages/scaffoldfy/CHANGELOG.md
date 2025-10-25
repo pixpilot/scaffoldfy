@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy
 
+## 0.29.1
+
+### Patch Changes
+
+- rename globalVariables and globalPrompts to variables and prompts
+
 ## 0.29.0
 
 ### Minor Changes
