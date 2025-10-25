@@ -45,7 +45,7 @@ const markdown = packages
 const readme = fs.readFileSync(readmePath, 'utf8');
 
 // Find the section between ## Packages and ## Contributing
-const startMarker = '## Packages';
+const startMarker = readme.includes('## 📦 Packages') ? '## 📦 Packages' : '## Packages';
 const endMarker = '\n## ';
 const startIndex = readme.indexOf(startMarker);
 const endIndex = readme.indexOf(endMarker, startIndex + startMarker.length);
