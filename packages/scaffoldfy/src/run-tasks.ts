@@ -18,6 +18,7 @@ import {
 } from './prompts/index.js';
 import { registerBuiltInPlugins, runTask } from './task-executors.js';
 import { topologicalSort } from './task-resolver.js';
+import { transformerManager } from './transformers/index.js';
 import { evaluateEnabled, evaluateEnabledAsync, log, logInfo } from './utils.js';
 import { displayValidationErrors, validateAllTasks } from './validation.js';
 import {
@@ -42,6 +43,7 @@ export async function runTasks(
     variables?: VariableDefinition[];
     prompts?: PromptDefinition[];
     templateEnabled?: EnabledValue;
+    transformers?: import('./transformers/types.js').Transformer[];
   },
 ): Promise<void> {
   // ============================================================================
@@ -63,6 +65,15 @@ export async function runTasks(
     info('⊘ Template is disabled - skipping all execution');
     return;
   }
+
+  // ============================================================================
+  // Register Transformers
+  // ============================================================================
+  if (options.transformers !== undefined && options.transformers.length > 0) {
+    debug(`Registering ${options.transformers.length} transformer(s)...`);
+    transformerManager.registerAll(options.transformers);
+  }
+
   // ============================================================================
   // Register Built-in Plugins First
   // ============================================================================
@@ -131,12 +142,17 @@ export async function runTasks(
     });
 
     // Collect all variable values and merge into config
-    const variableValues = collectVariables(allVariables, resolvedVariableValues);
+    const variableValues = await collectVariables(
+      allVariables,
+      resolvedVariableValues,
+      config,
+    );
     Object.assign(config, variableValues);
 
     // Log resolved variables if any
     if (Object.keys(variableValues).length > 0) {
       debug(`Resolved ${Object.keys(variableValues).length} variable(s)`);
+      debug(`Variable values: ${JSON.stringify(variableValues)}`);
     }
   }
 
@@ -160,7 +176,7 @@ export async function runTasks(
 
     // Pre-resolve all default values (execute commands in parallel)
     debug('Resolving prompt default values...');
-    const resolvedDefaults = await resolveAllDefaultValues(allPrompts);
+    const resolvedDefaults = await resolveAllDefaultValues(allPrompts, config);
 
     // Collect top-level prompts (always global)
     if (topLevelPrompts.length > 0) {
@@ -198,9 +214,10 @@ export async function runTasks(
       );
 
       // Merge conditional variable values into config
-      const conditionalValues = collectVariables(
+      const conditionalValues = await collectVariables(
         conditionalVariables,
         resolvedConditionalValues,
+        config,
       );
       Object.assign(config, conditionalValues);
 
@@ -403,7 +420,11 @@ export async function runTemplatesSequentially(
       );
 
       // Collect and merge into config
-      const variableValues = collectVariables(templateVariables, resolvedVariableValues);
+      const variableValues = await collectVariables(
+        templateVariables,
+        resolvedVariableValues,
+        config,
+      );
       Object.assign(config, variableValues);
 
       // Resolve conditional variables
@@ -421,9 +442,10 @@ export async function runTemplatesSequentially(
           conditionalVariables,
           config,
         );
-        const conditionalValues = collectVariables(
+        const conditionalValues = await collectVariables(
           conditionalVariables,
           resolvedConditionalValues,
+          config,
         );
         conditionalValuesCount = Object.keys(conditionalValues).length;
         Object.assign(config, conditionalValues);
@@ -439,6 +461,9 @@ export async function runTemplatesSequentially(
       const totalResolved = Object.keys(variableValues).length + conditionalValuesCount;
       if (totalResolved > 0) {
         debug(`Total variables resolved for template: ${totalResolved}`);
+        for (const [key, value] of Object.entries(variableValues)) {
+          debug(`  ${key} = ${JSON.stringify(value)}`);
+        }
       }
     }
 
@@ -458,7 +483,7 @@ export async function runTemplatesSequentially(
       }
 
       // Resolve default values
-      const resolvedDefaults = await resolveAllDefaultValues(templatePrompts);
+      const resolvedDefaults = await resolveAllDefaultValues(templatePrompts, config);
 
       // Collect prompts
       const promptAnswers = await collectPrompts(

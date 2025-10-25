@@ -2,7 +2,8 @@
  * Collect variable values (no user interaction - just resolve and return)
  */
 
-import type { VariableDefinition } from '../types.js';
+import type { InitConfig, VariableDefinition } from '../types.js';
+import { transformerManager } from '../transformers/index.js';
 
 /**
  * Collect variable values from resolved variables
@@ -11,20 +12,31 @@ import type { VariableDefinition } from '../types.js';
  *
  * @param variables - Array of variable definitions
  * @param resolvedValues - Map of pre-resolved variable values
+ * @param context - Current configuration context (for transformer evaluation)
  * @returns Object mapping variable IDs to their values
  */
-export function collectVariables(
+export async function collectVariables(
   variables: VariableDefinition[],
   resolvedValues: Map<string, unknown> = new Map(),
-): Record<string, unknown> {
+  context: InitConfig = {},
+): Promise<Record<string, unknown>> {
   const collected: Record<string, unknown> = {};
 
+  /* eslint-disable no-await-in-loop */
   for (const variable of variables) {
-    const value = resolvedValues.get(variable.id);
+    let value = resolvedValues.get(variable.id);
     if (value !== undefined) {
+      // Apply transformers if defined
+      if (variable.transformers !== undefined) {
+        value = await transformerManager.apply(variable.transformers, value, {
+          ...context,
+          ...collected,
+        });
+      }
       collected[variable.id] = value;
     }
   }
+  /* eslint-enable no-await-in-loop */
 
   return collected;
 }

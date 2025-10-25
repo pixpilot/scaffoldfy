@@ -843,6 +843,7 @@ export async function loadTasksWithInheritance(
   prompts?: PromptDefinition[];
   enabled?: EnabledValue;
   templates?: TasksConfiguration[];
+  transformers?: import('./transformers/types.js').Transformer[];
 }> {
   debug(`Loading tasks from ${tasksFilePath}...`);
 
@@ -881,6 +882,7 @@ export async function loadTasksWithInheritance(
     variables?: VariableDefinition[];
     prompts?: PromptDefinition[];
     enabled?: EnabledValue;
+    transformers?: import('./transformers/types.js').Transformer[];
   } = {
     tasks: config.tasks ?? [],
   };
@@ -895,6 +897,10 @@ export async function loadTasksWithInheritance(
 
   if (config.enabled != null) {
     result.enabled = config.enabled;
+  }
+
+  if (config.transformers != null) {
+    result.transformers = config.transformers;
   }
 
   return result;

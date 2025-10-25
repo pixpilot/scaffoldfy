@@ -69,6 +69,7 @@ program
       let variables: VariableDefinition[] | undefined;
       let prompts: PromptDefinition[] | undefined;
       let templateEnabled: import('./types.js').EnabledValue | undefined;
+      let transformers: import('./transformers/types.js').Transformer[] | undefined;
       let tasksFilePath: string | undefined;
 
       // Load config file (supports both .json and .ts/.mjs)
@@ -162,6 +163,7 @@ program
               variables = config.variables;
               prompts = config.prompts;
               templateEnabled = config.enabled;
+              transformers = config.transformers;
 
               if (!Array.isArray(tasks)) {
                 log('❌ Invalid config file format', 'error');
@@ -260,6 +262,7 @@ program
         variables,
         prompts,
         templateEnabled,
+        transformers,
       });
     } catch (error) {
       log('❌ CLI execution failed', 'error');

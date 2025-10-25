@@ -1,0 +1,77 @@
+{
+  "$schema": "../schema/tasks.schema.json",
+  "name": "transformers-example",
+  "description": "Example template demonstrating value transformers",
+  "prompts": [
+    {
+      "id": "projectName",
+      "message": "What is the project name?",
+      "type": "input",
+      "required": true,
+      "transformers": "slugify"
+    },
+    {
+      "id": "description",
+      "message": "Project description",
+      "type": "input",
+      "transformers": "trim"
+    },
+    {
+      "id": "authorEmail",
+      "message": "Author email",
+      "type": "input",
+      "transformers": "lowercase"
+    }
+  ],
+  "transformers": [
+    {
+      "id": "dash-to-underscore",
+      "type": "regex",
+      "config": {
+        "pattern": "-",
+        "replacement": "_",
+        "flags": "g"
+      }
+    },
+    {
+      "id": "compute-length",
+      "type": "computed",
+      "config": {
+        "expression": "value.length"
+      }
+    }
+  ],
+  "variables": [
+    {
+      "id": "upperProjectName",
+      "value": "{{projectName}}",
+      "transformers": "uppercase"
+    },
+    {
+      "id": "cleanDescription",
+      "value": "{{description}}",
+      "transformers": ["trim", "lowercase"]
+    },
+    {
+      "id": "formattedName",
+      "value": "{{projectName}}",
+      "transformers": "dash-to-underscore"
+    },
+    {
+      "id": "nameLength",
+      "value": "{{projectName}}",
+      "transformers": "compute-length"
+    }
+  ],
+  "tasks": [
+    {
+      "id": "create-readme",
+      "name": "Create README",
+      "type": "write",
+      "config": {
+        "file": "README.md",
+        "template": "# {{upperProjectName}}\n\n{{description}}\n\nAuthor: {{authorEmail}}\nFormatted: {{formattedName}}\nLength: {{nameLength}}\n"
+      }
+    }
+  ]
+}

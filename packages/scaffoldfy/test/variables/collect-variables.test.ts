@@ -9,7 +9,7 @@ import { describe, expect, it } from 'vitest';
 import { collectVariables } from '../../src/variables/collect-variables.js';
 
 describe('collectVariables', () => {
-  it('should collect variables from resolved values', () => {
+  it('should collect variables from resolved values', async () => {
     const variables: VariableDefinition[] = [
       { id: 'var1', value: 'test' },
       { id: 'var2', value: 42 },
@@ -19,7 +19,7 @@ describe('collectVariables', () => {
     resolvedValues.set('var1', 'test');
     resolvedValues.set('var2', 42);
 
-    const collected = collectVariables(variables, resolvedValues);
+    const collected = await collectVariables(variables, resolvedValues);
 
     expect(collected).toEqual({
       var1: 'test',
@@ -27,12 +27,12 @@ describe('collectVariables', () => {
     });
   });
 
-  it('should handle empty variables array', () => {
-    const collected = collectVariables([], new Map());
+  it('should handle empty variables array', async () => {
+    const collected = await collectVariables([], new Map());
     expect(collected).toEqual({});
   });
 
-  it('should skip variables without resolved values', () => {
+  it('should skip variables without resolved values', async () => {
     const variables: VariableDefinition[] = [
       { id: 'present', value: 'test' },
       { id: 'missing', value: 'test' },
@@ -41,7 +41,7 @@ describe('collectVariables', () => {
     const resolvedValues = new Map<string, unknown>();
     resolvedValues.set('present', 'test value');
 
-    const collected = collectVariables(variables, resolvedValues);
+    const collected = await collectVariables(variables, resolvedValues);
 
     expect(collected).toEqual({
       present: 'test value',
@@ -49,15 +49,15 @@ describe('collectVariables', () => {
     expect(collected).not.toHaveProperty('missing');
   });
 
-  it('should handle empty resolved values map', () => {
+  it('should handle empty resolved values map', async () => {
     const variables: VariableDefinition[] = [{ id: 'var1', value: 'test' }];
 
-    const collected = collectVariables(variables, new Map());
+    const collected = await collectVariables(variables, new Map());
 
     expect(collected).toEqual({});
   });
 
-  it('should handle various data types', () => {
+  it('should handle various data types', async () => {
     const variables: VariableDefinition[] = [
       { id: 'string', value: 'test' },
       { id: 'number', value: 42 },
@@ -76,7 +76,7 @@ describe('collectVariables', () => {
     resolvedValues.set('object', { key: 'value' });
     resolvedValues.set('array', [1, 2, 3]);
 
-    const collected = collectVariables(variables, resolvedValues);
+    const collected = await collectVariables(variables, resolvedValues);
 
     expect(collected['string']).toBe('test');
     expect(collected['number']).toBe(42);

@@ -121,4 +121,136 @@ describe('resolveAllDefaultValues', () => {
     const resolved = await resolveAllDefaultValues(prompts);
     expect(resolved.get('hasTests')).toBe(true);
   });
+
+  it('should interpolate variables from context in default values', async () => {
+    const context = {
+      userName: 'johndoe',
+      projectName: 'my-project',
+      year: 2025,
+    };
+
+    const prompts: PromptDefinition[] = [
+      {
+        id: 'author',
+        type: 'input',
+        message: 'Author',
+        default: {
+          type: 'interpolate',
+          value: '{{userName}}',
+        },
+      },
+      {
+        id: 'description',
+        type: 'input',
+        message: 'Description',
+        default: {
+          type: 'interpolate',
+          value: '{{projectName}} - created by {{userName}} in {{year}}',
+        },
+      },
+    ];
+
+    const resolved = await resolveAllDefaultValues(prompts, context);
+
+    expect(resolved.get('author')).toBe('johndoe');
+    expect(resolved.get('description')).toBe('my-project - created by johndoe in 2025');
+  });
+
+  it('should handle interpolate defaults without context (should not throw)', async () => {
+    const prompts: PromptDefinition[] = [
+      {
+        id: 'owner',
+        type: 'input',
+        message: 'Repository owner',
+        default: {
+          type: 'interpolate',
+          value: '{{repoOwnerVar}}',
+        },
+      },
+    ];
+
+    // Should not throw, but may warn - just return the template as-is
+    const resolved = await resolveAllDefaultValues(prompts);
+
+    // When context is missing, it should return the template string
+    expect(resolved.get('owner')).toBe('{{repoOwnerVar}}');
+  });
+
+  it('should resolve variables first then use them in prompt defaults', async () => {
+    const mockExec = vi.mocked(execSync);
+    mockExec.mockReturnValue('pixpilot\n');
+
+    // Simulate variables being resolved and added to config
+    const config = {
+      repoOwnerVar: 'pixpilot',
+      orgNameVar: 'pixpilot',
+    };
+
+    const prompts: PromptDefinition[] = [
+      {
+        id: 'repoOwner',
+        type: 'input',
+        message: 'Repository owner',
+        default: {
+          type: 'interpolate',
+          value: '{{repoOwnerVar}}',
+        },
+      },
+      {
+        id: 'orgName',
+        type: 'input',
+        message: 'Organization name',
+        default: {
+          type: 'interpolate',
+          value: '{{orgNameVar}}',
+        },
+      },
+    ];
+
+    const resolved = await resolveAllDefaultValues(prompts, config);
+
+    expect(resolved.get('repoOwner')).toBe('pixpilot');
+    expect(resolved.get('orgName')).toBe('pixpilot');
+  });
+
+  it('should combine exec and interpolate defaults with context', async () => {
+    const mockExec = vi.mocked(execSync);
+    mockExec.mockReturnValue('2025\n');
+
+    const config = {
+      projectName: 'my-app',
+      author: 'Jane Doe',
+    };
+
+    const prompts: PromptDefinition[] = [
+      {
+        id: 'year',
+        type: 'number',
+        message: 'Year',
+        default: {
+          type: 'exec',
+          value: 'date +%Y',
+        },
+      },
+      {
+        id: 'copyright',
+        type: 'input',
+        message: 'Copyright',
+        default: {
+          type: 'interpolate',
+          value: 'Copyright {{year}} {{author}}',
+        },
+      },
+    ];
+
+    // First resolve without context to get exec results
+    const resolved1 = await resolveAllDefaultValues(prompts, config);
+
+    // Now resolve again with year added to context
+    const contextWithYear = { ...config, year: resolved1.get('year') };
+    const resolved2 = await resolveAllDefaultValues(prompts, contextWithYear);
+
+    expect(resolved2.get('year')).toBe(2025);
+    expect(resolved2.get('copyright')).toBe('Copyright 2025 Jane Doe');
+  });
 });

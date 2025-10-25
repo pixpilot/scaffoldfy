@@ -60,6 +60,11 @@
         }
       ]
     },
+    "transformers": {
+      "type": "array",
+      "description": "Array of transformer definitions",
+      "items": { "$ref": "#/$defs/transformerItem" }
+    },
     "dependencies": {
       "type": "array",
       "items": {
@@ -383,6 +388,13 @@
             }
           }
         },
+        "transformers": {
+          "description": "Transformer(s) to apply to the prompt value after input. Can be a string (transformer ID) or array of IDs.",
+          "oneOf": [
+            { "type": "string" },
+            { "type": "array", "items": { "type": "string" } }
+          ]
+        },
         "override": {
           "type": "string",
           "enum": ["merge", "replace"],
@@ -470,12 +482,179 @@
             }
           ]
         },
+        "transformers": {
+          "description": "Transformer(s) to apply to the variable value after resolution. Can be a string (transformer ID) or array of IDs.",
+          "oneOf": [
+            { "type": "string" },
+            { "type": "array", "items": { "type": "string" } }
+          ]
+        },
         "override": {
           "type": "string",
           "enum": ["merge", "replace"],
           "description": "Strategy for merging with base variable when extending templates. 'merge' (default) replaces the value, 'replace' completely replaces the variable. Must be specified when variable ID conflicts with base template."
         }
       }
+    },
+    "transformerItem": {
+      "type": "object",
+      "required": ["id", "type"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the transformer"
+        },
+        "name": {
+          "type": "string",
+          "description": "Optional display name for the transformer"
+        },
+        "description": {
+          "type": "string",
+          "description": "Optional description for the transformer"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "regex",
+            "computed",
+            "lowercase",
+            "uppercase",
+            "trim",
+            "slugify",
+            "capitalize",
+            "titlecase",
+            "camelcase",
+            "pascalcase",
+            "snakecase",
+            "kebabcase",
+            "constantcase",
+            "alphanumeric",
+            "collapse-spaces",
+            "remove-spaces",
+            "urlencode",
+            "dasherize",
+            "underscore",
+            "custom",
+            "chain"
+          ],
+          "description": "Type of transformer"
+        },
+        "config": {
+          "type": "object",
+          "description": "Configuration specific to transformer type",
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "type": { "const": "regex" }
+                }
+              },
+              "then": {
+                "properties": {
+                  "pattern": {
+                    "type": "string",
+                    "description": "Regular expression pattern"
+                  },
+                  "flags": {
+                    "type": "string",
+                    "description": "Regex flags (g, i, m, etc.)",
+                    "default": ""
+                  },
+                  "replacement": {
+                    "type": "string",
+                    "description": "Replacement string (can use $1, $2, etc.)"
+                  }
+                },
+                "required": ["pattern", "replacement"]
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "type": { "const": "computed" }
+                }
+              },
+              "then": {
+                "properties": {
+                  "expression": {
+                    "type": "string",
+                    "description": "JavaScript expression to compute the transformed value"
+                  }
+                },
+                "required": ["expression"]
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "type": { "const": "custom" }
+                }
+              },
+              "then": {
+                "properties": {
+                  "handler": {
+                    "oneOf": [
+                      { "type": "string", "description": "Function code as string" },
+                      { "instanceof": "Function", "description": "Function object" }
+                    ],
+                    "description": "Custom transformation function"
+                  }
+                },
+                "required": ["handler"]
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "type": { "const": "chain" }
+                }
+              },
+              "then": {
+                "properties": {
+                  "transformers": {
+                    "type": "array",
+                    "items": { "type": "string" },
+                    "description": "Array of transformer IDs to execute in sequence"
+                  }
+                },
+                "required": ["transformers"]
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "type": {
+                    "enum": [
+                      "lowercase",
+                      "uppercase",
+                      "trim",
+                      "slugify",
+                      "capitalize",
+                      "titlecase",
+                      "camelcase",
+                      "pascalcase",
+                      "snakecase",
+                      "kebabcase",
+                      "constantcase",
+                      "alphanumeric",
+                      "collapse-spaces",
+                      "remove-spaces",
+                      "urlencode",
+                      "dasherize",
+                      "underscore"
+                    ]
+                  }
+                }
+              },
+              "then": {
+                "properties": {},
+                "additionalProperties": false
+              }
+            }
+          ]
+        }
+      },
+      "additionalProperties": false
     },
     "config-update-json": {
       "title": "Update JSON Config",

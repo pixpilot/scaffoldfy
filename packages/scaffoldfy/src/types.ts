@@ -118,6 +118,7 @@ export interface BasePrompt {
   enabled?: EnabledValue; // If false or condition evaluates to false, prompt is skipped
   override?: MergeStrategy; // Strategy for merging with base prompt: 'merge' (default, intelligent) or 'replace' (complete override)
   $templateEnabled?: EnabledValue; // Internal: Enabled condition of the template this prompt came from (for lazy evaluation)
+  transformers?: string | string[]; // Transformer(s) to apply to the prompt value after input
 }
 
 export interface InputPrompt extends BasePrompt {
@@ -157,6 +158,7 @@ export interface VariableDefinition {
   value: DefaultValue; // The value of the variable (static or executable)
   override?: MergeStrategy; // Strategy for merging with base variable: 'merge' (default, intelligent) or 'replace' (complete override)
   $templateEnabled?: EnabledValue; // Internal: Enabled condition of the template this variable came from (for lazy evaluation)
+  transformers?: string | string[]; // Transformer(s) to apply to the variable value after resolution
 }
 
 /**
@@ -234,6 +236,7 @@ export interface TasksConfiguration {
   enabled?: EnabledValue; // Optional: whether this entire template should be executed (defaults to true)
   dependencies?: string[]; // Optional: Names or identifiers of other templates this template depends on
   extends?: string | string[]; // Path(s) or URL(s) to base template file(s) to inherit from
+  transformers?: import('./transformers/types.js').Transformer[]; // Optional: Array of transformer definitions
   variables?: VariableDefinition[]; // Optional top-level global variables available to all tasks
   prompts?: PromptDefinition[]; // Optional top-level global prompts collected once upfront
   tasks?: TaskDefinition[]; // Optional tasks array - can be omitted when extending templates that only provide prompts/variables

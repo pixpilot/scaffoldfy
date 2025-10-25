@@ -117,3 +117,50 @@ export class PluginConfigurationError extends ScaffoldfyError {
     );
   }
 }
+
+/**
+ * Error thrown when transformer operations fail
+ */
+export class TransformerError extends ScaffoldfyError {
+  constructor(
+    message: string,
+    public readonly transformerId?: string,
+    public readonly reason?: string,
+  ) {
+    super(message, 'TRANSFORMER_ERROR');
+    this.name = 'TransformerError';
+  }
+
+  /**
+   * Create a transformer not found error
+   */
+  static notFound(transformerId: string): TransformerError {
+    return new TransformerError(
+      `Transformer "${transformerId}" not found`,
+      transformerId,
+      'not_found',
+    );
+  }
+
+  /**
+   * Create a transformer execution failed error
+   */
+  static executionFailed(transformerId: string, reason: string): TransformerError {
+    return new TransformerError(
+      `Transformer "${transformerId}" execution failed: ${reason}`,
+      transformerId,
+      'execution_failed',
+    );
+  }
+
+  /**
+   * Create an invalid transformer type error
+   */
+  static invalidType(transformerId: string, type: string): TransformerError {
+    return new TransformerError(
+      `Invalid transformer type "${type}" for transformer "${transformerId}"`,
+      transformerId,
+      'invalid_type',
+    );
+  }
+}

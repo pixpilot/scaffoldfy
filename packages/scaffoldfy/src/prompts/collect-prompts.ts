@@ -5,6 +5,7 @@
 import type { InitConfig, PromptDefinition } from '../types.js';
 import { confirm, input, number, password, select } from '@inquirer/prompts';
 import { PromptValidationError } from '../errors/other.js';
+import { transformerManager } from '../transformers/index.js';
 import { evaluateEnabledAsync, log } from '../utils.js';
 import { resolveDefaultValue } from './resolve-default-value.js';
 
@@ -179,6 +180,14 @@ export async function collectPrompts(
           log(`Unknown prompt type: ${(prompt as { type: string }).type}`, 'error');
           throw PromptValidationError.unknownType((prompt as { type: string }).type);
         }
+      }
+
+      // Apply transformers if defined
+      if (prompt.transformers !== undefined) {
+        answer = await transformerManager.apply(prompt.transformers, answer, {
+          ...currentContext,
+          ...answers,
+        });
       }
 
       answers[prompt.id] = answer;

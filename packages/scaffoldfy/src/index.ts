@@ -89,6 +89,7 @@ async function main(customTasks?: TaskDefinition[]) {
  * @param options.variables - Optional top-level global variables
  * @param options.prompts - Optional top-level global prompts
  * @param options.templateEnabled - Optional template-level enabled condition
+ * @param options.transformers - Optional transformer definitions
  */
 export async function runWithTasks(
   customTasks: TaskDefinition[],
@@ -99,6 +100,7 @@ export async function runWithTasks(
     variables?: VariableDefinition[] | undefined;
     prompts?: PromptDefinition[] | undefined;
     templateEnabled?: import('./types.js').EnabledValue | undefined;
+    transformers?: import('./transformers/types.js').Transformer[] | undefined;
   },
 ): Promise<void> {
   try {
@@ -114,6 +116,9 @@ export async function runWithTasks(
       }),
       ...(options?.templateEnabled != null && {
         templateEnabled: options.templateEnabled,
+      }),
+      ...(options?.transformers != null && {
+        transformers: options.transformers,
       }),
     });
   } catch (error) {
