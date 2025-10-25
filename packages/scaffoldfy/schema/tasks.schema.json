@@ -20,7 +20,7 @@
       "description": "Detailed description of what this Write does"
     },
     "enabled": {
-      "description": "Whether this template should be executed. Can be a boolean, a string expression, or an object with executable or conditional configuration (optional, defaults to true). If false or condition evaluates to false, the entire template (including prompts, variables, and tasks) will be skipped.",
+      "description": "Whether this item should be executed/displayed. Can be a boolean, a string expression, or an object with executable or conditional configuration (optional, defaults to true).",
       "default": true,
       "oneOf": [
         {
@@ -29,7 +29,7 @@
         },
         {
           "type": "string",
-          "description": "JavaScript expression to evaluate. Template only executes if expression evaluates to true."
+          "description": "JavaScript expression to evaluate."
         },
         {
           "type": "object",
@@ -38,7 +38,7 @@
           "properties": {
             "condition": {
               "type": "string",
-              "description": "JavaScript expression to evaluate. Template only executes if condition evaluates to true. Has access to all variables and config values."
+              "description": "JavaScript expression to evaluate."
             }
           }
         },
@@ -122,57 +122,13 @@
             "description": "Whether failure of this task should stop the process (optional, defaults to true)",
             "default": true
           },
-          "enabled": {
-            "description": "Whether this task should be executed. Can be a boolean, a string expression, or an object with executable or conditional configuration (optional, defaults to true).",
-            "default": true,
-            "oneOf": [
-              {
-                "type": "boolean",
-                "description": "Static enabled state"
-              },
-              {
-                "type": "string",
-                "description": "JavaScript expression to evaluate. Task only executes if expression evaluates to true."
-              },
-              {
-                "type": "object",
-                "description": "Conditional enabled configuration",
-                "required": ["condition"],
-                "properties": {
-                  "condition": {
-                    "type": "string",
-                    "description": "JavaScript expression to evaluate. Task only executes if condition evaluates to true. Has access to all variables and prompt values."
-                  }
-                }
-              },
-              {
-                "type": "object",
-                "description": "Executable enabled configuration - determines enabled state by running a command",
-                "required": ["type", "value"],
-                "properties": {
-                  "type": {
-                    "type": "string",
-                    "enum": ["exec"],
-                    "description": "Type of enabled value. 'exec' executes a shell command to determine enabled state."
-                  },
-                  "value": {
-                    "type": "string",
-                    "description": "Shell command to execute. The command output will be trimmed and parsed as a boolean. Non-empty output or '1', 'true', 'yes' (case-insensitive) evaluates to true."
-                  }
-                }
-              }
-            ]
-          },
+          "enabled": { "$ref": "#/$defs/enabled" },
           "dependencies": {
             "type": "array",
             "items": { "type": "string" },
             "description": "IDs of tasks that must run before this one"
           },
-          "override": {
-            "type": "string",
-            "enum": ["merge", "replace"],
-            "description": "Strategy for merging with base task when extending templates"
-          },
+          "override": { "$ref": "#/$defs/override" },
           "$sourceUrl": { "type": "string" },
           "type": {
             "type": "string",
@@ -185,7 +141,11 @@
               "delete",
               "rename",
               "git-init",
-              "exec"
+              "exec",
+              "move",
+              "copy",
+              "append",
+              "mkdir"
             ],
             "description": "Type of task to execute"
           },
@@ -248,12 +208,109 @@
               "type": { "const": "exec" },
               "config": { "$ref": "#/$defs/config-exec" }
             }
+          },
+          {
+            "properties": {
+              "type": { "const": "move" },
+              "config": { "$ref": "#/$defs/config-move" }
+            }
+          },
+          {
+            "properties": {
+              "type": { "const": "copy" },
+              "config": { "$ref": "#/$defs/config-copy" }
+            }
+          },
+          {
+            "properties": {
+              "type": { "const": "append" },
+              "config": { "$ref": "#/$defs/config-append" }
+            }
+          },
+          {
+            "properties": {
+              "type": { "const": "mkdir" },
+              "config": { "$ref": "#/$defs/config-mkdir" }
+            }
           }
         ]
       }
     }
   },
   "$defs": {
+    "builtInTransformers": {
+      "type": "string",
+      "enum": [
+        "lowercase",
+        "uppercase",
+        "trim",
+        "slugify",
+        "capitalize",
+        "titlecase",
+        "camelcase",
+        "pascalcase",
+        "snakecase",
+        "kebabcase",
+        "constantcase",
+        "alphanumeric",
+        "collapse-spaces",
+        "remove-spaces",
+        "urlencode",
+        "dasherize",
+        "underscore"
+      ],
+      "description": "Built-in transformer ID"
+    },
+    "enabled": {
+      "description": "Whether this item should be executed/displayed. Can be a boolean, a string expression, or an object with executable or conditional configuration (optional, defaults to true).",
+      "default": true,
+      "oneOf": [
+        {
+          "type": "boolean",
+          "description": "Static enabled state"
+        },
+        {
+          "type": "string",
+          "description": "JavaScript expression to evaluate."
+        },
+        {
+          "type": "object",
+          "description": "Conditional enabled configuration",
+          "required": ["condition"],
+          "properties": {
+            "condition": {
+              "type": "string",
+              "description": "JavaScript expression to evaluate."
+            }
+          }
+        },
+        {
+          "type": "object",
+          "description": "Executable enabled configuration - determines enabled state by running a command",
+          "required": ["type", "value"],
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["exec"],
+              "description": "Type of enabled value. 'exec' executes a shell command to determine enabled state."
+            },
+            "value": {
+              "type": "string",
+              "description": "Shell command to execute. The command output will be trimmed and parsed as a boolean. Non-empty output or '1', 'true', 'yes' (case-insensitive) evaluates to true."
+            }
+          }
+        }
+      ]
+    },
+    "condition": {
+      "type": "string",
+      "description": "Optional JavaScript expression to evaluate. Task only executes if condition evaluates to true."
+    },
+    "override": {
+      "type": "string",
+      "enum": ["merge", "replace"],
+      "description": "Strategy for merging with base item when extending templates"
+    },
     "promptItem": {
       "type": "object",
       "required": ["id", "type", "message"],
@@ -277,57 +334,19 @@
           "type": "boolean",
           "description": "Whether the prompt value is required (cannot be empty)"
         },
-        "enabled": {
-          "description": "Whether this prompt should be displayed. Can be a boolean, a string expression, or an object with executable or conditional configuration (optional, defaults to true). If false or condition evaluates to false, the prompt will be skipped.",
-          "default": true,
-          "oneOf": [
-            {
-              "type": "boolean",
-              "description": "Static enabled state"
-            },
-            {
-              "type": "string",
-              "description": "JavaScript expression to evaluate (shorthand for { condition: \"...\" }). Prompt only displays if expression evaluates to true."
-            },
-            {
-              "type": "object",
-              "description": "Conditional enabled configuration",
-              "required": ["condition"],
-              "properties": {
-                "condition": {
-                  "type": "string",
-                  "description": "JavaScript expression to evaluate. Prompt only displays if condition evaluates to true. Has access to all variables and previously collected prompts."
-                }
-              }
-            },
-            {
-              "type": "object",
-              "description": "Executable enabled configuration - determines enabled state by running a command",
-              "required": ["type", "value"],
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "enum": ["exec"],
-                  "description": "Type of enabled value. 'exec' executes a shell command to determine enabled state."
-                },
-                "value": {
-                  "type": "string",
-                  "description": "Shell command to execute. The command output will be trimmed and parsed as a boolean. Non-empty output or '1', 'true', 'yes' (case-insensitive) evaluates to true."
-                }
-              }
-            }
-          ]
-        },
+        "enabled": { "$ref": "#/$defs/enabled" },
         "default": {
           "description": "Default value for the prompt. Can be a static value, an object with 'type' and 'value' properties for executable defaults, or a conditional default configuration.",
           "oneOf": [
             {
+              "type": ["string", "number", "boolean"],
               "description": "Static default value (string, number, or boolean)"
             },
             {
               "type": "object",
-              "description": "Default value configuration for static or executable values",
+              "description": "Default value configuration for executable or interpolate values",
               "required": ["type", "value"],
+              "additionalProperties": false,
               "properties": {
                 "type": {
                   "type": "string",
@@ -343,6 +362,7 @@
               "type": "object",
               "description": "Conditional default value configuration",
               "required": ["type", "condition", "ifTrue", "ifFalse"],
+              "additionalProperties": false,
               "properties": {
                 "type": {
                   "type": "string",
@@ -389,9 +409,17 @@
           }
         },
         "transformers": {
-          "description": "Array of transformer(s) to apply to the prompt value after input. Each item is a transformer ID.",
+          "description": "Array of transformer(s) to apply to the prompt value after input. Each item can be a built-in transformer ID or a custom transformer ID.",
           "type": "array",
-          "items": { "type": "string" }
+          "items": {
+            "anyOf": [
+              { "$ref": "#/$defs/builtInTransformers" },
+              {
+                "type": "string",
+                "description": "Custom transformer ID (references a transformer defined in the 'transformers' array)"
+              }
+            ]
+          }
         },
         "override": {
           "type": "string",
@@ -414,30 +442,22 @@
           "description": "Variable value. Can be a static value or an object with 'type' and 'value' properties for executable values, or a conditional configuration.",
           "oneOf": [
             {
+              "type": ["string", "number", "boolean"],
               "description": "Static value (string, number, or boolean)"
             },
             {
               "type": "object",
-              "description": "Value configuration for static, executable, or conditional values",
+              "description": "Value configuration for static, executable, or interpolate values",
               "required": ["type"],
+              "additionalProperties": false,
               "properties": {
                 "type": {
                   "type": "string",
-                  "enum": ["static", "exec", "conditional", "interpolate"],
-                  "description": "Type of value. 'static' for explicit static values, 'exec' for command execution, 'conditional' for condition-based values, 'interpolate' for interpolate strings with {{variable}} placeholders."
+                  "enum": ["static", "exec", "interpolate"],
+                  "description": "Type of value. 'static' for explicit static values, 'exec' for command execution, 'interpolate' for interpolate strings with {{variable}} placeholders."
                 },
                 "value": {
-                  "description": "For 'static' type: the static value. For 'exec' type: the shell command to execute. For 'interpolate' type: interpolate string with {{variable}} placeholders. Commands output will be trimmed and auto-parsed as JSON, number, or boolean when applicable. Not used for 'conditional' type."
-                },
-                "condition": {
-                  "type": "string",
-                  "description": "For 'conditional' type: JavaScript expression to evaluate. Can reference other variables, prompts, and config values."
-                },
-                "ifTrue": {
-                  "description": "For 'conditional' type: Value to use if condition evaluates to true. Can be a static value or an object with type property for interpolation (e.g., { type: 'interpolate', value: '{{variable}}' })."
-                },
-                "ifFalse": {
-                  "description": "For 'conditional' type: Value to use if condition evaluates to false. Can be a static value or an object with type property for interpolation (e.g., { type: 'interpolate', value: '{{variable}}' })."
+                  "description": "For 'static' type: the static value. For 'exec' type: the shell command to execute. For 'interpolate' type: interpolate string with {{variable}} placeholders. Commands output will be trimmed and auto-parsed as JSON, number, or boolean when applicable."
                 }
               },
               "allOf": [
@@ -465,25 +485,46 @@
                       }
                     }
                   }
-                },
-                {
-                  "if": {
-                    "properties": {
-                      "type": { "const": "conditional" }
-                    }
-                  },
-                  "then": {
-                    "required": ["condition", "ifTrue", "ifFalse"]
-                  }
                 }
               ]
+            },
+            {
+              "type": "object",
+              "description": "Conditional value configuration",
+              "required": ["type", "condition", "ifTrue", "ifFalse"],
+              "additionalProperties": false,
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "enum": ["conditional"],
+                  "description": "Type of value. 'conditional' for condition-based values."
+                },
+                "condition": {
+                  "type": "string",
+                  "description": "JavaScript expression to evaluate. Can reference other variables, prompts, and config values."
+                },
+                "ifTrue": {
+                  "description": "Value to use if condition evaluates to true. Can be a static value or an object with type property for interpolation (e.g., { type: 'interpolate', value: '{{variable}}' })."
+                },
+                "ifFalse": {
+                  "description": "Value to use if condition evaluates to false. Can be a static value or an object with type property for interpolation (e.g., { type: 'interpolate', value: '{{variable}}' })."
+                }
+              }
             }
           ]
         },
         "transformers": {
-          "description": "Array of transformer(s) to apply to the variable value after resolution. Each item is a transformer ID.",
+          "description": "Array of transformer(s) to apply to the variable value after resolution. Each item can be a built-in transformer ID or a custom transformer ID.",
           "type": "array",
-          "items": { "type": "string" }
+          "items": {
+            "anyOf": [
+              { "$ref": "#/$defs/builtInTransformers" },
+              {
+                "type": "string",
+                "description": "Custom transformer ID (references a transformer defined in the 'transformers' array)"
+              }
+            ]
+          }
         },
         "override": {
           "type": "string",
@@ -495,6 +536,7 @@
     "transformerItem": {
       "type": "object",
       "required": ["id", "type"],
+      "additionalProperties": false,
       "properties": {
         "id": {
           "type": "string",
@@ -537,120 +579,103 @@
         },
         "config": {
           "type": "object",
-          "description": "Configuration specific to transformer type",
-          "allOf": [
-            {
-              "if": {
-                "properties": {
-                  "type": { "const": "regex" }
-                }
-              },
-              "then": {
-                "properties": {
-                  "pattern": {
-                    "type": "string",
-                    "description": "Regular expression pattern"
-                  },
-                  "flags": {
-                    "type": "string",
-                    "description": "Regex flags (g, i, m, etc.)",
-                    "default": ""
-                  },
-                  "replacement": {
-                    "type": "string",
-                    "description": "Replacement string (can use $1, $2, etc.)"
-                  }
-                },
-                "required": ["pattern", "replacement"]
-              }
-            },
-            {
-              "if": {
-                "properties": {
-                  "type": { "const": "computed" }
-                }
-              },
-              "then": {
-                "properties": {
-                  "expression": {
-                    "type": "string",
-                    "description": "JavaScript expression to compute the transformed value"
-                  }
-                },
-                "required": ["expression"]
-              }
-            },
-            {
-              "if": {
-                "properties": {
-                  "type": { "const": "custom" }
-                }
-              },
-              "then": {
-                "properties": {
-                  "handler": {
-                    "oneOf": [
-                      { "type": "string", "description": "Function code as string" },
-                      { "instanceof": "Function", "description": "Function object" }
-                    ],
-                    "description": "Custom transformation function"
-                  }
-                },
-                "required": ["handler"]
-              }
-            },
-            {
-              "if": {
-                "properties": {
-                  "type": { "const": "chain" }
-                }
-              },
-              "then": {
-                "properties": {
-                  "transformers": {
-                    "type": "array",
-                    "items": { "type": "string" },
-                    "description": "Array of transformer IDs to execute in sequence"
-                  }
-                },
-                "required": ["transformers"]
-              }
-            },
-            {
-              "if": {
-                "properties": {
-                  "type": {
-                    "enum": [
-                      "lowercase",
-                      "uppercase",
-                      "trim",
-                      "slugify",
-                      "capitalize",
-                      "titlecase",
-                      "camelcase",
-                      "pascalcase",
-                      "snakecase",
-                      "kebabcase",
-                      "constantcase",
-                      "alphanumeric",
-                      "collapse-spaces",
-                      "remove-spaces",
-                      "urlencode",
-                      "dasherize",
-                      "underscore"
-                    ]
-                  }
-                }
-              },
-              "then": {
-                "properties": {},
-                "additionalProperties": false
-              }
-            }
-          ]
+          "description": "Configuration specific to transformer type"
         }
       },
-      "additionalProperties": false
+      "oneOf": [
+        {
+          "required": ["type"],
+          "properties": {
+            "type": { "const": "regex" },
+            "config": {
+              "type": "object",
+              "required": ["pattern", "replacement"],
+              "additionalProperties": false,
+              "properties": {
+                "pattern": {
+                  "type": "string",
+                  "description": "Regular expression pattern"
+                },
+                "flags": {
+                  "type": "string",
+                  "description": "Regex flags (g, i, m, etc.)",
+                  "default": ""
+                },
+                "replacement": {
+                  "type": "string",
+                  "description": "Replacement string (can use $1, $2, etc.)"
+                }
+              }
+            }
+          }
+        },
+        {
+          "required": ["type"],
+          "properties": {
+            "type": { "const": "computed" },
+            "config": {
+              "type": "object",
+              "required": ["expression"],
+              "additionalProperties": false,
+              "properties": {
+                "expression": {
+                  "type": "string",
+                  "description": "JavaScript expression to compute the transformed value"
+                }
+              }
+            }
+          }
+        },
+        {
+          "required": ["type"],
+          "properties": {
+            "type": { "const": "custom" },
+            "config": {
+              "type": "object",
+              "required": ["handler"],
+              "additionalProperties": false,
+              "properties": {
+                "handler": {
+                  "oneOf": [
+                    { "type": "string", "description": "Function code as string" },
+                    { "instanceof": "Function", "description": "Function object" }
+                  ],
+                  "description": "Custom transformation function"
+                }
+              }
+            }
+          }
+        },
+        {
+          "required": ["type"],
+          "properties": {
+            "type": { "const": "chain" },
+            "config": {
+              "type": "object",
+              "required": ["transformers"],
+              "additionalProperties": false,
+              "properties": {
+                "transformers": {
+                  "type": "array",
+                  "items": { "type": "string" },
+                  "description": "Array of transformer IDs to execute in sequence"
+                }
+              }
+            }
+          }
+        },
+        {
+          "required": ["type"],
+          "properties": {
+            "type": { "$ref": "#/$defs/builtInTransformers" },
+            "config": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {}
+            }
+          }
+        }
+      ]
     },
     "config-update-json": {
       "title": "Update JSON Config",
@@ -665,10 +690,7 @@
           "type": "object",
           "description": "Key-value pairs to update (supports nested paths with dot notation)"
         },
-        "condition": {
-          "type": "string",
-          "description": "Optional JavaScript expression to evaluate. Task only executes if condition evaluates to true."
-        }
+        "condition": { "$ref": "#/$defs/condition" }
       },
       "required": ["file", "updates"]
     },
@@ -689,10 +711,7 @@
           "type": "string",
           "description": "Path to external template file (relative to project root). Files with .hbs extension automatically use Handlebars templating. Cannot be used with template."
         },
-        "condition": {
-          "type": "string",
-          "description": "Optional JavaScript expression to evaluate. Task only executes if condition evaluates to true."
-        },
+        "condition": { "$ref": "#/$defs/condition" },
         "allowCreate": {
           "type": "boolean",
           "description": "Whether to allow creating the file if it does not exist. Defaults to true.",
@@ -726,10 +745,7 @@
           "type": "string",
           "description": "Path to external Write file (relative to project root). Files with .hbs extension automatically use Handlebars templating. Cannot be used with template."
         },
-        "condition": {
-          "type": "string",
-          "description": "Optional JavaScript expression to evaluate. Task only executes if condition evaluates to true."
-        }
+        "condition": { "$ref": "#/$defs/condition" }
       },
       "required": ["file"],
       "oneOf": [
@@ -762,10 +778,7 @@
           "type": "string",
           "description": "String to replace matches with"
         },
-        "condition": {
-          "type": "string",
-          "description": "Optional JavaScript expression to evaluate. Task only executes if condition evaluates to true."
-        }
+        "condition": { "$ref": "#/$defs/condition" }
       },
       "required": ["file", "pattern", "replacement"]
     },
@@ -795,10 +808,7 @@
             "required": ["find", "replace"]
           }
         },
-        "condition": {
-          "type": "string",
-          "description": "Optional JavaScript expression to evaluate. Task only executes if condition evaluates to true."
-        }
+        "condition": { "$ref": "#/$defs/condition" }
       },
       "required": ["file", "replacements"]
     },
@@ -834,10 +844,7 @@
           "type": "string",
           "description": "New file or directory path"
         },
-        "condition": {
-          "type": "string",
-          "description": "Optional JavaScript expression to evaluate. Task only executes if condition evaluates to true."
-        }
+        "condition": { "$ref": "#/$defs/condition" }
       },
       "required": ["from", "to"]
     },
@@ -858,10 +865,7 @@
           "type": "string",
           "description": "Initial commit message"
         },
-        "condition": {
-          "type": "string",
-          "description": "Optional JavaScript expression to evaluate. Task only executes if condition evaluates to true."
-        }
+        "condition": { "$ref": "#/$defs/condition" }
       },
       "required": ["removeExisting", "initialCommit"]
     },
@@ -878,12 +882,97 @@
           "type": "string",
           "description": "Working directory for the command"
         },
-        "condition": {
-          "type": "string",
-          "description": "Optional JavaScript expression to evaluate. Task only executes if condition evaluates to true."
-        }
+        "condition": { "$ref": "#/$defs/condition" }
       },
       "required": ["command"]
+    },
+    "config-move": {
+      "title": "Move Config",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "from": {
+          "type": "string",
+          "description": "Current file or directory path"
+        },
+        "to": {
+          "type": "string",
+          "description": "New file or directory path"
+        },
+        "condition": { "$ref": "#/$defs/condition" }
+      },
+      "required": ["from", "to"]
+    },
+    "config-copy": {
+      "title": "Copy Config",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "from": {
+          "type": "string",
+          "description": "Source file or directory path"
+        },
+        "to": {
+          "type": "string",
+          "description": "Destination file or directory path"
+        },
+        "condition": { "$ref": "#/$defs/condition" }
+      },
+      "required": ["from", "to"]
+    },
+    "config-append": {
+      "title": "Append Config",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "file": {
+          "type": "string",
+          "description": "Path to the file to append to"
+        },
+        "content": {
+          "type": "string",
+          "description": "Inline content string with {{variable}} placeholders. Cannot be used with templateFile."
+        },
+        "template": {
+          "type": "string",
+          "description": "Alias for content"
+        },
+        "templateFile": {
+          "type": "string",
+          "description": "Path to external template file (relative to project root). Files with .hbs extension automatically use Handlebars templating. Cannot be used with content."
+        },
+        "newline": {
+          "type": "boolean",
+          "description": "Add newline before appending (default: true)",
+          "default": true
+        },
+        "condition": { "$ref": "#/$defs/condition" }
+      },
+      "required": ["file"],
+      "oneOf": [
+        {
+          "required": ["content"]
+        },
+        {
+          "required": ["template"]
+        },
+        {
+          "required": ["templateFile"]
+        }
+      ]
+    },
+    "config-mkdir": {
+      "title": "Mkdir Config",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "type": "string",
+          "description": "Path to the directory to create"
+        },
+        "condition": { "$ref": "#/$defs/condition" }
+      },
+      "required": ["path"]
     }
   }
 }

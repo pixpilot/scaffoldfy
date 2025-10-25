@@ -37,6 +37,10 @@ describe('jSON Schema Validation', () => {
       'rename',
       'git-init',
       'exec',
+      'move',
+      'copy',
+      'append',
+      'mkdir',
     ];
 
     expect(schemaTaskTypes).toEqual(expectedTypes);
@@ -48,7 +52,7 @@ describe('jSON Schema Validation', () => {
     ) as { title: string; required: string[] }[];
 
     // Should have 9 config schemas (one for each task type)
-    expect(configSchemas).toHaveLength(9);
+    expect(configSchemas).toHaveLength(13);
 
     // Verify each config schema has required properties
     const expectedConfigs = [
@@ -67,6 +71,10 @@ describe('jSON Schema Validation', () => {
         required: ['removeExisting', 'initialCommit'],
       },
       { title: 'Exec Config', required: ['command'] },
+      { title: 'Move Config', required: ['from', 'to'] },
+      { title: 'Copy Config', required: ['from', 'to'] },
+      { title: 'Append Config', required: ['file'] },
+      { title: 'Mkdir Config', required: ['path'] },
     ];
 
     for (const expected of expectedConfigs) {

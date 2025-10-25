@@ -1,4 +1,5 @@
 {
+  "$schema": "../schema/tasks.schema.json",
   "prompts": [
     {
       "id": "includeTests",

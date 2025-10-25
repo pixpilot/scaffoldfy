@@ -5,7 +5,7 @@ const MAX_BUNDLE_SIZE_KB = 80;
 
 export default defineConfig({
   bundleSize: MAX_BUNDLE_SIZE_KB * KB,
-  entry: ['src/index.ts', 'src/cli.ts'],
+  entry: ['src/index.ts', 'src/cli.ts', 'src/validate-scaffoldfy-json.ts'],
   dts: true,
   minify: true,
   clean: true,

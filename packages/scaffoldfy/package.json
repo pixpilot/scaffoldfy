@@ -23,7 +23,8 @@
     "./schema": "./schema/tasks.schema.json"
   },
   "bin": {
-    "scaffoldfy": "./dist/cli.js"
+    "scaffoldfy": "./dist/cli.js",
+    "validate-scaffoldfy-json": "./dist/validate-scaffoldfy-json.js"
   },
   "files": [
     "dist",
@@ -58,7 +59,8 @@
     "test:coverage": "vitest --coverage",
     "typecheck": "tsc --noEmit",
     "lint": "eslint",
-    "format": "prettier --check . --ignore-path ../../.gitignore --ignore-path ../../.prettierignore"
+    "format": "prettier --check . --ignore-path ../../.gitignore --ignore-path ../../.prettierignore",
+    "validate-scaffoldfy-json": "node dist/validate-scaffoldfy-json.js"
   },
   "dependencies": {
     "@inquirer/prompts": "^7.9.0",
