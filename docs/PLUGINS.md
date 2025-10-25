@@ -22,9 +22,9 @@ With the plugin system, you can:
 ### Creating a Simple Plugin
 
 ```typescript
-import { createPlugin, registerPlugin } from '@pixpilot/scaffoldfy';
+import { createTaskPlugin, registerPlugin } from '@pixpilot/scaffoldfy';
 
-const myPlugin = createPlugin(
+const myPlugin = createTaskPlugin(
   'my-plugin',
   'custom-greeting',
   async (task, config, options) => {
@@ -64,9 +64,9 @@ registerPlugin(myPlugin);
 
 ```typescript
 import type { TaskDefinition } from '@pixpilot/scaffoldfy';
-import { createPlugin, registerPlugin } from '@pixpilot/scaffoldfy';
+import { createTaskPlugin, registerPlugin } from '@pixpilot/scaffoldfy';
 
-const advancedPlugin = createPlugin(
+const advancedPlugin = createTaskPlugin(
   'advanced-plugin',
   'database-setup',
   // Execute function
@@ -230,9 +230,9 @@ console.log('Registered plugins:', plugins);
 
 ```typescript
 import fs from 'node:fs';
-import { createPlugin, registerPlugin } from '@pixpilot/scaffoldfy';
+import { createTaskPlugin, registerPlugin } from '@pixpilot/scaffoldfy';
 
-const dockerPlugin = createPlugin(
+const dockerPlugin = createTaskPlugin(
   'docker-plugin',
   'docker-setup',
   async (task, config, options) => {
@@ -318,9 +318,9 @@ Usage:
 
 ```typescript
 import fs from 'node:fs';
-import { createPlugin, registerPlugin } from '@pixpilot/scaffoldfy';
+import { createTaskPlugin, registerPlugin } from '@pixpilot/scaffoldfy';
 
-const envPlugin = createPlugin(
+const envPlugin = createTaskPlugin(
   'env-plugin',
   'create-env',
   async (task, config, options) => {
@@ -449,7 +449,7 @@ interface PluginHooks {
 - `listPlugins(): string[]` - List all registered plugin names
 - `clearPlugins(): void` - Clear all registered plugins
 - `registerHooks(hooks: Partial<PluginHooks>): void` - Register lifecycle hooks
-- `createPlugin(name, taskType, execute, options?): TaskPlugin` - Create a plugin
+- `createTaskPlugin(name, taskType, execute, options?): TaskPlugin` - Create a plugin
 - `executePluginTask(task, config, options): Promise<void>` - Execute a plugin task
 - `getPluginTaskDiff(task, config): Promise<string | undefined>` - Get diff for plugin task
 - `validatePluginTask(task): string[]` - Validate plugin task configuration

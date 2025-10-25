@@ -264,9 +264,9 @@ const diff = await getUpdateJsonDiff(
 Plugins can implement custom diff generation:
 
 ```typescript
-import { createPlugin, registerPlugin } from '@pixpilot/scaffoldfy';
+import { createTaskPlugin, registerPlugin } from '@pixpilot/scaffoldfy';
 
-const myPlugin = createPlugin(
+const myPlugin = createTaskPlugin(
   'my-plugin',
   'custom-task',
   async (task, config, options) => {

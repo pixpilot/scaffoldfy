@@ -7,7 +7,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   callHook,
   clearPlugins,
-  createPlugin,
+  createTaskPlugin,
   executePluginTask,
   getPlugin,
   getPluginForTaskType,
@@ -369,10 +369,10 @@ describe('plugin system', () => {
     });
   });
 
-  describe('createPlugin', () => {
+  describe('createTaskPlugin', () => {
     it('should create a plugin', () => {
       const executeFn = vi.fn();
-      const plugin = createPlugin('test-plugin', 'custom-task', executeFn);
+      const plugin = createTaskPlugin('test-plugin', 'custom-task', executeFn);
 
       expect(plugin.name).toBe('test-plugin');
       expect(plugin.taskTypes).toEqual(['custom-task']);
@@ -384,7 +384,7 @@ describe('plugin system', () => {
       const getDiffFn = vi.fn();
       const validateFn = vi.fn();
 
-      const plugin = createPlugin('test-plugin', 'custom-task', executeFn, {
+      const plugin = createTaskPlugin('test-plugin', 'custom-task', executeFn, {
         version: '1.0.0',
         getDiff: getDiffFn,
         validate: validateFn,

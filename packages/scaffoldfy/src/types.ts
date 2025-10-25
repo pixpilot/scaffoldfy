@@ -118,7 +118,7 @@ export interface BasePrompt {
   enabled?: EnabledValue; // If false or condition evaluates to false, prompt is skipped
   override?: MergeStrategy; // Strategy for merging with base prompt: 'merge' (default, intelligent) or 'replace' (complete override)
   $templateEnabled?: EnabledValue; // Internal: Enabled condition of the template this prompt came from (for lazy evaluation)
-  transformers?: string | string[]; // Transformer(s) to apply to the prompt value after input
+  transformers?: string[]; // Array of transformer(s) to apply to the prompt value after input
 }
 
 export interface InputPrompt extends BasePrompt {
@@ -158,7 +158,7 @@ export interface VariableDefinition {
   value: DefaultValue; // The value of the variable (static or executable)
   override?: MergeStrategy; // Strategy for merging with base variable: 'merge' (default, intelligent) or 'replace' (complete override)
   $templateEnabled?: EnabledValue; // Internal: Enabled condition of the template this variable came from (for lazy evaluation)
-  transformers?: string | string[]; // Transformer(s) to apply to the variable value after resolution
+  transformers?: string[]; // Array of transformer(s) to apply to the variable value after resolution
 }
 
 /**

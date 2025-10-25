@@ -286,7 +286,7 @@ export function validatePluginTask(task: TaskDefinition): string[] {
 }
 
 /**
- * Create a simple plugin
+ * Create a simple task plugin
  * @param name - Plugin name
  * @param taskType - Task type this plugin handles
  * @param execute - Execute function
@@ -296,7 +296,7 @@ export function validatePluginTask(task: TaskDefinition): string[] {
  * @param options.validate - Function to validate task configuration
  * @returns A TaskPlugin object
  */
-export function createPlugin(
+export function createTaskPlugin(
   name: string,
   taskType: string,
   execute: (

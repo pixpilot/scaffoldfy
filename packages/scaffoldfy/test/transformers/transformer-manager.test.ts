@@ -254,7 +254,7 @@ describe('transformerManager', () => {
   describe('apply', () => {
     it('should apply single transformer by string ID', async () => {
       manager.register({ id: 'lowercase', type: 'lowercase' });
-      const result = await manager.apply('lowercase', 'HELLO');
+      const result = await manager.apply(['lowercase'], 'HELLO');
       expect(result).toBe('hello');
     });
 
@@ -295,9 +295,9 @@ describe('transformerManager', () => {
       expect(errors[0]).toContain('missing');
     });
 
-    it('should handle string input', () => {
-      const errors = manager.validate('missing');
-      expect(errors).toHaveLength(1);
+    it('should handle array input with multiple missing transformers', () => {
+      const errors = manager.validate(['missing', 'another-missing']);
+      expect(errors).toHaveLength(2);
     });
 
     it('should return empty array for undefined', () => {

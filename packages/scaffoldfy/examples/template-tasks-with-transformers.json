@@ -8,19 +8,19 @@
       "message": "What is the project name?",
       "type": "input",
       "required": true,
-      "transformers": "slugify"
+      "transformers": ["slugify"]
     },
     {
       "id": "description",
       "message": "Project description",
       "type": "input",
-      "transformers": "trim"
+      "transformers": ["trim"]
     },
     {
       "id": "authorEmail",
       "message": "Author email",
       "type": "input",
-      "transformers": "lowercase"
+      "transformers": ["lowercase"]
     }
   ],
   "transformers": [
@@ -45,7 +45,7 @@
     {
       "id": "upperProjectName",
       "value": "{{projectName}}",
-      "transformers": "uppercase"
+      "transformers": ["uppercase"]
     },
     {
       "id": "cleanDescription",
@@ -55,12 +55,12 @@
     {
       "id": "formattedName",
       "value": "{{projectName}}",
-      "transformers": "dash-to-underscore"
+      "transformers": ["dash-to-underscore"]
     },
     {
       "id": "nameLength",
       "value": "{{projectName}}",
-      "transformers": "compute-length"
+      "transformers": ["compute-length"]
     }
   ],
   "tasks": [

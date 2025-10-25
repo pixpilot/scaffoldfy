@@ -50,7 +50,7 @@ Converts the value to lowercase.
   "id": "email",
   "message": "Enter your email",
   "type": "input",
-  "transformers": "lowercase"
+  "transformers": ["lowercase"]
 }
 ```
 
@@ -63,7 +63,7 @@ Converts the value to uppercase.
   "id": "constantName",
   "message": "Enter constant name",
   "type": "input",
-  "transformers": "uppercase"
+  "transformers": ["uppercase"]
 }
 ```
 
@@ -76,7 +76,7 @@ Removes leading and trailing whitespace.
   "id": "username",
   "message": "Enter username",
   "type": "input",
-  "transformers": "trim"
+  "transformers": ["trim"]
 }
 ```
 
@@ -89,7 +89,7 @@ Converts a string to a URL-friendly slug (lowercase, spaces to hyphens, special 
   "id": "projectName",
   "message": "Enter project name",
   "type": "input",
-  "transformers": "slugify"
+  "transformers": ["slugify"]
 }
 ```
 
@@ -107,7 +107,7 @@ Capitalizes the first letter of the string.
   "id": "title",
   "message": "Enter title",
   "type": "input",
-  "transformers": "capitalize"
+  "transformers": ["capitalize"]
 }
 ```
 
@@ -125,7 +125,7 @@ Converts the string to title case (capitalizes the first letter of each word).
   "id": "headline",
   "message": "Enter headline",
   "type": "input",
-  "transformers": "titlecase"
+  "transformers": ["titlecase"]
 }
 ```
 
@@ -143,7 +143,7 @@ Converts the string to camelCase.
   "id": "variableName",
   "message": "Enter variable name",
   "type": "input",
-  "transformers": "camelcase"
+  "transformers": ["camelcase"]
 }
 ```
 
@@ -161,7 +161,7 @@ Converts the string to PascalCase.
   "id": "className",
   "message": "Enter class name",
   "type": "input",
-  "transformers": "pascalcase"
+  "transformers": ["pascalcase"]
 }
 ```
 
@@ -179,7 +179,7 @@ Converts the string to snake_case.
   "id": "fileName",
   "message": "Enter file name",
   "type": "input",
-  "transformers": "snakecase"
+  "transformers": ["snakecase"]
 }
 ```
 
@@ -197,7 +197,7 @@ Converts the string to kebab-case.
   "id": "cssClass",
   "message": "Enter CSS class",
   "type": "input",
-  "transformers": "kebabcase"
+  "transformers": ["kebabcase"]
 }
 ```
 
@@ -215,7 +215,7 @@ Converts the string to CONSTANT_CASE.
   "id": "envVar",
   "message": "Enter environment variable",
   "type": "input",
-  "transformers": "constantcase"
+  "transformers": ["constantcase"]
 }
 ```
 
@@ -233,7 +233,7 @@ Removes all non-alphanumeric characters from the string.
   "id": "cleanId",
   "message": "Enter identifier",
   "type": "input",
-  "transformers": "alphanumeric"
+  "transformers": ["alphanumeric"]
 }
 ```
 
@@ -251,7 +251,7 @@ Collapses multiple consecutive spaces into a single space.
   "id": "description",
   "message": "Enter description",
   "type": "input",
-  "transformers": "collapse-spaces"
+  "transformers": ["collapse-spaces"]
 }
 ```
 
@@ -269,7 +269,7 @@ Removes all spaces from the string.
   "id": "compactName",
   "message": "Enter compact name",
   "type": "input",
-  "transformers": "remove-spaces"
+  "transformers": ["remove-spaces"]
 }
 ```
 
@@ -287,7 +287,7 @@ URL-encodes the string.
   "id": "encodedUrl",
   "message": "Enter URL",
   "type": "input",
-  "transformers": "urlencode"
+  "transformers": ["urlencode"]
 }
 ```
 
@@ -305,7 +305,7 @@ Converts the string to dash-separated format (similar to kebab-case but may hand
   "id": "dashedName",
   "message": "Enter dashed name",
   "type": "input",
-  "transformers": "dasherize"
+  "transformers": ["dasherize"]
 }
 ```
 
@@ -323,7 +323,7 @@ Converts the string to underscore-separated format (similar to snake_case but ma
   "id": "underscoredName",
   "message": "Enter underscored name",
   "type": "input",
-  "transformers": "underscore"
+  "transformers": ["underscore"]
 }
 ```
 
@@ -427,13 +427,13 @@ Transform user input before storing:
       "id": "projectName",
       "message": "What is the project name?",
       "type": "input",
-      "transformers": "slugify"
+      "transformers": ["slugify"]
     },
     {
       "id": "description",
       "message": "Project description",
       "type": "input",
-      "transformers": "trim"
+      "transformers": ["trim"]
     }
   ]
 }
@@ -449,7 +449,7 @@ Transform computed variable values:
     {
       "id": "upperProjectName",
       "value": "{{projectName}}",
-      "transformers": "uppercase"
+      "transformers": ["uppercase"]
     },
     {
       "id": "packageName",
@@ -546,7 +546,7 @@ Reference custom transformers by their ID:
 {
   "id": "reversedName",
   "value": "{{projectName}}",
-  "transformers": "reverse"
+  "transformers": ["reverse"]
 }
 ```
 
@@ -577,26 +577,26 @@ Or combine with other transformers:
       "message": "What is the project name?",
       "type": "input",
       "required": true,
-      "transformers": "slugify"
+      "transformers": ["slugify"]
     },
     {
       "id": "description",
       "message": "Project description",
       "type": "input",
-      "transformers": "trim"
+      "transformers": ["trim"]
     },
     {
       "id": "authorEmail",
       "message": "Author email",
       "type": "input",
-      "transformers": "lowercase"
+      "transformers": ["lowercase"]
     }
   ],
   "variables": [
     {
       "id": "upperProjectName",
       "value": "{{projectName}}",
-      "transformers": "uppercase"
+      "transformers": ["uppercase"]
     },
     {
       "id": "packageName",
@@ -677,7 +677,7 @@ Or combine with other transformers:
     {
       "id": "componentKebab",
       "value": "{{componentName}}",
-      "transformers": "slugify"
+      "transformers": ["slugify"]
     },
     {
       "id": "componentPascal",

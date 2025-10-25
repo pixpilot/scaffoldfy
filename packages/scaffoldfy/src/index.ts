@@ -154,7 +154,7 @@ export {
 export {
   callHook,
   clearPlugins,
-  createPlugin,
+  createTaskPlugin,
   executePluginTask,
   getPlugin,
   getPluginForTaskType,

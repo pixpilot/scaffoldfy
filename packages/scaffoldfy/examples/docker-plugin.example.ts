@@ -9,7 +9,7 @@
  * 2. Use the 'docker-setup' task type in your template
  */
 
-import { createPlugin, registerPlugin } from '@pixpilot/scaffoldfy';
+import { createTaskPlugin, registerPlugin } from '@pixpilot/scaffoldfy';
 import fs from 'node:fs';
 import type { InitConfig, TaskDefinition } from '@pixpilot/scaffoldfy';
 
@@ -22,7 +22,7 @@ interface DockerConfig {
 }
 
 // Create the Docker plugin
-const dockerPlugin = createPlugin(
+const dockerPlugin = createTaskPlugin(
   'docker-plugin',
   'docker-setup',
   // Execute function

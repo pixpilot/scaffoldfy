@@ -149,16 +149,12 @@ export class TransformerManager {
    * Execute transformers based on string or array input
    */
   async apply(
-    transformers: string | string[] | undefined,
+    transformers: string[] | undefined,
     value: unknown,
     context: TransformerContext = {},
   ): Promise<unknown> {
     if (transformers === undefined) {
       return value;
-    }
-
-    if (typeof transformers === 'string') {
-      return this.execute(transformers, value, context);
     }
 
     return this.executeChain(transformers, value, context);
@@ -167,12 +163,12 @@ export class TransformerManager {
   /**
    * Validate that all transformer IDs exist
    */
-  validate(transformers: string | string[] | undefined): string[] {
+  validate(transformers: string[] | undefined): string[] {
     if (transformers === undefined) {
       return [];
     }
 
-    const ids = typeof transformers === 'string' ? [transformers] : transformers;
+    const ids = transformers;
     const errors: string[] = [];
 
     for (const id of ids) {

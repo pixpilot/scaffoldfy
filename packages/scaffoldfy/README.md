@@ -280,9 +280,9 @@ See color-coded diffs for all file modifications, deletions, and additions.
 Create custom task types for specialized operations:
 
 ```typescript
-import { createPlugin, registerPlugin } from '@pixpilot/scaffoldfy';
+import { createTaskPlugin, registerPlugin } from '@pixpilot/scaffoldfy';
 
-const myPlugin = createPlugin(
+const myPlugin = createTaskPlugin(
   'my-plugin',
   'custom-task',
   async (task, config, options) => {
