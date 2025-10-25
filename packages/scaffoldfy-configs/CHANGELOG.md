@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy-configs
 
+## 0.4.3
+
+### Patch Changes
+
+- remove old pre-commit hook task
+
 ## 0.4.2
 
 ### Patch Changes
