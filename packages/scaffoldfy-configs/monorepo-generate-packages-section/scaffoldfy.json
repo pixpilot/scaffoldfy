@@ -9,7 +9,7 @@
       "id": "pixpilot_generate_packages_section_pre_commit_content",
       "value": {
         "type": "exec",
-        "value": "node -e \"const fs = require('fs'); const preCommitPath = '.husky/pre-commit'; let content = ''; try { content = fs.readFileSync(preCommitPath, 'utf8').trim(); } catch (e) {} process.stdout.write('pnpm run generate-packages\\n' + (content ? content + '\\n' : ''));\""
+        "value": "node -e \"const fs = require('fs'); const preCommitPath = '.husky/pre-commit'; let content = ''; try { content = fs.readFileSync(preCommitPath, 'utf8').trim(); } catch (e) {} process.stdout.write('pnpm run generate-packages-section\\n' + (content ? content + '\\n' : ''));\""
       }
     }
   ],
@@ -27,8 +27,8 @@
     },
     {
       "id": "pixpilot-generate-packages-section-script",
-      "name": "Add generate-packages script to package.json",
-      "description": "Adds the generate-packages script to the root package.json scripts section",
+      "name": "Add generate-packages-section script to package.json",
+      "description": "Adds the generate-packages-section script to the root package.json scripts section",
       "type": "update-json",
       "config": {
         "file": "package.json",
@@ -40,7 +40,7 @@
     {
       "id": "pixpilot-generate-packages-section-create-new-pre-commit",
       "name": "Create new pre-commit hook",
-      "description": "Creates a new .husky/pre-commit file with generate-packages command",
+      "description": "Creates a new .husky/pre-commit file with generate-packages-section command",
       "type": "write",
       "config": {
         "file": ".husky/pre-commit",
