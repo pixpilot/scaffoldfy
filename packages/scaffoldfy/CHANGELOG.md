@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy
 
+## 0.29.2
+
+### Patch Changes
+
+- update Handlebars code blocks to use correct syntax highlighting
+
 ## 0.29.1
 
 ### Patch Changes
