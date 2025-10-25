@@ -314,19 +314,6 @@ Every task type supports an optional `condition` field that determines whether t
 }
 ```
 
-### Supported Task Types
-
-Conditional execution is available for **all task types**:
-
-- ✅ `update-json`
-- ✅ `template`
-- ✅ `regex-replace`
-- ✅ `replace-in-file`
-- ✅ `delete`
-- ✅ `rename`
-- ✅ `git-init`
-- ✅ `exec`
-
 ### Condition Syntax
 
 Conditions are JavaScript expressions that have access to all configuration variables:

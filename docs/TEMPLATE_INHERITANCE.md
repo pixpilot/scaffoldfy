@@ -106,9 +106,8 @@ Tasks are merged in order, with later templates taking precedence.
 There are two override strategies:
 
 1. **`merge`** (default, recommended): Intelligently merges the child item with the base item
-   - For tasks: Merges config, dependencies, prompts, and variables
+   - For tasks: Merges config, dependencies, and variables
    - For variables: Replaces the value
-   - For prompts: Merges properties (message, type, etc.)
 
 2. **`replace`**: Completely replaces the base item with the child item
    - No merging occurs - the base item is discarded entirely
@@ -638,7 +637,7 @@ The child's `setup-git` task completely replaces the base version.
 
 ## Dependency and Prompt Merging
 
-When overriding a task, dependencies and prompts are intelligently merged:
+When overriding a task, dependencies are intelligently merged:
 
 ```json
 // base.json
@@ -652,14 +651,7 @@ When overriding a task, dependencies and prompts are intelligently merged:
       "enabled": true,
       "type": "write",
       "config": {},
-      "dependencies": ["task-a"],
-      "prompts": [
-        {
-          "id": "prompt1",
-          "type": "input",
-          "message": "Enter value 1"
-        }
-      ]
+      "dependencies": ["task-a"]
     }
   ]
 }
@@ -676,14 +668,7 @@ When overriding a task, dependencies and prompts are intelligently merged:
       "enabled": true,
       "type": "write",
       "config": { "enhanced": true },
-      "dependencies": ["task-b", "task-c"],
-      "prompts": [
-        {
-          "id": "prompt2",
-          "type": "confirm",
-          "message": "Enable feature?"
-        }
-      ]
+      "dependencies": ["task-b", "task-c"]
     }
   ]
 }
@@ -692,7 +677,6 @@ When overriding a task, dependencies and prompts are intelligently merged:
 The resulting task will have:
 
 - **Dependencies**: `["task-a", "task-b", "task-c"]` (merged and deduplicated)
-- **Prompts**: Both `prompt1` and `prompt2` (merged by ID)
 - **Config**: `{ "enhanced": true }` (child overrides base)
 
 ## Relative Paths

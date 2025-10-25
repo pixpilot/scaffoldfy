@@ -6,7 +6,6 @@ A flexible and powerful task automation utility for project setup, cleanup, and 
 
 ## ✨ Features
 
-- 🔄 **13 Task Types** - update-json, template, create, regex-replace, replace-in-file, delete, rename, move, copy, append, mkdir, git-init, exec
 - 💬 **Interactive Prompts** - Collect user input with various prompt types
 - 🧩 **Template Inheritance** - Extend base templates for code reuse
 - 🔍 **Dry-Run Mode** - Preview changes with detailed diffs before applying

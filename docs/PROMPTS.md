@@ -525,6 +525,77 @@ Here's a complete example showing how to use prompts with executable defaults in
 
 ```json
 {
+  "$schema": "../schema/tasks.schema.json",
+  "prompts": [
+    {
+      "id": "appName",
+      "type": "input",
+      "message": "Application name",
+      "default": {
+        "type": "exec",
+        "value": "node -p \"require('path').basename(process.cwd())\""
+      },
+      "required": true
+    },
+    {
+      "id": "authorName",
+      "type": "input",
+      "message": "Author name",
+      "default": {
+        "type": "exec",
+        "value": "git config user.name"
+      }
+    },
+    {
+      "id": "authorEmail",
+      "type": "input",
+      "message": "Author email",
+      "default": {
+        "type": "exec",
+        "value": "git config user.email"
+      }
+    },
+    {
+      "id": "useTypeScript",
+      "type": "confirm",
+      "message": "Use TypeScript?",
+      "default": true
+    },
+    {
+      "id": "packageManager",
+      "type": "select",
+      "message": "Package manager",
+      "choices": [
+        { "name": "npm", "value": "npm" },
+        { "name": "pnpm", "value": "pnpm" },
+        { "name": "yarn", "value": "yarn" }
+      ],
+      "default": {
+        "type": "exec",
+        "value": "command -v pnpm > /dev/null && echo 'pnpm' || echo 'npm'"
+      }
+    },
+    {
+      "id": "port",
+      "type": "number",
+      "message": "Development server port",
+      "default": 3000,
+      "min": 1024,
+      "max": 65535
+    },
+    {
+      "id": "apiUrl",
+      "type": "input",
+      "message": "API URL",
+      "default": "https://api.example.com"
+    },
+    {
+      "id": "apiSecret",
+      "type": "password",
+      "message": "API Secret Key",
+      "required": true
+    }
+  ],
   "tasks": [
     {
       "id": "setup-project",
@@ -533,64 +604,6 @@ Here's a complete example showing how to use prompts with executable defaults in
       "required": true,
       "enabled": true,
       "type": "update-json",
-      "prompts": [
-        {
-          "id": "appName",
-          "type": "input",
-          "message": "Application name",
-          "default": {
-            "type": "exec",
-            "value": "node -p \"require('path').basename(process.cwd())\""
-          },
-          "required": true
-        },
-        {
-          "id": "authorName",
-          "type": "input",
-          "message": "Author name",
-          "default": {
-            "type": "exec",
-            "value": "git config user.name"
-          }
-        },
-        {
-          "id": "authorEmail",
-          "type": "input",
-          "message": "Author email",
-          "default": {
-            "type": "exec",
-            "value": "git config user.email"
-          }
-        },
-        {
-          "id": "useTypeScript",
-          "type": "confirm",
-          "message": "Use TypeScript?",
-          "default": true
-        },
-        {
-          "id": "packageManager",
-          "type": "select",
-          "message": "Package manager",
-          "choices": [
-            { "name": "npm", "value": "npm" },
-            { "name": "pnpm", "value": "pnpm" },
-            { "name": "yarn", "value": "yarn" }
-          ],
-          "default": {
-            "type": "exec",
-            "value": "command -v pnpm > /dev/null && echo 'pnpm' || echo 'npm'"
-          }
-        },
-        {
-          "id": "port",
-          "type": "number",
-          "message": "Development server port",
-          "default": 3000,
-          "min": 1024,
-          "max": 65535
-        }
-      ],
       "config": {
         "file": "package.json",
         "updates": {
@@ -609,20 +622,6 @@ Here's a complete example showing how to use prompts with executable defaults in
       "required": false,
       "enabled": true,
       "type": "write",
-      "prompts": [
-        {
-          "id": "apiUrl",
-          "type": "input",
-          "message": "API URL",
-          "default": "https://api.example.com"
-        },
-        {
-          "id": "apiSecret",
-          "type": "password",
-          "message": "API Secret Key",
-          "required": true
-        }
-      ],
       "config": {
         "file": ".env",
         "template": "API_URL={{apiUrl}}\\nAPI_SECRET={{apiSecret}}\\n"
@@ -882,12 +881,7 @@ Prompt values can also be used directly in condition expressions for tasks and w
 
 ```json
 {
-  "id": "handle-example-packages",
-  "name": "Handle example packages",
-  "description": "Prompt user about keeping example packages and remove if not wanted",
-  "required": false,
-  "enabled": true,
-  "type": "delete",
+  "$schema": "../schema/tasks.schema.json",
   "prompts": [
     {
       "id": "keepExamplePackages",
@@ -896,10 +890,20 @@ Prompt values can also be used directly in condition expressions for tasks and w
       "default": true
     }
   ],
-  "config": {
-    "condition": "!keepExamplePackages",
-    "paths": ["packages/example-package"]
-  }
+  "tasks": [
+    {
+      "id": "handle-example-packages",
+      "name": "Handle example packages",
+      "description": "Prompt user about keeping example packages and remove if not wanted",
+      "required": false,
+      "enabled": true,
+      "type": "delete",
+      "config": {
+        "condition": "!keepExamplePackages",
+        "paths": ["packages/example-package"]
+      }
+    }
+  ]
 }
 ```
 

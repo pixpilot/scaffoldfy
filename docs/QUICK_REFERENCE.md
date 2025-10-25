@@ -437,7 +437,7 @@ Scaffoldfy supports multiple formats:
 ### Learn More
 
 - **[Getting Started Guide](GETTING_STARTED.html)** - Detailed installation and setup
-- **[Task Types Reference](TASK_TYPES.html)** - Complete list of all 9 task types
+- **[Task Types Reference](TASK_TYPES.html)** - Complete list of all task types
 - **[Interactive Prompts](PROMPTS.html)** - Detailed prompt configuration
 - **[Advanced Features](FEATURES.html)** - Conditional execution, Handlebars, etc.
 

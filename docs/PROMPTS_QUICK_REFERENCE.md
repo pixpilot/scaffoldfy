@@ -99,6 +99,14 @@ Values are available via template interpolation:
 
 ```json
 {
+  "prompts": [
+    {
+      "id": "appName",
+      "type": "input",
+      "message": "App name?",
+      "required": true
+    }
+  ],
   "tasks": [
     {
       "id": "setup",
@@ -107,14 +115,6 @@ Values are available via template interpolation:
       "required": true,
       "enabled": true,
       "type": "update-json",
-      "prompts": [
-        {
-          "id": "appName",
-          "type": "input",
-          "message": "App name?",
-          "required": true
-        }
-      ],
       "config": {
         "file": "package.json",
         "updates": {

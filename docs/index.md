@@ -15,7 +15,7 @@ Welcome to the official documentation for **@pixpilot/scaffoldfy** (formerly sca
 
 1. **[Quick Reference](QUICK_REFERENCE.html)** - Essential commands and examples to get started in minutes
 2. **[Getting Started Guide](GETTING_STARTED.html)** - Detailed installation and setup instructions
-3. **[Task Types Reference](TASK_TYPES.html)** - Learn about all 9 available task types
+3. **[Task Types Reference](TASK_TYPES.html)** - Learn about all available task types
 
 ---
 
@@ -37,7 +37,7 @@ Welcome to the official documentation for **@pixpilot/scaffoldfy** (formerly sca
 
 <div style="padding: 15px; background: #f6f8fa; border-radius: 6px; margin: 15px 0;">
   <strong><a href="TASK_TYPES.html">🔧 Task Types Reference</a></strong><br>
-  <em>Complete reference for all 9 built-in task types: write, update-json, copy, delete, exec, and more</em>
+  <em>Complete reference for all built-in task types: write, update-json, copy, delete, exec, and more</em>
 </div>
 
 <div style="padding: 15px; background: #f6f8fa; border-radius: 6px; margin: 15px 0;">
@@ -92,8 +92,6 @@ Welcome to the official documentation for **@pixpilot/scaffoldfy** (formerly sca
 ---
 
 ## 💡 Features at a Glance
-
-✅ **9 Task Types** - `update-json`, `write`, `regex-replace`, `replace-in-file`, `delete`, `conditional-delete`, `rename`, `git-init`, `exec`
 
 ✅ **Template Inheritance** - Extend base templates for code reuse
 

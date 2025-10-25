@@ -6,7 +6,6 @@ A flexible and powerful task automation utility for project setup, cleanup, and 
 
 ## Features
 
-- 🔄 **13 Task Types** - update-json, template, create, regex-replace, replace-in-file, delete, rename, move, copy, append, mkdir, git-init, exec
 - 🧩 **Template Inheritance** - Extend base templates for code reuse
 - 🔍 **Dry-Run Mode with Diff** - Preview exact changes before applying
 - 🔌 **Plugin System** - Create custom task types and lifecycle hooks
@@ -77,7 +76,7 @@ await runWithTasks(tasks, {
 
 ### Task Types
 
-13 built-in task types for common operations:
+Built-in task types for common operations:
 
 | Type              | Purpose                                            |
 | ----------------- | -------------------------------------------------- |
@@ -422,7 +421,7 @@ Control execution order:
 ### Quick Links
 
 - **[Getting Started](https://pixpilot.github.io/scaffoldfy/GETTING_STARTED.html)** - Installation, CLI usage, and examples
-- **[Task Types Reference](https://pixpilot.github.io/scaffoldfy/TASK_TYPES.html)** - All 13 built-in task types
+- **[Task Types Reference](https://pixpilot.github.io/scaffoldfy/TASK_TYPES.html)** - All built-in task types
 - **[Interactive Prompts](https://pixpilot.github.io/scaffoldfy/PROMPTS.html)** - Collect user input
 - **[Variables](https://pixpilot.github.io/scaffoldfy/VARIABLES.html)** - Reusable values without user interaction
 - **[Advanced Features](https://pixpilot.github.io/scaffoldfy/FEATURES.html)** - Conditional execution, global prompts, Handlebars

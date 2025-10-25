@@ -527,7 +527,7 @@ Check that:
 
 Now that you're familiar with the basics, explore these topics:
 
-- **[Task Types Reference](TASK_TYPES.md)** - Learn about all 9 built-in task types
+- **[Task Types Reference](TASK_TYPES.md)** - Learn about all built-in task types
 - **[Interactive Prompts](PROMPTS.md)** - Master user input collection
 - **[Advanced Features](FEATURES.md)** - Conditional execution, global prompts, and Handlebars
 - **[Template Inheritance](TEMPLATE_INHERITANCE.md)** - Compose and extend templates
