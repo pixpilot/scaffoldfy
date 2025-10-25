@@ -46,9 +46,9 @@ const readme = fs.readFileSync(readmePath, 'utf8');
 
 // Find the section between ## Packages and ## Contributing
 const startMarker = '## Packages';
-const endMarker = '## Contributing';
+const endMarker = '\n## ';
 const startIndex = readme.indexOf(startMarker);
-const endIndex = readme.indexOf(endMarker, startIndex);
+const endIndex = readme.indexOf(endMarker, startIndex + startMarker.length);
 
 if (startIndex === -1 || endIndex === -1) {
   throw new Error('Could not find the Packages section in README.md');
