@@ -38,15 +38,6 @@
       }
     },
     {
-      "id": "pixpilot-generate-packages-section-delete-old-pre-commit",
-      "name": "Delete old pre-commit hook",
-      "description": "Deletes the existing .husky/pre-commit file",
-      "type": "delete",
-      "config": {
-        "paths": [".husky/pre-commit"]
-      }
-    },
-    {
       "id": "pixpilot-generate-packages-section-create-new-pre-commit",
       "name": "Create new pre-commit hook",
       "description": "Creates a new .husky/pre-commit file with generate-packages command",
