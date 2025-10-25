@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy-configs
 
+## 0.4.5
+
+### Patch Changes
+
+- correct command references in pre-commit hook and package.json
+
 ## 0.4.4
 
 ### Patch Changes
