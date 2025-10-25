@@ -20,7 +20,7 @@
   ],
   "exports": {
     ".": "./src/index.ts",
-    "./schema": "./schema/tasks.schema.json"
+    "./schema": "./schema/scaffoldfy.schema.json"
   },
   "bin": {
     "scaffoldfy": "./dist/cli.js",
@@ -38,7 +38,7 @@
         "import": "./dist/index.js",
         "require": "./dist/index.cjs"
       },
-      "./schema": "./schema/tasks.schema.json"
+      "./schema": "./schema/scaffoldfy.schema.json"
     },
     "bin": {
       "scaffoldfy": "./dist/cli.js"

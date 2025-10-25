@@ -1,5 +1,5 @@
 {
-  "$schema": "../schema/tasks.schema.json",
+  "$schema": "../schema/scaffoldfy.schema.json",
   "name": "template-with-root-level-enabled",
   "description": "Example template demonstrating root-level enabled feature with various configurations",
   "enabled": {

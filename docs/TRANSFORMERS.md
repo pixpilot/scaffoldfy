@@ -568,7 +568,7 @@ Or combine with other transformers:
 
 ```json
 {
-  "$schema": "../schema/tasks.schema.json",
+  "$schema": "https://unpkg.com/@pixpilot/scaffoldfy/schema",
   "name": "transformers-example",
   "description": "Example template demonstrating value transformers",
   "prompts": [

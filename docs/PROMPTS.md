@@ -27,7 +27,7 @@ You can define prompts at the **root level** of your configuration file. These p
 
 ```json
 {
-  "$schema": "../schema/tasks.schema.json",
+  "$schema": "https://unpkg.com/@pixpilot/scaffoldfy/schema",
   "prompts": [
     {
       "id": "projectName",
@@ -775,7 +775,7 @@ Here's a complete example showing how to use prompts with executable defaults in
 
 ```json
 {
-  "$schema": "../schema/tasks.schema.json",
+  "$schema": "https://unpkg.com/@pixpilot/scaffoldfy/schema",
   "prompts": [
     {
       "id": "appName",
@@ -1131,7 +1131,7 @@ Prompt values can also be used directly in condition expressions for tasks and w
 
 ```json
 {
-  "$schema": "../schema/tasks.schema.json",
+  "$schema": "https://unpkg.com/@pixpilot/scaffoldfy/schema",
   "prompts": [
     {
       "id": "keepExamplePackages",

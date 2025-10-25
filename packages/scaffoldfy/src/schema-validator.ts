@@ -30,7 +30,7 @@ function createValidator(): Ajv {
  * Load the tasks schema from the schema directory
  */
 function loadTasksSchema(): Record<string, unknown> {
-  const schemaPath = path.join(dirname, '..', 'schema', 'tasks.schema.json');
+  const schemaPath = path.join(dirname, '..', 'schema', 'scaffoldfy.schema.json');
 
   try {
     const schemaContent = fs.readFileSync(schemaPath, 'utf-8');

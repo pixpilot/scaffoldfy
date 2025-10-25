@@ -431,7 +431,7 @@ Control execution order:
 
 ### Resources
 
-- **[JSON Schema](schema/tasks.schema.json)** - For IDE autocomplete and validation
+- **[JSON Schema](schema/scaffoldfy.schema.json)** - For IDE autocomplete and validation
 - **[Example Files](examples/)** - Sample task configurations
 
 ## JSON Schema Support
@@ -440,7 +440,7 @@ Enable autocomplete and validation in your IDE:
 
 ```json
 {
-  "$schema": "node_modules/@pixpilot/scaffoldfy/schema/tasks.schema.json",
+  "$schema": "https://unpkg.com/@pixpilot/scaffoldfy/schema",
   "tasks": []
 }
 ```

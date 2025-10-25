@@ -1,5 +1,5 @@
 {
-  "$schema": "../schema/tasks.schema.json",
+  "$schema": "../schema/scaffoldfy.schema.json",
   "name": "template-with-variables",
   "description": "Demonstrates using root-level variables for configuration",
   "variables": [

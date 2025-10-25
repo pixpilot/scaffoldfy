@@ -156,7 +156,7 @@ npm install --save-dev @pixpilot/scaffoldfy
 
 ```json
 {
-  "$schema": "../schema/tasks.schema.json",
+  "$schema": "https://unpkg.com/@pixpilot/scaffoldfy/schema",
   "prompts": [
     {
       "id": "projectName",

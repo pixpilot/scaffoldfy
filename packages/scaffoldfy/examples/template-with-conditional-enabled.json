@@ -1,5 +1,5 @@
 {
-  "$schema": "../schema/tasks.schema.json",
+  "$schema": "../schema/scaffoldfy.schema.json",
   "name": "conditional-template-example",
   "description": "Example showing conditional root-level enabled based on dependency template variables",
   "dependencies": ["project-info"],

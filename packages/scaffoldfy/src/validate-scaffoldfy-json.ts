@@ -66,7 +66,7 @@ function validateJsonFile(filePath: string): { valid: boolean; errors?: string[]
     if (schemaRef.startsWith('http')) {
       // For HTTP URLs, try to resolve to local schema
       if (schemaRef.includes('scaffoldfy/schema')) {
-        schemaPath = path.join(dirname, '..', 'schema', 'tasks.schema.json');
+        schemaPath = path.join(dirname, '..', 'schema', 'scaffoldfy.schema.json');
       } else {
         return { valid: true }; // Skip external schemas we don't know about
       }

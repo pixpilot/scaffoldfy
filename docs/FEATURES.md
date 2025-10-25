@@ -30,7 +30,7 @@ The root-level `enabled` property allows you to enable or disable an entire temp
 
 ```json
 {
-  "$schema": "https://scaffoldfy.dev/schema/tasks.schema.json",
+  "$schema": "https://unpkg.com/@pixpilot/scaffoldfy/schema",
   "name": "my-template",
   "enabled": true,
   "tasks": []
@@ -41,7 +41,7 @@ The root-level `enabled` property allows you to enable or disable an entire temp
 
 ```json
 {
-  "$schema": "https://scaffoldfy.dev/schema/tasks.schema.json",
+  "$schema": "https://unpkg.com/@pixpilot/scaffoldfy/schema",
   "name": "conditional-template",
   "enabled": "process.env.NODE_ENV === 'development'",
   "tasks": []
@@ -52,7 +52,7 @@ The root-level `enabled` property allows you to enable or disable an entire temp
 
 ```json
 {
-  "$schema": "https://scaffoldfy.dev/schema/tasks.schema.json",
+  "$schema": "https://unpkg.com/@pixpilot/scaffoldfy/schema",
   "name": "conditional-template",
   "enabled": {
     "condition": "projectType === 'monorepo'"
@@ -67,7 +67,7 @@ Determine if a template should run by executing a shell command:
 
 ```json
 {
-  "$schema": "https://scaffoldfy.dev/schema/tasks.schema.json",
+  "$schema": "https://unpkg.com/@pixpilot/scaffoldfy/schema",
   "name": "git-template",
   "enabled": {
     "type": "exec",

@@ -1,5 +1,5 @@
 {
-  "$schema": "../schema/tasks.schema.json",
+  "$schema": "../schema/scaffoldfy.schema.json",
   "name": "template-with-url-inheritance",
   "description": "Demonstrates extending from a remote template via URL",
   "extends": "https://raw.githubusercontent.com/pixpilot/scaffoldfy/main/packages/scaffoldfy/examples/base-node-template.json",

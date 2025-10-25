@@ -21,7 +21,7 @@
         "condition": "addSecurityFile === true"
       },
       "default": {
-        "type": "condistional",
+        "type": "conditional",
         "condition": "orgName === 'pixpilot'",
         "ifTrue": "security@pixpilot.com",
         "ifFalse": {

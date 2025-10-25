@@ -50,7 +50,7 @@ The validator checks JSON files that have a `$schema` property pointing to a sca
 
 ```json
 {
-  "$schema": "./schema/tasks.schema.json",
+  "$schema": "https://unpkg.com/@pixpilot/scaffoldfy/schema",
   "name": "my-template",
   "tasks": []
 }
@@ -126,6 +126,6 @@ You can integrate the validator into your CI/CD pipeline:
 ## Tips
 
 1. **Always add a `$schema` property** to your scaffoldfy JSON files to enable validation
-2. **Use relative paths** for the schema reference (e.g., `"./schema/tasks.schema.json"`)
+2. **Use the published schema URL**: `"https://unpkg.com/@pixpilot/scaffoldfy/schema"`
 3. **Run validation before committing** to catch errors early
 4. **Use `--dir` for batch validation** when making schema changes to ensure all files are still valid

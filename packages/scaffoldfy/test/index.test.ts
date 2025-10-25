@@ -19,7 +19,7 @@ import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 
 // Load JSON schema
-const schemaPath = path.join(__dirname, '..', 'schema', 'tasks.schema.json');
+const schemaPath = path.join(__dirname, '..', 'schema', 'scaffoldfy.schema.json');
 const schema = JSON.parse(fs.readFileSync(schemaPath, 'utf-8'));
 
 describe('jSON Schema Validation', () => {

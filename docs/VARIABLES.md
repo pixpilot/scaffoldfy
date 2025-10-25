@@ -36,7 +36,7 @@ Root-level variables are defined in the `variables` array at the root of your co
 
 ```json
 {
-  "$schema": "../schema/tasks.schema.json",
+  "$schema": "https://unpkg.com/@pixpilot/scaffoldfy/schema",
   "variables": [
     {
       "id": "currentYear",

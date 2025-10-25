@@ -1,5 +1,5 @@
 {
-  "$schema": "../schema/tasks.schema.json",
+  "$schema": "../schema/scaffoldfy.schema.json",
   "name": "template-with-inheritance",
   "description": "Demonstrates extending from a base template and overriding tasks",
   "extends": "./base-node-template.json",

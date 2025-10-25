@@ -224,7 +224,7 @@ await runWithTasks(tasks, {
 
 ```json
 {
-  "$schema": "../schema/tasks.schema.json",
+  "$schema": "https://unpkg.com/@pixpilot/scaffoldfy/schema",
   "prompts": [
     {
       "id": "projectName",

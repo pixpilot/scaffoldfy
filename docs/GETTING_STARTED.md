@@ -218,7 +218,7 @@ await runWithTasks(customTasks);
 
 ```json
 {
-  "$schema": "node_modules/@pixpilot/scaffoldfy/schema/tasks.schema.json",
+  "$schema": "https://unpkg.com/@pixpilot/scaffoldfy/schema",
   "name": "my-template",
   "description": "Optional description of what this template does",
   "dependencies": ["optional-dependency-template"],
@@ -358,7 +358,7 @@ Add the schema reference to get autocomplete and validation in your JSON task fi
 
 ```json
 {
-  "$schema": "./node_modules/@pixpilot/scaffoldfy/schema/tasks.schema.json",
+  "$schema": "./https://unpkg.com/@pixpilot/scaffoldfy/schema",
   "tasks": []
 }
 ```
@@ -413,7 +413,7 @@ Here's a complete example that sets up a Node.js project:
 
 ```json
 {
-  "$schema": "./node_modules/@pixpilot/scaffoldfy/schema/tasks.schema.json",
+  "$schema": "./https://unpkg.com/@pixpilot/scaffoldfy/schema",
   "name": "node-project-setup",
   "prompts": [
     {

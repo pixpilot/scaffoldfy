@@ -1,5 +1,5 @@
 {
-  "$schema": "../schema/tasks.schema.json",
+  "$schema": "../schema/scaffoldfy.schema.json",
   "name": "template-with-prompts",
   "description": "Demonstrates using root-level prompts for interactive configuration",
   "prompts": [
