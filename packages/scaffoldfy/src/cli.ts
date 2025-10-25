@@ -66,8 +66,8 @@ program
 
     try {
       let tasks: TaskDefinition[] = [];
-      let globalVariables: VariableDefinition[] | undefined;
-      let globalPrompts: PromptDefinition[] | undefined;
+      let variables: VariableDefinition[] | undefined;
+      let prompts: PromptDefinition[] | undefined;
       let templateEnabled: import('./types.js').EnabledValue | undefined;
       let tasksFilePath: string | undefined;
 
@@ -159,8 +159,8 @@ program
 
               // Otherwise use the traditional merged approach
               tasks = config.tasks;
-              globalVariables = config.variables;
-              globalPrompts = config.prompts;
+              variables = config.variables;
+              prompts = config.prompts;
               templateEnabled = config.enabled;
 
               if (!Array.isArray(tasks)) {
@@ -183,11 +183,11 @@ program
         }
       }
 
-      // If no tasks loaded but we have globalPrompts or globalVariables, that's okay (extending template)
+      // If no tasks loaded but we have prompts or variables, that's okay (extending template)
       // Otherwise show error
       const hasGlobalData =
-        (globalPrompts != null && globalPrompts.length > 0) ||
-        (globalVariables != null && globalVariables.length > 0);
+        (prompts != null && prompts.length > 0) ||
+        (variables != null && variables.length > 0);
 
       if (tasks.length === 0 && !hasGlobalData) {
         log('❌ No tasks defined', 'error');
@@ -257,8 +257,8 @@ program
         dryRun: options.dryRun,
         force: options.force,
         tasksFilePath,
-        globalVariables,
-        globalPrompts,
+        variables,
+        prompts,
         templateEnabled,
       });
     } catch (error) {

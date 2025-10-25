@@ -39,8 +39,8 @@ export async function runTasks(
     dryRun: boolean;
     force: boolean;
     tasksFilePath: string | undefined;
-    globalVariables?: VariableDefinition[];
-    globalPrompts?: PromptDefinition[];
+    variables?: VariableDefinition[];
+    prompts?: PromptDefinition[];
     templateEnabled?: EnabledValue;
   },
 ): Promise<void> {
@@ -110,8 +110,8 @@ export async function runTasks(
   // ============================================================================
 
   // Collect all variables from top-level config
-  const globalVariables: VariableDefinition[] = options.globalVariables ?? [];
-  const allVariables: VariableDefinition[] = [...globalVariables];
+  const variables: VariableDefinition[] = options.variables ?? [];
+  const allVariables: VariableDefinition[] = [...variables];
 
   // Validate variables
   if (allVariables.length > 0) {
@@ -145,7 +145,7 @@ export async function runTasks(
   // ============================================================================
 
   // Collect top-level prompts (always global)
-  const topLevelPrompts: PromptDefinition[] = options.globalPrompts ?? [];
+  const topLevelPrompts: PromptDefinition[] = options.prompts ?? [];
   const allPrompts: PromptDefinition[] = [...topLevelPrompts];
 
   // Validate prompts

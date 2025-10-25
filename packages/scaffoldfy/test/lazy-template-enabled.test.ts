@@ -321,7 +321,7 @@ describe('lazy template enabled evaluation', () => {
         dryRun: true,
         force: false,
         tasksFilePath: undefined,
-        globalVariables: variables,
+        variables,
       });
 
       // No assertion needed - if it runs without error, it works

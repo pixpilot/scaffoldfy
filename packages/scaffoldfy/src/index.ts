@@ -86,8 +86,8 @@ async function main(customTasks?: TaskDefinition[]) {
  * @param options.dryRun - Preview changes without applying them
  * @param options.force - Force execution even if checks fail
  * @param options.tasksFilePath - Path to the tasks file
- * @param options.globalVariables - Optional top-level global variables
- * @param options.globalPrompts - Optional top-level global prompts
+ * @param options.variables - Optional top-level global variables
+ * @param options.prompts - Optional top-level global prompts
  * @param options.templateEnabled - Optional template-level enabled condition
  */
 export async function runWithTasks(
@@ -96,8 +96,8 @@ export async function runWithTasks(
     dryRun?: boolean | undefined;
     force?: boolean | undefined;
     tasksFilePath?: string | undefined;
-    globalVariables?: VariableDefinition[] | undefined;
-    globalPrompts?: PromptDefinition[] | undefined;
+    variables?: VariableDefinition[] | undefined;
+    prompts?: PromptDefinition[] | undefined;
     templateEnabled?: import('./types.js').EnabledValue | undefined;
   },
 ): Promise<void> {
@@ -106,11 +106,11 @@ export async function runWithTasks(
       dryRun: options?.dryRun ?? dryRun,
       force: options?.force ?? force,
       tasksFilePath: options?.tasksFilePath ?? undefined,
-      ...(options?.globalVariables != null && {
-        globalVariables: options.globalVariables,
+      ...(options?.variables != null && {
+        variables: options.variables,
       }),
-      ...(options?.globalPrompts != null && {
-        globalPrompts: options.globalPrompts,
+      ...(options?.prompts != null && {
+        prompts: options.prompts,
       }),
       ...(options?.templateEnabled != null && {
         templateEnabled: options.templateEnabled,

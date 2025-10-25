@@ -38,6 +38,18 @@ npx @pixpilot/scaffoldfy --config ./my-tasks.ts
 
 ### CLI
 
+#### Installation (Optional)
+
+**Optional:** You can use npx (above) without installing anything. Or install for repeated use:
+
+```bash
+# Install globally for CLI usage
+npm install -g @pixpilot/scaffoldfy
+
+# Or install locally in your project
+npm install --save-dev @pixpilot/scaffoldfy
+```
+
 ```bash
 # Basic usage with default task file (./template-tasks.json)
 scaffoldfy
@@ -299,38 +311,6 @@ await runWithTasks(tasks, {
 
 ---
 
-## CLI Commands
-
-### Quick npx Commands (No Installation)
-
-```bash
-# Run with default config (fastest way!)
-npx @pixpilot/scaffoldfy
-
-# With custom config file
-npx @pixpilot/scaffoldfy --config ./my-tasks.json
-
-# Dry run (preview changes)
-npx @pixpilot/scaffoldfy --dry-run
-```
-
-### Installation (Optional)
-
-**Optional:** You can use npx (above) without installing anything. Or install for repeated use:
-
-```bash
-# Install globally for CLI usage
-npm install -g @pixpilot/scaffoldfy
-
-# Or install locally in your project
-npm install --save-dev @pixpilot/scaffoldfy
-
-# Or use with pnpm
-pnpm add -D @pixpilot/scaffoldfy
-```
-
-### Basic Commands
-
 ```bash
 # Run with default config
 scaffoldfy
@@ -381,8 +361,8 @@ await runWithTasks(tasks, {
   dryRun: true, // Preview mode
   force: false, // Don't force execution
   tasksFilePath: './my-tasks.json',
-  globalVariables: [], // Optional global variables
-  globalPrompts: [], // Optional global prompts
+  variables: [], // Optional global variables
+  prompts: [], // Optional global prompts
 });
 ```
 
