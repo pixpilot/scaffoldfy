@@ -4,7 +4,7 @@
 
 import type { DefaultValue, InitConfig } from '../types.js';
 import { execSync } from 'node:child_process';
-import { interpolateTemplate, log } from '../utils.js';
+import { debug, interpolateTemplate, log } from '../utils.js';
 
 /**
  * Resolve a default value that may be static or executable
@@ -134,11 +134,10 @@ export async function resolveDefaultValue<T = string | number | boolean>(
 
       return result as T;
     } catch (error) {
-      log(
+      debug(
         `Prompt "${promptId}": failed to execute default value command: ${
           error instanceof Error ? error.message : 'Unknown error'
         }`,
-        'warn',
       );
       return undefined;
     }
