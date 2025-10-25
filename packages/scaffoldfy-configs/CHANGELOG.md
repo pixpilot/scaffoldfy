@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy-configs
 
+## 0.4.2
+
+### Patch Changes
+
+- correct script name in package.json updates
+
 ## 0.4.1
 
 ### Patch Changes
