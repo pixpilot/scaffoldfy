@@ -33,7 +33,7 @@
       "config": {
         "file": "package.json",
         "updates": {
-          "scripts.generate-packages": "node scripts/generate-packages-section.js"
+          "scripts.generate-packages-section": "node scripts/generate-packages-section.js"
         }
       }
     },
@@ -50,7 +50,7 @@
       "id": "pixpilot-generate-packages-section-create-new-pre-commit",
       "name": "Create new pre-commit hook",
       "description": "Creates a new .husky/pre-commit file with generate-packages command",
-      "type": "create",
+      "type": "write",
       "config": {
         "file": ".husky/pre-commit",
         "template": "{{pixpilot_generate_packages_section_pre_commit_content}}"
