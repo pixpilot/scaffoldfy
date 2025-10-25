@@ -1,7 +1,8 @@
-{{#if author}}Released into the public domain by {{author}}{{#if authorEmail}} <{{authorEmail}}>{{/if}}{{#if currentYear}} in {{currentYear}}{{/if}}.
+{{#if orgName}}Released into the public domain by {{orgNameCapital}}{{#if currentYear}} in {{currentYear}}{{/if}}.
 
-{{/if}}
-This is free and unencumbered software released into the public domain.
+{{else}}{{#if author}}Released into the public domain by {{author}}{{#if authorEmail}} <{{authorEmail}}>{{/if}}{{#if currentYear}} in {{currentYear}}{{/if}}.
+
+{{/if}}{{/if}}This is free and unencumbered software released into the public domain.
 
 Anyone is free to copy, modify, publish, use, compile, sell, or
 distribute this software, either in source code form or as a compiled

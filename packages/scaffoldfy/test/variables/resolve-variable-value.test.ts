@@ -91,4 +91,116 @@ describe('resolveVariableValue', () => {
     const result = await resolveVariableValue({ key: 'value' }, 'testVar');
     expect(result).toEqual({ key: 'value' });
   });
+
+  it('should NOT interpolate template variables in direct string values', async () => {
+    const result = await resolveVariableValue('Hello {{name}}!', 'testVar', {
+      name: 'World',
+    });
+    expect(result).toBe('Hello {{name}}!'); // Should NOT be interpolated
+  });
+
+  it('should not interpolate when context is missing for simple strings', async () => {
+    const result = await resolveVariableValue('Hello {{name}}!', 'testVar');
+    expect(result).toBe('Hello {{name}}!');
+  });
+});
+
+describe('interpolate type variable values', () => {
+  it('should resolve interpolate type with single variable', async () => {
+    const result = await resolveVariableValue(
+      { type: 'interpolate', value: 'Hello {{name}}!' },
+      'testVar',
+      { name: 'World' },
+    );
+    expect(result).toBe('Hello World!');
+  });
+
+  it('should resolve interpolate type with multiple variables', async () => {
+    const result = await resolveVariableValue(
+      { type: 'interpolate', value: '{{firstName}} {{lastName}}' },
+      'fullName',
+      { firstName: 'John', lastName: 'Doe' },
+    );
+    expect(result).toBe('John Doe');
+  });
+
+  it('should resolve interpolate type referencing previously resolved variable', async () => {
+    const result = await resolveVariableValue(
+      { type: 'interpolate', value: '{{projectName}}-{{env}}' },
+      'appName',
+      { projectName: 'my-app', env: 'production' },
+    );
+    expect(result).toBe('my-app-production');
+  });
+
+  it('should resolve interpolate type referencing previously resolved prompt', async () => {
+    const result = await resolveVariableValue(
+      { type: 'interpolate', value: 'https://github.com/{{repoOwner}}/{{repoName}}' },
+      'repoUrl',
+      { repoOwner: 'pixpilot', repoName: 'scaffoldfy' },
+    );
+    expect(result).toBe('https://github.com/pixpilot/scaffoldfy');
+  });
+
+  it('should resolve interpolate type with complex interpolation', async () => {
+    const result = await resolveVariableValue(
+      { type: 'interpolate', value: '@{{scope}}/{{packageName}}' },
+      'fullPackageName',
+      { scope: 'myorg', packageName: 'my-package' },
+    );
+    expect(result).toBe('@myorg/my-package');
+  });
+
+  it('should return original template when context is missing', async () => {
+    const result = await resolveVariableValue(
+      { type: 'interpolate', value: 'Hello {{name}}!' },
+      'testVar',
+    );
+    expect(result).toBe('Hello {{name}}!');
+  });
+
+  it('should return undefined for interpolate type with non-string value', async () => {
+    const result = await resolveVariableValue(
+      { type: 'interpolate', value: 123 } as never,
+      'testVar',
+    );
+    expect(result).toBeUndefined();
+  });
+
+  it('should handle missing variables gracefully', async () => {
+    const result = await resolveVariableValue(
+      { type: 'interpolate', value: 'Hello {{name}}!' },
+      'testVar',
+      { otherVar: 'value' },
+    );
+    // interpolateTemplate should handle missing variables
+    expect(result).toBeDefined();
+  });
+
+  it('should resolve nested template references', async () => {
+    const result = await resolveVariableValue(
+      { type: 'interpolate', value: '{{author}}-{{email}}' },
+      'authorInfo',
+      { author: 'Jane', email: 'jane@example.com' },
+    );
+    expect(result).toBe('Jane-jane@example.com');
+  });
+
+  it('should work with numbers in template context', async () => {
+    const result = await resolveVariableValue(
+      { type: 'interpolate', value: 'Port: {{port}}' },
+      'portInfo',
+      { port: 3000 },
+    );
+    expect(result).toBe('Port: 3000');
+  });
+
+  it('should work with boolean values in template context', async () => {
+    const result = await resolveVariableValue(
+      { type: 'interpolate', value: 'Enabled: {{enabled}}' },
+      'status',
+      { enabled: true },
+    );
+    expect(result).toBe('Enabled: true');
+  });
 });

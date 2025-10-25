@@ -326,11 +326,11 @@
               "properties": {
                 "type": {
                   "type": "string",
-                  "enum": ["static", "exec"],
-                  "description": "Type of default value. 'static' for explicit static values, 'exec' for command execution."
+                  "enum": ["static", "exec", "interpolate"],
+                  "description": "Type of default value. 'static' for explicit static values, 'exec' for command execution, 'interpolate' for interpolate strings with {{variable}} placeholders."
                 },
                 "value": {
-                  "description": "For 'static' type: the static value. For 'exec' type: the shell command to execute. Commands can be any shell command including git, npm, node, etc. The command output will be trimmed and auto-parsed as JSON, number, or boolean when applicable."
+                  "description": "For 'static' type: the static value. For 'exec' type: the shell command to execute. For 'interpolate' type: interpolate string with {{variable}} placeholders. Commands can be any shell command including git, npm, node, etc. The command output will be trimmed and auto-parsed as JSON, number, or boolean when applicable."
                 }
               }
             },
@@ -349,10 +349,10 @@
                   "description": "JavaScript expression to evaluate. Can reference variables, prompts, and config values."
                 },
                 "ifTrue": {
-                  "description": "Value to use if condition evaluates to true. Can be a static value or a Write string with {{variables}}."
+                  "description": "Value to use if condition evaluates to true. Can be a static value or an object with type property for interpolation (e.g., { type: 'interpolate', value: '{{variable}}' })."
                 },
                 "ifFalse": {
-                  "description": "Value to use if condition evaluates to false. Can be a static value or a Write string with {{variables}}."
+                  "description": "Value to use if condition evaluates to false. Can be a static value or an object with type property for interpolation (e.g., { type: 'interpolate', value: '{{variable}}' })."
                 }
               }
             }
@@ -413,28 +413,28 @@
               "properties": {
                 "type": {
                   "type": "string",
-                  "enum": ["static", "exec", "conditional"],
-                  "description": "Type of value. 'static' for explicit static values, 'exec' for command execution, 'conditional' for condition-based values."
+                  "enum": ["static", "exec", "conditional", "interpolate"],
+                  "description": "Type of value. 'static' for explicit static values, 'exec' for command execution, 'conditional' for condition-based values, 'interpolate' for interpolate strings with {{variable}} placeholders."
                 },
                 "value": {
-                  "description": "For 'static' type: the static value. For 'exec' type: the shell command to execute. Commands output will be trimmed and auto-parsed as JSON, number, or boolean when applicable. Not used for 'conditional' type."
+                  "description": "For 'static' type: the static value. For 'exec' type: the shell command to execute. For 'interpolate' type: interpolate string with {{variable}} placeholders. Commands output will be trimmed and auto-parsed as JSON, number, or boolean when applicable. Not used for 'conditional' type."
                 },
                 "condition": {
                   "type": "string",
                   "description": "For 'conditional' type: JavaScript expression to evaluate. Can reference other variables, prompts, and config values."
                 },
                 "ifTrue": {
-                  "description": "For 'conditional' type: Value to use if condition evaluates to true. Can be a static value or a template string with {{variables}}."
+                  "description": "For 'conditional' type: Value to use if condition evaluates to true. Can be a static value or an object with type property for interpolation (e.g., { type: 'interpolate', value: '{{variable}}' })."
                 },
                 "ifFalse": {
-                  "description": "For 'conditional' type: Value to use if condition evaluates to false. Can be a static value or a template string with {{variables}}."
+                  "description": "For 'conditional' type: Value to use if condition evaluates to false. Can be a static value or an object with type property for interpolation (e.g., { type: 'interpolate', value: '{{variable}}' })."
                 }
               },
               "allOf": [
                 {
                   "if": {
                     "properties": {
-                      "type": { "enum": ["static", "exec"] }
+                      "type": { "enum": ["static", "exec", "interpolate"] }
                     }
                   },
                   "then": {

@@ -460,29 +460,76 @@ This is equivalent to:
 6. **Be mindful of security**: Avoid executing untrusted input
 7. **Use timeouts wisely**: Commands timeout after 10 seconds; keep them fast
 
-## Template Interpolation in Default Values
+## Interpolate Type Default Values
 
-You can use `{{variable}}` syntax in prompt default values. These will be dynamically interpolated using the current configuration and previously collected prompt/variable values.
+You can use the `type: "interpolate"` format to explicitly mark a default value as a template string that should be interpolated with previously resolved prompts and variables. This is useful when you want to compose default values from other prompt responses or variables.
 
-### Example
+### How It Works
+
+Interpolate Type Default Values use the `{{variable}}` syntax to reference previously resolved prompts and variables. The interpolate is evaluated **sequentially**, meaning it can only reference prompts/variables that were resolved before the current prompt.
+
+### Example: Basic Interpolation
 
 ```json
 {
-  "id": "securityEmail",
-  "type": "input",
-  "message": "Security contact email",
-  "default": "{{authorEmail}}",
-  "required": true
+  "prompts": [
+    {
+      "id": "authorEmail",
+      "type": "input",
+      "message": "Author email",
+      "required": true
+    },
+    {
+      "id": "securityEmail",
+      "type": "input",
+      "message": "Security contact email",
+      "default": {
+        "type": "interpolate",
+        "value": "{{authorEmail}}"
+      },
+      "required": true
+    }
+  ]
 }
 ```
 
-If `authorEmail` is available from another prompt or variable, it will be used as the default value.
+If `authorEmail` is available from another prompt or variable, it will be used as the default value for `securityEmail`.
+
+### Example: Complex Interpolation
+
+```json
+{
+  "prompts": [
+    {
+      "id": "repoOwner",
+      "type": "input",
+      "message": "Repository owner",
+      "required": true
+    },
+    {
+      "id": "repoName",
+      "type": "input",
+      "message": "Repository name",
+      "required": true
+    },
+    {
+      "id": "repoUrl",
+      "type": "input",
+      "message": "Repository URL",
+      "default": {
+        "type": "interpolate",
+        "value": "https://github.com/{{repoOwner}}/{{repoName}}"
+      }
+    }
+  ]
+}
+```
 
 ## Conditional Default Values
 
 You can provide conditional defaults using the `type: "conditional"` format. This allows you to set a default value based on a runtime condition (JavaScript expression).
 
-### Example
+### Example: Static Values
 
 ```json
 {
@@ -493,13 +540,216 @@ You can provide conditional defaults using the `type: "conditional"` format. Thi
     "type": "conditional",
     "condition": "orgName === 'pixpilot'",
     "ifTrue": "security@pixpilot.com",
-    "ifFalse": "{{authorEmail}}"
+    "ifFalse": "admin@example.com"
   },
   "required": true
 }
 ```
 
-This will use `security@pixpilot.com` if `orgName` is `pixpilot`, otherwise it will use the value of `authorEmail`.
+This will use `security@pixpilot.com` if `orgName` is `pixpilot`, otherwise it will use `admin@example.com`.
+
+### Example: Conditional with Interpolation
+
+If you need to use interpolation in `ifTrue` or `ifFalse`, you must use an explicit interpolate object:
+
+```json
+{
+  "id": "securityEmail",
+  "type": "input",
+  "message": "Security contact email",
+  "default": {
+    "type": "conditional",
+    "condition": "orgName === 'pixpilot'",
+    "ifTrue": "security@pixpilot.com",
+    "ifFalse": {
+      "type": "interpolate",
+      "value": "{{authorEmail}}"
+    }
+  },
+  "required": true
+}
+```
+
+This will use `security@pixpilot.com` if `orgName` is `pixpilot`, otherwise it will interpolate and use the value of `authorEmail`.
+
+### Example: Basic Template
+
+```json
+{
+  "prompts": [
+    {
+      "id": "projectName",
+      "type": "input",
+      "message": "Project name",
+      "default": "my-app"
+    },
+    {
+      "id": "apiName",
+      "type": "input",
+      "message": "API service name",
+      "default": {
+        "type": "interpolate",
+        "value": "{{projectName}}-api"
+      }
+    }
+  ]
+}
+```
+
+If the user accepts the default for `projectName` ("my-app"), the default for `apiName` will be "my-app-api".
+
+### Example: Composing from Multiple Values
+
+```json
+{
+  "prompts": [
+    {
+      "id": "repoOwner",
+      "type": "input",
+      "message": "Repository owner",
+      "default": "myorg"
+    },
+    {
+      "id": "repoName",
+      "type": "input",
+      "message": "Repository name",
+      "default": "my-repo"
+    },
+    {
+      "id": "repoUrl",
+      "type": "input",
+      "message": "Full repository URL",
+      "default": {
+        "type": "interpolate",
+        "value": "https://github.com/{{repoOwner}}/{{repoName}}"
+      }
+    }
+  ]
+}
+```
+
+### Example: With Variables
+
+Template defaults can also reference variables:
+
+```json
+{
+  "variables": [
+    {
+      "id": "orgName",
+      "value": "pixpilot"
+    }
+  ],
+  "prompts": [
+    {
+      "id": "packageName",
+      "type": "input",
+      "message": "Package name",
+      "default": "my-package"
+    },
+    {
+      "id": "fullPackageName",
+      "type": "input",
+      "message": "Full package name (scoped)",
+      "default": {
+        "type": "interpolate",
+        "value": "@{{orgName}}/{{packageName}}"
+      }
+    }
+  ]
+}
+```
+
+### Interpolate vs Simple String with {{}}
+
+Both of these work:
+
+```json
+// Implicit interpolate (simple string)
+{
+  "id": "apiName",
+  "type": "input",
+  "message": "API name",
+  "default": "{{projectName}}-api"
+}
+
+// Explicit interpolate type
+{
+  "id": "apiName",
+  "type": "input",
+  "message": "API name",
+  "default": {
+    "type": "interpolate",
+    "value": "{{projectName}}-api"
+  }
+}
+```
+
+**When to use explicit `type: "interpolate"`:**
+
+- For clarity and documentation purposes
+- When you want to be explicit about the interpolation behavior
+- When working in complex configurations where the intent should be clear
+
+**When to use simple string:**
+
+- For quick, simple cases
+- When brevity is preferred
+
+### Sequential Resolution
+
+Remember that prompts and variables are resolved sequentially, so an interpolate can only reference values that were resolved before it:
+
+✅ **This works:**
+
+```json
+{
+  "prompts": [
+    {
+      "id": "firstName",
+      "type": "input",
+      "message": "First name"
+    },
+    {
+      "id": "lastName",
+      "type": "input",
+      "message": "Last name"
+    },
+    {
+      "id": "fullName",
+      "type": "input",
+      "message": "Full name",
+      "default": {
+        "type": "interpolate",
+        "value": "{{firstName}} {{lastName}}"
+      }
+    }
+  ]
+}
+```
+
+❌ **This won't work:**
+
+```json
+{
+  "prompts": [
+    {
+      "id": "fullName",
+      "type": "input",
+      "message": "Full name",
+      "default": {
+        "type": "interpolate",
+        "value": "{{firstName}} {{lastName}}"
+      }
+    },
+    {
+      "id": "firstName",
+      "type": "input",
+      "message": "First name"
+    }
+  ]
+}
+```
 
 ### Windows Compatibility
 

@@ -120,8 +120,8 @@ export {
  * Interpolate template variables in a string
  */
 export function interpolateTemplate(template: string, config: InitConfig): string {
-  return template.replace(/\{\{(?<key>\w+)\}\}/gu, (match, key: string) => {
-    const value = (config as unknown as Record<string, unknown>)[key];
+  return template.replace(/\{\{(?<key>[\w.]+)\}\}/gu, (match, key: string) => {
+    const value = getNestedProperty(config as unknown as Record<string, unknown>, key);
     return value?.toString() ?? '';
   });
 }
@@ -155,6 +155,27 @@ export function setNestedProperty(
   if (lastKey != null && lastKey !== '') {
     current[lastKey] = value;
   }
+}
+
+/**
+ * Get a nested property from an object using dot notation
+ */
+export function getNestedProperty(
+  obj: Record<string, unknown>,
+  propertyPath: string,
+): unknown {
+  const keys = propertyPath.split('.');
+  let current: unknown = obj;
+
+  for (const key of keys) {
+    if (key !== '' && typeof current === 'object' && current !== null) {
+      current = (current as Record<string, unknown>)[key];
+    } else {
+      return undefined;
+    }
+  }
+
+  return current;
 }
 
 /**

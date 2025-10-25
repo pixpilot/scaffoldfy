@@ -23,21 +23,11 @@ export async function resolveDefaultValue<T = string | number | boolean>(
   }
 
   // If it's a simple value (not an object), return it as-is
-  // But if it's a string and we have context, interpolate template variables
   if (
     typeof defaultValue !== 'object' ||
     defaultValue === null ||
     Array.isArray(defaultValue)
   ) {
-    // If it's a string with template variables and we have context, interpolate
-    if (
-      typeof defaultValue === 'string' &&
-      context &&
-      /\{\{\w+\}\}/u.test(defaultValue)
-    ) {
-      const resolved = interpolateTemplate(defaultValue, context);
-      return resolved as T;
-    }
     return defaultValue as T;
   }
 
@@ -70,11 +60,15 @@ export async function resolveDefaultValue<T = string | number | boolean>(
       const conditionResult = evaluateCondition(config.condition, context);
 
       // Get the appropriate value based on condition
-      let selectedValue = conditionResult ? config.ifTrue : config.ifFalse;
+      const selectedValue = conditionResult ? config.ifTrue : config.ifFalse;
 
-      // If the selected value is a string with template variables, interpolate it
-      if (typeof selectedValue === 'string' && /\{\{\w+\}\}/u.test(selectedValue)) {
-        selectedValue = interpolateTemplate(selectedValue, context);
+      // If the selected value is an object with type, recursively resolve it
+      if (typeof selectedValue === 'object' && selectedValue !== null) {
+        return await resolveDefaultValue(
+          selectedValue as DefaultValue<T>,
+          promptId,
+          context,
+        );
       }
 
       return selectedValue as T;
@@ -143,10 +137,42 @@ export async function resolveDefaultValue<T = string | number | boolean>(
     }
   } else if (config.type === 'static') {
     return config.value as T;
+  } else if (config.type === 'interpolate') {
+    // Handle interpolate type - interpolate {{variable}} placeholders
+    const interpolateValue = config.value;
+    if (typeof interpolateValue !== 'string') {
+      log(
+        `Prompt "${promptId}": interpolate default value must be a string with {{variable}} placeholders`,
+        'error',
+      );
+      return undefined;
+    }
+
+    if (!context) {
+      log(
+        `Prompt "${promptId}": interpolate default value requires context but none provided`,
+        'warn',
+      );
+      return interpolateValue as T;
+    }
+
+    // Interpolate the interpolate string with context
+    try {
+      const resolved = interpolateTemplate(interpolateValue, context);
+      return resolved as T;
+    } catch (error) {
+      log(
+        `Prompt "${promptId}": failed to interpolate interpolate default value: ${
+          error instanceof Error ? error.message : 'Unknown error'
+        }`,
+        'warn',
+      );
+      return interpolateValue as T;
+    }
   } else if (config.type !== undefined) {
     // Unknown type specified
     log(
-      `Prompt "${promptId}": unknown default value type "${config.type}". Expected "static", "exec", or "conditional".`,
+      `Prompt "${promptId}": unknown default value type "${config.type}". Expected "static", "exec", "conditional", or "interpolate".`,
       'error',
     );
     return undefined;

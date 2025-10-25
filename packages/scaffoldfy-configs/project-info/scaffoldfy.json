@@ -9,6 +9,20 @@
         "type": "exec",
         "value": "node -e \"process.stdout.write(String(new Date().getFullYear()))\""
       }
+    },
+    {
+      "id": "repoOwnerVar",
+      "value": {
+        "type": "exec",
+        "value": "git remote get-url origin | node -e \"const url=require('fs').readFileSync(0,'utf-8'); console.log(url.match(/[:/]([^/]+)\\/[^/]+(?:\\.git)?$/)[1])\""
+      }
+    },
+    {
+      "id": "orgNameVar",
+      "value": {
+        "type": "interpolate",
+        "value": "{{repoOwnerVar}}"
+      }
     }
   ],
   "prompts": [
@@ -27,8 +41,8 @@
       "type": "input",
       "message": "Repository owner (GitHub username or organization)",
       "default": {
-        "type": "exec",
-        "value": "git remote get-url origin | node -e \"const url=require('fs').readFileSync(0,'utf-8'); console.log(url.match(/[:/]([^/]+)\\/[^/]+(?:\\.git)?$/)[1])\""
+        "type": "interpolate",
+        "value": "{{repoOwnerVar}}"
       },
       "required": true
     },
@@ -37,8 +51,8 @@
       "type": "input",
       "message": "Organization name for packages (used in package scopes)",
       "default": {
-        "type": "exec",
-        "value": "git remote get-url origin | node -e \"const url=require('fs').readFileSync(0,'utf-8'); console.log(url.match(/[:/]([^/]+)\\/[^/]+(?:\\.git)?$/)[1])\""
+        "type": "interpolate",
+        "value": "{{orgNameVar}}"
       },
       "required": false
     },

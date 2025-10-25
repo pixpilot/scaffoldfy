@@ -48,8 +48,9 @@ export type PromptType = 'input' | 'select' | 'confirm' | 'password' | 'number';
  * - 'static': Static value provided directly
  * - 'exec': Execute a command to get the value dynamically
  * - 'conditional': Choose value based on a condition
+ * - 'interpolate': Reference string with {{variable}} placeholders that will be interpolated with previously resolved prompts/variables
  */
-export type DefaultValueType = 'static' | 'exec' | 'conditional';
+export type DefaultValueType = 'static' | 'exec' | 'conditional' | 'interpolate';
 
 /**
  * Conditional default value configuration
@@ -58,8 +59,8 @@ export type DefaultValueType = 'static' | 'exec' | 'conditional';
 export interface ConditionalDefaultConfig<T = string | number | boolean> {
   type: 'conditional';
   condition: string; // JavaScript expression to evaluate
-  ifTrue: T | string; // Value if condition is true (can be a template string with {{variables}})
-  ifFalse: T | string; // Value if condition is false (can be a template string with {{variables}})
+  ifTrue: T | DefaultValueConfig<T>; // Value if condition is true (for interpolation, use { type: 'interpolate', value: '{{variable}}' })
+  ifFalse: T | DefaultValueConfig<T>; // Value if condition is false (for interpolation, use { type: 'interpolate', value: '{{variable}}' })
 }
 
 /**
@@ -67,7 +68,7 @@ export interface ConditionalDefaultConfig<T = string | number | boolean> {
  */
 export interface DefaultValueConfig<T = string | number | boolean> {
   type: DefaultValueType;
-  value: T | string; // For 'static' type: the static value; For 'exec' type: the command to execute
+  value: T | string; // For 'static' type: the static value; For 'exec' type: the command to execute; For 'interpolate' type: string with {{variable}} placeholders
 }
 
 /**
@@ -76,6 +77,7 @@ export interface DefaultValueConfig<T = string | number | boolean> {
  * - For executable defaults, use { type: 'exec', value: 'command' }
  * - For explicit static values, use { type: 'static', value: yourValue }
  * - For conditional defaults, use { type: 'conditional', condition: 'expression', ifTrue: value, ifFalse: value }
+ * - For interpolate strings, use { type: 'interpolate', value: '{{variable}}' } (will be interpolated with previously resolved prompts/variables)
  */
 export type DefaultValue<T = string | number | boolean> =
   | T

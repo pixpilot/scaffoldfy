@@ -4,7 +4,7 @@
 
 import type { DefaultValue, InitConfig } from '../types.js';
 import { execSync } from 'node:child_process';
-import { log } from '../utils.js';
+import { interpolateTemplate, log } from '../utils.js';
 
 /**
  * Resolve a variable value that may be static, executable, or conditional
@@ -56,15 +56,19 @@ export async function resolveVariableValue<T = string | number | boolean>(
 
     try {
       // Evaluate the condition
-      const { evaluateCondition, interpolateTemplate } = await import('../utils.js');
+      const { evaluateCondition } = await import('../utils.js');
       const conditionResult = evaluateCondition(config.condition, context);
 
       // Get the appropriate value based on condition
-      let selectedValue = conditionResult ? config.ifTrue : config.ifFalse;
+      const selectedValue = conditionResult ? config.ifTrue : config.ifFalse;
 
-      // If the selected value is a string with template variables, interpolate it
-      if (typeof selectedValue === 'string' && /\{\{\w+\}\}/u.test(selectedValue)) {
-        selectedValue = interpolateTemplate(selectedValue, context);
+      // If the selected value is an object with type, recursively resolve it
+      if (typeof selectedValue === 'object' && selectedValue !== null) {
+        return await resolveVariableValue(
+          selectedValue as DefaultValue<T>,
+          variableId,
+          context,
+        );
       }
 
       return selectedValue as T;
@@ -132,6 +136,45 @@ export async function resolveVariableValue<T = string | number | boolean>(
     }
   } else if (config.type === 'static') {
     return config.value as T;
+  } else if (config.type === 'interpolate') {
+    // Handle interpolate type - interpolate {{variable}} placeholders
+    const interpolateValue = config.value;
+    if (typeof interpolateValue !== 'string') {
+      log(
+        `Variable "${variableId}": interpolate value must be a string with {{variable}} placeholders`,
+        'error',
+      );
+      return undefined;
+    }
+
+    if (!context) {
+      log(
+        `Variable "${variableId}": interpolate value requires context but none provided`,
+        'warn',
+      );
+      return interpolateValue as T;
+    }
+
+    // Interpolate the interpolate string with context
+    try {
+      const resolved = interpolateTemplate(interpolateValue, context);
+      return resolved as T;
+    } catch (error) {
+      log(
+        `Variable "${variableId}": failed to interpolate interpolate value: ${
+          error instanceof Error ? error.message : 'Unknown error'
+        }`,
+        'warn',
+      );
+      return interpolateValue as T;
+    }
+  } else if (config.type !== undefined) {
+    // Unknown type specified
+    log(
+      `Variable "${variableId}": unknown value type "${config.type}". Expected "static", "exec", "conditional", or "interpolate".`,
+      'error',
+    );
+    return undefined;
   }
 
   // If type is not specified, treat the whole object as the static value

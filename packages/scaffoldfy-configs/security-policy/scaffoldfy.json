@@ -24,7 +24,10 @@
         "type": "conditional",
         "condition": "orgName === 'pixpilot'",
         "ifTrue": "security@pixpilot.com",
-        "ifFalse": "{{authorEmail}}"
+        "ifFalse": {
+          "type": "interpolate",
+          "value": "{{authorEmail}}"
+        }
       },
       "required": true
     }

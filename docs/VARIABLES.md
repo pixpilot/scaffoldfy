@@ -156,12 +156,12 @@ Conditional variables evaluate an expression and return different values based o
 
 #### Conditional Variable Properties
 
-| Property    | Type   | Required | Description                                  |
-| ----------- | ------ | -------- | -------------------------------------------- |
-| `type`      | string | Yes      | Must be `"conditional"`                      |
-| `condition` | string | Yes      | JavaScript expression to evaluate            |
-| `ifTrue`    | any    | Yes      | Value to use if condition evaluates to true  |
-| `ifFalse`   | any    | Yes      | Value to use if condition evaluates to false |
+| Property    | Type   | Required | Description                                                                                                      |
+| ----------- | ------ | -------- | ---------------------------------------------------------------------------------------------------------------- |
+| `type`      | string | Yes      | Must be `"conditional"`                                                                                          |
+| `condition` | string | Yes      | JavaScript expression to evaluate                                                                                |
+| `ifTrue`    | any    | Yes      | Value to use if condition evaluates to true. For interpolation, use `{ type: 'interpolate', value: '{{var}}' }`  |
+| `ifFalse`   | any    | Yes      | Value to use if condition evaluates to false. For interpolation, use `{ type: 'interpolate', value: '{{var}}' }` |
 
 #### Condition Expressions
 
@@ -202,10 +202,24 @@ Examples:
         "ifTrue": true,
         "ifFalse": false
       }
+    },
+    {
+      "id": "securityEmail",
+      "value": {
+        "type": "conditional",
+        "condition": "orgName === 'myorg'",
+        "ifTrue": "security@myorg.com",
+        "ifFalse": {
+          "type": "interpolate",
+          "value": "{{defaultEmail}}"
+        }
+      }
     }
   ]
 }
 ```
+
+In the last example, if `orgName` is `"myorg"`, it uses a static email. Otherwise, it interpolates the value from the `defaultEmail` variable.
 
 #### Evaluation Timing
 
@@ -246,6 +260,174 @@ Where `pixpilot-info` template defines:
         "ifTrue": true,
         "ifFalse": false
       }
+    }
+  ]
+}
+```
+
+### Interpolate Type Values
+
+Interpolate Type Values allow you to explicitly mark a variable value as a template string that should be interpolated with previously resolved variables and prompts. This is useful when you want to compose variable values from other variables or prompts.
+
+#### Basic Template Example
+
+```json
+{
+  "variables": [
+    {
+      "id": "projectName",
+      "value": "my-app"
+    },
+    {
+      "id": "apiServiceName",
+      "value": {
+        "type": "interpolate",
+        "value": "{{projectName}}-api"
+      }
+    }
+  ]
+}
+```
+
+The `apiServiceName` variable will have the value "my-app-api".
+
+#### Composing from Multiple Variables
+
+```json
+{
+  "variables": [
+    {
+      "id": "repoOwner",
+      "value": "myorg"
+    },
+    {
+      "id": "repoName",
+      "value": "my-repo"
+    },
+    {
+      "id": "repoUrl",
+      "value": {
+        "type": "interpolate",
+        "value": "https://github.com/{{repoOwner}}/{{repoName}}"
+      }
+    }
+  ]
+}
+```
+
+#### Referencing Prompts in Variable Templates
+
+Variables can reference values from prompts (since prompts are resolved before variables in the second pass):
+
+```json
+{
+  "prompts": [
+    {
+      "id": "organizationName",
+      "type": "input",
+      "message": "Organization name"
+    },
+    {
+      "id": "packageName",
+      "type": "input",
+      "message": "Package name"
+    }
+  ],
+  "variables": [
+    {
+      "id": "npmPackageName",
+      "value": {
+        "type": "interpolate",
+        "value": "@{{organizationName}}/{{packageName}}"
+      }
+    }
+  ]
+}
+```
+
+#### Using Interpolate in Variables
+
+To use interpolation in variable values, you must use the explicit `type: "interpolate"` format:
+
+```json
+{
+  "id": "fullName",
+  "value": {
+    "type": "interpolate",
+    "value": "{{firstName}} {{lastName}}"
+  }
+}
+```
+
+Direct strings with `{{}}` placeholders (without the explicit `type` property) will NOT be interpolated and will be treated as static strings.
+
+```json
+// This will NOT be interpolated - treated as a static string
+{
+  "id": "fullName",
+  "value": "{{firstName}} {{lastName}}" // Results in literal "{{firstName}} {{lastName}}"
+}
+```
+
+}
+}
+
+````
+
+**When to use explicit `type: "interpolate"`:**
+
+- For clarity and self-documentation
+- When you want to be explicit about the interpolation behavior
+- In complex configurations where intent should be clear
+
+**When to use simple string:**
+
+- For quick, simple cases
+- When brevity is preferred
+
+#### Sequential Resolution
+
+Variables are resolved sequentially, so an interpolate variable can only reference variables or prompts that were resolved before it:
+
+✅ **This works:**
+
+```json
+{
+  "variables": [
+    {
+      "id": "firstName",
+      "value": "John"
+    },
+    {
+      "id": "lastName",
+      "value": "Doe"
+    },
+    {
+      "id": "fullName",
+      "value": {
+        "type": "interpolate",
+        "value": "{{firstName}} {{lastName}}"
+      }
+    }
+  ]
+}
+````
+
+❌ **This won't work:**
+
+```json
+{
+  "variables": [
+    {
+      "id": "fullName",
+      "value": {
+        "type": "interpolate",
+        "value": "{{firstName}} {{lastName}}"
+      }
+    },
+    {
+      "id": "firstName",
+      "value": "John"
     }
   ]
 }

@@ -24,18 +24,18 @@ describe('executable default values', () => {
     expect(result).toBe('static-value');
   });
 
-  it('should interpolate template variables in string defaults', async () => {
+  it('should NOT interpolate template variables in direct string defaults', async () => {
     const defaultValue: DefaultValue<string> = 'Hello {{name}}!';
     const context = { name: 'Pixpilot' };
     const result = await resolveDefaultValue(defaultValue, 'test-prompt', context);
-    expect(result).toBe('Hello Pixpilot!');
+    expect(result).toBe('Hello {{name}}!'); // Should return as-is, not interpolated
   });
 
-  it('should interpolate multiple variables in string defaults', async () => {
+  it('should NOT interpolate multiple variables in direct string defaults', async () => {
     const defaultValue: DefaultValue<string> = 'Author: {{author}}, Email: {{email}}';
     const context = { author: 'Jane', email: 'jane@example.com' };
     const result = await resolveDefaultValue(defaultValue, 'test-prompt', context);
-    expect(result).toBe('Author: Jane, Email: jane@example.com');
+    expect(result).toBe('Author: {{author}}, Email: {{email}}'); // Should return as-is
   });
 
   it('should resolve conditional default (ifTrue)', async () => {
@@ -43,7 +43,10 @@ describe('executable default values', () => {
       type: 'conditional',
       condition: 'orgName === "pixpilot"',
       ifTrue: 'security@pixpilot.com',
-      ifFalse: '{{authorEmail}}',
+      ifFalse: {
+        type: 'interpolate',
+        value: '{{authorEmail}}',
+      },
     };
     const context = { orgName: 'pixpilot', authorEmail: 'jane@example.com' };
     const result = await resolveDefaultValue(defaultValue, 'securityEmail', context);
@@ -55,7 +58,10 @@ describe('executable default values', () => {
       type: 'conditional',
       condition: 'orgName === "pixpilot"',
       ifTrue: 'security@pixpilot.com',
-      ifFalse: '{{authorEmail}}',
+      ifFalse: {
+        type: 'interpolate',
+        value: '{{authorEmail}}',
+      },
     };
     const context = { orgName: 'otherorg', authorEmail: 'jane@example.com' };
     const result = await resolveDefaultValue(defaultValue, 'securityEmail', context);
@@ -186,5 +192,96 @@ describe('executable default values', () => {
     };
     const result = await resolveDefaultValue(defaultValue, 'test-prompt');
     expect(result).toBe('v20.10.0');
+  });
+});
+
+describe('interpolate type default values', () => {
+  it('should resolve interpolate type with single variable', async () => {
+    const defaultValue: DefaultValue<string> = {
+      type: 'interpolate',
+      value: 'Hello {{name}}!',
+    };
+    const context = { name: 'World' };
+    const result = await resolveDefaultValue(defaultValue, 'test-prompt', context);
+    expect(result).toBe('Hello World!');
+  });
+
+  it('should resolve interpolate type with multiple variables', async () => {
+    const defaultValue: DefaultValue<string> = {
+      type: 'interpolate',
+      value: '{{firstName}} {{lastName}}',
+    };
+    const context = { firstName: 'John', lastName: 'Doe' };
+    const result = await resolveDefaultValue(defaultValue, 'fullName', context);
+    expect(result).toBe('John Doe');
+  });
+
+  it('should resolve interpolate type referencing previously resolved prompt', async () => {
+    const defaultValue: DefaultValue<string> = {
+      type: 'interpolate',
+      value: 'https://github.com/{{repoOwner}}/{{repoName}}',
+    };
+    const context = { repoOwner: 'pixpilot', repoName: 'scaffoldfy' };
+    const result = await resolveDefaultValue(defaultValue, 'repoUrl', context);
+    expect(result).toBe('https://github.com/pixpilot/scaffoldfy');
+  });
+
+  it('should resolve interpolate type referencing previously resolved variable', async () => {
+    const defaultValue: DefaultValue<string> = {
+      type: 'interpolate',
+      value: '{{projectName}}-{{env}}',
+    };
+    const context = { projectName: 'my-app', env: 'production' };
+    const result = await resolveDefaultValue(defaultValue, 'appName', context);
+    expect(result).toBe('my-app-production');
+  });
+
+  it('should resolve interpolate type with complex interpolation', async () => {
+    const defaultValue: DefaultValue<string> = {
+      type: 'interpolate',
+      value: '@{{scope}}/{{packageName}}',
+    };
+    const context = { scope: 'myorg', packageName: 'my-package' };
+    const result = await resolveDefaultValue(defaultValue, 'fullPackageName', context);
+    expect(result).toBe('@myorg/my-package');
+  });
+
+  it('should return original template when context is missing', async () => {
+    const defaultValue: DefaultValue<string> = {
+      type: 'interpolate',
+      value: 'Hello {{name}}!',
+    };
+    const result = await resolveDefaultValue(defaultValue, 'testVar');
+    expect(result).toBe('Hello {{name}}!');
+  });
+
+  it('should return undefined for interpolate type with non-string value', async () => {
+    const defaultValue: DefaultValue<string> = {
+      type: 'interpolate',
+      value: 123,
+    } as never;
+    const result = await resolveDefaultValue(defaultValue, 'testVar');
+    expect(result).toBeUndefined();
+  });
+
+  it('should handle missing variables gracefully', async () => {
+    const defaultValue: DefaultValue<string> = {
+      type: 'interpolate',
+      value: 'Hello {{name}}!',
+    };
+    const context = { otherVar: 'value' };
+    const result = await resolveDefaultValue(defaultValue, 'testVar', context);
+    // interpolateTemplate should handle missing variables
+    expect(result).toBeDefined();
+  });
+
+  it('should resolve template with nested object access', async () => {
+    const defaultValue: DefaultValue<string> = {
+      type: 'interpolate',
+      value: '{{user.name}}-{{user.email}}',
+    };
+    const context = { user: { name: 'John', email: 'john@example.com' } };
+    const result = await resolveDefaultValue(defaultValue, 'userInfo', context);
+    expect(result).toBe('John-john@example.com');
   });
 });
