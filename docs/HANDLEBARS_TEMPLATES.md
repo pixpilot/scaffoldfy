@@ -404,4 +404,3 @@ You cannot specify both options:
 - [Handlebars Documentation](https://handlebarsjs.com/)
 - [Template Task Types](./TASK_TYPES.md#template)
 - [Prompts Documentation](./PROMPTS.md)
-- [Examples Directory](../examples/)
