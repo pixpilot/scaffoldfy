@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy
 
+## 0.31.0
+
+### Minor Changes
+
+- d2bd9dc: new release
+
 ## 0.30.0
 
 ### Minor Changes
