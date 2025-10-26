@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy
 
+## 0.37.0
+
+### Minor Changes
+
+- move utility functions to dedicated modules
+
 ## 0.36.0
 
 ### Minor Changes
