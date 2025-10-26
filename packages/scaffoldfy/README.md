@@ -6,7 +6,7 @@ A flexible and powerful task automation utility for project setup, cleanup, and 
 
 ## Features
 
-- 🧩 **Template Inheritance** - Extend base templates for code reuse
+- 🧩 **Configuration Inheritance** - Extend base configurations for code reuse
 - 🔍 **Dry-Run Mode with Diff** - Preview exact changes before applying
 - 🔌 **Plugin System** - Create custom task types and lifecycle hooks
 - 💬 **Interactive Prompts** - Collect user input with input, select, confirm, number, and password prompts
@@ -33,7 +33,7 @@ pnpm add @pixpilot/scaffoldfy
 scaffoldfy
 
 # With custom tasks file
-scaffoldfy --config ./my-tasks.json
+scaffoldfy --config ./config.json
 
 # Preview changes (dry run)
 scaffoldfy --dry-run
@@ -46,7 +46,7 @@ Or run without installing using npx:
 npx @pixpilot/scaffoldfy
 
 # With custom tasks file
-npx @pixpilot/scaffoldfy --config ./my-tasks.json
+npx @pixpilot/scaffoldfy --config ./config.json
 
 # Preview changes (dry run)
 npx @pixpilot/scaffoldfy --dry-run
@@ -56,7 +56,7 @@ npx @pixpilot/scaffoldfy --dry-run
 
 | Option            | Description                                                                     |
 | ----------------- | ------------------------------------------------------------------------------- |
-| `--config <path>` | Path to config file (JSON or TypeScript, default: `./template-tasks.json`)      |
+| `--config <path>` | Path to config file (JSON or TypeScript, default: `./scaffoldfy.json`)          |
 | `--dry-run`       | Preview changes without applying them                                           |
 | `--no-validate`   | Skip schema validation of task configuration (validation is enabled by default) |
 | `-h, --help`      | Show help message                                                               |
@@ -70,7 +70,7 @@ import { runWithTasks } from '@pixpilot/scaffoldfy';
 await runWithTasks(tasks, {
   dryRun: false,
   force: false,
-  tasksFilePath: './my-tasks.json',
+  configFilePath: './config.json',
 });
 ```
 
@@ -238,13 +238,13 @@ Create powerful file templates with Handlebars support. Files with `.hbs` extens
 
 📝 **[Complete Handlebars Guide →](https://pixpilot.github.io/scaffoldfy/HANDLEBARS_TEMPLATES.html)**
 
-### Template Inheritance
+### Config Inheritance
 
-Extend base templates to promote code reuse:
+Extend base configs to promote code reuse:
 
 ```json
 {
-  "extends": "./base-template.json",
+  "extends": "./base-config.json",
   "tasks": [
     {
       "id": "custom-task",
@@ -259,9 +259,9 @@ Extend base templates to promote code reuse:
 }
 ```
 
-You can extend multiple templates, override tasks by ID, and merge dependencies automatically.
+You can extend multiple configs, override tasks by ID, and merge dependencies automatically.
 
-🧬 **[Complete Inheritance Guide →](https://pixpilot.github.io/scaffoldfy/TEMPLATE_INHERITANCE.html)**
+🧬 **[Complete Inheritance Guide →](https://pixpilot.github.io/scaffoldfy/CONFIG_INHERITANCE.html)**
 
 ### Dry-Run Mode with Diff Preview
 
@@ -425,7 +425,7 @@ Control execution order:
 - **[Interactive Prompts](https://pixpilot.github.io/scaffoldfy/PROMPTS.html)** - Collect user input
 - **[Variables](https://pixpilot.github.io/scaffoldfy/VARIABLES.html)** - Reusable values without user interaction
 - **[Advanced Features](https://pixpilot.github.io/scaffoldfy/FEATURES.html)** - Conditional execution, global prompts, Handlebars
-- **[Template Inheritance](https://pixpilot.github.io/scaffoldfy/TEMPLATE_INHERITANCE.html)** - Extend and compose templates
+- **[Configuration Inheritance](https://pixpilot.github.io/scaffoldfy/CONFIG_INHERITANCE.html)** - Extend and compose configurations
 - **[Plugin System](https://pixpilot.github.io/scaffoldfy/PLUGINS.html)** - Create custom task types
 - **[Dry-Run Mode](https://pixpilot.github.io/scaffoldfy/DRY_RUN.html)** - Preview changes safely
 

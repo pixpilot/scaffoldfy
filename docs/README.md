@@ -38,7 +38,7 @@ Welcome to the official documentation for **@pixpilot/scaffoldfy** (formerly sca
 ### Advanced Features
 
 - **[Advanced Features Guide](FEATURES.md)** - Conditional execution, variables, and Handlebars templates
-- **[Template Inheritance](TEMPLATE_INHERITANCE.md)** - Extend and compose templates for code reuse
+- **[Configuration Inheritance](CONFIG_INHERITANCE.md)** - Extend and compose configurations for code reuse
 - **[Handlebars Templates](HANDLEBARS_TEMPLATES.md)** - Advanced templating with conditionals, loops, and helpers
 - **[Plugin System](PLUGINS.md)** - Create custom task types and lifecycle hooks
 - **[Dry Run Mode](DRY_RUN.md)** - Preview changes with detailed diffs before applying
@@ -53,7 +53,7 @@ Welcome to the official documentation for **@pixpilot/scaffoldfy** (formerly sca
 
 1. [Getting Started](GETTING_STARTED.md) - Start here if you're new
 2. [Task Types Reference](TASK_TYPES.md) - Learn about available task types
-3. [Interactive Prompts](PROMPTS.md) - Make your templates interactive
+3. [Interactive Prompts](PROMPTS.md) - Make your configurations interactive
 
 ### Common Use Cases
 
@@ -70,7 +70,7 @@ Welcome to the official documentation for **@pixpilot/scaffoldfy** (formerly sca
 → [Value Transformers](TRANSFORMERS.md)
 
 **Building complex templates?**
-→ [Template Inheritance](TEMPLATE_INHERITANCE.md) + [Handlebars Templates](HANDLEBARS_TEMPLATES.md)
+→ [Configuration Inheritance](CONFIG_INHERITANCE.md) + [Handlebars Templates](HANDLEBARS_TEMPLATES.md)
 
 **Want to preview changes first?**
 → [Dry Run Mode](DRY_RUN.md)
@@ -83,7 +83,7 @@ Welcome to the official documentation for **@pixpilot/scaffoldfy** (formerly sca
 
 ## 💡 Features at a Glance
 
-- 🧩 **Template Inheritance** - Extend base templates for code reuse
+- 🧩 **Configuration Inheritance** - Extend base configurations for code reuse
 - 🔍 **Dry-Run Mode with Diff** - Preview exact changes before applying
 - 🔌 **Plugin System** - Create custom task types and lifecycle hooks
 - 💬 **Interactive Prompts** - Collect user input with 5 prompt types

@@ -7,8 +7,8 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { InvalidTemplateError } from '../src/errors/template.js';
-import { clearTemplateCache, loadTemplate } from '../src/template-inheritance.js';
+import { clearConfigurationCache, loadConfiguration } from '../src/config-inheritance.js';
+import { InvalidConfigError } from '../src/errors/config.js';
 
 describe('template name validation and dependencies', () => {
   let testDir: string;
@@ -16,7 +16,7 @@ describe('template name validation and dependencies', () => {
   beforeEach(() => {
     // Create a temporary directory for test files
     testDir = fs.mkdtempSync(path.join(os.tmpdir(), 'scaffoldfy-test-'));
-    clearTemplateCache();
+    clearConfigurationCache();
   });
 
   afterEach(() => {
@@ -24,10 +24,10 @@ describe('template name validation and dependencies', () => {
     if (fs.existsSync(testDir)) {
       fs.rmSync(testDir, { recursive: true });
     }
-    clearTemplateCache();
+    clearConfigurationCache();
   });
 
-  function createTemplateFile(fileName: string, config: unknown): string {
+  function createConfigFile(fileName: string, config: unknown): string {
     const filePath = path.join(testDir, fileName);
     fs.writeFileSync(filePath, JSON.stringify(config, null, 2));
     return filePath;
@@ -49,10 +49,12 @@ describe('template name validation and dependencies', () => {
         ],
       };
 
-      const filePath = createTemplateFile('no-name.json', config);
+      const filePath = createConfigFile('no-name.json', config);
 
-      await expect(loadTemplate(filePath)).rejects.toThrow(InvalidTemplateError);
-      await expect(loadTemplate(filePath)).rejects.toThrow("'name' field is required");
+      await expect(loadConfiguration(filePath)).rejects.toThrow(InvalidConfigError);
+      await expect(loadConfiguration(filePath)).rejects.toThrow(
+        "'name' field is required",
+      );
     });
 
     it('should reject empty name field', async () => {
@@ -71,10 +73,12 @@ describe('template name validation and dependencies', () => {
         ],
       };
 
-      const filePath = createTemplateFile('empty-name.json', config);
+      const filePath = createConfigFile('empty-name.json', config);
 
-      await expect(loadTemplate(filePath)).rejects.toThrow(InvalidTemplateError);
-      await expect(loadTemplate(filePath)).rejects.toThrow("'name' field is required");
+      await expect(loadConfiguration(filePath)).rejects.toThrow(InvalidConfigError);
+      await expect(loadConfiguration(filePath)).rejects.toThrow(
+        "'name' field is required",
+      );
     });
 
     it('should reject whitespace-only name field', async () => {
@@ -93,10 +97,12 @@ describe('template name validation and dependencies', () => {
         ],
       };
 
-      const filePath = createTemplateFile('whitespace-name.json', config);
+      const filePath = createConfigFile('whitespace-name.json', config);
 
-      await expect(loadTemplate(filePath)).rejects.toThrow(InvalidTemplateError);
-      await expect(loadTemplate(filePath)).rejects.toThrow("'name' field is required");
+      await expect(loadConfiguration(filePath)).rejects.toThrow(InvalidConfigError);
+      await expect(loadConfiguration(filePath)).rejects.toThrow(
+        "'name' field is required",
+      );
     });
 
     it('should accept valid name field', async () => {
@@ -115,9 +121,9 @@ describe('template name validation and dependencies', () => {
         ],
       };
 
-      const filePath = createTemplateFile('valid-name.json', config);
+      const filePath = createConfigFile('valid-name.json', config);
 
-      const loaded = await loadTemplate(filePath);
+      const loaded = await loadConfiguration(filePath);
       expect(loaded.name).toBe('my-template');
     });
   });
@@ -142,8 +148,8 @@ describe('template name validation and dependencies', () => {
           tasks: [],
         };
 
-        const filePath = createTemplateFile(`valid-${name}.json`, config);
-        const loaded = await loadTemplate(filePath);
+        const filePath = createConfigFile(`valid-${name}.json`, config);
+        const loaded = await loadConfiguration(filePath);
         expect(loaded.name).toBe(name);
       }
     });
@@ -154,10 +160,10 @@ describe('template name validation and dependencies', () => {
         tasks: [],
       };
 
-      const filePath = createTemplateFile('uppercase-name.json', config);
+      const filePath = createConfigFile('uppercase-name.json', config);
 
-      await expect(loadTemplate(filePath)).rejects.toThrow(InvalidTemplateError);
-      await expect(loadTemplate(filePath)).rejects.toThrow(
+      await expect(loadConfiguration(filePath)).rejects.toThrow(InvalidConfigError);
+      await expect(loadConfiguration(filePath)).rejects.toThrow(
         'must contain only lowercase letters, digits, and hyphens',
       );
     });
@@ -168,10 +174,10 @@ describe('template name validation and dependencies', () => {
         tasks: [],
       };
 
-      const filePath = createTemplateFile('space-name.json', config);
+      const filePath = createConfigFile('space-name.json', config);
 
-      await expect(loadTemplate(filePath)).rejects.toThrow(InvalidTemplateError);
-      await expect(loadTemplate(filePath)).rejects.toThrow(
+      await expect(loadConfiguration(filePath)).rejects.toThrow(InvalidConfigError);
+      await expect(loadConfiguration(filePath)).rejects.toThrow(
         'must contain only lowercase letters, digits, and hyphens',
       );
     });
@@ -182,10 +188,10 @@ describe('template name validation and dependencies', () => {
         tasks: [],
       };
 
-      const filePath = createTemplateFile('underscore-name.json', config);
+      const filePath = createConfigFile('underscore-name.json', config);
 
-      await expect(loadTemplate(filePath)).rejects.toThrow(InvalidTemplateError);
-      await expect(loadTemplate(filePath)).rejects.toThrow(
+      await expect(loadConfiguration(filePath)).rejects.toThrow(InvalidConfigError);
+      await expect(loadConfiguration(filePath)).rejects.toThrow(
         'must contain only lowercase letters, digits, and hyphens',
       );
     });
@@ -196,10 +202,10 @@ describe('template name validation and dependencies', () => {
         tasks: [],
       };
 
-      const filePath = createTemplateFile('start-hyphen-name.json', config);
+      const filePath = createConfigFile('start-hyphen-name.json', config);
 
-      await expect(loadTemplate(filePath)).rejects.toThrow(InvalidTemplateError);
-      await expect(loadTemplate(filePath)).rejects.toThrow(
+      await expect(loadConfiguration(filePath)).rejects.toThrow(InvalidConfigError);
+      await expect(loadConfiguration(filePath)).rejects.toThrow(
         'must contain only lowercase letters, digits, and hyphens',
       );
     });
@@ -210,10 +216,10 @@ describe('template name validation and dependencies', () => {
         tasks: [],
       };
 
-      const filePath = createTemplateFile('end-hyphen-name.json', config);
+      const filePath = createConfigFile('end-hyphen-name.json', config);
 
-      await expect(loadTemplate(filePath)).rejects.toThrow(InvalidTemplateError);
-      await expect(loadTemplate(filePath)).rejects.toThrow(
+      await expect(loadConfiguration(filePath)).rejects.toThrow(InvalidConfigError);
+      await expect(loadConfiguration(filePath)).rejects.toThrow(
         'must contain only lowercase letters, digits, and hyphens',
       );
     });
@@ -224,10 +230,10 @@ describe('template name validation and dependencies', () => {
         tasks: [],
       };
 
-      const filePath = createTemplateFile('consecutive-hyphens-name.json', config);
+      const filePath = createConfigFile('consecutive-hyphens-name.json', config);
 
-      await expect(loadTemplate(filePath)).rejects.toThrow(InvalidTemplateError);
-      await expect(loadTemplate(filePath)).rejects.toThrow(
+      await expect(loadConfiguration(filePath)).rejects.toThrow(InvalidConfigError);
+      await expect(loadConfiguration(filePath)).rejects.toThrow(
         'must contain only lowercase letters, digits, and hyphens',
       );
     });
@@ -241,10 +247,10 @@ describe('template name validation and dependencies', () => {
           tasks: [],
         };
 
-        const filePath = createTemplateFile(`invalid-${name}.json`, config);
+        const filePath = createConfigFile(`invalid-${name}.json`, config);
 
-        await expect(loadTemplate(filePath)).rejects.toThrow(InvalidTemplateError);
-        await expect(loadTemplate(filePath)).rejects.toThrow(
+        await expect(loadConfiguration(filePath)).rejects.toThrow(InvalidConfigError);
+        await expect(loadConfiguration(filePath)).rejects.toThrow(
           'must contain only lowercase letters, digits, and hyphens',
         );
       }
@@ -259,9 +265,9 @@ describe('template name validation and dependencies', () => {
         tasks: [],
       };
 
-      const filePath = createTemplateFile('with-description.json', config);
+      const filePath = createConfigFile('with-description.json', config);
 
-      const loaded = await loadTemplate(filePath);
+      const loaded = await loadConfiguration(filePath);
       expect(loaded.name).toBe('my-template');
       expect(loaded.description).toBe('This is a test template');
     });
@@ -272,9 +278,9 @@ describe('template name validation and dependencies', () => {
         tasks: [],
       };
 
-      const filePath = createTemplateFile('no-description.json', config);
+      const filePath = createConfigFile('no-description.json', config);
 
-      const loaded = await loadTemplate(filePath);
+      const loaded = await loadConfiguration(filePath);
       expect(loaded.name).toBe('my-template');
       expect(loaded.description).toBeUndefined();
     });
@@ -288,9 +294,9 @@ describe('template name validation and dependencies', () => {
         tasks: [],
       };
 
-      const filePath = createTemplateFile('with-dependencies.json', config);
+      const filePath = createConfigFile('with-dependencies.json', config);
 
-      const loaded = await loadTemplate(filePath);
+      const loaded = await loadConfiguration(filePath);
       expect(loaded.name).toBe('my-template');
       expect(loaded.dependencies).toEqual(['base-template', 'utility-template']);
     });
@@ -301,9 +307,9 @@ describe('template name validation and dependencies', () => {
         tasks: [],
       };
 
-      const filePath = createTemplateFile('no-dependencies.json', config);
+      const filePath = createConfigFile('no-dependencies.json', config);
 
-      const loaded = await loadTemplate(filePath);
+      const loaded = await loadConfiguration(filePath);
       expect(loaded.name).toBe('my-template');
       expect(loaded.dependencies).toBeUndefined();
     });
@@ -315,9 +321,9 @@ describe('template name validation and dependencies', () => {
         tasks: [],
       };
 
-      const filePath = createTemplateFile('empty-dependencies.json', config);
+      const filePath = createConfigFile('empty-dependencies.json', config);
 
-      const loaded = await loadTemplate(filePath);
+      const loaded = await loadConfiguration(filePath);
       expect(loaded.name).toBe('my-template');
       expect(loaded.dependencies).toEqual([]);
     });
@@ -355,9 +361,9 @@ describe('template name validation and dependencies', () => {
         ],
       };
 
-      const filePath = createTemplateFile('complete.json', config);
+      const filePath = createConfigFile('complete.json', config);
 
-      const loaded = await loadTemplate(filePath);
+      const loaded = await loadConfiguration(filePath);
       expect(loaded.name).toBe('complete-template');
       expect(loaded.description).toBe('A complete template with all optional fields');
       expect(loaded.dependencies).toEqual(['base-template']);

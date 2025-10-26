@@ -5,7 +5,7 @@ title: Dry Run Mode - Scaffoldfy
 
 # Dry Run Mode
 
-Dry-run mode allows you to preview exactly what changes would be made to your project before actually applying them. This is invaluable for understanding template behavior and avoiding unwanted changes.
+Dry-run mode allows you to preview exactly what changes would be made to your project before actually applying them. This is invaluable for understanding configuration behavior and avoiding unwanted changes.
 
 ## Overview
 
@@ -14,7 +14,7 @@ With dry-run mode, you can:
 - **Preview all changes** before they're applied
 - **See diffs** for file modifications
 - **Identify skipped tasks** due to unmet conditions
-- **Validate your template** without modifying files
+- **Validate your configuration** without modifying files
 
 ## Basic Usage
 
@@ -22,10 +22,10 @@ With dry-run mode, you can:
 
 ```bash
 # Preview changes without applying them
-scaffoldfy --config ./template-tasks.json --dry-run
+scaffoldfy --config ./config.json --dry-run
 
-# Preview with inherited templates
-scaffoldfy --config ./my-template.json --dry-run
+# Preview with inherited configurations
+scaffoldfy --config ./my-configuration.json --dry-run
 ```
 
 ### Programmatic
@@ -106,7 +106,7 @@ File: package.json
 +   "description": "My awesome project",
 ```
 
-### `template`
+### `file-template`
 
 Shows full file creation or modification:
 
@@ -286,10 +286,10 @@ registerPlugin(myPlugin);
 
 ## Best Practices
 
-1. **Always dry-run first** before applying templates to new projects
+1. **Always dry-run first** before applying configurations to new projects
 2. **Review each diff carefully** especially for file deletions
-3. **Test templates with dry-run** during development
-4. **Use dry-run in CI/CD** to validate template changes
+3. **Test configurations with dry-run** during development
+4. **Use dry-run in CI/CD** to validate configuration changes
 5. **Document expected diffs** for your templates
 6. **Combine with version control** to easily revert changes if needed
 
@@ -299,7 +299,7 @@ Use dry-run mode in continuous integration:
 
 ```yaml
 # .github/workflows/test-template.yml
-name: Test Template
+name: Test Configuration
 
 on: [push, pull_request]
 
@@ -310,7 +310,7 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
       - run: npm install
-      - name: Test template dry-run
+      - name: Test Configuration dry-run
         run: npx @pixpilot/scaffoldfy --config ./template-tasks.json --dry-run
 ```
 
@@ -322,7 +322,7 @@ You can use dry-run with version control to see exactly what changed:
 # Initialize git if not already
 git init
 git add .
-git commit -m "Before template"
+git commit -m "Before configuration"
 
 # Run dry-run to preview
 scaffoldfy --config ./template.json --dry-run
@@ -346,7 +346,7 @@ git diff
 ### Diff looks wrong?
 
 - Verify your config values
-- Check template syntax
+- Check configuration syntax
 - Test interpolation patterns
 - Review task order and dependencies
 

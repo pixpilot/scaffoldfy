@@ -22,14 +22,12 @@ title: Quick Reference - Scaffoldfy
 ### 🚀 Quick Start with npx (No Installation Required)
 
 ```bash
-# Run any template directly with npx (fastest way!)
-npx @pixpilot/scaffoldfy
 
 # With custom tasks file
-npx @pixpilot/scaffoldfy --config ./my-tasks.json
+npx @pixpilot/scaffoldfy --config ./config.json
 
 # Preview changes first (recommended)
-npx @pixpilot/scaffoldfy --dry-run
+npx @pixpilot/scaffoldfy  --config ./config.json --dry-run
 
 # With TypeScript tasks file
 npx @pixpilot/scaffoldfy --config ./my-tasks.ts
@@ -42,22 +40,18 @@ npx @pixpilot/scaffoldfy --config ./my-tasks.ts
 **Optional:** You can use npx (above) without installing anything. Or install for repeated use:
 
 ```bash
-# Install globally for CLI usage
-npm install -g @pixpilot/scaffoldfy
 
 # Or install locally in your project
 npm install --save-dev @pixpilot/scaffoldfy
 ```
 
 ```bash
-# Basic usage with default task file (./template-tasks.json)
-scaffoldfy
 
 # With custom tasks file
-scaffoldfy --config ./my-tasks.json
+scaffoldfy --config ./config.json
 
 # Preview changes without applying (dry-run mode)
-scaffoldfy --dry-run
+scaffoldfy  --config ./config.json --dry-run
 
 # With TypeScript task file
 scaffoldfy --config ./my-tasks.ts
@@ -72,7 +66,7 @@ import { runWithTasks } from '@pixpilot/scaffoldfy';
 await runWithTasks(tasks, {
   dryRun: false,
   force: false,
-  tasksFilePath: './template-tasks.json',
+  configFilePath: './config.json',
 });
 ```
 
@@ -220,7 +214,7 @@ await runWithTasks(tasks, {
 
 ## Common Patterns
 
-### Complete Minimal Template
+### Complete Minimal Config
 
 ```json
 {
@@ -329,7 +323,7 @@ await runWithTasks(tasks, {
 scaffoldfy
 
 # With custom config file
-scaffoldfy --config ./my-tasks.json
+scaffoldfy --config ./config.json
 
 # Dry run (preview changes)
 scaffoldfy --dry-run
@@ -344,7 +338,7 @@ scaffoldfy --help
 ### Options
 
 ```bash
---config <path>    # Path to config file (JSON or TypeScript, default: ./template-tasks.json)
+--config <path>    # Path to config file (JSON or TypeScript, default: ./configs-tasks.json)
 --dry-run          # Preview changes without applying them
 --no-validate      # Skip schema validation
 --force            # Force execution even if checks fail
@@ -363,7 +357,7 @@ import { runWithTasks } from '@pixpilot/scaffoldfy';
 await runWithTasks(tasks, {
   dryRun: false,
   force: false,
-  tasksFilePath: './template-tasks.json',
+  configFilePath: './configs-tasks.json',
 });
 ```
 
@@ -373,7 +367,7 @@ await runWithTasks(tasks, {
 await runWithTasks(tasks, {
   dryRun: true, // Preview mode
   force: false, // Don't force execution
-  tasksFilePath: './my-tasks.json',
+  configFilePath: './config.json',
   variables: [], // Optional global variables
   prompts: [], // Optional global prompts
 });
@@ -387,7 +381,7 @@ import { runWithTasks } from '@pixpilot/scaffoldfy';
 try {
   await runWithTasks(tasks, {
     dryRun: false,
-    tasksFilePath: './template-tasks.json',
+    configFilePath: './configs-tasks.json',
   });
   console.log('✅ Tasks completed successfully!');
 } catch (error) {
@@ -406,7 +400,7 @@ try {
 3. **Set `required: false`** for optional tasks, or use conditional `required` with `{ "type": "condition", "value": "expression" }` for dynamic behavior
 4. **Use the typed format** for `enabled` and `required` fields: `{ "type": "condition"|"exec", "value": "..." }`
 5. **Use dependencies** to ensure tasks run in the correct order
-6. **Validate your template** with the JSON schema for IntelliSense
+6. **Validate your configuration** with the JSON schema for IntelliSense
 
 ### 🔥 Common Gotchas
 
@@ -416,13 +410,13 @@ try {
 - **Task order**: Tasks run in array order unless dependencies specified
 - **Prompt IDs**: Must be unique across all prompts
 
-### 📦 Template File Formats
+### 📦 Configurations File Formats
 
 Scaffoldfy supports multiple formats:
 
 - **JSON**: `.json` files (most common)
-- **TypeScript**: `.ts` files (for dynamic templates)
-- **Remote URLs**: HTTP/HTTPS URLs (for shared templates)
+- **TypeScript**: `.ts` files (for dynamic configurations)
+- **Remote URLs**: HTTP/HTTPS URLs (for shared configurations)
 
 ---
 
@@ -435,14 +429,14 @@ Scaffoldfy supports multiple formats:
 - **[Interactive Prompts](PROMPTS.html)** - Detailed prompt configuration
 - **[Advanced Features](FEATURES.html)** - Conditional execution, Handlebars, etc.
 
-### Example Templates
+### Example Configurations
 
-Check the `examples/` directory for complete working templates:
+Check the `examples/` directory for complete working configurations:
 
-- `base-node-template.json` - Basic Node.js project
-- `template-tasks-with-handlebars.json` - Using Handlebars templates
-- `template-tasks-with-inheritance.json` - Template composition
-- `template-tasks-with-plugin.json` - Custom plugin example
+- `base-node-configuration.json` - Basic Node.js project
+- `configuration-tasks-with-handlebars.json` - Using Handlebars configurations
+- `configuration-tasks-with-inheritance.json` - Configuration composition
+- `configuration-tasks-with-plugin.json` - Custom plugin example
 
 ---
 
@@ -457,5 +451,5 @@ Check the `examples/` directory for complete working templates:
 **Ready to start?** Run your first template:
 
 ```bash
-scaffoldfy --dry-run
+scaffoldfy --config scaffoldfy.json --dry-run
 ```

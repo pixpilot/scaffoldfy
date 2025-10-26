@@ -9,11 +9,11 @@ import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
 import { Command } from 'commander';
+import { loadTasksWithInheritance } from './config-inheritance.js';
 import { EXIT_CODE_ERROR } from './constants.js';
 import { runWithTasks } from './index.js';
 import { debug, setDebugMode } from './logger.js';
 import { validateTasksSchema } from './schema-validator.js';
-import { loadTasksWithInheritance } from './template-inheritance.js';
 import { log } from './utils';
 
 // Interface for CLI options
@@ -51,7 +51,7 @@ program
   .option(
     '--config <path>',
     'Path to task configuration file (JSON or TypeScript)',
-    './template-tasks.json',
+    './scaffoldfy.json',
   )
   .option(
     '--no-validate',
@@ -68,17 +68,17 @@ program
       let tasks: TaskDefinition[] = [];
       let variables: VariableDefinition[] | undefined;
       let prompts: PromptDefinition[] | undefined;
-      let templateEnabled: import('./types.js').EnabledValue | undefined;
+      let configEnabled: import('./types.js').EnabledValue | undefined;
       let transformers: import('./transformers/types.js').Transformer[] | undefined;
-      let tasksFilePath: string | undefined;
+      let configFilePath: string | undefined;
 
       // Load config file (supports both .json and .ts/.mjs)
       if (options.config != null && options.config !== '') {
-        const configPath = path.resolve(process.cwd(), options.config);
+        const configFile = path.resolve(process.cwd(), options.config);
 
-        if (fs.existsSync(configPath)) {
-          tasksFilePath = configPath;
-          const isTypeScript = configPath.endsWith('.ts') || configPath.endsWith('.mts');
+        if (fs.existsSync(configFile)) {
+          configFilePath = configFile;
+          const isTypeScript = configFile.endsWith('.ts') || configFile.endsWith('.mts');
 
           // Try TypeScript/ESM file
           if (isTypeScript) {
@@ -86,7 +86,7 @@ program
 
             try {
               // Dynamic import for ES modules
-              const tasksModule = (await import(configPath)) as {
+              const tasksModule = (await import(configFile)) as {
                 default?: TaskDefinition[];
                 tasks?: TaskDefinition[];
               };
@@ -115,7 +115,7 @@ program
                 debug('Validating task configuration against schema...');
 
                 // Load raw JSON for validation
-                const rawJson = fs.readFileSync(configPath, 'utf-8');
+                const rawJson = fs.readFileSync(configFile, 'utf-8');
                 const rawConfig = JSON.parse(rawJson) as unknown;
 
                 const validationResult = validateTasksSchema(rawConfig, {
@@ -134,9 +134,9 @@ program
                 log('Configuration validated', 'success');
               }
 
-              // Use template inheritance loader to support extends
-              // Use sequential mode to process templates one at a time
-              const config = await loadTasksWithInheritance(configPath, {
+              // Use configs inheritance loader to support extends
+              // Use sequential mode to process configs one at a time
+              const config = await loadTasksWithInheritance(configFile, {
                 sequential: true,
               });
 
@@ -150,7 +150,7 @@ program
                   {
                     dryRun: options.dryRun ?? false,
                     force: options.force ?? false,
-                    tasksFilePath: configPath,
+                    configFilePath: configFile,
                   },
                   createInitialConfig(),
                 );
@@ -162,7 +162,7 @@ program
               tasks = config.tasks;
               variables = config.variables;
               prompts = config.prompts;
-              templateEnabled = config.enabled;
+              configEnabled = config.enabled;
               transformers = config.transformers;
 
               if (!Array.isArray(tasks)) {
@@ -258,10 +258,10 @@ program
       await runWithTasks(tasks, {
         dryRun: options.dryRun,
         force: options.force,
-        tasksFilePath,
+        configFilePath,
         variables,
         prompts,
-        templateEnabled,
+        configEnabled,
         transformers,
       });
     } catch (error) {

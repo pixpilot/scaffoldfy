@@ -33,8 +33,8 @@ export async function collectPrompts(
   for (const prompt of prompts) {
     // First check if the template this prompt belongs to is enabled
     // This allows lazy evaluation - templates can be conditionally enabled based on previous prompts
-    if (prompt.$templateEnabled != null) {
-      const templateIsEnabled = await evaluateEnabledAsync(prompt.$templateEnabled, {
+    if (prompt.$configEnabled != null) {
+      const templateIsEnabled = await evaluateEnabledAsync(prompt.$configEnabled, {
         ...config,
         ...answers,
       });

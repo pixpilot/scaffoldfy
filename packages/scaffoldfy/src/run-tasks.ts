@@ -40,10 +40,10 @@ export async function runTasks(
   options: {
     dryRun: boolean;
     force: boolean;
-    tasksFilePath: string | undefined;
+    configFilePath: string | undefined;
     variables?: VariableDefinition[];
     prompts?: PromptDefinition[];
-    templateEnabled?: EnabledValue;
+    configEnabled?: EnabledValue;
     transformers?: import('./transformers/types.js').Transformer[];
   },
 ): Promise<void> {
@@ -57,7 +57,7 @@ export async function runTasks(
 
   // Evaluate template-level enabled (lazy mode returns true for undefined variables)
   const templateIsEnabled = await evaluateEnabledAsync(
-    options.templateEnabled,
+    options.configEnabled,
     initialConfig,
     { lazy: true },
   );
@@ -236,7 +236,7 @@ export async function runTasks(
   // Now that we have the full config with all variables and prompts,
   // re-evaluate the template-level enabled field in case it depends on variables
   const templateIsEnabledAfterConfig = await evaluateEnabledAsync(
-    options.templateEnabled,
+    options.configEnabled,
     config,
   );
 
@@ -251,9 +251,9 @@ export async function runTasks(
   const finalEnabledTasks = [];
   for (const task of sortedTasks) {
     // First check if the template this task belongs to is enabled
-    if (task.$templateEnabled != null) {
+    if (task.$configEnabled != null) {
       const taskTemplateIsEnabled = await evaluateEnabledAsync(
-        task.$templateEnabled,
+        task.$configEnabled,
         config,
       );
       if (!taskTemplateIsEnabled) {
@@ -356,7 +356,7 @@ export async function runTemplatesSequentially(
   options: {
     dryRun: boolean;
     force: boolean;
-    tasksFilePath: string | undefined;
+    configFilePath: string | undefined;
   },
   config: import('./types.js').InitConfig = {},
 ): Promise<void> {

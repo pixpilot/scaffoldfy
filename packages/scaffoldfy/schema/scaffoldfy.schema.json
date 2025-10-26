@@ -12,7 +12,7 @@
     },
     "name": {
       "type": "string",
-      "description": "Unique identifier name for this template. Must contain only lowercase letters, digits, and hyphens. Cannot start or end with a hyphen.",
+      "description": "Unique identifier name for this config. Must contain only lowercase letters, digits, and hyphens. Cannot start or end with a hyphen.",
       "pattern": "^[a-z\\d]+(?:-[a-z\\d]+)*$"
     },
     "description": {
@@ -30,7 +30,7 @@
       "items": {
         "type": "string"
       },
-      "description": "Names or identifiers of other templates that this Write depends on"
+      "description": "Names or identifiers of other configs that this Write depends on"
     },
     "extends": {
       "description": "Base Write file(s) to extend from. Can be a local path or URL (http/https). Supports single path or array of paths.",
@@ -412,7 +412,7 @@
     "override": {
       "type": "string",
       "enum": ["merge", "replace"],
-      "description": "Strategy for merging with base item when extending templates. 'merge' (default) intelligently merges properties, 'replace' completely replaces the base item. Must be specified when item ID conflicts with base template."
+      "description": "Strategy for merging with base item when extending configs. 'merge' (default) intelligently merges properties, 'replace' completely replaces the base item. Must be specified when item ID conflicts with base config."
     },
     "promptItem": {
       "type": "object",

@@ -1,5 +1,5 @@
 /**
- * Tests for template inheritance functionality
+ * Tests for configuration inheritance functionality
  */
 
 import type { TaskDefinition, TasksConfiguration } from '../src/types.js';
@@ -7,36 +7,36 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import {
-  CircularDependencyError,
-  TemplateFetchError,
-  TemplateFileNotFoundError,
-  TemplateParseError,
-} from '../src/errors/index.js';
-import {
-  clearTemplateCache,
-  loadAndMergeTemplate,
+  clearConfigurationCache,
+  loadAndMergeConfiguration,
+  loadConfiguration,
   loadTasksWithInheritance,
-  loadTemplate,
-  mergeTemplates,
-} from '../src/template-inheritance.js';
+  mergeConfigurations,
+} from '../src/config-inheritance.js';
+import {
+  CircularDependencyError,
+  ConfigFetchError,
+  ConfigParseError,
+  ConfigurationFileNotFoundError,
+} from '../src/errors/index.js';
 
 const testDir = path.join(process.cwd(), 'test-fixtures', 'inheritance');
 
-// Helper to create test template files
-function createTemplateFile(name: string, config: TasksConfiguration): string {
+// Helper to create test configuration files
+function createConfigFile(name: string, config: TasksConfiguration): string {
   const filePath = path.join(testDir, name);
   fs.mkdirSync(path.dirname(filePath), { recursive: true });
   fs.writeFileSync(filePath, JSON.stringify(config, null, 2));
   return filePath;
 }
 
-describe('template inheritance', () => {
+describe('configuration inheritance', () => {
   beforeEach(() => {
     // Clean up before each test
     if (fs.existsSync(testDir)) {
       fs.rmSync(testDir, { recursive: true });
     }
-    clearTemplateCache();
+    clearConfigurationCache();
   });
 
   afterEach(() => {
@@ -44,13 +44,13 @@ describe('template inheritance', () => {
     if (fs.existsSync(testDir)) {
       fs.rmSync(testDir, { recursive: true });
     }
-    clearTemplateCache();
+    clearConfigurationCache();
   });
 
-  describe('loadTemplate', () => {
-    it('should load a simple template file', async () => {
+  describe('loadConfiguration', () => {
+    it('should load a simple configuration file', async () => {
       const config: TasksConfiguration = {
-        name: 'test-template',
+        name: 'test-config',
         tasks: [
           {
             id: 'task1',
@@ -64,8 +64,8 @@ describe('template inheritance', () => {
         ],
       };
 
-      const filePath = createTemplateFile('simple.json', config);
-      const loaded = await loadTemplate(filePath);
+      const filePath = createConfigFile('simple.json', config);
+      const loaded = await loadConfiguration(filePath);
 
       // Tasks should be annotated with $sourceUrl
       expect(loaded.tasks).toBeDefined();
@@ -76,8 +76,8 @@ describe('template inheritance', () => {
     });
 
     it('should throw error for non-existent file', async () => {
-      await expect(loadTemplate('non-existent.json')).rejects.toThrow(
-        TemplateFileNotFoundError,
+      await expect(loadConfiguration('non-existent.json')).rejects.toThrow(
+        ConfigurationFileNotFoundError,
       );
     });
 
@@ -86,10 +86,10 @@ describe('template inheritance', () => {
       fs.mkdirSync(testDir, { recursive: true });
       fs.writeFileSync(filePath, 'invalid json');
 
-      await expect(loadTemplate(filePath)).rejects.toThrow(TemplateParseError);
+      await expect(loadConfiguration(filePath)).rejects.toThrow(ConfigParseError);
     });
 
-    it('should allow missing tasks array (for templates with only prompts/variables)', async () => {
+    it('should allow missing tasks array (for configurations with only prompts/variables)', async () => {
       const filePath = path.join(testDir, 'no-tasks.json');
       fs.mkdirSync(testDir, { recursive: true });
       fs.writeFileSync(
@@ -106,7 +106,7 @@ describe('template inheritance', () => {
         }),
       );
 
-      const config = await loadTemplate(filePath);
+      const config = await loadConfiguration(filePath);
       expect(config.tasks).toEqual([]);
       expect(config.prompts).toBeDefined();
       expect(config.prompts).toHaveLength(1);
@@ -124,19 +124,19 @@ describe('template inheritance', () => {
         tasks: [],
       };
 
-      createTemplateFile('template1.json', config1);
-      createTemplateFile('template2.json', config2);
+      createConfigFile('template1.json', config1);
+      createConfigFile('template2.json', config2);
 
       await expect(
-        loadAndMergeTemplate(path.join(testDir, 'template1.json')),
+        loadAndMergeConfiguration(path.join(testDir, 'template1.json')),
       ).rejects.toThrow(CircularDependencyError);
     });
   });
 
-  describe('mergeTemplates', () => {
-    it('should merge tasks from multiple templates', () => {
+  describe('mergeConfigurations', () => {
+    it('should merge tasks from multiple configurations', () => {
       const template1: TasksConfiguration = {
-        name: 'test-template',
+        name: 'test-config',
         tasks: [
           {
             id: 'task1',
@@ -151,7 +151,7 @@ describe('template inheritance', () => {
       };
 
       const template2: TasksConfiguration = {
-        name: 'test-template',
+        name: 'test-config',
         tasks: [
           {
             id: 'task2',
@@ -165,7 +165,7 @@ describe('template inheritance', () => {
         ],
       };
 
-      const merged = mergeTemplates([template1, template2]);
+      const merged = mergeConfigurations([template1, template2]);
 
       expect(merged.tasks).toBeDefined();
       expect(merged.tasks).toHaveLength(2);
@@ -175,7 +175,7 @@ describe('template inheritance', () => {
 
     it('should override tasks with same ID', () => {
       const template1: TasksConfiguration = {
-        name: 'test-template',
+        name: 'test-config',
         tasks: [
           {
             id: 'task1',
@@ -190,7 +190,7 @@ describe('template inheritance', () => {
       };
 
       const template2: TasksConfiguration = {
-        name: 'test-template',
+        name: 'test-config',
         tasks: [
           {
             id: 'task1',
@@ -205,7 +205,7 @@ describe('template inheritance', () => {
         ],
       };
 
-      const merged = mergeTemplates([template1, template2]);
+      const merged = mergeConfigurations([template1, template2]);
 
       expect(merged.tasks).toBeDefined();
       expect(merged.tasks).toHaveLength(1);
@@ -239,23 +239,23 @@ describe('template inheritance', () => {
         override: 'merge',
       };
 
-      const merged = mergeTemplates([
-        { name: 'test-template', tasks: [task1] },
-        { name: 'test-template', tasks: [task2] },
+      const merged = mergeConfigurations([
+        { name: 'test-config', tasks: [task1] },
+        { name: 'test-config', tasks: [task2] },
       ]);
 
       expect(merged.tasks).toBeDefined();
       expect(merged.tasks![0]?.dependencies).toEqual(['dep1', 'dep2', 'dep3']);
     });
 
-    it('should handle empty templates array', () => {
-      const merged = mergeTemplates([]);
+    it('should handle empty configurations array', () => {
+      const merged = mergeConfigurations([]);
       expect(merged.tasks).toHaveLength(0);
     });
 
-    it('should merge template with only prompts/variables (no tasks)', () => {
+    it('should merge configuration with only prompts/variables (no tasks)', () => {
       const baseTemplate: TasksConfiguration = {
-        name: 'test-template',
+        name: 'test-config',
         prompts: [
           {
             id: 'projectName',
@@ -277,7 +277,7 @@ describe('template inheritance', () => {
       };
 
       const childTemplate: TasksConfiguration = {
-        name: 'test-template',
+        name: 'test-config',
         tasks: [
           {
             id: 'use-prompts',
@@ -291,7 +291,7 @@ describe('template inheritance', () => {
         ],
       };
 
-      const merged = mergeTemplates([baseTemplate, childTemplate]);
+      const merged = mergeConfigurations([baseTemplate, childTemplate]);
 
       expect(merged.tasks).toBeDefined();
       expect(merged.tasks).toHaveLength(1);
@@ -302,9 +302,9 @@ describe('template inheritance', () => {
       expect(merged.variables).toHaveLength(1);
     });
 
-    it('should return single template as-is', () => {
+    it('should return single configuration as-is', () => {
       const template: TasksConfiguration = {
-        name: 'test-template',
+        name: 'test-config',
         tasks: [
           {
             id: 'task1',
@@ -318,11 +318,11 @@ describe('template inheritance', () => {
         ],
       };
 
-      const merged = mergeTemplates([template]);
+      const merged = mergeConfigurations([template]);
       expect(merged).toEqual(template);
     });
 
-    it('should preserve enabled field from last template when merging', () => {
+    it('should preserve enabled field from last configuration when merging', () => {
       const template1: TasksConfiguration = {
         name: 'base-template',
         enabled: true,
@@ -355,12 +355,12 @@ describe('template inheritance', () => {
         ],
       };
 
-      const merged = mergeTemplates([template1, template2]);
+      const merged = mergeConfigurations([template1, template2]);
 
       expect(merged.enabled).toBe(false);
     });
 
-    it('should preserve enabled field as undefined when not specified in last template', () => {
+    it('should preserve enabled field as undefined when not specified in last configuration', () => {
       const template1: TasksConfiguration = {
         name: 'base-template',
         enabled: false,
@@ -393,7 +393,7 @@ describe('template inheritance', () => {
         ],
       };
 
-      const merged = mergeTemplates([template1, template2]);
+      const merged = mergeConfigurations([template1, template2]);
 
       expect(merged.enabled).toBeUndefined();
     });
@@ -411,7 +411,7 @@ describe('template inheritance', () => {
         tasks: [],
       };
 
-      const merged = mergeTemplates([template1, template2]);
+      const merged = mergeConfigurations([template1, template2]);
 
       expect(merged.enabled).toEqual({
         type: 'condition',
@@ -432,7 +432,7 @@ describe('template inheritance', () => {
         tasks: [],
       };
 
-      const merged = mergeTemplates([template1, template2]);
+      const merged = mergeConfigurations([template1, template2]);
 
       expect(merged.enabled).toEqual({
         type: 'exec',
@@ -440,7 +440,7 @@ describe('template inheritance', () => {
       });
     });
 
-    it('should skip tasks from templates with enabled: false', () => {
+    it('should skip tasks from configurations with enabled: false', () => {
       const template1: TasksConfiguration = {
         name: 'enabled-template',
         enabled: true,
@@ -488,7 +488,7 @@ describe('template inheritance', () => {
         ],
       };
 
-      const merged = mergeTemplates([template1, template2, template3]);
+      const merged = mergeConfigurations([template1, template2, template3]);
 
       // Only tasks from template1 and template3 should be present
       expect(merged.tasks).toHaveLength(2);
@@ -497,7 +497,7 @@ describe('template inheritance', () => {
       expect(merged.tasks!.find((t) => t.id === 'task3')).toBeDefined();
     });
 
-    it('should skip prompts and variables from templates with enabled: false', () => {
+    it('should skip prompts and variables from configurations with enabled: false', () => {
       const template1: TasksConfiguration = {
         name: 'enabled-template',
         prompts: [
@@ -535,7 +535,7 @@ describe('template inheritance', () => {
         tasks: [],
       };
 
-      const merged = mergeTemplates([template1, template2]);
+      const merged = mergeConfigurations([template1, template2]);
 
       // Only prompts and variables from template1 should be present
       expect(merged.prompts).toHaveLength(1);
@@ -545,10 +545,10 @@ describe('template inheritance', () => {
     });
   });
 
-  describe('loadAndMergeTemplate', () => {
-    it('should load template with only prompts/variables (no tasks) for extending', async () => {
+  describe('loadAndMergeConfiguration', () => {
+    it('should load configuration with only prompts/variables (no tasks) for extending', async () => {
       const baseConfig: TasksConfiguration = {
-        name: 'test-template',
+        name: 'test-config',
         prompts: [
           {
             id: 'sharedPrompt',
@@ -580,10 +580,10 @@ describe('template inheritance', () => {
         ],
       };
 
-      createTemplateFile('base.json', baseConfig);
-      const childPath = createTemplateFile('child.json', childConfig);
+      createConfigFile('base.json', baseConfig);
+      const childPath = createConfigFile('child.json', childConfig);
 
-      const merged = await loadAndMergeTemplate(childPath);
+      const merged = await loadAndMergeConfiguration(childPath);
 
       expect(merged.tasks).toBeDefined();
       expect(merged.tasks).toHaveLength(1);
@@ -596,9 +596,9 @@ describe('template inheritance', () => {
       expect(merged.variables![0]?.id).toBe('baseVar');
     });
 
-    it('should load and merge templates with extends', async () => {
+    it('should load and merge configurations with extends', async () => {
       const baseConfig: TasksConfiguration = {
-        name: 'test-template',
+        name: 'test-config',
         tasks: [
           {
             id: 'base-task',
@@ -628,10 +628,10 @@ describe('template inheritance', () => {
         ],
       };
 
-      createTemplateFile('base.json', baseConfig);
-      const childPath = createTemplateFile('child.json', childConfig);
+      createConfigFile('base.json', baseConfig);
+      const childPath = createConfigFile('child.json', childConfig);
 
-      const merged = await loadAndMergeTemplate(childPath);
+      const merged = await loadAndMergeConfiguration(childPath);
 
       expect(merged.tasks).toBeDefined();
       expect(merged.tasks).toHaveLength(2);
@@ -641,7 +641,7 @@ describe('template inheritance', () => {
 
     it('should support multiple extends', async () => {
       const base1: TasksConfiguration = {
-        name: 'test-template',
+        name: 'test-config',
         tasks: [
           {
             id: 'task1',
@@ -656,7 +656,7 @@ describe('template inheritance', () => {
       };
 
       const base2: TasksConfiguration = {
-        name: 'test-template',
+        name: 'test-config',
         tasks: [
           {
             id: 'task2',
@@ -686,11 +686,11 @@ describe('template inheritance', () => {
         ],
       };
 
-      createTemplateFile('base1.json', base1);
-      createTemplateFile('base2.json', base2);
-      const childPath = createTemplateFile('child.json', child);
+      createConfigFile('base1.json', base1);
+      createConfigFile('base2.json', base2);
+      const childPath = createConfigFile('child.json', child);
 
-      const merged = await loadAndMergeTemplate(childPath);
+      const merged = await loadAndMergeConfiguration(childPath);
 
       expect(merged.tasks).toHaveLength(3);
     });
@@ -699,7 +699,7 @@ describe('template inheritance', () => {
       fs.mkdirSync(path.join(testDir, 'subdir'), { recursive: true });
 
       const baseConfig: TasksConfiguration = {
-        name: 'test-template',
+        name: 'test-config',
         tasks: [
           {
             id: 'base',
@@ -719,17 +719,17 @@ describe('template inheritance', () => {
         tasks: [],
       };
 
-      createTemplateFile('base.json', baseConfig);
-      const childPath = createTemplateFile('subdir/child.json', childConfig);
+      createConfigFile('base.json', baseConfig);
+      const childPath = createConfigFile('subdir/child.json', childConfig);
 
-      const merged = await loadAndMergeTemplate(childPath);
+      const merged = await loadAndMergeConfiguration(childPath);
 
       expect(merged.tasks).toBeDefined();
       expect(merged.tasks).toHaveLength(1);
       expect(merged.tasks![0]?.id).toBe('base');
     });
 
-    it('should preserve enabled field from child template when extending', async () => {
+    it('should preserve enabled field from child configuration when extending', async () => {
       const baseConfig: TasksConfiguration = {
         name: 'base-template',
         enabled: true,
@@ -763,12 +763,12 @@ describe('template inheritance', () => {
         ],
       };
 
-      createTemplateFile('base.json', baseConfig);
-      const childPath = createTemplateFile('child.json', childConfig);
+      createConfigFile('base.json', baseConfig);
+      const childPath = createConfigFile('child.json', childConfig);
 
-      const merged = await loadAndMergeTemplate(childPath);
+      const merged = await loadAndMergeConfiguration(childPath);
 
-      // The enabled field should be preserved from the child template
+      // The enabled field should be preserved from the child configuration
       expect(merged.enabled).toBe(false);
       // Only the base template's task should be included (child's task is skipped)
       expect(merged.tasks).toHaveLength(1);
@@ -789,10 +789,10 @@ describe('template inheritance', () => {
         tasks: [],
       };
 
-      createTemplateFile('base.json', baseConfig);
-      const childPath = createTemplateFile('child.json', childConfig);
+      createConfigFile('base.json', baseConfig);
+      const childPath = createConfigFile('child.json', childConfig);
 
-      const merged = await loadAndMergeTemplate(childPath);
+      const merged = await loadAndMergeConfiguration(childPath);
 
       expect(merged.enabled).toEqual({
         type: 'condition',
@@ -804,7 +804,7 @@ describe('template inheritance', () => {
   describe('loadTasksWithInheritance', () => {
     it('should load tasks with inheritance info', async () => {
       const baseConfig: TasksConfiguration = {
-        name: 'test-template',
+        name: 'test-config',
         tasks: [
           {
             id: 'base',
@@ -834,8 +834,8 @@ describe('template inheritance', () => {
         ],
       };
 
-      createTemplateFile('base.json', baseConfig);
-      const childPath = createTemplateFile('child.json', childConfig);
+      createConfigFile('base.json', baseConfig);
+      const childPath = createConfigFile('child.json', childConfig);
 
       const result = await loadTasksWithInheritance(childPath);
 
@@ -843,7 +843,7 @@ describe('template inheritance', () => {
     });
   });
 
-  describe('url-based template loading', () => {
+  describe('url-based configuration loading', () => {
     // Mock fetch for testing
     const originalFetch = globalThis.fetch;
     let mockFetch: typeof fetch;
@@ -856,7 +856,7 @@ describe('template inheritance', () => {
         if (url === 'https://example.com/base.json') {
           return new Response(
             JSON.stringify({
-              name: 'test-template',
+              name: 'test-config',
               tasks: [
                 {
                   id: 'remote-task',
@@ -951,7 +951,7 @@ describe('template inheritance', () => {
         if (url === 'https://example.com/local-base.json') {
           return new Response(
             JSON.stringify({
-              name: 'test-template',
+              name: 'test-config',
               tasks: [
                 {
                   id: 'local-base-task',
@@ -978,8 +978,8 @@ describe('template inheritance', () => {
       globalThis.fetch = originalFetch;
     });
 
-    it('should load template from HTTP URL', async () => {
-      const config = await loadTemplate('https://example.com/base.json');
+    it('should load configuration from HTTP URL', async () => {
+      const config = await loadConfiguration('https://example.com/base.json');
 
       expect(config.tasks).toBeDefined();
       expect(config.tasks).toHaveLength(1);
@@ -987,27 +987,27 @@ describe('template inheritance', () => {
       expect(config.tasks![0]?.name).toBe('Remote Task');
     });
 
-    it('should cache remote templates', async () => {
-      const config1 = await loadTemplate('https://example.com/base.json');
-      const config2 = await loadTemplate('https://example.com/base.json');
+    it('should cache remote configurations', async () => {
+      const config1 = await loadConfiguration('https://example.com/base.json');
+      const config2 = await loadConfiguration('https://example.com/base.json');
 
       expect(config1).toBe(config2); // Should be the same cached instance
     });
 
     it('should throw error for 404 responses', async () => {
-      await expect(loadTemplate('https://example.com/notfound.json')).rejects.toThrow(
-        TemplateFetchError,
-      );
+      await expect(
+        loadConfiguration('https://example.com/notfound.json'),
+      ).rejects.toThrow(ConfigFetchError);
     });
 
     it('should throw error for invalid JSON from URL', async () => {
-      await expect(loadTemplate('https://example.com/invalid.json')).rejects.toThrow(
-        TemplateParseError,
+      await expect(loadConfiguration('https://example.com/invalid.json')).rejects.toThrow(
+        ConfigParseError,
       );
     });
 
-    it('should support template inheritance from URLs', async () => {
-      const config = await loadAndMergeTemplate(
+    it('should support configuration inheritance from URLs', async () => {
+      const config = await loadAndMergeConfiguration(
         'https://example.com/templates/child.json',
       );
 
@@ -1019,7 +1019,7 @@ describe('template inheritance', () => {
 
     it('should detect circular dependencies with URLs', async () => {
       await expect(
-        loadAndMergeTemplate('https://example.com/circular1.json'),
+        loadAndMergeConfiguration('https://example.com/circular1.json'),
       ).rejects.toThrow(CircularDependencyError);
     });
 
@@ -1040,8 +1040,8 @@ describe('template inheritance', () => {
         ],
       };
 
-      const localPath = createTemplateFile('mixed.json', localConfig);
-      const config = await loadAndMergeTemplate(localPath);
+      const localPath = createConfigFile('mixed.json', localConfig);
+      const config = await loadAndMergeConfiguration(localPath);
 
       expect(config.tasks).toBeDefined();
       expect(config.tasks).toHaveLength(2);
@@ -1050,7 +1050,7 @@ describe('template inheritance', () => {
     });
 
     it('should resolve relative URLs correctly', async () => {
-      const config = await loadAndMergeTemplate(
+      const config = await loadAndMergeConfiguration(
         'https://example.com/with-local-extends.json',
       );
 
@@ -1068,7 +1068,7 @@ describe('template inheritance', () => {
     });
 
     it('should support HTTPS URLs', async () => {
-      const config = await loadTemplate('https://example.com/base.json');
+      const config = await loadConfiguration('https://example.com/base.json');
 
       expect(config.tasks).toHaveLength(1);
     });
@@ -1105,7 +1105,7 @@ describe('template inheritance', () => {
         if (url === 'https://example.com/base1.json') {
           return new Response(
             JSON.stringify({
-              name: 'test-template',
+              name: 'test-config',
               tasks: [
                 {
                   id: 'base1-task',
@@ -1125,7 +1125,7 @@ describe('template inheritance', () => {
         if (url === 'https://example.com/base2.json') {
           return new Response(
             JSON.stringify({
-              name: 'test-template',
+              name: 'test-config',
               tasks: [
                 {
                   id: 'base2-task',
@@ -1147,7 +1147,7 @@ describe('template inheritance', () => {
 
       globalThis.fetch = multiExtendsFetch;
 
-      const config = await loadAndMergeTemplate('https://example.com/multi.json');
+      const config = await loadAndMergeConfiguration('https://example.com/multi.json');
 
       expect(config.tasks).toBeDefined();
       expect(config.tasks).toHaveLength(3);
@@ -1157,9 +1157,9 @@ describe('template inheritance', () => {
     });
   });
 
-  describe('fetchTemplateFile', () => {
+  describe('fetchConfigurationFile', () => {
     it('should fetch from remote URL', async () => {
-      const { fetchTemplateFile } = await import('../src/template-inheritance.js');
+      const { fetchConfigurationFile } = await import('../src/config-inheritance.js');
       const mockFetch = (async (url: string) => {
         if (url === 'https://example.com/template.hbs') {
           return Promise.resolve(
@@ -1174,37 +1174,37 @@ describe('template inheritance', () => {
 
       globalThis.fetch = mockFetch;
 
-      const content = await fetchTemplateFile('https://example.com/template.hbs');
+      const content = await fetchConfigurationFile('https://example.com/template.hbs');
       expect(content).toBe('# {{title}}\n\nWelcome to {{projectName}}');
     });
 
     it('should read from local file', async () => {
-      const { fetchTemplateFile } = await import('../src/template-inheritance.js');
+      const { fetchConfigurationFile } = await import('../src/config-inheritance.js');
       const templatePath = path.join(testDir, 'local-template.hbs');
       fs.mkdirSync(testDir, { recursive: true });
       fs.writeFileSync(templatePath, 'Local content: {{name}}');
 
-      const content = await fetchTemplateFile(templatePath);
+      const content = await fetchConfigurationFile(templatePath);
       expect(content).toBe('Local content: {{name}}');
     });
 
     it('should throw error for non-existent local file', async () => {
-      const { fetchTemplateFile } = await import('../src/template-inheritance.js');
+      const { fetchConfigurationFile } = await import('../src/config-inheritance.js');
       const nonExistentPath = path.join(testDir, 'does-not-exist.hbs');
-      await expect(fetchTemplateFile(nonExistentPath)).rejects.toThrow(
-        'Template file not found',
+      await expect(fetchConfigurationFile(nonExistentPath)).rejects.toThrow(
+        'Configuration file not found',
       );
     });
   });
 
   describe('$sourceUrl annotation', () => {
-    it('should annotate tasks with source URL from remote template', async () => {
+    it('should annotate tasks with source URL from remote configuration', async () => {
       const mockFetch = (async (url: string) => {
-        if (url === 'https://example.com/remote-template.json') {
+        if (url === 'https://example.com/remote-config.json') {
           return Promise.resolve(
             new Response(
               JSON.stringify({
-                name: 'test-template',
+                name: 'test-config',
                 tasks: [
                   {
                     id: 'remote-task',
@@ -1229,16 +1229,14 @@ describe('template inheritance', () => {
 
       globalThis.fetch = mockFetch;
 
-      const config = await loadTemplate('https://example.com/remote-template.json');
+      const config = await loadConfiguration('https://example.com/remote-config.json');
       expect(config.tasks).toBeDefined();
-      expect(config.tasks![0]?.$sourceUrl).toBe(
-        'https://example.com/remote-template.json',
-      );
+      expect(config.tasks![0]?.$sourceUrl).toBe('https://example.com/remote-config.json');
     });
 
-    it('should annotate tasks with source path from local template', async () => {
+    it('should annotate tasks with source path from local configuration', async () => {
       const config: TasksConfiguration = {
-        name: 'test-template',
+        name: 'test-config',
         tasks: [
           {
             id: 'local-task',
@@ -1252,8 +1250,8 @@ describe('template inheritance', () => {
         ],
       };
 
-      const filePath = createTemplateFile('local-with-templatefile.json', config);
-      const loaded = await loadTemplate(filePath);
+      const filePath = createConfigFile('local-with-templatefile.json', config);
+      const loaded = await loadConfiguration(filePath);
 
       expect(loaded.tasks).toBeDefined();
       expect(loaded.tasks![0]?.$sourceUrl).toBe(filePath);
@@ -1261,7 +1259,7 @@ describe('template inheritance', () => {
 
     it('should preserve $sourceUrl when merging templates', async () => {
       const baseConfig: TasksConfiguration = {
-        name: 'test-template',
+        name: 'test-config',
         tasks: [
           {
             id: 'task1',
@@ -1292,19 +1290,19 @@ describe('template inheritance', () => {
         ],
       };
 
-      createTemplateFile('base.json', baseConfig);
-      const childPath = createTemplateFile('child.json', childConfig);
+      createConfigFile('base.json', baseConfig);
+      const childPath = createConfigFile('child.json', childConfig);
 
-      const merged = await loadAndMergeTemplate(childPath);
+      const merged = await loadAndMergeConfiguration(childPath);
 
       // The overridden task should have the child's source URL
       expect(merged.tasks).toBeDefined();
       expect(merged.tasks![0]?.$sourceUrl).toBe(childPath);
     });
 
-    it('should annotate variables with source URL from local template', async () => {
+    it('should annotate variables with source URL from local configuration', async () => {
       const config: TasksConfiguration = {
-        name: 'test-template',
+        name: 'test-config',
         variables: [
           {
             id: 'testVar',
@@ -1313,8 +1311,8 @@ describe('template inheritance', () => {
         ],
       };
 
-      const filePath = createTemplateFile('with-variables.json', config);
-      const loaded = await loadTemplate(filePath);
+      const filePath = createConfigFile('with-variables.json', config);
+      const loaded = await loadConfiguration(filePath);
 
       expect(loaded.variables).toBeDefined();
       expect(loaded.variables).toHaveLength(1);
@@ -1345,10 +1343,10 @@ describe('template inheritance', () => {
         ],
       };
 
-      createTemplateFile('base-vars.json', baseConfig);
-      const childPath = createTemplateFile('child-vars.json', childConfig);
+      createConfigFile('base-vars.json', baseConfig);
+      const childPath = createConfigFile('child-vars.json', childConfig);
 
-      const merged = await loadAndMergeTemplate(childPath);
+      const merged = await loadAndMergeConfiguration(childPath);
 
       // The overridden variable should have the child's source URL
       expect(merged.variables).toBeDefined();
@@ -1360,7 +1358,7 @@ describe('template inheritance', () => {
   describe('duplicate ID validation', () => {
     it('should throw error when task ID duplicates variable ID', () => {
       const template: TasksConfiguration = {
-        name: 'test-template',
+        name: 'test-config',
         tasks: [
           {
             id: 'duplicate-id',
@@ -1380,14 +1378,14 @@ describe('template inheritance', () => {
         ],
       };
 
-      expect(() => mergeTemplates([template])).toThrow(
+      expect(() => mergeConfigurations([template])).toThrow(
         'Duplicate ID "duplicate-id" found in variable. This ID is already used in task',
       );
     });
 
     it('should throw error when task ID duplicates prompt ID', () => {
       const template: TasksConfiguration = {
-        name: 'test-template',
+        name: 'test-config',
         tasks: [
           {
             id: 'duplicate-id',
@@ -1408,14 +1406,14 @@ describe('template inheritance', () => {
         ],
       };
 
-      expect(() => mergeTemplates([template])).toThrow(
+      expect(() => mergeConfigurations([template])).toThrow(
         'Duplicate ID "duplicate-id" found in prompt. This ID is already used in task',
       );
     });
 
     it('should throw error when variable ID duplicates prompt ID', () => {
       const template: TasksConfiguration = {
-        name: 'test-template',
+        name: 'test-config',
         tasks: [],
         variables: [
           {
@@ -1432,14 +1430,14 @@ describe('template inheritance', () => {
         ],
       };
 
-      expect(() => mergeTemplates([template])).toThrow(
+      expect(() => mergeConfigurations([template])).toThrow(
         'Duplicate ID "duplicate-id" found in prompt. This ID is already used in variable',
       );
     });
 
     it('should throw error when duplicate IDs exist after inheritance merge', async () => {
       const baseConfig: TasksConfiguration = {
-        name: 'test-template',
+        name: 'test-config',
         variables: [
           {
             id: 'shared-id',
@@ -1464,17 +1462,17 @@ describe('template inheritance', () => {
         ],
       };
 
-      createTemplateFile('base.json', baseConfig);
-      const childPath = createTemplateFile('child.json', childConfig);
+      createConfigFile('base.json', baseConfig);
+      const childPath = createConfigFile('child.json', childConfig);
 
-      await expect(loadAndMergeTemplate(childPath)).rejects.toThrow(
+      await expect(loadAndMergeConfiguration(childPath)).rejects.toThrow(
         'Duplicate ID "shared-id"',
       );
     });
 
     it('should allow same ID when overriding (task to task)', async () => {
       const baseConfig: TasksConfiguration = {
-        name: 'test-template',
+        name: 'test-config',
         tasks: [
           {
             id: 'same-id',
@@ -1505,18 +1503,18 @@ describe('template inheritance', () => {
         ],
       };
 
-      createTemplateFile('base.json', baseConfig);
-      const childPath = createTemplateFile('child.json', childConfig);
+      createConfigFile('base.json', baseConfig);
+      const childPath = createConfigFile('child.json', childConfig);
 
       // This should not throw - it's a valid override
-      const merged = await loadAndMergeTemplate(childPath);
+      const merged = await loadAndMergeConfiguration(childPath);
       expect(merged.tasks).toHaveLength(1);
       expect(merged.tasks![0]?.name).toBe('Overridden Task');
     });
 
     it('should allow same ID when overriding variables', async () => {
       const baseConfig: TasksConfiguration = {
-        name: 'test-template',
+        name: 'test-config',
         variables: [
           {
             id: 'var-id',
@@ -1537,18 +1535,18 @@ describe('template inheritance', () => {
         ],
       };
 
-      createTemplateFile('base.json', baseConfig);
-      const childPath = createTemplateFile('child.json', childConfig);
+      createConfigFile('base.json', baseConfig);
+      const childPath = createConfigFile('child.json', childConfig);
 
       // This should not throw - it's a valid override
-      const merged = await loadAndMergeTemplate(childPath);
+      const merged = await loadAndMergeConfiguration(childPath);
       expect(merged.variables).toHaveLength(1);
       expect(merged.variables![0]?.value).toBe('override');
     });
 
     it('should allow same ID when overriding prompts', async () => {
       const baseConfig: TasksConfiguration = {
-        name: 'test-template',
+        name: 'test-config',
         prompts: [
           {
             id: 'prompt-id',
@@ -1571,18 +1569,18 @@ describe('template inheritance', () => {
         ],
       };
 
-      createTemplateFile('base.json', baseConfig);
-      const childPath = createTemplateFile('child.json', childConfig);
+      createConfigFile('base.json', baseConfig);
+      const childPath = createConfigFile('child.json', childConfig);
 
       // This should not throw - it's a valid override
-      const merged = await loadAndMergeTemplate(childPath);
+      const merged = await loadAndMergeConfiguration(childPath);
       expect(merged.prompts).toHaveLength(1);
       expect(merged.prompts![0]?.message).toBe('Override message');
     });
 
     it('should allow same ID when overriding variables with replace strategy', async () => {
       const baseConfig: TasksConfiguration = {
-        name: 'test-template',
+        name: 'test-config',
         variables: [
           {
             id: 'var-id',
@@ -1603,11 +1601,11 @@ describe('template inheritance', () => {
         ],
       };
 
-      createTemplateFile('base.json', baseConfig);
-      const childPath = createTemplateFile('child.json', childConfig);
+      createConfigFile('base.json', baseConfig);
+      const childPath = createConfigFile('child.json', childConfig);
 
       // This should not throw - it's a valid override
-      const merged = await loadAndMergeTemplate(childPath);
+      const merged = await loadAndMergeConfiguration(childPath);
       expect(merged.variables).toHaveLength(1);
       expect(merged.variables![0]?.value).toBe('replaced');
       // Verify override field is removed
@@ -1616,7 +1614,7 @@ describe('template inheritance', () => {
 
     it('should allow same ID when overriding prompts with replace strategy', async () => {
       const baseConfig: TasksConfiguration = {
-        name: 'test-template',
+        name: 'test-config',
         prompts: [
           {
             id: 'prompt-id',
@@ -1640,11 +1638,11 @@ describe('template inheritance', () => {
         ],
       };
 
-      createTemplateFile('base.json', baseConfig);
-      const childPath = createTemplateFile('child.json', childConfig);
+      createConfigFile('base.json', baseConfig);
+      const childPath = createConfigFile('child.json', childConfig);
 
       // This should not throw - it's a valid override
-      const merged = await loadAndMergeTemplate(childPath);
+      const merged = await loadAndMergeConfiguration(childPath);
       expect(merged.prompts).toHaveLength(1);
       expect(merged.prompts![0]?.message).toBe('Replaced message');
       expect(merged.prompts![0]?.type).toBe('confirm');
@@ -1655,7 +1653,7 @@ describe('template inheritance', () => {
 
     it('should throw error when overriding variable without override strategy', () => {
       const baseConfig: TasksConfiguration = {
-        name: 'test-template',
+        name: 'test-config',
         variables: [
           {
             id: 'var-id',
@@ -1665,7 +1663,7 @@ describe('template inheritance', () => {
       };
 
       const childConfig: TasksConfiguration = {
-        name: 'test-template',
+        name: 'test-config',
         variables: [
           {
             id: 'var-id',
@@ -1675,7 +1673,7 @@ describe('template inheritance', () => {
         ],
       };
 
-      expect(() => mergeTemplates([baseConfig, childConfig])).toThrow(
+      expect(() => mergeConfigurations([baseConfig, childConfig])).toThrow(
         'Variable ID conflict: "var-id" is defined in multiple templates.\n' +
           '  You must specify an override strategy: add "override": "merge" or "override": "replace" to the variable.\n' +
           '  Variable is being extended/overridden but no override strategy was specified.',
@@ -1684,7 +1682,7 @@ describe('template inheritance', () => {
 
     it('should throw error when overriding prompt without override strategy', () => {
       const baseConfig: TasksConfiguration = {
-        name: 'test-template',
+        name: 'test-config',
         prompts: [
           {
             id: 'prompt-id',
@@ -1695,7 +1693,7 @@ describe('template inheritance', () => {
       };
 
       const childConfig: TasksConfiguration = {
-        name: 'test-template',
+        name: 'test-config',
         prompts: [
           {
             id: 'prompt-id',
@@ -1706,7 +1704,7 @@ describe('template inheritance', () => {
         ],
       };
 
-      expect(() => mergeTemplates([baseConfig, childConfig])).toThrow(
+      expect(() => mergeConfigurations([baseConfig, childConfig])).toThrow(
         'Prompt ID conflict: "prompt-id" is defined in multiple templates.\n' +
           '  You must specify an override strategy: add "override": "merge" or "override": "replace" to the prompt.\n' +
           '  Prompt is being extended/overridden but no override strategy was specified.',
@@ -1715,7 +1713,7 @@ describe('template inheritance', () => {
 
     it('should throw error with multiple templates having cross-type duplicates', () => {
       const base1: TasksConfiguration = {
-        name: 'test-template',
+        name: 'test-config',
         tasks: [
           {
             id: 'id1',
@@ -1730,7 +1728,7 @@ describe('template inheritance', () => {
       };
 
       const base2: TasksConfiguration = {
-        name: 'test-template',
+        name: 'test-config',
         variables: [
           {
             id: 'id1',
@@ -1739,14 +1737,14 @@ describe('template inheritance', () => {
         ],
       };
 
-      expect(() => mergeTemplates([base1, base2])).toThrow(
+      expect(() => mergeConfigurations([base1, base2])).toThrow(
         'Duplicate ID "id1" found in variable. This ID is already used in task',
       );
     });
 
     it('should not throw when all IDs are unique across tasks, variables, and prompts', () => {
       const template: TasksConfiguration = {
-        name: 'test-template',
+        name: 'test-config',
         tasks: [
           {
             id: 'task-1',
@@ -1773,8 +1771,8 @@ describe('template inheritance', () => {
         ],
       };
 
-      expect(() => mergeTemplates([template])).not.toThrow();
-      const merged = mergeTemplates([template]);
+      expect(() => mergeConfigurations([template])).not.toThrow();
+      const merged = mergeConfigurations([template]);
       expect(merged.tasks).toHaveLength(1);
       expect(merged.variables).toHaveLength(1);
       expect(merged.prompts).toHaveLength(1);

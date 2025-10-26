@@ -1,6 +1,6 @@
 /**
- * Tests for lazy template enabled evaluation
- * Tests that template enabled conditions are evaluated with access to prompts and variables
+ * Tests for lazy config enabled evaluation
+ * Tests that config enabled conditions are evaluated with access to prompts and variables
  */
 
 import type {
@@ -10,7 +10,7 @@ import type {
 } from '../src/types.js';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-describe('lazy template enabled evaluation', () => {
+describe('lazy config enabled evaluation', () => {
   const mockLog = vi.fn();
   let collectPrompts: typeof import('../src/prompts/collect-prompts.js').collectPrompts;
   let resolveAllVariableValues: typeof import('../src/variables/resolve-all-variable-values.js').resolveAllVariableValues;
@@ -68,14 +68,14 @@ describe('lazy template enabled evaluation', () => {
     vi.restoreAllMocks();
   });
 
-  describe('collectPrompts with $templateEnabled', () => {
-    it('should skip prompts when $templateEnabled evaluates to false', async () => {
+  describe('collectPrompts with $configEnabled', () => {
+    it('should skip prompts when $configEnabled evaluates to false', async () => {
       const prompts: PromptDefinition[] = [
         {
           id: 'prompt1',
           type: 'input',
           message: 'First prompt',
-          $templateEnabled: false,
+          $configEnabled: false,
         },
         {
           id: 'prompt2',
@@ -86,12 +86,12 @@ describe('lazy template enabled evaluation', () => {
 
       const answers = await collectPrompts(prompts);
 
-      // prompt1 should be skipped due to $templateEnabled: false
+      // prompt1 should be skipped due to $configEnabled: false
       expect(answers).not.toHaveProperty('prompt1');
       expect(answers).toHaveProperty('prompt2');
     });
 
-    it('should evaluate $templateEnabled condition with previous prompt answers', async () => {
+    it('should evaluate $configEnabled condition with previous prompt answers', async () => {
       const prompts: PromptDefinition[] = [
         {
           id: 'isPixpilot',
@@ -103,7 +103,7 @@ describe('lazy template enabled evaluation', () => {
           id: 'pixpilotSpecificPrompt',
           type: 'input',
           message: 'Pixpilot specific setting',
-          $templateEnabled: { type: 'condition', value: 'isPixpilot === true' },
+          $configEnabled: { type: 'condition', value: 'isPixpilot === true' },
         },
       ];
 
@@ -114,7 +114,7 @@ describe('lazy template enabled evaluation', () => {
       expect(answers).toHaveProperty('pixpilotSpecificPrompt');
     });
 
-    it('should skip prompt when $templateEnabled condition is false', async () => {
+    it('should skip prompt when $configEnabled condition is false', async () => {
       const prompts: PromptDefinition[] = [
         {
           id: 'isPixpilot',
@@ -126,7 +126,7 @@ describe('lazy template enabled evaluation', () => {
           id: 'pixpilotSpecificPrompt',
           type: 'input',
           message: 'Pixpilot specific setting',
-          $templateEnabled: { type: 'condition', value: 'isPixpilot === true' },
+          $configEnabled: { type: 'condition', value: 'isPixpilot === true' },
         },
       ];
 
@@ -149,7 +149,7 @@ describe('lazy template enabled evaluation', () => {
           id: 'pixpilotPrompt',
           type: 'input',
           message: 'Pixpilot prompt',
-          $templateEnabled: { type: 'condition', value: 'repoOwner === "pixpilots"' },
+          $configEnabled: { type: 'condition', value: 'repoOwner === "pixpilots"' },
         },
       ];
 
@@ -160,13 +160,13 @@ describe('lazy template enabled evaluation', () => {
     });
   });
 
-  describe('resolveAllVariableValues with $templateEnabled', () => {
-    it('should skip variables when $templateEnabled evaluates to false', async () => {
+  describe('resolveAllVariableValues with $configEnabled', () => {
+    it('should skip variables when $configEnabled evaluates to false', async () => {
       const variables: VariableDefinition[] = [
         {
           id: 'var1',
           value: { type: 'static', value: 'value1' },
-          $templateEnabled: false,
+          $configEnabled: false,
         },
         {
           id: 'var2',
@@ -176,12 +176,12 @@ describe('lazy template enabled evaluation', () => {
 
       const resolved = await resolveAllVariableValues(variables);
 
-      // var1 should be skipped due to $templateEnabled: false
+      // var1 should be skipped due to $configEnabled: false
       expect(resolved.has('var1')).toBe(false);
       expect(resolved.has('var2')).toBe(true);
     });
 
-    it('should evaluate $templateEnabled condition with previous variable values', async () => {
+    it('should evaluate $configEnabled condition with previous variable values', async () => {
       const variables: VariableDefinition[] = [
         {
           id: 'enableFeature',
@@ -190,7 +190,7 @@ describe('lazy template enabled evaluation', () => {
         {
           id: 'featureSpecificVar',
           value: { type: 'static', value: 'feature-value' },
-          $templateEnabled: { type: 'condition', value: 'enableFeature === true' },
+          $configEnabled: { type: 'condition', value: 'enableFeature === true' },
         },
       ];
 
@@ -201,7 +201,7 @@ describe('lazy template enabled evaluation', () => {
       expect(resolved.get('featureSpecificVar')).toBe('feature-value');
     });
 
-    it('should skip variable when $templateEnabled condition is false', async () => {
+    it('should skip variable when $configEnabled condition is false', async () => {
       const variables: VariableDefinition[] = [
         {
           id: 'enableFeature',
@@ -210,7 +210,7 @@ describe('lazy template enabled evaluation', () => {
         {
           id: 'featureSpecificVar',
           value: { type: 'static', value: 'feature-value' },
-          $templateEnabled: { type: 'condition', value: 'enableFeature === true' },
+          $configEnabled: { type: 'condition', value: 'enableFeature === true' },
         },
       ];
 
@@ -241,7 +241,7 @@ describe('lazy template enabled evaluation', () => {
       expect(resolved.get('pixpilot_project')).toBe(true);
     });
 
-    it('should work with complex template enabled conditions', async () => {
+    it('should work with complex config enabled conditions', async () => {
       const config = { repoOwner: 'pixpilots' };
 
       const variables: VariableDefinition[] = [
@@ -257,7 +257,7 @@ describe('lazy template enabled evaluation', () => {
         {
           id: 'pixpilot_specific_var',
           value: { type: 'static', value: 'pixpilot-value' },
-          $templateEnabled: { type: 'condition', value: 'pixpilot_project == true' },
+          $configEnabled: { type: 'condition', value: 'pixpilot_project == true' },
         },
       ];
 
@@ -268,8 +268,8 @@ describe('lazy template enabled evaluation', () => {
     });
   });
 
-  describe('integration: tasks with $templateEnabled', () => {
-    it('should skip tasks when $templateEnabled evaluates to false', async () => {
+  describe('integration: tasks with $configEnabled', () => {
+    it('should skip tasks when $configEnabled evaluates to false', async () => {
       const tasks: TaskDefinition[] = [
         {
           id: 'task1',
@@ -282,7 +282,7 @@ describe('lazy template enabled evaluation', () => {
           name: 'Task 2',
           type: 'write' as const,
           config: { file: 'test2.txt', template: 'test2' },
-          $templateEnabled: false,
+          $configEnabled: false,
         },
       ];
 
@@ -290,21 +290,21 @@ describe('lazy template enabled evaluation', () => {
       await runTasks(tasks, {
         dryRun: true,
         force: false,
-        tasksFilePath: undefined,
+        configFilePath: undefined,
       });
 
       // No assertion needed - if it runs without error, it works
-      // The test validates that task2 with $templateEnabled: false is skipped
+      // The test validates that task2 with $configEnabled: false is skipped
     });
 
-    it('should evaluate task $templateEnabled with prompts and variables', async () => {
+    it('should evaluate task $configEnabled with prompts and variables', async () => {
       const tasks: TaskDefinition[] = [
         {
           id: 'conditional-task',
           name: 'Conditional Task',
           type: 'write' as const,
           config: { file: 'test.txt', template: 'test' },
-          $templateEnabled: { type: 'condition', value: 'pixpilot_project === true' },
+          $configEnabled: { type: 'condition', value: 'pixpilot_project === true' },
         },
       ];
 
@@ -319,12 +319,12 @@ describe('lazy template enabled evaluation', () => {
       await runTasks(tasks, {
         dryRun: true,
         force: false,
-        tasksFilePath: undefined,
+        configFilePath: undefined,
         variables,
       });
 
       // No assertion needed - if it runs without error, it works
-      // The test validates that task with $templateEnabled is evaluated with variable values
+      // The test validates that task with $configEnabled is evaluated with variable values
     });
   });
 

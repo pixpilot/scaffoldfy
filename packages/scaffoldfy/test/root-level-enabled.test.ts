@@ -1,11 +1,11 @@
 /**
- * Tests for root-level template enabled functionality
+ * Tests for root-level config enabled functionality
  */
 
 import type { EnabledValue } from '../src/types.js';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-describe('root-level template enabled', () => {
+describe('root-level config enabled', () => {
   const mockLog = vi.fn();
   const mockInfo = vi.fn();
   let runTasks: typeof import('../src/run-tasks.js').runTasks;
@@ -126,7 +126,7 @@ describe('root-level template enabled', () => {
       expect(await evaluateEnabledAsync(execConfigNo, {})).toBe(false);
     });
 
-    it('should handle exec command with template interpolation', async () => {
+    it('should handle exec command with config interpolation', async () => {
       const config = { checkFile: 'package.json' };
 
       // This would need file system mocking for a real test
@@ -152,7 +152,7 @@ describe('root-level template enabled', () => {
   });
 
   describe('runTasks with root-level enabled', () => {
-    it('should skip all execution when templateEnabled is false', async () => {
+    it('should skip all execution when configEnabled is false', async () => {
       const tasks = [
         {
           id: 'task1',
@@ -165,8 +165,8 @@ describe('root-level template enabled', () => {
       await runTasks(tasks, {
         dryRun: false,
         force: false,
-        tasksFilePath: undefined,
-        templateEnabled: false,
+        configFilePath: undefined,
+        configEnabled: false,
       });
 
       // Should log that template is disabled
@@ -181,7 +181,7 @@ describe('root-level template enabled', () => {
       );
     });
 
-    it('should execute tasks when templateEnabled is true', async () => {
+    it('should execute tasks when configEnabled is true', async () => {
       const tasks = [
         {
           id: 'task1',
@@ -194,8 +194,8 @@ describe('root-level template enabled', () => {
       await runTasks(tasks, {
         dryRun: true, // Use dry run to avoid actual file operations
         force: false,
-        tasksFilePath: undefined,
-        templateEnabled: true,
+        configFilePath: undefined,
+        configEnabled: true,
       });
 
       // Should not log disabled message
@@ -205,7 +205,7 @@ describe('root-level template enabled', () => {
       );
     });
 
-    it('should execute tasks when templateEnabled is undefined (default)', async () => {
+    it('should execute tasks when configEnabled is undefined (default)', async () => {
       const tasks = [
         {
           id: 'task1',
@@ -218,8 +218,8 @@ describe('root-level template enabled', () => {
       await runTasks(tasks, {
         dryRun: true, // Use dry run to avoid actual file operations
         force: false,
-        tasksFilePath: undefined,
-        // templateEnabled omitted - defaults to enabled
+        configFilePath: undefined,
+        // configEnabled omitted - defaults to enabled
       });
 
       // Should not log disabled message
@@ -229,7 +229,7 @@ describe('root-level template enabled', () => {
       );
     });
 
-    it('should skip execution when templateEnabled condition evaluates to false', async () => {
+    it('should skip execution when configEnabled condition evaluates to false', async () => {
       const tasks = [
         {
           id: 'task1',
@@ -242,8 +242,8 @@ describe('root-level template enabled', () => {
       await runTasks(tasks, {
         dryRun: false,
         force: false,
-        tasksFilePath: undefined,
-        templateEnabled: { type: 'condition', value: 'false === true' }, // Condition that evaluates to false
+        configFilePath: undefined,
+        configEnabled: { type: 'condition', value: 'false === true' }, // Condition that evaluates to false
       });
 
       // Should log that template is disabled
@@ -252,7 +252,7 @@ describe('root-level template enabled', () => {
       );
     });
 
-    it('should execute when templateEnabled condition evaluates to true', async () => {
+    it('should execute when configEnabled condition evaluates to true', async () => {
       const tasks = [
         {
           id: 'task1',
@@ -265,8 +265,8 @@ describe('root-level template enabled', () => {
       await runTasks(tasks, {
         dryRun: true, // Use dry run to avoid actual file operations
         force: false,
-        tasksFilePath: undefined,
-        templateEnabled: { type: 'condition', value: 'true === true' }, // Condition that evaluates to true
+        configFilePath: undefined,
+        configEnabled: { type: 'condition', value: 'true === true' }, // Condition that evaluates to true
       });
 
       // Should not log disabled message
@@ -289,8 +289,8 @@ describe('root-level template enabled', () => {
       await runTasks(tasks, {
         dryRun: false,
         force: false,
-        tasksFilePath: undefined,
-        templateEnabled: { type: 'condition', value: '1 === 2' }, // False condition
+        configFilePath: undefined,
+        configEnabled: { type: 'condition', value: '1 === 2' }, // False condition
       });
 
       expect(mockInfo).toHaveBeenCalledWith(

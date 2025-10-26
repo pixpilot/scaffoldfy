@@ -5,74 +5,74 @@
 import type { TasksConfiguration } from '../src/types.js';
 import { describe, expect, it } from 'vitest';
 import { CircularDependencyError } from '../src/errors/base.js';
-import { topologicalSortTemplates } from '../src/topological-sort.js';
+import { topologicalSortConfigs } from '../src/topological-sort.js';
 
-describe('topologicalSortTemplates', () => {
+describe('topologicalSortConfigs', () => {
   it('should handle empty array', () => {
-    const result = topologicalSortTemplates([]);
+    const result = topologicalSortConfigs([]);
     expect(result).toEqual([]);
   });
 
-  it('should handle single template', () => {
-    const templates: TasksConfiguration[] = [
+  it('should handle single config', () => {
+    const configs: TasksConfiguration[] = [
       {
-        name: 'template-a',
+        name: 'config-a',
         tasks: [],
       },
     ];
 
-    const result = topologicalSortTemplates(templates);
-    expect(result).toEqual(templates);
+    const result = topologicalSortConfigs(configs);
+    expect(result).toEqual(configs);
   });
 
-  it('should preserve order of independent templates with no dependencies', () => {
-    const templates: TasksConfiguration[] = [
+  it('should preserve order of independent configs with no dependencies', () => {
+    const configs: TasksConfiguration[] = [
       {
-        name: 'template-a',
+        name: 'config-a',
         tasks: [],
       },
       {
-        name: 'template-b',
+        name: 'config-b',
         tasks: [],
       },
       {
-        name: 'template-c',
+        name: 'config-c',
         tasks: [],
       },
     ];
 
-    const result = topologicalSortTemplates(templates);
+    const result = topologicalSortConfigs(configs);
     // Order should be preserved since none have dependencies
-    expect(result).toEqual(templates);
+    expect(result).toEqual(configs);
   });
 
-  it('should sort templates with simple dependency chain', () => {
-    const templates: TasksConfiguration[] = [
+  it('should sort configs with simple dependency chain', () => {
+    const configs: TasksConfiguration[] = [
       {
-        name: 'template-c',
-        dependencies: ['template-b'],
+        name: 'config-c',
+        dependencies: ['config-b'],
         tasks: [],
       },
       {
-        name: 'template-b',
-        dependencies: ['template-a'],
+        name: 'config-b',
+        dependencies: ['config-a'],
         tasks: [],
       },
       {
-        name: 'template-a',
+        name: 'config-a',
         tasks: [],
       },
     ];
 
-    const result = topologicalSortTemplates(templates);
+    const result = topologicalSortConfigs(configs);
     // Should be sorted: a, b, c
-    expect(result[0]!.name).toBe('template-a');
-    expect(result[1]!.name).toBe('template-b');
-    expect(result[2]!.name).toBe('template-c');
+    expect(result[0]!.name).toBe('config-a');
+    expect(result[1]!.name).toBe('config-b');
+    expect(result[2]!.name).toBe('config-c');
   });
 
-  it('should keep independent template at original position when mixed with dependent templates', () => {
-    const templates: TasksConfiguration[] = [
+  it('should keep independent config at original position when mixed with dependent configs', () => {
+    const configs: TasksConfiguration[] = [
       {
         name: 'project-info',
         tasks: [],
@@ -84,19 +84,19 @@ describe('topologicalSortTemplates', () => {
       {
         name: 'cleanup-setup-artifacts',
         tasks: [],
-        // This template has no dependencies and nothing depends on it
+        // This config has no dependencies and nothing depends on it
       },
     ];
 
-    const result = topologicalSortTemplates(templates);
-    // All templates are independent, order should be preserved
+    const result = topologicalSortConfigs(configs);
+    // All configs are independent, order should be preserved
     expect(result[0]!.name).toBe('project-info');
     expect(result[1]!.name).toBe('license-file');
     expect(result[2]!.name).toBe('cleanup-setup-artifacts');
   });
 
-  it('should preserve position of independent template at the end', () => {
-    const templates: TasksConfiguration[] = [
+  it('should preserve position of independent config at the end', () => {
+    const configs: TasksConfiguration[] = [
       {
         name: 'project-info',
         tasks: [],
@@ -113,12 +113,12 @@ describe('topologicalSortTemplates', () => {
       {
         name: 'cleanup-setup-artifacts',
         tasks: [],
-        // This template has no dependencies and nothing depends on it
+        // This config has no dependencies and nothing depends on it
         // Should stay at position 3 (index 3)
       },
     ];
 
-    const result = topologicalSortTemplates(templates);
+    const result = topologicalSortConfigs(configs);
     // Dependencies should be sorted, but cleanup should stay at the end
     expect(result[0]!.name).toBe('project-info');
     expect(result[1]!.name).toBe('pixpilot-info');
@@ -126,8 +126,8 @@ describe('topologicalSortTemplates', () => {
     expect(result[3]!.name).toBe('cleanup-setup-artifacts');
   });
 
-  it('should handle complex scenario with multiple independent and dependent templates', () => {
-    const templates: TasksConfiguration[] = [
+  it('should handle complex scenario with multiple independent and dependent configs', () => {
+    const configs: TasksConfiguration[] = [
       {
         name: 'project-info',
         tasks: [],
@@ -164,12 +164,12 @@ describe('topologicalSortTemplates', () => {
       },
     ];
 
-    const result = topologicalSortTemplates(templates);
+    const result = topologicalSortConfigs(configs);
 
-    // Find positions of key templates
+    // Find positions of key configs
     const cleanupIndex = result.findIndex((t) => t.name === 'cleanup-setup-artifacts');
 
-    // Independent templates should maintain their relative positions
+    // Independent configs should maintain their relative positions
     expect(cleanupIndex).toBe(6); // Should stay at the end
 
     // Dependencies should be satisfied
@@ -190,33 +190,33 @@ describe('topologicalSortTemplates', () => {
     expect(turboIndex).toBeLessThan(updateRootIndex);
   });
 
-  it('should handle templates with multiple dependencies', () => {
-    const templates: TasksConfiguration[] = [
+  it('should handle configs with multiple dependencies', () => {
+    const configs: TasksConfiguration[] = [
       {
-        name: 'template-d',
-        dependencies: ['template-b', 'template-c'],
+        name: 'config-d',
+        dependencies: ['config-b', 'config-c'],
         tasks: [],
       },
       {
-        name: 'template-c',
+        name: 'config-c',
         tasks: [],
       },
       {
-        name: 'template-b',
+        name: 'config-b',
         tasks: [],
       },
       {
-        name: 'template-a',
+        name: 'config-a',
         tasks: [],
       },
     ];
 
-    const result = topologicalSortTemplates(templates);
+    const result = topologicalSortConfigs(configs);
 
     // Find positions
-    const bIndex = result.findIndex((t) => t.name === 'template-b');
-    const cIndex = result.findIndex((t) => t.name === 'template-c');
-    const dIndex = result.findIndex((t) => t.name === 'template-d');
+    const bIndex = result.findIndex((t) => t.name === 'config-b');
+    const cIndex = result.findIndex((t) => t.name === 'config-c');
+    const dIndex = result.findIndex((t) => t.name === 'config-d');
 
     // b and c should come before d
     expect(bIndex).toBeLessThan(dIndex);
@@ -224,100 +224,100 @@ describe('topologicalSortTemplates', () => {
   });
 
   it('should detect circular dependencies', () => {
-    const templates: TasksConfiguration[] = [
+    const configs: TasksConfiguration[] = [
       {
-        name: 'template-a',
-        dependencies: ['template-b'],
+        name: 'config-a',
+        dependencies: ['config-b'],
         tasks: [],
       },
       {
-        name: 'template-b',
-        dependencies: ['template-c'],
+        name: 'config-b',
+        dependencies: ['config-c'],
         tasks: [],
       },
       {
-        name: 'template-c',
-        dependencies: ['template-a'],
+        name: 'config-c',
+        dependencies: ['config-a'],
         tasks: [],
       },
     ];
 
-    expect(() => topologicalSortTemplates(templates)).toThrow(CircularDependencyError);
+    expect(() => topologicalSortConfigs(configs)).toThrow(CircularDependencyError);
   });
 
   it('should detect self-referential circular dependency', () => {
-    const templates: TasksConfiguration[] = [
+    const configs: TasksConfiguration[] = [
       {
-        name: 'template-a',
-        dependencies: ['template-a'],
+        name: 'config-a',
+        dependencies: ['config-a'],
         tasks: [],
       },
     ];
 
-    expect(() => topologicalSortTemplates(templates)).toThrow(CircularDependencyError);
+    expect(() => topologicalSortConfigs(configs)).toThrow(CircularDependencyError);
   });
 
-  it('should handle templates with duplicate names by preserving order', () => {
-    const templates: TasksConfiguration[] = [
+  it('should handle configs with duplicate names by preserving order', () => {
+    const configs: TasksConfiguration[] = [
       {
-        name: 'template-a',
+        name: 'config-a',
         tasks: [],
       },
       {
-        name: 'template-b',
+        name: 'config-b',
         tasks: [],
       },
       {
-        name: 'template-a', // Duplicate name
+        name: 'config-a', // Duplicate name
         tasks: [],
       },
     ];
 
-    const result = topologicalSortTemplates(templates);
+    const result = topologicalSortConfigs(configs);
     // Should preserve original order when duplicate names exist
-    expect(result).toEqual(templates);
+    expect(result).toEqual(configs);
   });
 
   it('should handle long dependency chains', () => {
-    const templates: TasksConfiguration[] = [
+    const configs: TasksConfiguration[] = [
       {
-        name: 'template-e',
-        dependencies: ['template-d'],
+        name: 'config-e',
+        dependencies: ['config-d'],
         tasks: [],
       },
       {
-        name: 'template-d',
-        dependencies: ['template-c'],
+        name: 'config-d',
+        dependencies: ['config-c'],
         tasks: [],
       },
       {
-        name: 'template-c',
-        dependencies: ['template-b'],
+        name: 'config-c',
+        dependencies: ['config-b'],
         tasks: [],
       },
       {
-        name: 'template-b',
-        dependencies: ['template-a'],
+        name: 'config-b',
+        dependencies: ['config-a'],
         tasks: [],
       },
       {
-        name: 'template-a',
+        name: 'config-a',
         tasks: [],
       },
     ];
 
-    const result = topologicalSortTemplates(templates);
+    const result = topologicalSortConfigs(configs);
 
     // Should be in order: a, b, c, d, e
-    expect(result[0]!.name).toBe('template-a');
-    expect(result[1]!.name).toBe('template-b');
-    expect(result[2]!.name).toBe('template-c');
-    expect(result[3]!.name).toBe('template-d');
-    expect(result[4]!.name).toBe('template-e');
+    expect(result[0]!.name).toBe('config-a');
+    expect(result[1]!.name).toBe('config-b');
+    expect(result[2]!.name).toBe('config-c');
+    expect(result[3]!.name).toBe('config-d');
+    expect(result[4]!.name).toBe('config-e');
   });
 
-  it('should handle mixed independent templates at different positions', () => {
-    const templates: TasksConfiguration[] = [
+  it('should handle mixed independent configs at different positions', () => {
+    const configs: TasksConfiguration[] = [
       {
         name: 'independent-1',
         tasks: [],
@@ -341,21 +341,21 @@ describe('topologicalSortTemplates', () => {
       },
     ];
 
-    const result = topologicalSortTemplates(templates);
+    const result = topologicalSortConfigs(configs);
 
-    // Independent templates should keep their positions
+    // Independent configs should keep their positions
     expect(result[0]!.name).toBe('independent-1');
     expect(result[2]!.name).toBe('independent-2');
     expect(result[4]!.name).toBe('independent-3');
 
-    // Dependent templates should be sorted
+    // Dependent configs should be sorted
     const bIndex = result.findIndex((t) => t.name === 'dependent-b');
     const aIndex = result.findIndex((t) => t.name === 'dependent-a');
     expect(bIndex).toBeLessThan(aIndex);
   });
 
   it('should handle real-world scenario from user example', () => {
-    const templates: TasksConfiguration[] = [
+    const configs: TasksConfiguration[] = [
       {
         name: 'project-info',
         tasks: [],
@@ -390,7 +390,7 @@ describe('topologicalSortTemplates', () => {
       },
     ];
 
-    const result = topologicalSortTemplates(templates);
+    const result = topologicalSortConfigs(configs);
 
     // Cleanup should remain at position 6 (last)
     expect(result[6]!.name).toBe('cleanup-setup-artifacts');

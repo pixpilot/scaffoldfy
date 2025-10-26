@@ -7,7 +7,7 @@ A flexible and powerful task automation utility for project setup, cleanup, and 
 ## ✨ Features
 
 - 💬 **Interactive Prompts** - Collect user input with various prompt types
-- 🧩 **Template Inheritance** - Extend base templates for code reuse
+- 🧩 **Configuration Inheritance** - Extend base configs for code reuse
 - 🔍 **Dry-Run Mode** - Preview changes with detailed diffs before applying
 - 🔌 **Plugin System** - Create custom task types and lifecycle hooks
 - 📝 **Handlebars Support** - Advanced templating with conditionals, loops, and helpers
@@ -28,7 +28,7 @@ pnpm add @pixpilot/scaffoldfy
 scaffoldfy
 
 # With custom tasks file
-scaffoldfy --config ./my-tasks.json
+scaffoldfy --config ./config.json
 
 # Preview changes (dry run)
 scaffoldfy --dry-run
@@ -41,7 +41,7 @@ Or run without installing using npx:
 npx @pixpilot/scaffoldfy
 
 # With custom tasks file
-npx @pixpilot/scaffoldfy --config ./my-tasks.json
+npx @pixpilot/scaffoldfy --config ./config.json
 
 # Preview changes (dry run)
 npx @pixpilot/scaffoldfy --dry-run

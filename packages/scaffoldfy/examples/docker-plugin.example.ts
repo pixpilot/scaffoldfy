@@ -6,7 +6,7 @@
  *
  * Usage:
  * 1. Import and register the plugin
- * 2. Use the 'docker-setup' task type in your template
+ * 2. Use the 'docker-setup' task type in your configs
  */
 
 import { createTaskPlugin, registerPlugin } from '@pixpilot/scaffoldfy';

@@ -1,18 +1,3 @@
-/**
- * Template Task Automation Library
- *
- * Enhanced version with:
- * - Dry run mode
- * - Task dependencies
- * - Rollback support
- * - Progress indicators
- * - Advanced conditional evaluation
- * - More task types (rename, git-init, exec)
- * - Better error messages
- * - Configuration validation
- * - TypeScript type safety
- */
-
 import type { PromptDefinition, TaskDefinition, VariableDefinition } from './types.js';
 
 import process from 'node:process';
@@ -28,53 +13,6 @@ import { log } from './utils';
 const dryRun = process.argv.includes('--dry-run');
 const force = process.argv.includes('--force');
 
-// =================================================================
-// Main Execution
-// ============================================================================
-
-/**
- * Main function for executing tasks with default/empty tasks array
- * For most use cases, you should use runWithTasks() with your custom tasks
- */
-// eslint-disable-next-line ts/explicit-module-boundary-types
-async function main(customTasks?: TaskDefinition[]) {
-  try {
-    // Use custom tasks or empty array
-    const tasks = customTasks || [];
-
-    if (tasks.length === 0) {
-      log(
-        '⚠️  No tasks defined. Use --config to specify tasks or call runWithTasks() programmatically.',
-        'warn',
-      );
-
-      log('Example: scaffoldfy --config ./tasks.json', 'info');
-
-      process.exit(1);
-    }
-
-    await runTasks(tasks, {
-      dryRun,
-      force,
-      tasksFilePath: undefined,
-    });
-  } catch (error) {
-    log('❌ Task execution failed', 'error');
-
-    if (error instanceof Error) {
-      log(`Error: ${error.message}`, 'error');
-
-      if (process.env['DEBUG'] != null) {
-        console.error(error.stack);
-      }
-    } else {
-      console.error(error);
-    }
-
-    process.exit(1);
-  }
-}
-
 // ============================================================================
 // Public API
 // ============================================================================
@@ -85,10 +23,10 @@ async function main(customTasks?: TaskDefinition[]) {
  * @param options - Optional configuration
  * @param options.dryRun - Preview changes without applying them
  * @param options.force - Force execution even if checks fail
- * @param options.tasksFilePath - Path to the tasks file
+ * @param options.configFilePath - Path to the tasks file
  * @param options.variables - Optional top-level global variables
  * @param options.prompts - Optional top-level global prompts
- * @param options.templateEnabled - Optional template-level enabled condition
+ * @param options.configEnabled - Optional config-level enabled condition
  * @param options.transformers - Optional transformer definitions
  */
 export async function runWithTasks(
@@ -96,10 +34,10 @@ export async function runWithTasks(
   options?: {
     dryRun?: boolean | undefined;
     force?: boolean | undefined;
-    tasksFilePath?: string | undefined;
+    configFilePath?: string | undefined;
     variables?: VariableDefinition[] | undefined;
     prompts?: PromptDefinition[] | undefined;
-    templateEnabled?: import('./types.js').EnabledValue | undefined;
+    configEnabled?: import('./types.js').EnabledValue | undefined;
     transformers?: import('./transformers/types.js').Transformer[] | undefined;
   },
 ): Promise<void> {
@@ -107,15 +45,15 @@ export async function runWithTasks(
     await runTasks(customTasks, {
       dryRun: options?.dryRun ?? dryRun,
       force: options?.force ?? force,
-      tasksFilePath: options?.tasksFilePath ?? undefined,
+      configFilePath: options?.configFilePath ?? undefined,
       ...(options?.variables != null && {
         variables: options.variables,
       }),
       ...(options?.prompts != null && {
         prompts: options.prompts,
       }),
-      ...(options?.templateEnabled != null && {
-        templateEnabled: options.templateEnabled,
+      ...(options?.configEnabled != null && {
+        configEnabled: options.configEnabled,
       }),
       ...(options?.transformers != null && {
         transformers: options.transformers,
@@ -138,9 +76,18 @@ export async function runWithTasks(
   }
 }
 
+// Configuration and inheritance API (documented in CONFIG_INHERITANCE.md)
+export {
+  clearConfigurationCache,
+  loadAndMergeConfiguration,
+  loadConfiguration,
+  loadTasksWithInheritance,
+  mergeConfigurations,
+} from './config-inheritance.js';
+
+// Dry-run and diff API (documented in DRY_RUN.md)
 export {
   displayTasksDiff,
-  getCreateDiff,
   getDeleteDiff,
   getExecDiff,
   getGitInitDiff,
@@ -149,56 +96,24 @@ export {
   getReplaceInFileDiff,
   getTaskDiff,
   getUpdateJsonDiff,
-  getWriteDiff,
 } from './dry-run.js';
+
+// Plugin API (documented in PLUGINS.md)
 export {
-  callHook,
   clearPlugins,
   createTaskPlugin,
   executePluginTask,
   getPlugin,
   getPluginForTaskType,
-  getPluginTaskDiff,
   isPluginTaskType,
   listPlugins,
   registerHooks,
   registerPlugin,
   unregisterPlugin,
-  validatePluginTask,
 } from './plugin.js';
-export {
-  collectPrompts,
-  resolveAllDefaultValues,
-  resolveDefaultValue,
-  validatePrompts,
-} from './prompts/index.js';
-export { runTasks, runTemplatesSequentially } from './run-tasks.js';
+
+// JSON validation API (documented in JSON_VALIDATION.md)
 export { validateScaffoldfyJsonFile } from './scaffoldfy-config-json-validator';
-export { executeTask, registerBuiltInPlugins, runTask } from './task-executors.js';
-export { topologicalSort } from './task-resolver.js';
-export {
-  clearTemplateCache,
-  loadAndMergeTemplate,
-  loadTasksWithInheritance,
-  loadTemplate,
-  loadTemplatesInOrder,
-  mergeTemplates,
-} from './template-inheritance.js';
-export {
-  getTemplateSourceDescription,
-  hasInlineTemplate,
-  hasTemplateFile,
-  processTemplate,
-  shouldUseHandlebars,
-  validateTemplateConfig,
-} from './template-utils.js';
+
+// Type exports
 export type * from './types.js';
-
-export {
-  collectVariables,
-  resolveAllVariableValues,
-  resolveVariableValue,
-  validateVariables,
-} from './variables/index.js';
-
-export { main };

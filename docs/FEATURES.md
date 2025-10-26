@@ -5,24 +5,24 @@ title: Advanced Features - Scaffoldfy
 
 # Advanced Features
 
-This guide covers the advanced features of **@pixpilot/scaffoldfy** that enable powerful and flexible template automation.
+This guide covers the advanced features of **@pixpilot/scaffoldfy** that enable powerful and flexible configuration automation.
 
 ## Table of Contents
 
-- [Template-Level Enabled](#template-level-enabled)
+- [Configuration-Level Enabled](#configuration-level-enabled)
 - [Conditional Execution](#conditional-execution)
 - [Conditional Variables](#conditional-variables)
 - [Handlebars Templates](#handlebars-templates)
 
 ---
 
-## Template-Level Enabled
+## Configuration-Level Enabled
 
-Control whether an entire template should be executed at the root level. This is useful for creating conditional templates that only run under specific circumstances.
+Control whether an entire configuration should be executed at the root level. This is useful for creating conditional configurations that only run under specific circumstances.
 
 ### Overview
 
-The root-level `enabled` property allows you to enable or disable an entire template, including all of its prompts, variables, and tasks. If the template is disabled, execution stops immediately without any user interaction or file operations.
+The root-level `enabled` property allows you to enable or disable an entire configuration, including all of its prompts, variables, and tasks. If the configuration is disabled, execution stops immediately without any user interaction or file operations.
 
 ### Basic Usage
 
@@ -31,7 +31,7 @@ The root-level `enabled` property allows you to enable or disable an entire temp
 ```json
 {
   "$schema": "https://unpkg.com/@pixpilot/scaffoldfy/schema",
-  "name": "my-template",
+  "name": "my-config",
   "enabled": true,
   "tasks": []
 }
@@ -42,7 +42,7 @@ The root-level `enabled` property allows you to enable or disable an entire temp
 ```json
 {
   "$schema": "https://unpkg.com/@pixpilot/scaffoldfy/schema",
-  "name": "conditional-template",
+  "name": "conditional-config",
   "enabled": {
     "type": "condition",
     "value": "projectType === 'monorepo'"
@@ -53,12 +53,12 @@ The root-level `enabled` property allows you to enable or disable an entire temp
 
 ### Executable Enabled
 
-Determine if a template should run by executing a shell command:
+Determine if a configuration should run by executing a shell command:
 
 ```json
 {
   "$schema": "https://unpkg.com/@pixpilot/scaffoldfy/schema",
-  "name": "git-template",
+  "name": "git-config",
   "enabled": {
     "type": "exec",
     "value": "git rev-parse --is-inside-work-tree"
@@ -75,9 +75,9 @@ The command output is parsed as a boolean:
 
 ### Use Cases
 
-#### 1. Environment-Based Templates
+#### 1. Environment-Based Configurations
 
-Only run certain templates in specific environments:
+Only run certain configurations in specific environments:
 
 ```json
 {
@@ -99,9 +99,9 @@ Only run certain templates in specific environments:
 }
 ```
 
-#### 2. Dependency-Based Templates
+#### 2. Dependency-Based Configurations
 
-Enable templates only when certain dependencies exist:
+Enable configurations only when certain dependencies exist:
 
 ```json
 {
@@ -115,9 +115,9 @@ Enable templates only when certain dependencies exist:
 }
 ```
 
-#### 3. Conditional Based on Other Templates
+#### 3. Conditional Based on Other Configurations
 
-Enable templates based on variables from dependency templates:
+Enable configurations based on variables from dependency configurations:
 
 ```json
 {
@@ -142,11 +142,11 @@ Enable templates based on variables from dependency templates:
 }
 ```
 
-In this example, if the `project-info` template has a prompt `useTypeScript`, this template will only run if the user answered `true`.
+In this example, if the `project-info` configuration has a prompt `useTypeScript`, this configuration will only run if the user answered `true`.
 
 #### 4. Git Repository Check
 
-Only run Git-related templates in Git repositories:
+Only run Git-related configurations in Git repositories:
 
 ```json
 {
@@ -170,28 +170,26 @@ Only run Git-related templates in Git repositories:
 
 ### Evaluation Timing
 
-The template-level `enabled` property evaluation depends on the context:
+The configuration-level `enabled` property evaluation depends on the context:
 
-**For Main Templates:**
+**For Main Configurations:**
 
 1. ✅ **Evaluated first** - Before variable resolution
 2. ✅ **Evaluated first** - Before prompt collection
 3. ✅ **Evaluated first** - Before task execution
 4. ✅ **Evaluated first** - Before validation
 
-If the main template is disabled, **nothing** from that template will be processed or executed.
+If the main configuration is disabled, **nothing** from that configuration will be processed or executed.
 
-**For Extended Templates (via `extends`):**
+**For Extended Configurations (via `extends`):**
 
-Extended templates use **lazy evaluation**, meaning their `enabled` condition is evaluated sequentially during execution with access to previous values:
+Extended configurations use **lazy evaluation**, meaning their `enabled` condition is evaluated sequentially during execution with access to previous values:
 
-1. **Prompts**: Each prompt from an extended template is evaluated before asking - has access to all previous prompt answers
-2. **Variables**: Each variable from an extended template is evaluated before resolving - has access to all prompts + previous variables
-3. **Tasks**: Each task from an extended template is evaluated before execution - has access to all prompts and variables
+1. **Prompts**: Each prompt from an extended configuration is evaluated before asking - has access to all previous prompt answers
+2. **Variables**: Each variable from an extended configuration is evaluated before resolving - has access to all prompts + previous variables
+3. **Tasks**: Each task from an extended configuration is evaluated before execution - has access to all prompts and variables
 
-This allows extended templates to be conditionally enabled based on user input or computed values from dependency templates.
-
-### Example: Conditional Extended Template
+### Example: Conditional Extended Configuration
 
 ```json
 {
@@ -234,20 +232,18 @@ This allows extended templates to be conditionally enabled based on user input o
 
 In this example:
 
-1. `project-info` template asks for `repoOwner` and `orgName`
-2. `pixpilot-info` template computes `pixpilot_project` variable based on those answers
-3. `pixpilot-copilot-instructions` template is only enabled if `pixpilot_project` is `true`
-4. The tasks, prompts, and variables from disabled templates are automatically skipped
+1. `project-info` configuration asks for `repoOwner` and `orgName`
+2. `pixpilot-info` configuration computes `pixpilot_project` variable based on those answers
+3. `pixpilot-copilot-instructions` configuration is only enabled if `pixpilot_project` is `true`
+4. The tasks, prompts, and variables from disabled configurations are automatically skipped
 
-This makes it efficient for conditional templates and enables powerful template composition patterns.
+### Configuration Variables in Enabled
 
-### Template Variables in Enabled
-
-You can use variables in the `enabled` expression, but be aware that variables are resolved during execution. For exec-type enabled, you can use template interpolation:
+You can use variables in the `enabled` expression, but be aware that variables are resolved during execution. For exec-type enabled, you can use configuration interpolation:
 
 ```json
 {
-  "name": "conditional-template",
+  "name": "conditional-config",
   "variables": [
     {
       "id": "targetEnv",
@@ -266,7 +262,7 @@ However, for early evaluation, prefer using exec-type enabled directly:
 
 ```json
 {
-  "name": "conditional-template",
+  "name": "conditional-config",
   "enabled": {
     "type": "exec",
     "value": "test \"$NODE_ENV\" = \"production\" && echo true || echo false"
@@ -278,9 +274,9 @@ However, for early evaluation, prefer using exec-type enabled directly:
 ### Best Practices
 
 1. **Use exec for external checks** - When checking file existence, environment variables, or system state
-2. **Use conditions for prompt-based logic** - When the decision depends on user input from dependency templates
+2. **Use conditions for prompt-based logic** - When the decision depends on user input from dependency configurations
 3. **Keep conditions simple** - Complex logic should be in scripts, not conditions
-4. **Document dependencies** - If your template depends on variables from other templates, list them in `dependencies`
+4. **Document dependencies** - If your configuration depends on variables from other configurations, list them in `dependencies`
 
 ---
 
@@ -573,11 +569,11 @@ This allows conditional variables to reference prompt values.
 }
 ```
 
-### Dynamic Template Enabling
+### Dynamic Configuration Enabling
 
-Combine conditional variables with template-level `enabled` to create templates that automatically activate based on project context:
+Combine conditional variables with configuration-level `enabled` to create configurations that automatically activate based on project context:
 
-**Template: pixpilot-info** (derives the flag)
+**Config: pixpilot-info** (derives the flag)
 
 ```json
 {
@@ -597,7 +593,7 @@ Combine conditional variables with template-level `enabled` to create templates 
 }
 ```
 
-**Template: pixpilot-copilot-instructions** (uses the flag)
+**Config: pixpilot-copilot-instructions** (uses the flag)
 
 ```json
 {
@@ -620,7 +616,7 @@ Combine conditional variables with template-level `enabled` to create templates 
 }
 ```
 
-**Result**: The `pixpilot-copilot-instructions` template only runs when the repository owner or organization is "pixpilot".
+**Result**: The `pixpilot-copilot-instructions` configuration only runs when the repository owner or organization is "pixpilot".
 
 ### Complex Conditions
 
@@ -657,12 +653,6 @@ Conditional variables support complex JavaScript expressions:
 2. **Document the logic**: Add comments in `description` field
 3. **Chain dependencies**: Let conditional variables build on each other
 4. **Fail gracefully**: Provide sensible default values in `ifFalse`
-
-### Related Features
-
-- See [Variables](./VARIABLES.md) for complete variable documentation
-- See [Template-Level Enabled](#template-level-enabled) for controlling entire templates
-- See [Conditional Execution](#conditional-execution) for task-level conditions
 
 ---
 
@@ -1051,6 +1041,6 @@ This example:
 - [Getting Started Guide](GETTING_STARTED.md) - Learn the basics
 - [Task Types Reference](TASK_TYPES.md) - Explore all task types
 - [Interactive Prompts](PROMPTS.md) - Master user input
-- [Template Inheritance](TEMPLATE_INHERITANCE.md) - Compose templates
+- [Configuration Inheritance](CONFIG_INHERITANCE.md) - Compose configurations
 - [Plugin System](PLUGINS.md) - Create custom task types
 - [Dry Run Mode](DRY_RUN.md) - Preview changes safely

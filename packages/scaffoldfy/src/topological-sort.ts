@@ -1,116 +1,116 @@
 /**
  * Topological Sort Utilities
  *
- * This module provides utilities for topologically sorting templates
+ * This module provides utilities for topologically sorting configs
  * based on their dependencies while preserving the original order
- * of independent templates.
+ * of independent configs.
  */
 
 import type { TasksConfiguration } from './types.js';
 import { CircularDependencyError } from './errors/base.js';
 
 /**
- * Topologically sort templates based on their dependencies
- * while preserving the original order of independent templates.
+ * Topologically sort configs based on their dependencies
+ * while preserving the original order of independent configs.
  *
- * Templates that have no dependencies and are not depended upon by others
- * will maintain their original position in the array. Only templates with
+ * Configs that have no dependencies and are not depended upon by others
+ * will maintain their original position in the array. Only configs with
  * dependency relationships will be reordered.
  *
- * @param templates - Array of templates to sort
- * @returns Sorted array of templates
+ * @param templates - Array of configs to sort
+ * @returns Sorted array of configs
  */
-export function topologicalSortTemplates(
+export function topologicalSortConfigs(
   templates: TasksConfiguration[],
 ): TasksConfiguration[] {
-  // If all templates have unique names, use name-based sorting
-  // If there are duplicate names, just return templates in order (can't sort by name)
-  const nameToTemplates = new Map<string, TasksConfiguration[]>();
-  for (const template of templates) {
-    const existing = nameToTemplates.get(template.name) || [];
-    existing.push(template);
-    nameToTemplates.set(template.name, existing);
+  // If all configs have unique names, use name-based sorting
+  // If there are duplicate names, just return configs in order (can't sort by name)
+  const nameToConfigs = new Map<string, TasksConfiguration[]>();
+  for (const config of templates) {
+    const existing = nameToConfigs.get(config.name) || [];
+    existing.push(config);
+    nameToConfigs.set(config.name, existing);
   }
 
-  // Check if all templates have unique names
-  const hasDuplicateNames = Array.from(nameToTemplates.values()).some(
+  // Check if all configs have unique names
+  const hasDuplicateNames = Array.from(nameToConfigs.values()).some(
     (arr) => arr.length > 1,
   );
 
   if (hasDuplicateNames) {
     // Cannot do topological sort with duplicate names
-    // Just return templates in the order they were loaded
+    // Just return configs in the order they were loaded
     return templates;
   }
 
   // Build a dependency graph
-  const templateMap = new Map<string, TasksConfiguration>();
-  const dependents = new Map<string, Set<string>>(); // Map of template name -> templates that depend on it
-  const dependencies = new Map<string, Set<string>>(); // Map of template name -> templates it depends on
+  const configMap = new Map<string, TasksConfiguration>();
+  const dependents = new Map<string, Set<string>>(); // Map of config name -> configs that depend on it
+  const dependencies = new Map<string, Set<string>>(); // Map of config name -> configs it depends on
 
-  for (const template of templates) {
-    templateMap.set(template.name, template);
-    dependencies.set(template.name, new Set());
+  for (const config of templates) {
+    configMap.set(config.name, config);
+    dependencies.set(config.name, new Set());
 
-    if (template.dependencies != null && template.dependencies.length > 0) {
-      for (const depName of template.dependencies) {
-        dependencies.get(template.name)!.add(depName);
+    if (config.dependencies != null && config.dependencies.length > 0) {
+      for (const depName of config.dependencies) {
+        dependencies.get(config.name)!.add(depName);
 
         if (!dependents.has(depName)) {
           dependents.set(depName, new Set());
         }
-        dependents.get(depName)!.add(template.name);
+        dependents.get(depName)!.add(config.name);
       }
     }
   }
 
-  // Identify templates that are completely independent:
+  // Identify configs that are completely independent:
   // - Have no dependencies
-  // - Are not depended upon by any other template
-  const independentTemplates = new Set<string>();
+  // - Are not depended upon by any other config
+  const independentConfigs = new Set<string>();
   const independentPositions = new Map<string, number>(); // Track original positions
 
   for (let i = 0; i < templates.length; i++) {
-    const template = templates[i]!;
-    const hasDeps = dependencies.get(template.name)!.size > 0;
+    const config = templates[i]!;
+    const hasDeps = dependencies.get(config.name)!.size > 0;
     const isDependedUpon =
-      dependents.has(template.name) && dependents.get(template.name)!.size > 0;
+      dependents.has(config.name) && dependents.get(config.name)!.size > 0;
 
     if (!hasDeps && !isDependedUpon) {
-      independentTemplates.add(template.name);
-      independentPositions.set(template.name, i);
+      independentConfigs.add(config.name);
+      independentPositions.set(config.name, i);
     }
   }
 
-  // Get templates that need to be sorted (have dependencies or are depended upon)
-  const templatesToSort = templates.filter(
-    (template) => !independentTemplates.has(template.name),
+  // Get configs that need to be sorted (have dependencies or are depended upon)
+  const configsToSort = templates.filter(
+    (config) => !independentConfigs.has(config.name),
   );
 
-  // Perform topological sort on dependent templates only
+  // Perform topological sort on dependent configs only
   const sorted: TasksConfiguration[] = [];
   const visited = new Set<string>();
   const visiting = new Set<string>();
 
-  function visit(templateName: string): void {
-    if (visited.has(templateName)) {
+  function visit(configName: string): void {
+    if (visited.has(configName)) {
       return;
     }
 
-    if (visiting.has(templateName)) {
+    if (visiting.has(configName)) {
       // Circular dependency detected
       throw CircularDependencyError.forTemplateDependencies(
         Array.from(visiting),
-        templateName,
+        configName,
       );
     }
 
-    visiting.add(templateName);
+    visiting.add(configName);
 
-    const template = templateMap.get(templateName);
-    if (template != null) {
+    const config = configMap.get(configName);
+    if (config != null) {
       // Visit all dependencies first
-      const deps = dependencies.get(templateName);
+      const deps = dependencies.get(configName);
       if (deps != null && deps.size > 0) {
         for (const depName of deps) {
           visit(depName);
@@ -118,32 +118,32 @@ export function topologicalSortTemplates(
       }
     }
 
-    visiting.delete(templateName);
-    visited.add(templateName);
+    visiting.delete(configName);
+    visited.add(configName);
 
-    if (template != null && !independentTemplates.has(templateName)) {
-      sorted.push(template);
+    if (config != null && !independentConfigs.has(configName)) {
+      sorted.push(config);
     }
   }
 
-  // Visit all templates that need sorting
-  for (const template of templatesToSort) {
-    visit(template.name);
+  // Visit all configs that need sorting
+  for (const config of configsToSort) {
+    visit(config.name);
   }
 
-  // Now merge the sorted templates back with independent templates at their original positions
+  // Now merge the sorted configs back with independent configs at their original positions
   const result: TasksConfiguration[] = [];
   let sortedIndex = 0;
 
   for (let i = 0; i < templates.length; i++) {
-    const template = templates[i]!;
+    const config = templates[i]!;
 
-    if (independentTemplates.has(template.name)) {
-      // Keep independent template at its original position
-      result.push(template);
+    if (independentConfigs.has(config.name)) {
+      // Keep independent config at its original position
+      result.push(config);
     } else if (sortedIndex < sorted.length) {
-      // We need to insert a sorted template here
-      // But we should insert it only if we haven't used all sorted templates
+      // We need to insert a sorted config here
+      // But we should insert it only if we haven't used all sorted configs
       result.push(sorted[sortedIndex]!);
       sortedIndex++;
     }

@@ -1,6 +1,6 @@
 # JSON Schema Validation
 
-Scaffoldfy includes a JSON schema validator to catch errors in your template files before runtime.
+Scaffoldfy includes a JSON schema validator to catch errors in your config files before runtime.
 
 ## Usage
 
@@ -10,7 +10,7 @@ Use the convenient root script to validate files from anywhere in the monorepo:
 
 ```bash
 # Validate a single file
-pnpm validate:json --file packages/scaffoldfy/examples/template-tasks-with-prompts.json
+pnpm validate:json --file packages/scaffoldfy/examples/config-tasks-with-prompts.json
 
 # Validate all JSON files in a directory
 pnpm validate:json --dir packages/scaffoldfy/examples
@@ -22,7 +22,7 @@ If you're working inside the `packages/scaffoldfy` directory:
 
 ```bash
 # Validate a single file
-pnpm run validate-scaffoldfy-json --file examples/template-tasks-with-prompts.json
+pnpm run validate-scaffoldfy-json --file examples/config-tasks-with-prompts.json
 
 # Validate all JSON files in a directory
 pnpm run validate-scaffoldfy-json --dir examples
@@ -34,7 +34,7 @@ After building the package, you can use the binary directly:
 
 ```bash
 # From the scaffoldfy package directory
-node dist/scaffoldfy-config-json-validator/cli.js --file examples/template-tasks-with-prompts.json
+node dist/scaffoldfy-config-json-validator/cli.js --file examples/config-tasks-with-prompts.json
 node dist/scaffoldfy-config-json-validator/cli.js --dir examples
 ```
 
@@ -74,7 +74,7 @@ The validator checks JSON files that have a `$schema` property pointing to a sca
 ```json
 {
   "$schema": "https://unpkg.com/@pixpilot/scaffoldfy/schema",
-  "name": "my-template",
+  "name": "my-config",
   "tasks": []
 }
 ```

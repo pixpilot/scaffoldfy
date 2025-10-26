@@ -96,7 +96,7 @@ describe('runTasks', () => {
       dryRun: false,
       force: false,
 
-      tasksFilePath: undefined,
+      configFilePath: undefined,
     });
 
     expect(mockCreateInitialConfig).toHaveBeenCalled();
@@ -118,7 +118,7 @@ describe('runTasks', () => {
         dryRun: false,
         force: false,
 
-        tasksFilePath: undefined,
+        configFilePath: undefined,
       }),
     ).rejects.toThrow('Process exit');
   });
@@ -148,7 +148,7 @@ describe('runTasks', () => {
       dryRun: false,
       force: false,
 
-      tasksFilePath: undefined,
+      configFilePath: undefined,
     });
 
     expect(mockRunTask).toHaveBeenCalledTimes(3);
@@ -159,7 +159,7 @@ describe('runTasks', () => {
       dryRun: true,
       force: false,
 
-      tasksFilePath: undefined,
+      configFilePath: undefined,
     });
 
     expect(mockCreateInitialConfig).toHaveBeenCalled();
@@ -201,7 +201,7 @@ describe('runTasks', () => {
       dryRun: false,
       force: false,
 
-      tasksFilePath: undefined,
+      configFilePath: undefined,
     });
 
     // topologicalSort is called with only the tasks that passed lazy evaluation
@@ -234,7 +234,7 @@ describe('runTasks', () => {
     await runTasks(tasksWithPromptCondition, {
       dryRun: false,
       force: false,
-      tasksFilePath: undefined,
+      configFilePath: undefined,
     });
 
     // Verify that lazy mode was used in at least one call (initial filtering)

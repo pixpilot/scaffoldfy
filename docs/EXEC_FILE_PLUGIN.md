@@ -533,7 +533,7 @@ Runtime is automatically detected from file extension, even in variables and pro
 
 ## Best Practices
 
-1. **Use Relative Paths**: Reference scripts relative to your template for portability
+1. **Use Relative Paths**: Reference scripts relative to your configuration for portability
 2. **Version Remote Scripts**: Use versioned URLs or commit hashes for remote scripts
 3. **Error Handling**: Scripts should return appropriate exit codes
 4. **Security**: Only execute trusted scripts, especially from remote sources

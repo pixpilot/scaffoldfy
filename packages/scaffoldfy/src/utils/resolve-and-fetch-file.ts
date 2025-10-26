@@ -5,7 +5,7 @@
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { fetchTemplateFile } from '../template-inheritance.js';
+import { fetchConfigurationFile } from '../config-inheritance.js';
 import { isUrl } from './is-url.js';
 import { debug } from './logger.js';
 import { resolveFilePath } from './resolve-file-path.js';
@@ -96,7 +96,7 @@ export async function resolveAndFetchFile(
   if (isUrl(file)) {
     resolvedPath = file;
     debug(`Fetching remote file: ${resolvedPath}`);
-    const fileContent = await fetchTemplateFile(resolvedPath);
+    const fileContent = await fetchConfigurationFile(resolvedPath);
     isRemote = true;
 
     // Create temporary file
@@ -116,7 +116,7 @@ export async function resolveAndFetchFile(
     if (isUrl(resolvedPath)) {
       // Case 3a: Resolved to a URL - fetch it
       debug(`Fetching remote file: ${resolvedPath}`);
-      const fileContent = await fetchTemplateFile(resolvedPath);
+      const fileContent = await fetchConfigurationFile(resolvedPath);
       isRemote = true;
 
       // Create temporary file

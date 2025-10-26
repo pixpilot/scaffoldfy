@@ -8,7 +8,7 @@ import path from 'node:path';
 
 import process from 'node:process';
 import Handlebars from 'handlebars';
-import { TemplateFileNotFoundError } from '../errors/template.js';
+import { ConfigurationFileNotFoundError } from '../errors/config.js';
 import { log } from '../logger.js';
 
 // Re-export logger functions for convenience
@@ -32,7 +32,7 @@ export function compileHandlebarsTemplateFile(
       : path.join(process.cwd(), templatePath);
 
     if (!fs.existsSync(absolutePath)) {
-      throw TemplateFileNotFoundError.forPath(templatePath);
+      throw ConfigurationFileNotFoundError.forPath(templatePath);
     }
 
     const templateContent = fs.readFileSync(absolutePath, 'utf-8');

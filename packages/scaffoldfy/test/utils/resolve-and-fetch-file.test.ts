@@ -6,7 +6,7 @@ import path from 'node:path';
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import * as templateInheritance from '../../src/template-inheritance.js';
+import * as configInheritance from '../../src/config-inheritance.js';
 import {
   cleanupTempFile,
   resolveAndFetchFile,
@@ -15,8 +15,8 @@ import {
 // Mock the modules
 vi.mock('node:fs');
 vi.mock('node:os');
-vi.mock('../../src/template-inheritance.js', () => ({
-  fetchTemplateFile: vi.fn(),
+vi.mock('../../src/config-inheritance.js', () => ({
+  fetchConfigurationFile: vi.fn(),
 }));
 vi.mock('../../src/utils/logger', () => ({
   debug: vi.fn(),
@@ -42,7 +42,7 @@ describe('resolveAndFetchFile', () => {
     it('should fetch and create temp file for direct URL', async () => {
       const url = 'https://example.com/script.js';
       const content = 'console.log("hello");';
-      vi.mocked(templateInheritance.fetchTemplateFile).mockResolvedValue(content);
+      vi.mocked(configInheritance.fetchConfigurationFile).mockResolvedValue(content);
 
       const result = await resolveAndFetchFile({
         file: url,
@@ -55,7 +55,7 @@ describe('resolveAndFetchFile', () => {
       expect(result.resolvedPath).toBe(url);
       expect(result.localFilePath).toContain('test-');
       expect(result.localFilePath).toContain('.js');
-      expect(templateInheritance.fetchTemplateFile).toHaveBeenCalledWith(url);
+      expect(configInheritance.fetchConfigurationFile).toHaveBeenCalledWith(url);
       expect(fs.writeFileSync).toHaveBeenCalledWith(
         result.localFilePath,
         content,
@@ -136,7 +136,7 @@ describe('resolveAndFetchFile', () => {
       const expectedUrl = 'https://example.com/configs/script.js';
       const content = 'console.log("remote");';
 
-      vi.mocked(templateInheritance.fetchTemplateFile).mockResolvedValue(content);
+      vi.mocked(configInheritance.fetchConfigurationFile).mockResolvedValue(content);
 
       const result = await resolveAndFetchFile({
         file: relPath,
@@ -150,7 +150,7 @@ describe('resolveAndFetchFile', () => {
       expect(result.resolvedPath).toBe(expectedUrl);
       expect(result.localFilePath).toContain('test-');
       expect(result.localFilePath).toContain('.js');
-      expect(templateInheritance.fetchTemplateFile).toHaveBeenCalledWith(expectedUrl);
+      expect(configInheritance.fetchConfigurationFile).toHaveBeenCalledWith(expectedUrl);
       expect(fs.writeFileSync).toHaveBeenCalledWith(
         result.localFilePath,
         content,
@@ -164,7 +164,7 @@ describe('resolveAndFetchFile', () => {
       const expectedUrl = 'https://example.com/configs/shared/script.js';
       const content = 'console.log("shared");';
 
-      vi.mocked(templateInheritance.fetchTemplateFile).mockResolvedValue(content);
+      vi.mocked(configInheritance.fetchConfigurationFile).mockResolvedValue(content);
 
       const result = await resolveAndFetchFile({
         file: relPath,
@@ -179,7 +179,7 @@ describe('resolveAndFetchFile', () => {
   describe('edge cases', () => {
     it('should use default temp file extension if not provided', async () => {
       const url = 'https://example.com/script';
-      vi.mocked(templateInheritance.fetchTemplateFile).mockResolvedValue('content');
+      vi.mocked(configInheritance.fetchConfigurationFile).mockResolvedValue('content');
 
       const result = await resolveAndFetchFile({
         file: url,
@@ -190,7 +190,7 @@ describe('resolveAndFetchFile', () => {
 
     it('should use default temp file prefix if not provided', async () => {
       const url = 'https://example.com/script.js';
-      vi.mocked(templateInheritance.fetchTemplateFile).mockResolvedValue('content');
+      vi.mocked(configInheritance.fetchConfigurationFile).mockResolvedValue('content');
 
       const result = await resolveAndFetchFile({
         file: url,

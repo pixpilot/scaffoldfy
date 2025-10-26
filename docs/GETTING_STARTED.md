@@ -112,21 +112,21 @@ Debug mode provides verbose output including:
 - Variable resolution details
 - Task dependency resolution
 - Plugin hook executions
-- Template processing steps
+- Configuration processing steps
 - Detailed error messages
 
 This is particularly useful for:
 
 - Troubleshooting configuration issues
 - Understanding task execution order
-- Debugging template inheritance
+- Debugging configuration inheritance
 - Verifying variable and prompt values
 
 ## CLI Options
 
 | Option            | Description                                                                     |
 | ----------------- | ------------------------------------------------------------------------------- |
-| `--config <path>` | Path to config file (JSON or TypeScript, default: `./template-tasks.json`)      |
+| `--config <path>` | Path to config file (JSON or TypeScript, default: `./config-tasks.json`)        |
 | `--dry-run`       | Preview changes without applying them                                           |
 | `--force`         | Force execution even if checks fail                                             |
 | `--no-validate`   | Skip schema validation of task configuration (validation is enabled by default) |
@@ -157,8 +157,8 @@ await runWithTasks(tasks, { force: true });
 import fs from 'node:fs';
 import { runWithTasks } from '@pixpilot/scaffoldfy';
 
-const tasksFilePath = './tasks.json';
-const tasksJson = JSON.parse(fs.readFileSync(tasksFilePath, 'utf-8'));
+const configFilePath = './config.json';
+const tasksJson = JSON.parse(fs.readFileSync(configFilePath, 'utf-8'));
 
 await runWithTasks(tasksJson.tasks);
 ```
@@ -219,9 +219,9 @@ await runWithTasks(customTasks);
 ```json
 {
   "$schema": "https://unpkg.com/@pixpilot/scaffoldfy/schema",
-  "name": "my-template",
-  "description": "Optional description of what this template does",
-  "dependencies": ["optional-dependency-template"],
+  "name": "my-config",
+  "description": "Optional description of what this configuration does",
+  "dependencies": ["optional-dependency-config"],
   "tasks": [
     {
       "id": "unique-id",
@@ -243,10 +243,10 @@ await runWithTasks(customTasks);
 
 > **Note:**
 >
-> - The `name` field is **required** for all templates. It must contain only lowercase letters, digits, and hyphens. It cannot start or end with a hyphen, or contain consecutive hyphens (e.g., `my-template`, `node-project-generator`).
+> - The `name` field is **required** for all configurations. It must contain only lowercase letters, digits, and hyphens. It cannot start or end with a hyphen, or contain consecutive hyphens (e.g., `my-config`, `node-project-generator`).
 > - The `description` field is optional but recommended for documentation.
-> - The `dependencies` field is optional and can be used to document template dependencies.
-> - The `tasks` array is optional when using template inheritance. You can create templates with only `prompts` and/or `variables` that other templates can extend. See [Template Inheritance](./TEMPLATE_INHERITANCE.md) for details.
+> - The `dependencies` field is optional and can be used to document configuration dependencies.
+> - The `tasks` array is optional when using configuration inheritance. You can create configurations with only `prompts` and/or `variables` that other configurations can extend. See [Configuration Inheritance](./CONFIG_INHERITANCE.md) for details.
 > - Task properties `description`, `required`, and `enabled` are optional and default to `""`, `true`, and `true` respectively.
 
 ### With Interactive Prompts
@@ -358,7 +358,7 @@ Add the schema reference to get autocomplete and validation in your JSON task fi
 
 ```json
 {
-  "$schema": "./https://unpkg.com/@pixpilot/scaffoldfy/schema",
+  "$schema": "https://unpkg.com/@pixpilot/scaffoldfy/schema",
   "tasks": []
 }
 ```
@@ -367,53 +367,13 @@ Add the schema reference to get autocomplete and validation in your JSON task fi
 
 The JSON schema will be automatically detected if the `$schema` property is set in your JSON file.
 
-## Template Variables
-
-Built-in variables available for interpolation in any task config:
-
-- `{{projectName}}` - Repository name
-- `{{owner}}` - Repository owner/organization
-- `{{repoUrl}}` - Full repository URL
-- `{{author}}` - Author name
-- `{{repoUrl}}` - Base repository URL (without .git)
-- `{{orgName}}` - Organization name with @ prefix
-
-You can also define custom variables through root-level prompts:
-
-```json
-{
-  "prompts": [
-    {
-      "id": "port",
-      "type": "number",
-      "message": "Server port?",
-      "default": 3000
-    }
-  ],
-  "tasks": [
-    {
-      "id": "configure",
-      "name": "Configure",
-      "type": "update-json",
-      "config": {
-        "file": "config.json",
-        "updates": {
-          "port": "{{port}}",
-          "author": "{{author}}"
-        }
-      }
-    }
-  ]
-}
-```
-
 ## Real-World Example
 
 Here's a complete example that sets up a Node.js project:
 
 ```json
 {
-  "$schema": "./https://unpkg.com/@pixpilot/scaffoldfy/schema",
+  "$schema": "https://unpkg.com/@pixpilot/scaffoldfy/schema",
   "name": "node-project-setup",
   "prompts": [
     {
@@ -508,7 +468,7 @@ Review your task dependencies - one or more tasks have circular references. Chec
 
 A task lists a dependency that doesn't exist. Verify that all task IDs in `dependencies` arrays match existing task IDs exactly.
 
-### Template variables not replaced
+### Configuration variables not replaced
 
 Ensure you're using the correct syntax: `{{variableName}}` and that the variable:
 
@@ -520,7 +480,6 @@ Ensure you're using the correct syntax: `{{variableName}}` and that the variable
 Check that:
 
 - File paths are relative to the project root (where you run the command)
-- Template files exist at the specified `templateFile` path
 - Directories exist for files you're trying to update
 
 ## Next Steps
@@ -530,7 +489,7 @@ Now that you're familiar with the basics, explore these topics:
 - **[Task Types Reference](TASK_TYPES.md)** - Learn about all built-in task types
 - **[Interactive Prompts](PROMPTS.md)** - Master user input collection
 - **[Advanced Features](FEATURES.md)** - Conditional execution, global prompts, and Handlebars
-- **[Template Inheritance](TEMPLATE_INHERITANCE.md)** - Compose and extend templates
+- **[Configuration Inheritance](CONFIG_INHERITANCE.md)** - Compose and extend configurations
 - **[Plugin System](PLUGINS.md)** - Create custom task types
 - **[Dry Run Mode](DRY_RUN.md)** - Preview changes with detailed diffs
 

@@ -461,7 +461,7 @@ describe('schema-validator', () => {
         $schema:
           'https://unpkg.com/@pixpilot/scaffoldfy@latest/schema/scaffoldfy.schema.json',
         name: 'test-template',
-        extends: 'base-template.json',
+        extends: 'base-config.json',
         tasks: [
           {
             id: 'task-1',

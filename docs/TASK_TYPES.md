@@ -25,7 +25,7 @@ Every task has the following properties:
 - **`config`** (object): Task-specific configuration (varies by task type)
 - **`dependencies`** (string[]): IDs of tasks that must run before this one
 - **`rollback`** (object): How to rollback if something fails
-- **`override`** (string): Merge strategy when extending templates (`'merge'` or `'replace'`)
+- **`override`** (string): Merge strategy when extending configurations (`'merge'` or `'replace'`)
 
 ### Minimal Task Example
 

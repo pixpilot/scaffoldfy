@@ -29,9 +29,9 @@ export class CircularDependencyError extends ScaffoldfyError {
   }
 
   /**
-   * Create a circular dependency error for template inheritance
+   * Create a circular dependency error for configuration inheritance
    */
-  static forTemplateInheritance(
+  static forConfigurationInheritance(
     visitedPaths: Set<string>,
     resolvedPath: string,
   ): CircularDependencyError {
@@ -41,6 +41,20 @@ export class CircularDependencyError extends ScaffoldfyError {
     )} -> ${resolvedPath}`;
 
     return new CircularDependencyError(message, dependencyChain, resolvedPath);
+  }
+
+  /**
+   * @deprecated Use forConfigurationInheritance instead
+   * Create a circular dependency error for template inheritance (legacy)
+   */
+  static forTemplateInheritance(
+    visitedPaths: Set<string>,
+    resolvedPath: string,
+  ): CircularDependencyError {
+    return CircularDependencyError.forConfigurationInheritance(
+      visitedPaths,
+      resolvedPath,
+    );
   }
 
   /**

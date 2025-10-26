@@ -19,7 +19,7 @@ Templates can be defined in two ways:
 1. **Inline**: Template string directly in the task configuration (simple interpolation only)
 2. **File-based**: External template file (relative to project root or template source). `.hbs` files automatically use Handlebars
 
-> **Note**: When using [template inheritance](./TEMPLATE_INHERITANCE.md) with remote templates, `templateFile` paths are automatically resolved relative to the remote template's location. This allows remote templates to reference their own template files hosted alongside them.
+> **Note**: When using [configuration inheritance](./CONFIG_INHERITANCE.md) with remote configurations, `templateFile` paths are automatically resolved relative to the remote configuration's location. This allows remote configurations to reference their own template files hosted alongside them.
 
 ## Configuration Options
 
@@ -235,12 +235,12 @@ project-root/
 │       ├── package-json.hbs    # Handlebars template
 │       ├── license.txt         # Simple template
 │       └── contributing.md     # Simple template
-└── template-tasks.json
+└── config-tasks.json
 ```
 
 ## Complete Example
 
-**Task configuration** (`template-tasks.json`):
+**Task configuration** (`config-tasks.json`):
 
 ```json
 {

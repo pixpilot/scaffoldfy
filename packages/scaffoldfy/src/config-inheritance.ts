@@ -1,9 +1,13 @@
 /**
- * Template Inheritance - Extend base templates
+ * Configuration Inheritance - Extend base configurations
  *
- * This module handles loading and merging template configurations,
- * allowing templates to extend from one or more base templates.
+ * This module handles loading and merging configuration files,
+ * allowing configurations to extend from one or more base configurations.
  * Supports both local file paths and remote URLs (http/https).
+ *
+ * Note: "Configuration files" (.json/.ts) define tasks, prompts, and variables.
+ * The actual "template files" (.hbs) are Handlebars templates referenced via
+ * the templateFile property in task configurations.
  */
 
 import type {
@@ -21,14 +25,14 @@ import process from 'node:process';
 import { promisify } from 'node:util';
 import { CircularDependencyError } from './errors/base.js';
 import {
+  ConfigFetchError,
+  ConfigParseError,
+  ConfigurationFileNotFoundError,
   DuplicateIdError,
   IdConflictError,
-  InvalidTemplateError,
-  TemplateFetchError,
-  TemplateFileNotFoundError,
-  TemplateParseError,
+  InvalidConfigError,
 } from './errors/index.js';
-import { topologicalSortTemplates } from './topological-sort.js';
+import { topologicalSortConfigs } from './topological-sort.js';
 import { debug, log } from './utils';
 import { isUrl } from './utils/is-url.js';
 
@@ -47,7 +51,7 @@ const CONFLICTING_FIELDS: Record<string, string[][]> = {
  */
 function getSourceDisplayName(sourceUrl?: string): string {
   if (sourceUrl == null || sourceUrl === '') {
-    return 'current template';
+    return 'current configuration';
   }
   if (isUrl(sourceUrl)) {
     return sourceUrl;
@@ -65,14 +69,14 @@ function getSourceDisplayName(sourceUrl?: string): string {
  * @param urlOrPath - URL or file path to fetch/read
  * @returns The content as a string
  */
-export async function fetchTemplateFile(urlOrPath: string): Promise<string> {
+export async function fetchConfigurationFile(urlOrPath: string): Promise<string> {
   if (isUrl(urlOrPath)) {
-    return fetchRemoteTemplate(urlOrPath);
+    return fetchRemoteConfiguration(urlOrPath);
   }
 
   // Local file
   if (!fs.existsSync(urlOrPath)) {
-    throw TemplateFileNotFoundError.forPath(urlOrPath);
+    throw ConfigurationFileNotFoundError.forPath(urlOrPath);
   }
   return readFile(urlOrPath, 'utf-8');
 }
@@ -82,12 +86,12 @@ export async function fetchTemplateFile(urlOrPath: string): Promise<string> {
  * @param url - URL to fetch
  * @returns The fetched content as a string
  */
-async function fetchRemoteTemplate(url: string): Promise<string> {
+async function fetchRemoteConfiguration(url: string): Promise<string> {
   try {
     const response = await fetch(url);
 
     if (!response.ok) {
-      throw TemplateFetchError.forUrl(url, response.status, response.statusText);
+      throw ConfigFetchError.forUrl(url, response.status, response.statusText);
     }
 
     return await response.text();
@@ -95,74 +99,74 @@ async function fetchRemoteTemplate(url: string): Promise<string> {
     if (error instanceof Error && error.message.includes('Failed to fetch')) {
       throw error;
     }
-    throw TemplateFetchError.forUrl(url, error instanceof Error ? error : undefined);
+    throw ConfigFetchError.forUrl(url, error instanceof Error ? error : undefined);
   }
 }
 
 /**
- * Cache for loaded templates to avoid reloading
+ * Cache for loaded configurations to avoid reloading
  */
-const templateCache = new Map<string, TasksConfiguration>();
+const configurationCache = new Map<string, TasksConfiguration>();
 
 /**
- * Load a template configuration file from local path or remote URL
- * @param templatePath - Path or URL to the template file
+ * Load a configuration file from local path or remote URL
+ * @param configPath - Path or URL to the configuration file
  * @param visitedPaths - Set of already visited paths to detect circular dependencies
- * @returns The loaded template configuration
+ * @returns The loaded configuration
  */
-export async function loadTemplate(
-  templatePath: string,
+export async function loadConfiguration(
+  configPath: string,
   visitedPaths: Set<string> = new Set(),
 ): Promise<TasksConfiguration> {
   // Check if it's a URL
-  const isRemote = isUrl(templatePath);
+  const isRemote = isUrl(configPath);
 
   // For URLs, use the URL as-is; for paths, resolve to absolute path
   let resolvedPath: string;
   if (isRemote) {
-    resolvedPath = templatePath;
-  } else if (path.isAbsolute(templatePath)) {
-    resolvedPath = templatePath;
+    resolvedPath = configPath;
+  } else if (path.isAbsolute(configPath)) {
+    resolvedPath = configPath;
   } else {
-    resolvedPath = path.resolve(process.cwd(), templatePath);
+    resolvedPath = path.resolve(process.cwd(), configPath);
   }
 
   // Check cache first
-  if (templateCache.has(resolvedPath)) {
-    return templateCache.get(resolvedPath)!;
+  if (configurationCache.has(resolvedPath)) {
+    return configurationCache.get(resolvedPath)!;
   }
 
   // Check for circular dependencies
   if (visitedPaths.has(resolvedPath)) {
-    throw CircularDependencyError.forTemplateInheritance(visitedPaths, resolvedPath);
+    throw CircularDependencyError.forConfigurationInheritance(visitedPaths, resolvedPath);
   }
 
   // Add to visited paths
   visitedPaths.add(resolvedPath);
 
-  // Load the template content
+  // Load the configuration content
   let content: string;
 
   if (isRemote) {
     // Fetch from remote URL
-    content = await fetchRemoteTemplate(resolvedPath);
+    content = await fetchRemoteConfiguration(resolvedPath);
   } else {
     // Check if file exists
     if (!fs.existsSync(resolvedPath)) {
-      throw TemplateFileNotFoundError.forPath(resolvedPath);
+      throw ConfigurationFileNotFoundError.forPath(resolvedPath);
     }
 
     // Load from local file
     content = await readFile(resolvedPath, 'utf-8');
   }
 
-  // Parse the template file
+  // Parse the configuration file
   let config: TasksConfiguration;
 
   try {
     config = JSON.parse(content) as TasksConfiguration;
   } catch (error) {
-    throw TemplateParseError.forFile(
+    throw ConfigParseError.forFile(
       resolvedPath,
       error instanceof Error ? error : new Error(String(error)),
     );
@@ -170,7 +174,7 @@ export async function loadTemplate(
 
   // Validate required name field
   if (config.name == null || config.name.trim() === '') {
-    throw InvalidTemplateError.missingName(resolvedPath);
+    throw InvalidConfigError.missingName(resolvedPath);
   }
 
   // Validate name format (similar to npm package names)
@@ -181,20 +185,20 @@ export async function loadTemplate(
   // - Must be at least 1 character long
   const namePattern = /^[a-z\d]+(?:-[a-z\d]+)*$/u;
   if (!namePattern.test(config.name)) {
-    throw InvalidTemplateError.invalidNameFormat(resolvedPath, config.name);
+    throw InvalidConfigError.invalidNameFormat(resolvedPath, config.name);
   }
 
   // Validate basic structure - tasks can be optional but must be an array if present
   if (config.tasks !== undefined && !Array.isArray(config.tasks)) {
-    throw InvalidTemplateError.tasksNotArray(resolvedPath);
+    throw InvalidConfigError.tasksNotArray(resolvedPath);
   }
 
-  // Initialize tasks as empty array if not provided (for templates that only provide prompts/variables)
+  // Initialize tasks as empty array if not provided (for files that only provide prompts/variables)
   if (config.tasks === undefined) {
     config.tasks = [];
   }
 
-  // Annotate each task with the source URL/path for resolving relative templateFile references
+  // Annotate each task with the source URL/path for resolving relative files references
   for (const task of config.tasks) {
     task.$sourceUrl = resolvedPath;
   }
@@ -213,46 +217,46 @@ export async function loadTemplate(
     }
   }
 
-  // Cache the loaded template
-  templateCache.set(resolvedPath, config);
+  // Cache the loaded configuration
+  configurationCache.set(resolvedPath, config);
 
   return config;
 }
 
 /**
- * Load all templates recursively (without merging)
- * @param templatePath - Path or URL to the template file
+ * Load all configurations recursively (without merging)
+ * @param configPath - Path or URL to the configuration file
  * @param baseDir - Base directory or URL for resolving relative paths
  * @param visitedPaths - Set of already visited paths (for deduplication)
  * @param visitingPaths - Set of paths currently being visited (for circular detection)
- * @param allTemplates - Array to collect all loaded templates
- * @returns Array of all loaded templates (unmerged)
+ * @param allConfigurations - Array to collect all loaded configurations
+ * @returns Array of all loaded configurations (unmerged)
  */
-async function loadAllTemplatesRecursive(
-  templatePath: string,
+async function loadAllConfigurationsRecursive(
+  configPath: string,
   baseDir: string | undefined,
   visitedPaths: Set<string>,
   visitingPaths: Set<string>,
-  allTemplates: TasksConfiguration[],
+  allConfigurations: TasksConfiguration[],
 ): Promise<void> {
-  // Check if templatePath is a URL
-  const isRemote = isUrl(templatePath);
+  // Check if configPath is a URL
+  const isRemote = isUrl(configPath);
 
   // Resolve the absolute path or URL
   let resolvedPath: string;
   if (isRemote) {
-    resolvedPath = templatePath;
-  } else if (path.isAbsolute(templatePath)) {
-    resolvedPath = templatePath;
+    resolvedPath = configPath;
+  } else if (path.isAbsolute(configPath)) {
+    resolvedPath = configPath;
   } else if (baseDir != null) {
     // If baseDir is a URL, resolve relative to URL; otherwise resolve as path
     if (isUrl(baseDir)) {
-      resolvedPath = new URL(templatePath, baseDir).href;
+      resolvedPath = new URL(configPath, baseDir).href;
     } else {
-      resolvedPath = path.resolve(baseDir, templatePath);
+      resolvedPath = path.resolve(baseDir, configPath);
     }
   } else {
-    resolvedPath = path.resolve(process.cwd(), templatePath);
+    resolvedPath = path.resolve(process.cwd(), configPath);
   }
 
   // Check if we've already completely loaded this path
@@ -262,32 +266,35 @@ async function loadAllTemplatesRecursive(
 
   // Check for circular dependencies
   if (visitingPaths.has(resolvedPath)) {
-    throw CircularDependencyError.forTemplateInheritance(visitingPaths, resolvedPath);
+    throw CircularDependencyError.forConfigurationInheritance(
+      visitingPaths,
+      resolvedPath,
+    );
   }
 
   // Add to visiting paths
   visitingPaths.add(resolvedPath);
 
-  // Load the current template
-  const config = await loadTemplate(resolvedPath);
+  // Load the current configuration
+  const config = await loadConfiguration(resolvedPath);
 
   // Get the directory or base URL for resolving relative extends
   const currentBase = isUrl(resolvedPath)
     ? new URL('.', resolvedPath).href
     : path.dirname(resolvedPath);
 
-  // If template has extends, load them first (recursively)
+  // If configuration has extends, load them first (recursively)
   if (config.extends != null && config.extends !== '') {
     const extendsList = Array.isArray(config.extends) ? config.extends : [config.extends];
 
     /* eslint-disable no-await-in-loop */
     for (const extendsPath of extendsList) {
-      await loadAllTemplatesRecursive(
+      await loadAllConfigurationsRecursive(
         extendsPath,
         currentBase,
         visitedPaths,
         visitingPaths,
-        allTemplates,
+        allConfigurations,
       );
     }
     /* eslint-enable no-await-in-loop */
@@ -297,54 +304,58 @@ async function loadAllTemplatesRecursive(
   visitingPaths.delete(resolvedPath);
   visitedPaths.add(resolvedPath);
 
-  // Add current template to the collection
-  allTemplates.push(config);
+  // Add current configuration to the collection
+  allConfigurations.push(config);
 }
 
 /**
- * Load all templates in dependency order without merging
- * @param templatePath - Path or URL to the template file
+ * Load all configurations in dependency order without merging
+ * @param configPath - Path or URL to the configuration file
  * @param baseDir - Base directory or URL for resolving relative paths in extends
  * @param visitedPaths - Set of already visited paths
- * @returns Array of sorted templates (in dependency order, ready for sequential processing)
+ * @returns Array of sorted configurations (in dependency order, ready for sequential processing)
  */
-export async function loadTemplatesInOrder(
-  templatePath: string,
+export async function loadConfigurationsInOrder(
+  configPath: string,
   baseDir?: string,
   visitedPaths: Set<string> = new Set(),
 ): Promise<TasksConfiguration[]> {
-  // Collect all templates first (without merging)
-  const allTemplates: TasksConfiguration[] = [];
+  // Collect all configurations first (without merging)
+  const allConfigurations: TasksConfiguration[] = [];
   const visitingPaths = new Set<string>();
-  await loadAllTemplatesRecursive(
-    templatePath,
+  await loadAllConfigurationsRecursive(
+    configPath,
     baseDir,
     visitedPaths,
     visitingPaths,
-    allTemplates,
+    allConfigurations,
   );
 
-  // Sort templates topologically based on their dependencies
-  return topologicalSortTemplates(allTemplates);
+  // Sort configurations topologically based on their dependencies
+  return topologicalSortConfigs(allConfigurations);
 }
 
 /**
- * Recursively load and merge templates
- * @param templatePath - Path or URL to the template file
+ * Recursively load and merge configurations
+ * @param configPath - Path or URL to the configuration file
  * @param baseDir - Base directory or URL for resolving relative paths in extends
  * @param visitedPaths - Set of already visited paths
- * @returns Merged template configuration
+ * @returns Merged configuration
  */
-export async function loadAndMergeTemplate(
-  templatePath: string,
+export async function loadAndMergeConfiguration(
+  configPath: string,
   baseDir?: string,
   visitedPaths: Set<string> = new Set(),
 ): Promise<TasksConfiguration> {
-  // Use the new loadTemplatesInOrder function
-  const sortedTemplates = await loadTemplatesInOrder(templatePath, baseDir, visitedPaths);
+  // Use the new loadConfigurationsInOrder function
+  const sortedConfigurations = await loadConfigurationsInOrder(
+    configPath,
+    baseDir,
+    visitedPaths,
+  );
 
-  // Merge sorted templates
-  return mergeTemplates(sortedTemplates);
+  // Merge sorted configurations
+  return mergeConfigurations(sortedConfigurations);
 }
 
 /**
@@ -470,22 +481,28 @@ function mergePrompt(
 }
 
 /**
- * Merge multiple template configurations
- * Later templates override earlier ones for conflicting task IDs
- * @param templates - Array of templates to merge (in priority order)
- * @returns Merged template configuration
+ * Merge multiple configurations
+ * Later configurations override earlier ones for conflicting task IDs
+ * @param configurations - Array of configurations to merge (in priority order)
+ * @returns Merged configuration
  */
-export function mergeTemplates(templates: TasksConfiguration[]): TasksConfiguration {
-  if (templates.length === 0) {
+export function mergeConfigurations(
+  configurations: TasksConfiguration[],
+): TasksConfiguration {
+  if (configurations.length === 0) {
     // This should not happen in practice but return a minimal valid config
-    return { name: 'Empty Template', tasks: [] };
+    return { name: 'Empty Configuration', tasks: [] };
   }
 
-  if (templates.length === 1) {
-    const template = templates[0]!;
-    // Validate even for single templates
-    validateUniqueIds(template.tasks ?? [], template.variables, template.prompts);
-    return template;
+  if (configurations.length === 1) {
+    const configuration = configurations[0]!;
+    // Validate even for single configurations
+    validateUniqueIds(
+      configuration.tasks ?? [],
+      configuration.variables,
+      configuration.prompts,
+    );
+    return configuration;
   }
 
   // Use a Map to handle task overriding by ID
@@ -497,22 +514,22 @@ export function mergeTemplates(templates: TasksConfiguration[]): TasksConfigurat
   // Use a Map to handle prompt overriding by ID
   const promptMap = new Map<string, PromptDefinition>();
 
-  // Track template enabled conditions for lazy evaluation
-  const templateEnabledMap: Record<string, DynamicBooleanValue | EnabledValue> = {};
+  // Track configuration enabled conditions for lazy evaluation
+  const configurationEnabledMap: Record<string, DynamicBooleanValue | EnabledValue> = {};
 
-  // Process templates in order (earlier templates have lower priority)
-  for (const template of templates) {
-    // Store the template's enabled condition (if any)
-    if (template.enabled != null) {
-      templateEnabledMap[template.name] = template.enabled;
+  // Process configurations in order (earlier configurations have lower priority)
+  for (const configuration of configurations) {
+    // Store the configuration's enabled condition (if any)
+    if (configuration.enabled != null) {
+      configurationEnabledMap[configuration.name] = configuration.enabled;
     }
 
-    // Skip templates that are explicitly disabled (enabled: false)
+    // Skip configurations that are explicitly disabled (enabled: false)
     // Note: undefined or true means enabled
     // Only skip if it's the literal boolean false (not conditional expressions)
-    if (template.enabled === false) {
+    if (configuration.enabled === false) {
       log(
-        `⊘ Skipping disabled template "${template.name}" - its tasks, prompts, and variables will not be included`,
+        `⊘ Skipping disabled configuration "${configuration.name}" - its tasks, prompts, and variables will not be included`,
         'info',
       );
       // eslint-disable-next-line no-continue
@@ -520,8 +537,8 @@ export function mergeTemplates(templates: TasksConfiguration[]): TasksConfigurat
     }
 
     // Merge top-level prompts if present
-    if (template.prompts != null) {
-      for (const prompt of template.prompts) {
+    if (configuration.prompts != null) {
+      for (const prompt of configuration.prompts) {
         if (promptMap.has(prompt.id)) {
           // Prompt already exists - require explicit override strategy
           if (prompt.override == null) {
@@ -529,16 +546,16 @@ export function mergeTemplates(templates: TasksConfiguration[]): TasksConfigurat
           }
           const existingPrompt = promptMap.get(prompt.id)!;
           const mergedPrompt = mergePrompt(existingPrompt, prompt);
-          // Add template enabled condition for lazy evaluation
-          if (template.enabled != null) {
-            mergedPrompt.$templateEnabled = template.enabled;
+          // Add configuration enabled condition for lazy evaluation
+          if (configuration.enabled != null) {
+            mergedPrompt.$configEnabled = configuration.enabled;
           }
           promptMap.set(prompt.id, mergedPrompt);
         } else {
-          // New prompt, add it with template enabled condition
+          // New prompt, add it with configuration enabled condition
           const newPrompt = { ...prompt };
-          if (template.enabled != null) {
-            newPrompt.$templateEnabled = template.enabled;
+          if (configuration.enabled != null) {
+            newPrompt.$configEnabled = configuration.enabled;
           }
           promptMap.set(prompt.id, newPrompt);
         }
@@ -546,8 +563,8 @@ export function mergeTemplates(templates: TasksConfiguration[]): TasksConfigurat
     }
 
     // Merge top-level variables if present
-    if (template.variables != null) {
-      for (const variable of template.variables) {
+    if (configuration.variables != null) {
+      for (const variable of configuration.variables) {
         if (variableMap.has(variable.id)) {
           // Variable already exists - require explicit override strategy
           if (variable.override == null) {
@@ -555,16 +572,16 @@ export function mergeTemplates(templates: TasksConfiguration[]): TasksConfigurat
           }
           const existingVariable = variableMap.get(variable.id)!;
           const mergedVariable = mergeVariable(existingVariable, variable);
-          // Add template enabled condition for lazy evaluation
-          if (template.enabled != null) {
-            mergedVariable.$templateEnabled = template.enabled;
+          // Add configuration enabled condition for lazy evaluation
+          if (configuration.enabled != null) {
+            mergedVariable.$configEnabled = configuration.enabled;
           }
           variableMap.set(variable.id, mergedVariable);
         } else {
-          // New variable, add it with template enabled condition
+          // New variable, add it with configuration enabled condition
           const newVariable = { ...variable };
-          if (template.enabled != null) {
-            newVariable.$templateEnabled = template.enabled;
+          if (configuration.enabled != null) {
+            newVariable.$configEnabled = configuration.enabled;
           }
           variableMap.set(variable.id, newVariable);
         }
@@ -572,7 +589,7 @@ export function mergeTemplates(templates: TasksConfiguration[]): TasksConfigurat
     }
 
     // Merge tasks
-    for (const task of template.tasks ?? []) {
+    for (const task of configuration.tasks ?? []) {
       if (taskMap.has(task.id)) {
         // Task already exists - require explicit override strategy
         if (task.override == null) {
@@ -585,16 +602,16 @@ export function mergeTemplates(templates: TasksConfiguration[]): TasksConfigurat
         }
         const existingTask = taskMap.get(task.id)!;
         const mergedTask = mergeTask(existingTask, task);
-        // Add template enabled condition for lazy evaluation
-        if (template.enabled != null) {
-          mergedTask.$templateEnabled = template.enabled;
+        // Add configuration enabled condition for lazy evaluation
+        if (configuration.enabled != null) {
+          mergedTask.$configEnabled = configuration.enabled;
         }
         taskMap.set(task.id, mergedTask);
       } else {
-        // New task, add it with template enabled condition
+        // New task, add it with configuration enabled condition
         const newTask = { ...task };
-        if (template.enabled != null) {
-          newTask.$templateEnabled = template.enabled;
+        if (configuration.enabled != null) {
+          newTask.$configEnabled = configuration.enabled;
         }
         taskMap.set(task.id, newTask);
       }
@@ -609,25 +626,25 @@ export function mergeTemplates(templates: TasksConfiguration[]): TasksConfigurat
   // Validate that all IDs are unique across tasks, variables, and prompts
   validateUniqueIds(tasks, variables, prompts);
 
-  // Use the last template's name, description, and dependencies (highest priority)
-  const lastTemplate = templates[templates.length - 1]!;
+  // Use the last configuration's name, description, and dependencies (highest priority)
+  const lastConfiguration = configurations[configurations.length - 1]!;
 
   const result: TasksConfiguration = {
-    name: lastTemplate.name,
+    name: lastConfiguration.name,
     tasks,
   };
 
-  // Add optional fields from last template if they exist
-  if (lastTemplate.description != null) {
-    result.description = lastTemplate.description;
+  // Add optional fields from last configuration if they exist
+  if (lastConfiguration.description != null) {
+    result.description = lastConfiguration.description;
   }
 
-  if (lastTemplate.dependencies != null) {
-    result.dependencies = lastTemplate.dependencies;
+  if (lastConfiguration.dependencies != null) {
+    result.dependencies = lastConfiguration.dependencies;
   }
 
-  if (lastTemplate.enabled != null) {
-    result.enabled = lastTemplate.enabled;
+  if (lastConfiguration.enabled != null) {
+    result.enabled = lastConfiguration.enabled;
   }
 
   // Add prompts if any exist
@@ -789,17 +806,17 @@ function mergeTask(base: TaskDefinition, override: TaskDefinition): TaskDefiniti
 }
 
 /**
- * Clear the template cache (useful for testing)
+ * Clear the configuration cache (useful for testing)
  */
-export function clearTemplateCache(): void {
-  templateCache.clear();
+export function clearConfigurationCache(): void {
+  configurationCache.clear();
 }
 
 /**
- * Load tasks from a configuration file with template inheritance support
+ * Load tasks from a configuration file with configuration inheritance support
  * @param tasksFilePath - Path to the tasks configuration file
  * @param options - Optional configuration
- * @param options.sequential - If true, return templates as separate items for sequential processing
+ * @param options.sequential - If true, return configurations as separate items for sequential processing
  * @returns Task configuration with tasks, optional variables, and optional prompts
  */
 export async function loadTasksWithInheritance(
@@ -815,20 +832,20 @@ export async function loadTasksWithInheritance(
 }> {
   debug(`Loading tasks from ${tasksFilePath}...`);
 
-  // If sequential mode, load templates without merging
+  // If sequential mode, load configurations without merging
   if (options?.sequential === true) {
-    const templates = await loadTemplatesInOrder(tasksFilePath);
+    const configurations = await loadConfigurationsInOrder(tasksFilePath);
 
-    debug(`Loaded ${templates.length} template(s) for processing`);
+    debug(`Loaded ${configurations.length} configuration(s) for processing`);
 
     return {
       tasks: [],
-      templates,
+      templates: configurations,
     };
   }
 
   // Otherwise, use the traditional merged approach
-  const config = await loadAndMergeTemplate(tasksFilePath);
+  const config = await loadAndMergeConfiguration(tasksFilePath);
 
   log(`Loaded ${config.tasks?.length ?? 0} task(s)`, 'info');
 

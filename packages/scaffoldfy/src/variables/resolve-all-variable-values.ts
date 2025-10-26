@@ -41,7 +41,7 @@ export async function resolveAllVariableValues(
     }
     // Check if the template this variable belongs to is enabled
     // This allows lazy evaluation - templates can be conditionally enabled based on previous variables/prompts
-    if (variable.$templateEnabled != null) {
+    if (variable.$configEnabled != null) {
       // Merge resolved variables into context for evaluation
       const currentContext = { ...context };
       for (const [id, value] of resolved.entries()) {
@@ -49,7 +49,7 @@ export async function resolveAllVariableValues(
       }
 
       const templateIsEnabled = await evaluateEnabledAsync(
-        variable.$templateEnabled,
+        variable.$configEnabled,
         currentContext,
       );
 

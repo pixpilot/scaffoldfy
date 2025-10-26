@@ -1,31 +1,33 @@
 ---
 layout: default
-title: Template Inheritance - Scaffoldfy
+title: Configuration Inheritance - Scaffoldfy
 ---
 
-# Template Inheritance
+# Configuration Inheritance
 
-Template inheritance allows you to extend base templates, promoting code reuse and modularity in your template configurations. Templates can be loaded from local file paths or remote URLs (HTTP/HTTPS).
+Configuration inheritance allows you to extend base configurations, promoting code reuse and modularity in your configuration files. Configurations can be loaded from local file paths or remote URLs (HTTP/HTTPS).
+
+> **Terminology Note**: In Scaffoldfy, "configuration files" (`.json`/`.ts`) define tasks, prompts, and variables. These are what you extend using the `extends` field. The actual "template files" (`.hbs`) are Handlebars templates referenced within task configurations via the `templateFile` property.
 
 ## Overview
 
-With template inheritance, you can:
+With configuration inheritance, you can:
 
-- **Extend one or more base templates** using the `extends` field
-- **Load templates from local files or remote URLs** (HTTP/HTTPS)
-- **Override tasks, variables, and prompts** from base templates using explicit merge strategies
+- **Extend one or more base configurations** using the `extends` field
+- **Load configurations from local files or remote URLs** (HTTP/HTTPS)
+- **Override tasks, variables, and prompts** from base configurations using explicit merge strategies
 - **Merge configurations intelligently** with smart conflict detection and resolution
 - **Validate early** to catch configuration errors before user prompts
-- **Create reusable template libraries** that can be shared across projects
+- **Create reusable configuration libraries** that can be shared across projects
 
 ## Basic Usage
 
 ### Single Inheritance
 
-Create a base template:
+Create a base configuration file:
 
 ```json
-// base-template.json
+// base-config.json
 {
   "tasks": [
     {
@@ -47,12 +49,12 @@ Create a base template:
 }
 ```
 
-Extend it in your template:
+Extend it in your configuration:
 
 ```json
-// my-template.json
+// my-config.json
 {
-  "extends": "base-template.json",
+  "extends": "base-config.json",
   "tasks": [
     {
       "id": "cleanup-readme",
@@ -70,11 +72,11 @@ Extend it in your template:
 }
 ```
 
-The resulting template will have both tasks from the base and your custom task.
+The resulting configuration will have both tasks from the base and your custom task.
 
 ### Multiple Inheritance
 
-You can extend multiple base templates:
+You can extend multiple base configurations:
 
 ```json
 {
@@ -95,11 +97,11 @@ You can extend multiple base templates:
 }
 ```
 
-Tasks are merged in order, with later templates taking precedence.
+Tasks are merged in order, with later configs taking precedence.
 
 ## Override Strategies
 
-**Important:** When a child template has a task, variable, or prompt with the same ID as a base template, you **must** explicitly specify an override strategy. This requirement was added to prevent accidental conflicts and make template inheritance more predictable.
+**Important:** When a child configuration has a task, variable, or prompt with the same ID as a base configuration, you **must** explicitly specify an override strategy. This requirement was added to prevent accidental conflicts and make configuration inheritance more predictable.
 
 ### Available Strategies
 
@@ -119,7 +121,7 @@ Add the `override` field to the conflicting task, variable, or prompt:
 
 ```json
 {
-  "extends": "base-template.json",
+  "extends": "base-config.json",
   "tasks": [
     {
       "id": "update-package",
@@ -143,12 +145,15 @@ Add the `override` field to the conflicting task, variable, or prompt:
 
 ### What Happens Without Override?
 
-If you extend a template and use the same ID without specifying `override`, you'll get a clear error:
+If you extend a configuration and use the same ID without specifying `override`, you'll get a clear error:
 
 ```
-Task ID conflict: "update-package" is defined in multiple templates.
-  Base task from: base-template.json
-  Override task from: my-template.json
+Task ID conflict: "update-package" is defined in multiple configurations.
+  Base task from: base-config.json
+  Child task from: my-config.json
+
+You must specify an 'override' strategy ('merge' or 'replace') for the task in the child configuration.
+  Override task from: my-config.json
   You must specify an override strategy: add "override": "merge" or "override": "replace" to the task.
 ```
 
@@ -156,7 +161,7 @@ Task ID conflict: "update-package" is defined in multiple templates.
 
 When using `override: "merge"` for tasks:
 
-**Base template:**
+**Base configuration:**
 
 ```json
 {
@@ -174,7 +179,7 @@ When using `override: "merge"` for tasks:
 }
 ```
 
-**Child template:**
+**Child configuration:**
 
 ```json
 {
@@ -256,22 +261,22 @@ The base task is completely ignored, and only the child task definition is used.
 }
 ```
 
-## Templates with Only Prompts/Variables
+## Configurations with Only Prompts/Variables
 
-The `tasks` array is optional. This allows you to create base templates that only provide shared prompts and variables for child templates to use.
+The `tasks` array is optional. This allows you to create base configurations that only provide shared prompts and variables for child configurations to use.
 
 ### Use Case
 
 This is particularly useful when you want to:
 
-- Create reusable prompt collections across multiple templates
-- Define common variables that multiple child templates should use
-- Build composable template libraries without duplicating prompts
+- Create reusable prompt collections across multiple configurations
+- Define common variables that multiple child configurations should use
+- Build composable configuration libraries without duplicating prompts
 - Separate concerns between data collection (base) and task execution (child)
 
-### Example: Shared Prompts Template
+### Example: Shared Prompts Configuration
 
-**Base template** (`shared-prompts.json`):
+**Base configuration** (`shared-prompts.json`):
 
 ```json
 {
@@ -307,7 +312,7 @@ This is particularly useful when you want to:
 }
 ```
 
-**Child template** that extends it:
+**Child config** that extends it:
 
 ```json
 {
@@ -333,11 +338,11 @@ This is particularly useful when you want to:
 }
 ```
 
-The child template inherits all prompts and variables from the base template and can use them in its tasks without redefining them.
+The child configuration inherits all prompts and variables from the base configuration and can use them in its tasks without redefining them.
 
-## Remote Templates from URLs
+## Remote Configurations from URLs
 
-Templates can be loaded from remote URLs (HTTP or HTTPS), enabling you to share base templates across projects and organizations.
+Configurations can be loaded from remote URLs (HTTP or HTTPS), enabling you to share base configurations across projects and organizations.
 
 ### Loading from a URL
 
@@ -345,7 +350,7 @@ Specify a full URL in the `extends` field:
 
 ```json
 {
-  "extends": "https://raw.githubusercontent.com/your-org/templates/main/base.json",
+  "extends": "https://raw.githubusercontent.com/your-org/congigs/main/base.json",
   "tasks": [
     {
       "id": "custom-task",
@@ -364,10 +369,10 @@ Specify a full URL in the `extends` field:
 
 ### GitHub Raw URLs
 
-For templates stored in GitHub repositories, use the raw content URL:
+For configs stored in GitHub repositories, use the raw content URL:
 
 ```
-https://raw.githubusercontent.com/owner/repo/branch/path/to/template.json
+https://raw.githubusercontent.com/owner/repo/branch/path/to/configs.json
 ```
 
 Example:
@@ -375,8 +380,8 @@ Example:
 ```json
 {
   "extends": [
-    "https://raw.githubusercontent.com/your-org/templates/main/base-node.json",
-    "https://raw.githubusercontent.com/your-org/templates/main/typescript.json"
+    "https://raw.githubusercontent.com/your-org/configs/main/base-node.json",
+    "https://raw.githubusercontent.com/your-org/configs/main/typescript.json"
   ],
   "tasks": []
 }
@@ -384,10 +389,10 @@ Example:
 
 ### Relative URLs
 
-When a remote template extends another template using a relative path, the path is resolved relative to the current template's URL:
+When a remote config extends another config using a relative path, the path is resolved relative to the current config's URL:
 
 ```json
-// https://example.com/templates/base.json
+// https://example.com/configs/base.json
 {
   "tasks": [
     {
@@ -402,9 +407,9 @@ When a remote template extends another template using a relative path, the path 
   ]
 }
 
-// https://example.com/templates/frameworks/react.json
+// https://example.com/configs/frameworks/react.json
 {
-  "extends": "../base.json",  // Resolves to https://example.com/templates/base.json
+  "extends": "../base.json",  // Resolves to https://example.com/configs/base.json
   "tasks": [
     {
       "id": "react-setup",
@@ -421,14 +426,14 @@ When a remote template extends another template using a relative path, the path 
 }
 ```
 
-### Mixed Local and Remote Templates
+### Mixed Local and Remote Configurations
 
-You can mix local file paths and remote URLs in your template inheritance:
+You can mix local file paths and remote URLs in your configuration inheritance:
 
 ```json
-// Local template extending a remote base
+// Local configuration extending a remote base
 {
-  "extends": "https://example.com/org-templates/base.json",
+  "extends": "https://example.com/org-configs/base.json",
   "tasks": [
     {
       "id": "local-task",
@@ -443,51 +448,51 @@ You can mix local file paths and remote URLs in your template inheritance:
 }
 ```
 
-Or a remote template can extend local templates (though this is less common):
+Or a remote config can extend local configs (though this is less common):
 
 ```json
-// Remote template
+// Remote config
 {
   "extends": "./local-overrides.json",
   "tasks": []
 }
 ```
 
-### Benefits of Remote Templates
+### Benefits of Remote configs
 
-- **Centralized Management**: Maintain organization-wide templates in one location
-- **Version Control**: Use Git tags or branches to version your templates
-- **Easy Updates**: Teams automatically get template updates without manual distribution
-- **Sharing**: Share templates publicly or within your organization
+- **Centralized Management**: Maintain organization-wide configs in one location
+- **Version Control**: Use Git tags or branches to version your configs
+- **Easy Updates**: Teams automatically get config updates without manual distribution
+- **Sharing**: Share config publicly or within your organization
 - **Consistency**: Ensure all projects follow the same patterns and best practices
 
 ### Caching
 
-Remote templates are cached in memory during execution to avoid repeated network requests. Each URL is fetched only once per execution, even if multiple templates extend from it.
+Remote configs are cached in memory during execution to avoid repeated network requests. Each URL is fetched only once per execution, even if multiple configs extend from it.
 
 ### Security Considerations
 
 - Only use HTTPS URLs from trusted sources
-- Review remote templates before using them in production
+- Review remote configs before using them in production
 - Consider pinning to specific versions (e.g., Git tags) for stability
-- Be aware that remote templates can change unless locked to a specific version
+- Be aware that remote configs can change unless locked to a specific version
 
 ### Remote Template Files
 
-When a remote template uses the `templateFile` property in a `template` task, the file path is automatically resolved relative to the remote template's location. This allows remote templates to reference their own template files seamlessly.
+When a remote configuration uses the `templateFile` property in a `template` task, the file path is automatically resolved relative to the remote configuration's location. This allows remote configurations to reference their own template files seamlessly.
 
 #### How It Works
 
-When you extend a remote template that contains tasks with `templateFile` references, the CLI automatically:
+When you extend a remote configuration that contains tasks with `templateFile` references, the CLI automatically:
 
 1. Tracks the source URL of each task
-2. Resolves `templateFile` paths relative to the remote template's URL
+2. Resolves `templateFile` paths relative to the remote configuration's URL
 3. Fetches the template file from the remote location
 4. Processes it with the specified template engine (Handlebars for `.hbs` files)
 
-#### Example: Remote Template with Template Files
+#### Example: Remote Configuration with Template Files
 
-**Remote base template** at `https://raw.githubusercontent.com/your-org/templates/main/base-node.json`:
+**Remote base configuration** at `https://raw.githubusercontent.com/your-org/configs/main/base-node.json`:
 
 ```json
 {
@@ -520,16 +525,16 @@ When you extend a remote template that contains tasks with `templateFile` refere
 }
 ```
 
-**Template files hosted alongside the template:**
+**Template files hosted alongside the configuration:**
 
-- `https://raw.githubusercontent.com/your-org/templates/main/tsconfig.hbs`
-- `https://raw.githubusercontent.com/your-org/templates/shared/readme.hbs`
+- `https://raw.githubusercontent.com/your-org/configs/main/tsconfig.hbs`
+- `https://raw.githubusercontent.com/your-org/configs/shared/readme.hbs`
 
-**Your local template** extending the remote one:
+**Your local configuration** extending the remote one:
 
 ```json
 {
-  "extends": "https://raw.githubusercontent.com/your-org/templates/main/base-node.json",
+  "extends": "https://raw.githubusercontent.com/your-org/configs/main/base-node.json",
   "tasks": [
     {
       "id": "custom-task",
@@ -549,8 +554,8 @@ When you extend a remote template that contains tasks with `templateFile` refere
 When you run this, the CLI will:
 
 1. Fetch `base-node.json` from GitHub
-2. For the `create-tsconfig` task, resolve `./tsconfig.hbs` → `https://raw.githubusercontent.com/your-org/templates/main/tsconfig.hbs`
-3. For the `create-readme` task, resolve `../shared/readme.hbs` → `https://raw.githubusercontent.com/your-org/templates/shared/readme.hbs`
+2. For the `create-tsconfig` task, resolve `./tsconfig.hbs` → `https://raw.githubusercontent.com/your-org/configs/main/tsconfig.hbs`
+3. For the `create-readme` task, resolve `../shared/readme.hbs` → `https://raw.githubusercontent.com/your-org/configs/shared/readme.hbs`
 4. Fetch both template files from their remote locations
 5. Process them with Handlebars to generate the output files
 
@@ -558,18 +563,18 @@ When you run this, the CLI will:
 
 The `templateFile` paths are resolved using standard URL/path resolution:
 
-- **Relative paths** (`./file.hbs`, `file.hbs`): Resolved relative to the template's directory
-- **Parent directory paths** (`../file.hbs`): Navigate up from the template's directory
+- **Relative paths** (`./file.hbs`, `file.hbs`): Resolved relative to the configuration's directory
+- **Parent directory paths** (`../file.hbs`): Navigate up from the configuration's directory
 - **Absolute URLs** (`https://...`): Used as-is
-- **Absolute local paths** (`/path/to/file.hbs`): Used as-is for local templates
+- **Absolute local paths** (`/path/to/file.hbs`): Used as-is for local configurations
 
 #### Mixed Remote and Local Template Files
 
-You can combine remote templates with local template files, though remote templates with remote template files are more common for portability:
+You can combine remote configurations with local template files, though remote configurations with remote template files are more common for portability:
 
 ```json
 {
-  "extends": "https://example.com/templates/base.json",
+  "extends": "https://example.com/configs/base.json",
   "tasks": [
     {
       "id": "custom-template",
@@ -587,11 +592,11 @@ You can combine remote templates with local template files, though remote templa
 }
 ```
 
-In this case, the `create-tsconfig` task from the remote template will fetch its template file from the remote location, while your `custom-template` task will use the local `./local-template.hbs` file.
+In this case, the `create-tsconfig` task from the remote configuration will fetch its template file from the remote location, while your `custom-template` task will use the local `./local-template.hbs` file.
 
 ## Task Overriding
 
-If a child template defines a task with the same ID as a base template, the child's task completely replaces the base task:
+If a child configuration defines a task with the same ID as a base configuration, the child's task completely replaces the base task:
 
 ```json
 // base.json
@@ -681,10 +686,10 @@ The resulting task will have:
 
 ## Relative Paths
 
-Template paths in `extends` are resolved relative to the template file containing them:
+Configs paths in `extends` are resolved relative to the config file containing them:
 
 ```
-templates/
+configs/
 ├── base/
 │   └── common.json
 ├── typescript/
@@ -695,13 +700,13 @@ templates/
 ## Programmatic Usage
 
 ```typescript
-import { loadAndMergeTemplate, loadTasksWithInheritance } from '@pixpilot/scaffoldfy';
+import { loadAndMergeConfig, loadTasksWithInheritance } from '@pixpilot/scaffoldfy';
 
 // Load tasks with full inheritance resolution
-const tasks = await loadTasksWithInheritance('./my-template.json');
+const tasks = await loadTasksWithInheritance('./my-config.json');
 
 // Or load and get the full configuration
-const config = await loadAndMergeTemplate('./my-template.json');
+const config = await loadAndMergeConfig('./my-config.json');
 console.log(`Loaded ${config.tasks.length} tasks`);
 ```
 
@@ -710,32 +715,32 @@ console.log(`Loaded ${config.tasks.length} tasks`);
 The system automatically detects and prevents circular dependencies:
 
 ```json
-// template-a.json
+// config-a.json
 {
-  "extends": "template-b.json",
+  "extends": "config-b.json",
   "tasks": []
 }
 
-// template-b.json
+// config-b.json
 {
-  "extends": "template-a.json",  // ❌ Error: Circular dependency!
+  "extends": "config-a.json",  // ❌ Error: Circular dependency!
   "tasks": []
 }
 ```
 
 ## Best Practices
 
-1. **Create a library of base templates** for common project types
+1. **Create a library of base configurations** for common project types
 2. **Use descriptive task IDs** to make overriding intentional and clear
-3. **Document what can be overridden** in your base templates
+3. **Document what can be overridden** in your base configurations
 4. **Keep inheritance chains shallow** (2-3 levels max) for maintainability
-5. **Version your base templates** if they're shared across projects
+5. **Version your base configurations** if they're shared across projects
 6. **Test inheritance chains** to ensure tasks merge as expected
 7. **Use unique IDs across all types** - All IDs must be unique across tasks, variables, and prompts. For example, you cannot have a task with ID `projectName` and a variable with the same ID `projectName`
 
 ## ID Uniqueness Validation
 
-Starting from version 2.1, Scaffoldfy validates that all IDs are unique across tasks, variables, and prompts when templates are merged during inheritance. This prevents naming conflicts and ensures clarity in your template configurations.
+Starting from version 2.1, Scaffoldfy validates that all IDs are unique across tasks, variables, and prompts when configurations are merged during inheritance. This prevents naming conflicts and ensures clarity in your configuration files.
 
 ### Valid Example
 
@@ -799,7 +804,7 @@ This will throw an error: `Duplicate ID "projectName" found in prompt. This ID i
 
 ### With Inheritance
 
-The validation also applies when templates are merged through inheritance:
+The validation also applies when configs are merged through inheritance:
 
 ```json
 // base.json
@@ -829,7 +834,7 @@ The validation also applies when templates are merged through inheritance:
 }
 ```
 
-This will throw an error when loading the child template.
+This will throw an error when loading the child config.
 
 ### Overriding is Allowed
 
@@ -870,21 +875,21 @@ Note that overriding items of the **same type** is allowed and intentional:
 
 This is valid - the child's `setup` task will completely replace the base's `setup` task.
 
-## Example: Organization Template Library
+## Example: Organization Config Library
 
 ```
-org-templates/
+org-configs/
 ├── base.json           # Common tasks for all projects
 ├── node-base.json      # Node.js specific (extends: base.json)
 ├── ts-base.json        # TypeScript specific (extends: node-base.json)
 └── react-base.json     # React specific (extends: ts-base.json)
 ```
 
-Your project template:
+Your project configuration:
 
 ```json
 {
-  "extends": "../org-templates/react-base.json",
+  "extends": "../org-configs/react-base.json",
   "tasks": [
     {
       "id": "project-specific-setup",
@@ -903,95 +908,95 @@ Your project template:
 
 ## CLI Usage
 
-The CLI automatically handles template inheritance from both local files and remote URLs:
+The CLI automatically handles configuration inheritance from both local files and remote URLs:
 
 ```bash
-# Load template from local file with inheritance
-scaffoldfy --config ./my-template.json
+# Load configuration from local file with inheritance
+scaffoldfy --config ./my-config.json
 
-# Load template from remote URL
-scaffoldfy --config https://example.com/templates/project-setup.json
+# Load configuration from remote URL
+scaffoldfy --config https://example.com/configs/project-setup.json
 
 # Dry run to see all inherited and merged tasks
-scaffoldfy --config ./my-template.json --dry-run
+scaffoldfy --config ./my-config.json --dry-run
 
-# Dry run with remote template
-scaffoldfy --config https://raw.githubusercontent.com/org/templates/main/base.json --dry-run
+# Dry run with remote configuration
+scaffoldfy --config https://raw.githubusercontent.com/org/configs/main/base.json --dry-run
 ```
 
 ## API Reference
 
-### `loadTemplate(templatePath: string): Promise<TasksConfiguration>`
+### `loadConfiguration(configPath: string): Promise<TasksConfiguration>`
 
-Load a single template file from a local path or remote URL without processing inheritance.
+Load a single configuration file from a local path or remote URL without processing inheritance.
 
 **Parameters:**
 
-- `templatePath`: Local file path (absolute or relative) or remote URL (http/https)
+- `configPath`: Local file path (absolute or relative) or remote URL (http/https)
 
 **Example:**
 
 ```typescript
 // Load from local file
-const local = await loadTemplate('./template.json');
+const local = await loadConfiguration('./config.json');
 
 // Load from URL
-const remote = await loadTemplate('https://example.com/template.json');
+const remote = await loadConfiguration('https://example.com/config.json');
 ```
 
-### `loadAndMergeTemplate(templatePath: string): Promise<TasksConfiguration>`
+### `loadAndMergeConfiguration(configPath: string): Promise<TasksConfiguration>`
 
-Load a template and recursively merge all extended templates. Supports both local and remote templates.
+Load a configuration and recursively merge all extended configurations. Supports both local and remote configurations.
 
 **Parameters:**
 
-- `templatePath`: Local file path or remote URL to the main template
+- `configPath`: Local file path or remote URL to the main configuration
 
 **Example:**
 
 ```typescript
 // Load and merge with inheritance from URL
-const config = await loadAndMergeTemplate('https://example.com/my-template.json');
+const config = await loadAndMergeConfiguration('https://example.com/my-config.json');
 console.log(`Loaded ${config.tasks.length} tasks`);
 ```
 
-### `loadTasksWithInheritance(tasksFilePath: string): Promise<TaskDefinition[]>`
+### `loadTasksWithInheritance(configFilePath: string): Promise<TaskDefinition[]>`
 
 Load tasks from a file or URL, processing all inheritance, and return the final task array.
 
 **Parameters:**
 
-- `tasksFilePath`: Local file path or remote URL to the tasks configuration
+- `configFilePath`: Local file path or remote URL to the tasks configuration
 
 **Example:**
 
 ```typescript
 // Load from URL with full inheritance chain
 const tasks = await loadTasksWithInheritance(
-  'https://raw.githubusercontent.com/org/templates/main/nodejs.json',
+  'https://raw.githubusercontent.com/org/configs/main/nodejs.json',
 );
 ```
 
-### `mergeTemplates(templates: TasksConfiguration[]): TasksConfiguration`
+### `mergeConfigurations(configs: TasksConfiguration[]): TasksConfiguration`
 
-Merge multiple template configurations manually.
+Merge multiple configurations manually.
 
-### `clearTemplateCache(): void`
+### `clearConfigurationCache(): void`
 
-Clear the internal template cache (useful for testing).
+Clear the internal configuration cache (useful for testing).
 
 ## Real-World Examples
 
-### Example 1: Organization Template Library on GitHub
+### Example 1: Organization Configuration Library on GitHub
 
-Host your organization's templates on GitHub and reference them via raw URLs:
+Host your organization's configurations on GitHub and reference them via raw URLs:
 
 ```json
-// Your project's template
+// Your project's configuration
 {
   "extends": [
-    "https://raw.githubusercontent.com/acme-corp/project-templates/v1.0.0/base-node.json",
-    "https://raw.githubusercontent.com/acme-corp/project-templates/v1.0.0/typescript.json"
+    "https://raw.githubusercontent.com/acme-corp/project-configs/v1.0.0/base-node.json",
+    "https://raw.githubusercontent.com/acme-corp/project-configs/v1.0.0/typescript.json"
   ],
   "tasks": [
     {
@@ -1015,13 +1020,13 @@ Host your organization's templates on GitHub and reference them via raw URLs:
 - Easy updates across all projects
 - Centralized maintenance
 
-### Example 2: Public Template Ecosystem
+### Example 2: Public Configuration Ecosystem
 
-Create and share public templates:
+Create and share public configurations:
 
 ```json
 {
-  "extends": "https://templates.scaffoldfy.dev/react-app/v2.json",
+  "extends": "https://configs.scaffoldfy.dev/react-app/v2.json",
   "tasks": [
     {
       "id": "custom-setup",
@@ -1039,16 +1044,16 @@ Create and share public templates:
 }
 ```
 
-### Example 3: Private CDN for Templates
+### Example 3: Private CDN for Configurations
 
-Host templates on a private CDN or internal server:
+Host configurations on a private CDN or internal server:
 
 ```json
 {
   "extends": [
-    "https://templates.internal.company.com/base/security.json",
-    "https://templates.internal.company.com/base/compliance.json",
-    "https://templates.internal.company.com/tech/nodejs-v18.json"
+    "https://configs.internal.company.com/base/security.json",
+    "https://configs.internal.company.com/base/compliance.json",
+    "https://configs.internal.company.com/tech/nodejs-v18.json"
   ],
   "tasks": []
 }
@@ -1056,13 +1061,13 @@ Host templates on a private CDN or internal server:
 
 ### Example 4: Mix of Local and Remote
 
-Combine organization templates with project-specific local templates:
+Combine organization configurations with project-specific local configurations:
 
 ```json
-// my-project-template.json
+// my-project-config.json
 {
   "extends": [
-    "https://raw.githubusercontent.com/org/templates/main/base.json",
+    "https://raw.githubusercontent.com/org/configs/main/base.json",
     "./local-overrides.json"
   ],
   "tasks": [
@@ -1103,22 +1108,22 @@ Combine organization templates with project-specific local templates:
 }
 ```
 
-### Best Practices for Remote Templates
+### Best Practices for Remote Configurations
 
 1. **Use Version Tags**: Pin to specific versions using Git tags for stability
 
    ```
-   https://raw.githubusercontent.com/org/templates/v1.2.3/base.json
+   https://raw.githubusercontent.com/org/configs/v1.2.3/base.json
    ```
 
 2. **Use HTTPS**: Always use secure HTTPS URLs, never HTTP
 
-3. **Document Dependencies**: Document what remote templates your project depends on
+3. **Document Dependencies**: Document what remote configurations your project depends on
 
-4. **Test Before Deploying**: Test remote template changes in a staging environment
+4. **Test Before Deploying**: Test remote configuration changes in a staging environment
 
-5. **Have Fallbacks**: Consider caching critical templates locally as backups
+5. **Have Fallbacks**: Consider caching critical configurations locally as backups
 
 6. **Monitor Changes**: If using branch references (like `main`), monitor for breaking changes
 
-7. **Access Control**: For private templates, use authenticated URLs or host on secure servers
+7. **Access Control**: For private configurations, use authenticated URLs or host on secure servers

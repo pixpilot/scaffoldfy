@@ -656,7 +656,7 @@ If you need to use interpolation in `ifTrue` or `ifFalse`, you must use an expli
 
 This will use `security@pixpilot.com` if `orgName` is `pixpilot`, otherwise it will interpolate and use the value of `authorEmail`.
 
-### Example: Basic Template
+### Example: Basic Config
 
 ```json
 {
@@ -714,7 +714,7 @@ If the user accepts the default for `projectName` ("my-app"), the default for `a
 
 ### Example: With Variables
 
-Template defaults can also reference variables:
+Prompt defaults can also reference variables:
 
 ```json
 {
@@ -855,7 +855,7 @@ This works on Windows, macOS, and Linux without modification.
 
 ## Complete Example
 
-Here's a complete example showing how to use prompts with executable defaults in `template-tasks.json`:
+Here's a complete example showing how to use prompts with executable defaults in `config-tasks.json`:
 
 ```json
 {
@@ -1150,8 +1150,6 @@ In this example:
 }
 ```
 
-````
-
 ## Prompt Collection Order
 
 When you run initialization:
@@ -1201,7 +1199,7 @@ Prompt values can also be used directly in condition expressions for tasks and w
     }
   ]
 }
-````
+```
 
 In this example:
 
@@ -1231,13 +1229,13 @@ Prompts are validated automatically:
 
 ## TypeScript Support
 
-For TypeScript task configuration files (`template-tasks.ts`), you can use typed configurations:
+For TypeScript task configuration files (`config-tasks.ts`), you can use typed configurations:
 
 ```typescript
 import type { TasksConfiguration } from '@pixpilot/scaffoldfy';
 
 export const config: TasksConfiguration = {
-  name: 'my-template',
+  name: 'my-config',
   prompts: [
     {
       id: 'projectName',
@@ -1284,13 +1282,10 @@ Run initialization with prompts:
 
 ```bash
 # Using config file (JSON or TypeScript)
-scaffoldfy --config ./template-tasks.json
-
-# Or with TypeScript
-scaffoldfy --config ./template-tasks.ts
+scaffoldfy --config ./config-tasks.json
 
 # Dry run to preview
-scaffoldfy --dry-run
+scaffoldfy  --config ./config-tasks.json --dry-run
 ```
 
 The CLI will automatically detect prompts in your tasks and collect user input before executing the tasks.

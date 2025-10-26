@@ -5,7 +5,7 @@ title: Variables - Scaffoldfy
 
 # Variables
 
-Variables provide a way to define reusable values in your template configuration **without requiring user interaction**. Unlike [prompts](./PROMPTS.md), which collect user input interactively, variables are resolved automatically from static values or executable commands.
+Variables provide a way to define reusable values in your configuration **without requiring user interaction**. Unlike [prompts](./PROMPTS.md), which collect user input interactively, variables are resolved automatically from static values or executable commands.
 
 ## Overview
 
@@ -343,9 +343,9 @@ Conditional variables are resolved in **two passes**:
 
 This allows conditional variables to depend on user input from prompts.
 
-#### Dynamic Template Enabling
+#### Dynamic Configuration Enabling
 
-Conditional variables are particularly useful with template-level `enabled` fields to dynamically enable/disable entire templates:
+Conditional variables are particularly useful with configuration-level `enabled` fields to dynamically enable/disable entire configurations:
 
 ```json
 {
@@ -359,7 +359,7 @@ Conditional variables are particularly useful with template-level `enabled` fiel
 }
 ```
 
-Where `pixpilot-info` template defines:
+Where `pixpilot-info` configuration defines:
 
 ```json
 {
@@ -383,7 +383,7 @@ Where `pixpilot-info` template defines:
 
 Interpolate Type Values allow you to explicitly mark a variable value as a template string that should be interpolated with previously resolved variables and prompts. This is useful when you want to compose variable values from other variables or prompts.
 
-#### Basic Template Example
+#### Basic Configuration Example
 
 ```json
 {
@@ -429,7 +429,7 @@ The `apiServiceName` variable will have the value "my-app-api".
 }
 ```
 
-#### Referencing Prompts in Variable Templates
+#### Referencing Prompts in Variable Values
 
 Variables can reference values from prompts (since prompts are resolved before variables in the second pass):
 
@@ -549,9 +549,9 @@ Variables are resolved sequentially, so an interpolate variable can only referen
 
 ## Using Variables in Tasks
 
-Variables are available in all template contexts using `{{variableName}}` syntax:
+Variables are available in all configuration contexts using `{{variableName}}` syntax:
 
-### In Template Files
+### In Configuration Files
 
 ```json
 {
@@ -744,7 +744,7 @@ If an executable variable's command fails:
 
 - A warning is logged
 - The variable value is `undefined`
-- Templates using that variable will show `undefined`
+- Configurations using that variable will show `undefined`
 
 ```json
 {
@@ -840,10 +840,6 @@ Combine with prompts for fallback values:
   ]
 }
 ```
-
-## Complete Example
-
-See [`examples/template-tasks-with-variables.json`](../packages/scaffoldfy/examples/template-tasks-with-variables.json) for a full working example.
 
 ## See Also
 

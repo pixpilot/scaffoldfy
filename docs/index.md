@@ -63,8 +63,8 @@ Welcome to the official documentation for **@pixpilot/scaffoldfy** (formerly sca
 </div>
 
 <div style="padding: 15px; background: #f6f8fa; border-radius: 6px; margin: 15px 0;">
-  <strong><a href="TEMPLATE_INHERITANCE.html">🧬 Template Inheritance</a></strong><br>
-  <em>Extend and compose templates for code reuse and better organization</em>
+  <strong><a href="CONFIG_INHERITANCE.html">🧬 Configuration Inheritance</a></strong><br>
+  <em>Extend and compose configs for code reuse and better organization</em>
 </div>
 
 <div style="padding: 15px; background: #f6f8fa; border-radius: 6px; margin: 15px 0;">
@@ -98,7 +98,7 @@ Welcome to the official documentation for **@pixpilot/scaffoldfy** (formerly sca
 
 ## 💡 Features at a Glance
 
-✅ **Template Inheritance** - Extend base templates for code reuse
+✅ **Configuration Inheritance** - Extend base configurations for code reuse
 
 ✅ **Dry-Run Mode with Diff** - Preview exact changes before applying
 
@@ -132,7 +132,7 @@ Welcome to the official documentation for **@pixpilot/scaffoldfy** (formerly sca
 → [Variables](VARIABLES.html)
 
 **Building complex templates?**
-→ [Template Inheritance](TEMPLATE_INHERITANCE.html) + [Handlebars Templates](HANDLEBARS_TEMPLATES.html)
+→ [Configuration Inheritance](CONFIG_INHERITANCE.html) + [Handlebars Templates](HANDLEBARS_TEMPLATES.html)
 
 **Want to preview changes first?**
 → [Dry Run Mode](DRY_RUN.html)
@@ -192,7 +192,7 @@ npm install --save-dev @pixpilot/scaffoldfy
 Run it:
 
 ```bash
-scaffoldfy init template.json --dry-run
+scaffoldfy --config config.json --dry-run
 ```
 
 ---

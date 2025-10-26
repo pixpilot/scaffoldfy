@@ -5,7 +5,7 @@ title: Value Transformers - Scaffoldfy
 
 # Value Transformers
 
-Value transformers allow you to transform prompt and variable values before they're used in your templates. This enables powerful data manipulation and validation workflows.
+Value transformers allow you to transform prompt and variable values before they're used in your configurations. This enables powerful data manipulation and validation workflows.
 
 ## Table of Contents
 
@@ -24,8 +24,8 @@ Value transformers allow you to transform prompt and variable values before they
 Transformers are applied to:
 
 - **Prompts**: Transform user input before storing in variables
-- **Variables**: Transform computed values before using in templates
-- **Global Transformers**: Define custom transformers for reuse across your template
+- **Variables**: Transform computed values before using in configurations
+- **Global Transformers**: Define custom transformers for reuse across your configuration
 
 ### Key Features
 
@@ -33,7 +33,7 @@ Transformers are applied to:
 - **Regex transformers** for pattern-based replacements
 - **Computed transformers** for JavaScript expressions
 - **Chain transformers** to apply multiple transformations sequentially
-- **Custom transformers** defined globally and reused throughout your template
+- **Custom transformers** defined globally and reused throughout your configuration
 
 ---
 
@@ -517,7 +517,7 @@ Apply multiple transformers in sequence by using an array:
 
 ## Custom Transformers
 
-Define custom transformers globally and reference them by ID throughout your template.
+Define custom transformers globally and reference them by ID throughout your configuration.
 
 ### Defining Custom Transformers
 
@@ -564,13 +564,13 @@ Or combine with other transformers:
 
 ## Examples
 
-### Complete Template with Transformers
+### Complete Configuration with Transformers
 
 ```json
 {
   "$schema": "https://unpkg.com/@pixpilot/scaffoldfy/schema",
   "name": "transformers-example",
-  "description": "Example template demonstrating value transformers",
+  "description": "Example configuration demonstrating value transformers",
   "prompts": [
     {
       "id": "projectName",
@@ -729,7 +729,7 @@ Or combine with other transformers:
 ## Limitations
 
 - Custom transformer handlers must be valid JavaScript arrow function expressions
-- Computed expressions have access to template context but not Node.js modules
+- Computed expressions have access to configuration context but not Node.js modules
 - Transformers run synchronously - async operations are not supported
 - Regex transformers use JavaScript RegExp - some advanced features may not be available
 
@@ -739,4 +739,3 @@ Or combine with other transformers:
 
 - [Prompts Documentation](PROMPTS.md)
 - [Variables Documentation](VARIABLES.md)
-- [Template Configuration](QUICK_REFERENCE.md)
