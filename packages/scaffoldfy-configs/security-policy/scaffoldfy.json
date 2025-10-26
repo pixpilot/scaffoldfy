@@ -1,5 +1,5 @@
 {
-  "$schema": "https://unpkg.com/@pixpilot/scaffoldfy/schema",
+  "$schema": "../node_modules/@pixpilot/scaffoldfy/schema/scaffoldfy.schema.json",
   "description": "Security policy template with configurable contact email",
   "name": "security-policy",
   "dependencies": ["project-info"],
@@ -18,7 +18,7 @@
 
       "enabled": {
         "type": "condition",
-        "condition": "addSecurityFile === true"
+        "value": "addSecurityFile === true"
       },
       "default": {
         "type": "conditional",
@@ -41,7 +41,7 @@
       "type": "write",
       "enabled": {
         "type": "condition",
-        "condition": "addSecurityFile === true"
+        "value": "addSecurityFile === true"
       },
       "config": {
         "file": "SECURITY.md",

@@ -1,0 +1,4 @@
+{
+  "$schema": "./relative-schema.json",
+  "foo": "bar"
+}

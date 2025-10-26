@@ -1,5 +1,5 @@
 {
-  "$schema": "https://unpkg.com/@pixpilot/scaffoldfy/schema",
+  "$schema": "../node_modules/@pixpilot/scaffoldfy/schema/scaffoldfy.schema.json",
   "description": "Update root package.json with repository information",
   "name": "update-root-package-json",
   "dependencies": ["project-info"],

@@ -580,5 +580,355 @@ describe('schema-validator', () => {
       expect(result.errors.length).toBeGreaterThan(0);
       expect(result.errors.some((e) => e.includes('Unknown property'))).toBe(true);
     });
+
+    describe('shared valueConfig definition', () => {
+      it('should accept static value for variable.value', () => {
+        const config = {
+          $schema:
+            'https://unpkg.com/@pixpilot/scaffoldfy@latest/schema/scaffoldfy.schema.json',
+          name: 'test-template',
+          variables: [
+            {
+              id: 'myVar',
+              value: 'static value',
+            },
+          ],
+          tasks: [],
+        };
+
+        const result = validateTasksSchema(config, { silent: true });
+        expect(result.valid).toBe(true);
+      });
+
+      it('should accept exec value for variable.value', () => {
+        const config = {
+          $schema:
+            'https://unpkg.com/@pixpilot/scaffoldfy@latest/schema/scaffoldfy.schema.json',
+          name: 'test-template',
+          variables: [
+            {
+              id: 'myVar',
+              value: {
+                type: 'exec',
+                value: 'echo "test"',
+              },
+            },
+          ],
+          tasks: [],
+        };
+
+        const result = validateTasksSchema(config, { silent: true });
+        expect(result.valid).toBe(true);
+      });
+
+      it('should accept conditional value for variable.value', () => {
+        const config = {
+          $schema:
+            'https://unpkg.com/@pixpilot/scaffoldfy@latest/schema/scaffoldfy.schema.json',
+          name: 'test-template',
+          variables: [
+            {
+              id: 'myVar',
+              value: {
+                type: 'conditional',
+                condition: 'true',
+                ifTrue: 'yes',
+                ifFalse: 'no',
+              },
+            },
+          ],
+          tasks: [],
+        };
+
+        const result = validateTasksSchema(config, { silent: true });
+        expect(result.valid).toBe(true);
+      });
+
+      it('should accept static value for prompt.default', () => {
+        const config = {
+          $schema:
+            'https://unpkg.com/@pixpilot/scaffoldfy@latest/schema/scaffoldfy.schema.json',
+          name: 'test-template',
+          prompts: [
+            {
+              id: 'myPrompt',
+              type: 'input',
+              message: 'Enter value',
+              default: 'default value',
+            },
+          ],
+          tasks: [],
+        };
+
+        const result = validateTasksSchema(config, { silent: true });
+        expect(result.valid).toBe(true);
+      });
+
+      it('should accept exec value for prompt.default', () => {
+        const config = {
+          $schema:
+            'https://unpkg.com/@pixpilot/scaffoldfy@latest/schema/scaffoldfy.schema.json',
+          name: 'test-template',
+          prompts: [
+            {
+              id: 'myPrompt',
+              type: 'input',
+              message: 'Enter value',
+              default: {
+                type: 'exec',
+                value: 'git config --get user.name',
+              },
+            },
+          ],
+          tasks: [],
+        };
+
+        const result = validateTasksSchema(config, { silent: true });
+        expect(result.valid).toBe(true);
+      });
+
+      it('should accept interpolate value for prompt.default', () => {
+        const config = {
+          $schema:
+            'https://unpkg.com/@pixpilot/scaffoldfy@latest/schema/scaffoldfy.schema.json',
+          name: 'test-template',
+          prompts: [
+            {
+              id: 'myPrompt',
+              type: 'input',
+              message: 'Enter value',
+              default: {
+                type: 'interpolate',
+                value: '{{otherVar}}',
+              },
+            },
+          ],
+          tasks: [],
+        };
+
+        const result = validateTasksSchema(config, { silent: true });
+        expect(result.valid).toBe(true);
+      });
+    });
+
+    describe('shared transformersArray definition', () => {
+      it('should accept built-in transformer ID for variable.transformers', () => {
+        const config = {
+          $schema:
+            'https://unpkg.com/@pixpilot/scaffoldfy@latest/schema/scaffoldfy.schema.json',
+          name: 'test-template',
+          variables: [
+            {
+              id: 'myVar',
+              value: 'test',
+              transformers: ['lowercase', 'trim'],
+            },
+          ],
+          tasks: [],
+        };
+
+        const result = validateTasksSchema(config, { silent: true });
+        expect(result.valid).toBe(true);
+      });
+
+      it('should accept inline transformer definition for variable.transformers', () => {
+        const config = {
+          $schema:
+            'https://unpkg.com/@pixpilot/scaffoldfy@latest/schema/scaffoldfy.schema.json',
+          name: 'test-template',
+          variables: [
+            {
+              id: 'myVar',
+              value: 'test',
+              transformers: [
+                {
+                  id: 'custom',
+                  type: 'regex',
+                  config: {
+                    pattern: 'a',
+                    replacement: 'b',
+                  },
+                },
+              ],
+            },
+          ],
+          tasks: [],
+        };
+
+        const result = validateTasksSchema(config, { silent: true });
+        expect(result.valid).toBe(true);
+      });
+
+      it('should accept built-in transformer ID for prompt.transformers', () => {
+        const config = {
+          $schema:
+            'https://unpkg.com/@pixpilot/scaffoldfy@latest/schema/scaffoldfy.schema.json',
+          name: 'test-template',
+          prompts: [
+            {
+              id: 'myPrompt',
+              type: 'input',
+              message: 'Enter value',
+              transformers: ['slugify', 'lowercase'],
+            },
+          ],
+          tasks: [],
+        };
+
+        const result = validateTasksSchema(config, { silent: true });
+        expect(result.valid).toBe(true);
+      });
+
+      it('should accept inline transformer definition for prompt.transformers', () => {
+        const config = {
+          $schema:
+            'https://unpkg.com/@pixpilot/scaffoldfy@latest/schema/scaffoldfy.schema.json',
+          name: 'test-template',
+          prompts: [
+            {
+              id: 'myPrompt',
+              type: 'input',
+              message: 'Enter value',
+              transformers: [
+                {
+                  id: 'custom',
+                  type: 'computed',
+                  config: {
+                    expression: 'value.toUpperCase()',
+                  },
+                },
+              ],
+            },
+          ],
+          tasks: [],
+        };
+
+        const result = validateTasksSchema(config, { silent: true });
+        expect(result.valid).toBe(true);
+      });
+    });
+
+    describe('type-specific prompt fields', () => {
+      it('should accept min and max for number prompts', () => {
+        const config = {
+          $schema:
+            'https://unpkg.com/@pixpilot/scaffoldfy@latest/schema/scaffoldfy.schema.json',
+          name: 'test-template',
+          prompts: [
+            {
+              id: 'port',
+              type: 'number',
+              message: 'Port number',
+              min: 1024,
+              max: 65535,
+            },
+          ],
+          tasks: [],
+        };
+
+        const result = validateTasksSchema(config, { silent: true });
+        expect(result.valid).toBe(true);
+      });
+
+      it('should accept choices for select prompts', () => {
+        const config = {
+          $schema:
+            'https://unpkg.com/@pixpilot/scaffoldfy@latest/schema/scaffoldfy.schema.json',
+          name: 'test-template',
+          prompts: [
+            {
+              id: 'framework',
+              type: 'select',
+              message: 'Choose framework',
+              choices: [
+                { name: 'React', value: 'react' },
+                { name: 'Vue', value: 'vue' },
+              ],
+            },
+          ],
+          tasks: [],
+        };
+
+        const result = validateTasksSchema(config, { silent: true });
+        expect(result.valid).toBe(true);
+      });
+
+      it('should reject select prompt without choices', () => {
+        const config = {
+          $schema:
+            'https://unpkg.com/@pixpilot/scaffoldfy@latest/schema/scaffoldfy.schema.json',
+          name: 'test-template',
+          prompts: [
+            {
+              id: 'framework',
+              type: 'select',
+              message: 'Choose framework',
+            },
+          ],
+          tasks: [],
+        };
+
+        const result = validateTasksSchema(config, { silent: true });
+        expect(result.valid).toBe(false);
+        expect(result.errors.length).toBeGreaterThan(0);
+      });
+
+      it('should accept input prompt without min, max, or choices', () => {
+        const config = {
+          $schema:
+            'https://unpkg.com/@pixpilot/scaffoldfy@latest/schema/scaffoldfy.schema.json',
+          name: 'test-template',
+          prompts: [
+            {
+              id: 'name',
+              type: 'input',
+              message: 'Enter name',
+            },
+          ],
+          tasks: [],
+        };
+
+        const result = validateTasksSchema(config, { silent: true });
+        expect(result.valid).toBe(true);
+      });
+
+      it('should accept confirm prompt without min, max, or choices', () => {
+        const config = {
+          $schema:
+            'https://unpkg.com/@pixpilot/scaffoldfy@latest/schema/scaffoldfy.schema.json',
+          name: 'test-template',
+          prompts: [
+            {
+              id: 'confirm',
+              type: 'confirm',
+              message: 'Are you sure?',
+            },
+          ],
+          tasks: [],
+        };
+
+        const result = validateTasksSchema(config, { silent: true });
+        expect(result.valid).toBe(true);
+      });
+
+      it('should accept password prompt without min, max, or choices', () => {
+        const config = {
+          $schema:
+            'https://unpkg.com/@pixpilot/scaffoldfy@latest/schema/scaffoldfy.schema.json',
+          name: 'test-template',
+          prompts: [
+            {
+              id: 'secret',
+              type: 'password',
+              message: 'Enter password',
+            },
+          ],
+          tasks: [],
+        };
+
+        const result = validateTasksSchema(config, { silent: true });
+        expect(result.valid).toBe(true);
+      });
+    });
   });
 });

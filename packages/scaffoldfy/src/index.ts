@@ -173,6 +173,7 @@ export {
   validatePrompts,
 } from './prompts/index.js';
 export { runTasks, runTemplatesSequentially } from './run-tasks.js';
+export { validateScaffoldfyJsonFile } from './scaffoldfy-config-json-validator';
 export { executeTask, registerBuiltInPlugins, runTask } from './task-executors.js';
 export { topologicalSort } from './task-resolver.js';
 export {
@@ -201,6 +202,7 @@ export {
   promptYesNo,
   setNestedProperty,
 } from './utils.js';
+
 export {
   collectVariables,
   resolveAllVariableValues,

@@ -1,5 +1,5 @@
 {
-  "$schema": "https://unpkg.com/@pixpilot/scaffoldfy/schema",
+  "$schema": "../node_modules/@pixpilot/scaffoldfy/schema/scaffoldfy.schema.json",
   "description": "Generates packages section in monorepo README by reading package.json files",
   "name": "pixpilot-generate-packages-section",
   "dependencies": ["pixpilot-info"],

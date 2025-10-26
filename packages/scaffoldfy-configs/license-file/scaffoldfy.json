@@ -1,5 +1,5 @@
 {
-  "$schema": "https://unpkg.com/@pixpilot/scaffoldfy/schema",
+  "$schema": "../node_modules/@pixpilot/scaffoldfy/schema/scaffoldfy.schema.json",
   "name": "license-file",
   "description": "Generate a LICENSE file with common open-source licenses",
   "dependencies": ["project-info"],

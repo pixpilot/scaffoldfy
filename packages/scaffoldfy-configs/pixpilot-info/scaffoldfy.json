@@ -1,5 +1,5 @@
 {
-  "$schema": "https://unpkg.com/@pixpilot/scaffoldfy/schema",
+  "$schema": "../node_modules/@pixpilot/scaffoldfy/schema/scaffoldfy.schema.json",
   "description": "Project information prompts for pnpm-turbo-monorepo-template",
   "name": "pixpilot-info",
   "dependencies": ["project-info"],

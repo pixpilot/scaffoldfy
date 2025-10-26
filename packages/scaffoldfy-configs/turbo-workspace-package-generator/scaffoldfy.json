@@ -1,5 +1,5 @@
 {
-  "$schema": "https://unpkg.com/@pixpilot/scaffoldfy/schema",
+  "$schema": "../node_modules/@pixpilot/scaffoldfy/schema/scaffoldfy.schema.json",
   "description": "Pixpilot workspace package generator template for pnpm + Turbo monorepo. Provides project info prompts and config tasks.",
   "name": "turbo-workspace-package-generator",
   "prompts": [

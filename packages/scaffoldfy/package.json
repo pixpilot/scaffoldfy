@@ -24,7 +24,7 @@
   },
   "bin": {
     "scaffoldfy": "./dist/cli.js",
-    "validate-scaffoldfy-json": "./dist/validate-scaffoldfy-json.js"
+    "validate-scaffoldfy-json": "./dist/scaffoldfy-config-json-validator/cli.js"
   },
   "files": [
     "dist",
