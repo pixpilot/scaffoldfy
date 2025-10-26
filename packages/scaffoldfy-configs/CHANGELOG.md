@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy-configs
 
+## 0.7.0
+
+### Minor Changes
+
+- Enhance dynamic evaluation for required and enabled properties
+
 ## 0.6.0
 
 ### Minor Changes
