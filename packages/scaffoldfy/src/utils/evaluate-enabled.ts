@@ -6,31 +6,6 @@ import type { DynamicBooleanValue, EnabledValue, InitConfig } from '../types.js'
 import { evaluateCondition } from '../utils.js';
 
 /**
- * Normalize old EnabledValue format to new DynamicBooleanValue format
- * Provides backwards compatibility for old string and {condition} formats
- */
-function normalizeEnabledValue(
-  enabled: EnabledValue | DynamicBooleanValue | undefined,
-): DynamicBooleanValue | undefined {
-  if (enabled === undefined || typeof enabled === 'boolean') {
-    return enabled;
-  }
-
-  // Handle old string format (shorthand condition) -> convert to new format
-  if (typeof enabled === 'string') {
-    return { type: 'condition', value: enabled };
-  }
-
-  // Handle old {condition: "..."} format -> convert to new format
-  if (typeof enabled === 'object' && 'condition' in enabled && !('type' in enabled)) {
-    return { type: 'condition', value: enabled.condition };
-  }
-
-  // Already in new format or ExecutableConfig
-  return enabled as DynamicBooleanValue;
-}
-
-/**
  * Evaluate whether a prompt or task is enabled (synchronous version)
  * @param enabled - The enabled value (boolean or dynamic config object)
  * @param config - Current configuration context for evaluating conditions
@@ -44,30 +19,27 @@ export function evaluateEnabled(
   config: InitConfig,
   options?: { lazy?: boolean },
 ): boolean {
-  // Normalize to new format for consistent handling
-  const normalizedEnabled = normalizeEnabledValue(enabled);
-
   // If enabled is not specified, default to true
-  if (normalizedEnabled === undefined) {
+  if (enabled === undefined) {
     return true;
   }
 
   // If it's a boolean, return it directly
-  if (typeof normalizedEnabled === 'boolean') {
-    return normalizedEnabled;
+  if (typeof enabled === 'boolean') {
+    return enabled;
   }
 
   // If it's an object, check the type
-  if (typeof normalizedEnabled === 'object' && 'type' in normalizedEnabled) {
+  if (typeof enabled === 'object' && 'type' in enabled) {
     // For exec type, we can't execute synchronously
-    if (normalizedEnabled.type === 'exec') {
+    if (enabled.type === 'exec') {
       return options?.lazy === true;
     }
 
     // For condition type, evaluate the expression
-    if (normalizedEnabled.type === 'condition') {
+    if (enabled.type === 'condition') {
       return evaluateCondition(
-        normalizedEnabled.value,
+        enabled.value,
         config,
         options?.lazy === true ? { lazy: true } : undefined,
       );
@@ -92,29 +64,26 @@ export async function evaluateEnabledAsync(
   config: InitConfig,
   options?: { lazy?: boolean },
 ): Promise<boolean> {
-  // Normalize to new format for consistent handling
-  const normalizedEnabled = normalizeEnabledValue(enabled);
-
   // If enabled is not specified, default to true
-  if (normalizedEnabled === undefined) {
+  if (enabled === undefined) {
     return true;
   }
 
   // If it's a boolean, return it directly
-  if (typeof normalizedEnabled === 'boolean') {
-    return normalizedEnabled;
+  if (typeof enabled === 'boolean') {
+    return enabled;
   }
 
   // If it's an object, check the type
-  if (typeof normalizedEnabled === 'object' && 'type' in normalizedEnabled) {
+  if (typeof enabled === 'object' && 'type' in enabled) {
     // For exec type, execute the command
-    if (normalizedEnabled.type === 'exec') {
+    if (enabled.type === 'exec') {
       try {
         const { execSync } = await import('node:child_process');
         const { interpolateTemplate } = await import('../utils.js');
 
         // Interpolate template variables in the command
-        const command = interpolateTemplate(normalizedEnabled.value, config);
+        const command = interpolateTemplate(enabled.value, config);
 
         // Execute the command and get output
         const output = execSync(command, { encoding: 'utf-8' }).trim();
@@ -133,7 +102,7 @@ export async function evaluateEnabledAsync(
       } catch (error) {
         // If command fails, log warning and return false
         const { log } = await import('../utils.js');
-        log(`Failed to execute enabled command: ${normalizedEnabled.value}`, 'warn');
+        log(`Failed to execute enabled command: ${enabled.value}`, 'warn');
         if (error instanceof Error) {
           log(`  Error: ${error.message}`, 'warn');
         }
@@ -142,9 +111,9 @@ export async function evaluateEnabledAsync(
     }
 
     // For condition type, evaluate the expression
-    if (normalizedEnabled.type === 'condition') {
+    if (enabled.type === 'condition') {
       return evaluateCondition(
-        normalizedEnabled.value,
+        enabled.value,
         config,
         options?.lazy === true ? { lazy: true } : undefined,
       );

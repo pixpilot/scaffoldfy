@@ -57,23 +57,20 @@ describe('root-level template enabled', () => {
       expect(await evaluateEnabledAsync(false, {})).toBe(false);
     });
 
-    it('should evaluate string condition when enabled is a string', async () => {
-      const config = { useTypeScript: true, projectType: 'monorepo' };
-
-      expect(await evaluateEnabledAsync('useTypeScript === true', config)).toBe(true);
-      expect(await evaluateEnabledAsync('useTypeScript === false', config)).toBe(false);
-      expect(await evaluateEnabledAsync('projectType === "monorepo"', config)).toBe(true);
-      expect(await evaluateEnabledAsync('projectType === "lib"', config)).toBe(false);
-    });
-
     it('should evaluate conditional object', async () => {
       const config = { useTypeScript: true };
 
       expect(
-        await evaluateEnabledAsync({ condition: 'useTypeScript === true' }, config),
+        await evaluateEnabledAsync(
+          { type: 'condition', value: 'useTypeScript === true' },
+          config,
+        ),
       ).toBe(true);
       expect(
-        await evaluateEnabledAsync({ condition: 'useTypeScript === false' }, config),
+        await evaluateEnabledAsync(
+          { type: 'condition', value: 'useTypeScript === false' },
+          config,
+        ),
       ).toBe(false);
     });
 
@@ -82,13 +79,19 @@ describe('root-level template enabled', () => {
 
       expect(
         await evaluateEnabledAsync(
-          'useTypeScript === true && projectType === "monorepo"',
+          {
+            type: 'condition',
+            value: 'useTypeScript === true && projectType === "monorepo"',
+          },
           config,
         ),
       ).toBe(true);
       expect(
         await evaluateEnabledAsync(
-          'useTypeScript === true || includeTests === false',
+          {
+            type: 'condition',
+            value: 'useTypeScript === true || includeTests === false',
+          },
           config,
         ),
       ).toBe(true);
@@ -241,7 +244,7 @@ describe('root-level template enabled', () => {
         dryRun: false,
         force: false,
         tasksFilePath: undefined,
-        templateEnabled: 'false === true', // Condition that evaluates to false
+        templateEnabled: { type: 'condition', value: 'false === true' }, // Condition that evaluates to false
       });
 
       // Should log that template is disabled
@@ -264,7 +267,7 @@ describe('root-level template enabled', () => {
         dryRun: true, // Use dry run to avoid actual file operations
         force: false,
         tasksFilePath: undefined,
-        templateEnabled: 'true === true', // Condition that evaluates to true
+        templateEnabled: { type: 'condition', value: 'true === true' }, // Condition that evaluates to true
       });
 
       // Should not log disabled message
@@ -288,7 +291,7 @@ describe('root-level template enabled', () => {
         dryRun: false,
         force: false,
         tasksFilePath: undefined,
-        templateEnabled: { condition: '1 === 2' }, // False condition
+        templateEnabled: { type: 'condition', value: '1 === 2' }, // False condition
       });
 
       expect(mockInfo).toHaveBeenCalledWith(

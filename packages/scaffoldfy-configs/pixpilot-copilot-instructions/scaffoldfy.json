@@ -3,7 +3,7 @@
   "description": "GitHub Copilot instructions template for Pixpilot projects",
   "name": "pixpilot-copilot-instructions",
   "dependencies": ["project-info", "pixpilot-info"],
-  "enabled": "pixpilot_project == true",
+  "enabled": { "type": "condition", "value": "pixpilot_project == true" },
   "tasks": [
     {
       "id": "pixpilot-copilot-instructions",

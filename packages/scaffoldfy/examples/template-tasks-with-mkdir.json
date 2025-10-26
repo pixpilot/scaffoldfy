@@ -1,5 +1,7 @@
 {
   "$schema": "../schema/scaffoldfy.schema.json",
+  "name": "template-with-mkdir",
+  "description": "Demonstrates creating directories with mkdir tasks",
   "prompts": [
     {
       "id": "includeTests",

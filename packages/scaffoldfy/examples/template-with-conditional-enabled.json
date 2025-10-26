@@ -3,7 +3,7 @@
   "name": "conditional-template-example",
   "description": "Example showing conditional root-level enabled based on dependency template variables",
   "dependencies": ["project-info"],
-  "enabled": "useTypeScript === true",
+  "enabled": { "type": "condition", "value": "useTypeScript === true" },
   "tasks": [
     {
       "id": "create-tsconfig",

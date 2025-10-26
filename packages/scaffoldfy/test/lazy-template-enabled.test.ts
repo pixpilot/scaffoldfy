@@ -104,7 +104,7 @@ describe('lazy template enabled evaluation', () => {
           id: 'pixpilotSpecificPrompt',
           type: 'input',
           message: 'Pixpilot specific setting',
-          $templateEnabled: { condition: 'isPixpilot === true' },
+          $templateEnabled: { type: 'condition', value: 'isPixpilot === true' },
         },
       ];
 
@@ -127,7 +127,7 @@ describe('lazy template enabled evaluation', () => {
           id: 'pixpilotSpecificPrompt',
           type: 'input',
           message: 'Pixpilot specific setting',
-          $templateEnabled: { condition: 'isPixpilot === true' },
+          $templateEnabled: { type: 'condition', value: 'isPixpilot === true' },
         },
       ];
 
@@ -150,7 +150,7 @@ describe('lazy template enabled evaluation', () => {
           id: 'pixpilotPrompt',
           type: 'input',
           message: 'Pixpilot prompt',
-          $templateEnabled: 'repoOwner === "pixpilots"',
+          $templateEnabled: { type: 'condition', value: 'repoOwner === "pixpilots"' },
         },
       ];
 
@@ -191,7 +191,7 @@ describe('lazy template enabled evaluation', () => {
         {
           id: 'featureSpecificVar',
           value: { type: 'static', value: 'feature-value' },
-          $templateEnabled: { condition: 'enableFeature === true' },
+          $templateEnabled: { type: 'condition', value: 'enableFeature === true' },
         },
       ];
 
@@ -211,7 +211,7 @@ describe('lazy template enabled evaluation', () => {
         {
           id: 'featureSpecificVar',
           value: { type: 'static', value: 'feature-value' },
-          $templateEnabled: { condition: 'enableFeature === true' },
+          $templateEnabled: { type: 'condition', value: 'enableFeature === true' },
         },
       ];
 
@@ -258,7 +258,7 @@ describe('lazy template enabled evaluation', () => {
         {
           id: 'pixpilot_specific_var',
           value: { type: 'static', value: 'pixpilot-value' },
-          $templateEnabled: 'pixpilot_project == true',
+          $templateEnabled: { type: 'condition', value: 'pixpilot_project == true' },
         },
       ];
 
@@ -305,7 +305,7 @@ describe('lazy template enabled evaluation', () => {
           name: 'Conditional Task',
           type: 'write' as const,
           config: { file: 'test.txt', template: 'test' },
-          $templateEnabled: 'pixpilot_project === true',
+          $templateEnabled: { type: 'condition', value: 'pixpilot_project === true' },
         },
       ];
 

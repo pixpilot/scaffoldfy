@@ -317,22 +317,6 @@
           "description": "Static enabled state"
         },
         {
-          "type": "string",
-          "description": "JavaScript expression to evaluate (deprecated, use { type: 'condition', value: 'expression' } instead)"
-        },
-        {
-          "type": "object",
-          "description": "Conditional enabled configuration (deprecated format)",
-          "required": ["condition"],
-          "additionalProperties": false,
-          "properties": {
-            "condition": {
-              "type": "string",
-              "description": "JavaScript expression to evaluate"
-            }
-          }
-        },
-        {
           "type": "object",
           "description": "Dynamic enabled configuration",
           "required": ["type", "value"],

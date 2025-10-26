@@ -440,7 +440,7 @@ describe('schema-validator', () => {
             id: 'task-1',
             name: 'Conditional Task',
             type: 'update-json',
-            enabled: 'useFeature === true',
+            enabled: { type: 'condition', value: 'useFeature === true' },
             config: {
               file: 'package.json',
               updates: {

@@ -1,4 +1,7 @@
 {
+  "$schema": "../schema/scaffoldfy.schema.json",
+  "name": "template-with-move",
+  "description": "Demonstrates moving files with move tasks",
   "tasks": [
     {
       "id": "create-temp-file",

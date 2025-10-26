@@ -1,6 +1,6 @@
 {
   "$schema": "../schema/scaffoldfy.schema.json",
-  "name": "string-enabled-example",
+  "name": "conditional-enabled-example",
   "prompts": [
     {
       "id": "useTypeScript",
@@ -22,7 +22,7 @@
         { "name": "Vitest", "value": "vitest" },
         { "name": "Jest", "value": "jest" }
       ],
-      "enabled": "includeTests === true"
+      "enabled": { "type": "condition", "value": "includeTests === true" }
     }
   ],
   "tasks": [
@@ -30,33 +30,39 @@
       "id": "setup-typescript",
       "name": "Setup TypeScript",
       "description": "Create TypeScript configuration",
-      "enabled": "useTypeScript === true",
+      "enabled": { "type": "condition", "value": "useTypeScript === true" },
       "type": "create",
       "config": {
         "file": "tsconfig.json",
-        "template": "{\n  \"compilerOptions\": {\n    \"target\": \"ES2020\",\n    \"module\": \"ESNext\",\n    \"strict\": true\n  }\n}"
+        "write": "{\n  \"compilerOptions\": {\n    \"target\": \"ES2020\",\n    \"module\": \"ESNext\",\n    \"strict\": true\n  }\n}"
       }
     },
     {
       "id": "setup-vitest",
       "name": "Setup Vitest",
       "description": "Create Vitest configuration",
-      "enabled": "includeTests === true && testFramework === 'vitest'",
+      "enabled": {
+        "type": "condition",
+        "value": "includeTests === true && testFramework === 'vitest'"
+      },
       "type": "create",
       "config": {
         "file": "vitest.config.ts",
-        "template": "import { defineConfig } from 'vitest/config';\n\nexport default defineConfig({});"
+        "write": "import { defineConfig } from 'vitest/config';\n\nexport default defineConfig({});"
       }
     },
     {
       "id": "setup-jest",
       "name": "Setup Jest",
       "description": "Create Jest configuration",
-      "enabled": "includeTests === true && testFramework === 'jest'",
+      "enabled": {
+        "type": "condition",
+        "value": "includeTests === true && testFramework === 'jest'"
+      },
       "type": "create",
       "config": {
         "file": "jest.config.js",
-        "template": "module.exports = {};"
+        "write": "module.exports = {};"
       }
     }
   ]

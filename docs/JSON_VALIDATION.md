@@ -34,9 +34,32 @@ After building the package, you can use the binary directly:
 
 ```bash
 # From the scaffoldfy package directory
-node dist/validate-scaffoldfy-json.js --file examples/template-tasks-with-prompts.json
-node dist/validate-scaffoldfy-json.js --dir examples
+node dist/scaffoldfy-config-json-validator/cli.js --file examples/template-tasks-with-prompts.json
+node dist/scaffoldfy-config-json-validator/cli.js --dir examples
 ```
+
+### Programmatic API
+
+You can also use the validator programmatically in your code:
+
+```typescript
+import { validateScaffoldfyJsonFile } from '@pixpilot/scaffoldfy';
+
+// Validate a single file
+const result = validateScaffoldfyJsonFile('path/to/scaffoldfy.json');
+
+if (result.valid) {
+  console.log('✅ File is valid');
+} else {
+  console.error('❌ Validation failed:');
+  result.errors?.forEach((error) => console.error(`  - ${error}`));
+}
+```
+
+The `validateScaffoldfyJsonFile` function returns an object with:
+
+- `valid` (boolean): Whether the file is valid
+- `errors` (string[] | undefined): Array of error messages if validation failed
 
 ## Pre-commit Validation
 

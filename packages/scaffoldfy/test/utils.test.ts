@@ -224,66 +224,75 @@ describe('evaluate Enabled', () => {
     expect(evaluateEnabled(false, config)).toBe(false);
   });
 
-  it('should evaluate string condition when enabled is a string', () => {
-    expect(evaluateEnabled('useTypeScript === true', config)).toBe(true);
-    expect(evaluateEnabled('useTypeScript === false', config)).toBe(false);
-    expect(evaluateEnabled('projectType === "monorepo"', config)).toBe(true);
-  });
-
-  it('should handle complex string conditions', () => {
+  it('should evaluate condition when enabled is conditional object', () => {
     expect(
-      evaluateEnabled('useTypeScript === true && projectType === "monorepo"', config),
+      evaluateEnabled({ type: 'condition', value: 'useTypeScript === true' }, config),
     ).toBe(true);
     expect(
-      evaluateEnabled('useTypeScript === false || projectType === "lib"', config),
+      evaluateEnabled({ type: 'condition', value: 'useTypeScript === false' }, config),
     ).toBe(false);
+    expect(
+      evaluateEnabled({ type: 'condition', value: 'projectType === "monorepo"' }, config),
+    ).toBe(true);
   });
 
-  it('should evaluate condition when enabled is conditional object', () => {
-    expect(evaluateEnabled({ condition: 'useTypeScript === true' }, config)).toBe(true);
-    expect(evaluateEnabled({ condition: 'useTypeScript === false' }, config)).toBe(false);
+  it('should handle complex conditions', () => {
+    expect(
+      evaluateEnabled(
+        {
+          type: 'condition',
+          value: 'useTypeScript === true && projectType === "monorepo"',
+        },
+        config,
+      ),
+    ).toBe(true);
+    expect(
+      evaluateEnabled(
+        { type: 'condition', value: 'useTypeScript === false || projectType === "lib"' },
+        config,
+      ),
+    ).toBe(false);
   });
 
   it('should return false for undefined variables in normal mode', () => {
     const emptyConfig: InitConfig = {};
-    expect(evaluateEnabled({ condition: 'missingVar === true' }, emptyConfig)).toBe(
-      false,
-    );
-    // Test string syntax too
-    expect(evaluateEnabled('missingVar === true', emptyConfig)).toBe(false);
+    expect(
+      evaluateEnabled({ type: 'condition', value: 'missingVar === true' }, emptyConfig),
+    ).toBe(false);
   });
 
   it('should return true for undefined variables in lazy mode', () => {
     const emptyConfig: InitConfig = {};
     expect(
-      evaluateEnabled({ condition: 'missingVar === true' }, emptyConfig, { lazy: true }),
+      evaluateEnabled({ type: 'condition', value: 'missingVar === true' }, emptyConfig, {
+        lazy: true,
+      }),
     ).toBe(true);
-    // Test string syntax too
-    expect(evaluateEnabled('missingVar === true', emptyConfig, { lazy: true })).toBe(
-      true,
-    );
   });
 
   it('should evaluate correctly in lazy mode when variable exists', () => {
     expect(
-      evaluateEnabled({ condition: 'useTypeScript === true' }, config, { lazy: true }),
+      evaluateEnabled({ type: 'condition', value: 'useTypeScript === true' }, config, {
+        lazy: true,
+      }),
     ).toBe(true);
     expect(
-      evaluateEnabled({ condition: 'useTypeScript === false' }, config, { lazy: true }),
+      evaluateEnabled({ type: 'condition', value: 'useTypeScript === false' }, config, {
+        lazy: true,
+      }),
     ).toBe(false);
-    // Test string syntax too
-    expect(evaluateEnabled('useTypeScript === true', config, { lazy: true })).toBe(true);
-    expect(evaluateEnabled('useTypeScript === false', config, { lazy: true })).toBe(
-      false,
-    );
   });
 
   it('should handle complex conditions with undefined variables in lazy mode', () => {
     const emptyConfig: InitConfig = {};
     expect(
-      evaluateEnabled({ condition: 'addSecurityFile === true' }, emptyConfig, {
-        lazy: true,
-      }),
+      evaluateEnabled(
+        { type: 'condition', value: 'addSecurityFile === true' },
+        emptyConfig,
+        {
+          lazy: true,
+        },
+      ),
     ).toBe(true);
   });
 

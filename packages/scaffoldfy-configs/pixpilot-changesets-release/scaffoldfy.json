@@ -8,7 +8,7 @@
       "id": "pixpilot-admin-changesets-release-create",
       "name": "Setup Changesets Release Workflow",
       "description": "Adds a GitHub Actions workflow for Changesets-based releases",
-      "enabled": "pixpilot_project == true",
+      "enabled": { "type": "condition", "value": "pixpilot_project == true" },
       "type": "write",
       "config": {
         "templateFile": "release.yml",
@@ -19,7 +19,7 @@
       "id": "changesets-release-cleanup",
       "name": "Cleanup Changesets Release Workflow",
       "description": "Removes Pixpilot owner condition from Changesets release workflow",
-      "enabled": "pixpilot_project != true",
+      "enabled": { "type": "condition", "value": "pixpilot_project != true" },
       "type": "regex-replace",
       "config": {
         "file": ".github/workflows/release.yml",

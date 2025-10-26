@@ -103,39 +103,14 @@ export interface ExecutableConfig {
 }
 
 /**
- * @deprecated Old conditional enabled configuration. For backwards compatibility.
- */
-export interface ConditionalEnabled {
-  condition: ConditionExpression;
-}
-
-/**
- * @deprecated Old executable enabled configuration. For backwards compatibility.
- */
-export interface ExecutableEnabled {
-  type: 'exec';
-  value: string;
-}
-
-/**
  * Type for enabled/required field with consistent object structure
- * Supports both new and old formats for backwards compatibility
  *
- * New format (recommended):
+ * Supports:
  * - boolean: Simple true/false
  * - ConditionalConfig: Object with type='condition' and value=expression
  * - ExecutableConfig: Object with type='exec' and value=command
- *
- * Old format (deprecated but supported):
- * - string: JavaScript expression (shorthand)
- * - ConditionalEnabled: Object with condition property
  */
-export type DynamicBooleanValue =
-  | boolean
-  | string
-  | ConditionalConfig
-  | ExecutableConfig
-  | ConditionalEnabled;
+export type DynamicBooleanValue = boolean | ConditionalConfig | ExecutableConfig;
 
 /**
  * @deprecated Use DynamicBooleanValue instead. Kept for backwards compatibility.

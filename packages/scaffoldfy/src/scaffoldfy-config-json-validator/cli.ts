@@ -98,4 +98,7 @@ function main() {
   console.log('\n✅ All files validated successfully!');
 }
 
-main();
+// Only run main if this file is executed directly
+if (import.meta.url === `file://${process.argv[1]}`) {
+  main();
+}

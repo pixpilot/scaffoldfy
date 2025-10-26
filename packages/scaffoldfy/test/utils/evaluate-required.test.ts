@@ -22,30 +22,6 @@ describe('evaluateRequired', () => {
     });
   });
 
-  describe('string expressions (deprecated format)', () => {
-    it('should evaluate string condition to true', () => {
-      const config: InitConfig = {
-        isProduction: true,
-      };
-      expect(evaluateRequired('isProduction === true', config)).toBe(true);
-    });
-
-    it('should evaluate string condition to false', () => {
-      const config: InitConfig = {
-        isProduction: false,
-      };
-      expect(evaluateRequired('isProduction === true', config)).toBe(false);
-    });
-
-    it('should handle complex expressions', () => {
-      const config: InitConfig = {
-        env: 'production',
-        debug: false,
-      };
-      expect(evaluateRequired('env === "production" && !debug', config)).toBe(true);
-    });
-  });
-
   describe('new format - type: condition', () => {
     it('should evaluate condition type to true', () => {
       const required: DynamicBooleanValue = {
@@ -133,14 +109,24 @@ describe('evaluateRequiredAsync', () => {
       const config: InitConfig = {
         deploy: true,
       };
-      expect(await evaluateRequiredAsync('deploy === true', config)).toBe(true);
+      expect(
+        await evaluateRequiredAsync(
+          { type: 'condition', value: 'deploy === true' },
+          config,
+        ),
+      ).toBe(true);
     });
 
     it('should evaluate string condition to false', async () => {
       const config: InitConfig = {
         deploy: false,
       };
-      expect(await evaluateRequiredAsync('deploy === true', config)).toBe(false);
+      expect(
+        await evaluateRequiredAsync(
+          { type: 'condition', value: 'deploy === true' },
+          config,
+        ),
+      ).toBe(false);
     });
   });
 
@@ -237,7 +223,12 @@ describe('evaluateRequiredAsync', () => {
       };
 
       // String format
-      expect(await evaluateRequiredAsync('test === true', config)).toBe(true);
+      expect(
+        await evaluateRequiredAsync(
+          { type: 'condition', value: 'test === true' },
+          config,
+        ),
+      ).toBe(true);
 
       // New format
       expect(

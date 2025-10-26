@@ -218,7 +218,8 @@ describe('runTasks', () => {
         description: 'Task depending on prompt value',
         required: true,
         enabled: {
-          condition: 'addSecurityFile === true',
+          type: 'condition' as const,
+          value: 'addSecurityFile === true',
         },
         type: 'write' as const,
         config: {},

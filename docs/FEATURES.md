@@ -257,7 +257,7 @@ You can use variables in the `enabled` expression, but be aware that variables a
       }
     }
   ],
-  "enabled": "targetEnv === 'production'",
+  "enabled": { "type": "condition", "value": "targetEnv === 'production'" },
   "tasks": []
 }
 ```

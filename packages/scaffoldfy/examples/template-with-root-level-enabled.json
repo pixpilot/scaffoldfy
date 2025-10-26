@@ -19,7 +19,7 @@
       "id": "init-husky",
       "name": "Initialize Husky",
       "description": "Setup Husky for Git hooks",
-      "enabled": "setupGitHooks === true",
+      "enabled": { "type": "condition", "value": "setupGitHooks === true" },
       "type": "exec",
       "config": {
         "command": "npx husky install"
@@ -29,7 +29,7 @@
       "id": "add-pre-commit",
       "name": "Add pre-commit hook",
       "description": "Add a pre-commit hook",
-      "enabled": "setupGitHooks === true",
+      "enabled": { "type": "condition", "value": "setupGitHooks === true" },
       "type": "write",
       "config": {
         "file": ".husky/pre-commit",

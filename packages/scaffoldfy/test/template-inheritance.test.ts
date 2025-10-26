@@ -398,24 +398,6 @@ describe('template inheritance', () => {
       expect(merged.enabled).toBeUndefined();
     });
 
-    it('should preserve string expression enabled field', () => {
-      const template1: TasksConfiguration = {
-        name: 'base-template',
-        enabled: true,
-        tasks: [],
-      };
-
-      const template2: TasksConfiguration = {
-        name: 'child-template',
-        enabled: 'projectType === "monorepo"',
-        tasks: [],
-      };
-
-      const merged = mergeTemplates([template1, template2]);
-
-      expect(merged.enabled).toBe('projectType === "monorepo"');
-    });
-
     it('should preserve conditional enabled field', () => {
       const template1: TasksConfiguration = {
         name: 'base-template',
@@ -425,13 +407,16 @@ describe('template inheritance', () => {
 
       const template2: TasksConfiguration = {
         name: 'child-template',
-        enabled: { condition: 'useTypeScript === true' },
+        enabled: { type: 'condition', value: 'useTypeScript === true' },
         tasks: [],
       };
 
       const merged = mergeTemplates([template1, template2]);
 
-      expect(merged.enabled).toEqual({ condition: 'useTypeScript === true' });
+      expect(merged.enabled).toEqual({
+        type: 'condition',
+        value: 'useTypeScript === true',
+      });
     });
 
     it('should preserve executable enabled field', () => {
@@ -800,7 +785,7 @@ describe('template inheritance', () => {
       const childConfig: TasksConfiguration = {
         name: 'child-template',
         extends: 'base.json',
-        enabled: { condition: 'projectType === "monorepo"' },
+        enabled: { type: 'condition', value: 'projectType === "monorepo"' },
         tasks: [],
       };
 
@@ -809,7 +794,10 @@ describe('template inheritance', () => {
 
       const merged = await loadAndMergeTemplate(childPath);
 
-      expect(merged.enabled).toEqual({ condition: 'projectType === "monorepo"' });
+      expect(merged.enabled).toEqual({
+        type: 'condition',
+        value: 'projectType === "monorepo"',
+      });
     });
   });
 

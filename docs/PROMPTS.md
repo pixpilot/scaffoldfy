@@ -965,16 +965,14 @@ In this example:
 4. If the condition evaluates to `false`, the prompt is **skipped**
 5. Exec commands are executed and their output parsed to determine if prompt should be shown
 6. Conditions can be provided as:
-   - **String expression**: `"enabled": "useDatabase === true"` (shorthand)
-   - **Conditional object**: `"enabled": { "condition": "useDatabase === true" }` (verbose)
+   - **Boolean**: `"enabled": true` or `"enabled": false`
+   - **Conditional object**: `"enabled": { "type": "condition", "value": "useDatabase === true" }`
    - **Executable object**: `"enabled": { "type": "exec", "value": "command" }` (shell command)
 
 ### Examples
 
 #### Conditional Based on Previous Prompt
 
-Using string expression (shorthand):
-
 ```json
 {
   "prompts": [
@@ -993,51 +991,19 @@ Using string expression (shorthand):
         { "name": "MySQL", "value": "mysql" },
         { "name": "MongoDB", "value": "mongodb" }
       ],
-      "enabled": "useDatabase === true"
-    }
-  ]
-}
-```
-
-Using conditional object (verbose):
-
-```json
-{
-  "prompts": [
-    {
-      "id": "useDatabase",
-      "type": "confirm",
-      "message": "Use database?",
-      "default": false
-    },
-    {
-      "id": "databaseType",
-      "type": "select",
-      "message": "Select database type",
-      "choices": [
-        { "name": "PostgreSQL", "value": "postgres" },
-        { "name": "MySQL", "value": "mysql" },
-        { "name": "MongoDB", "value": "mongodb" }
-      ],
-      "enabled": {
-        "condition": "useDatabase === true"
-      }
+      "enabled": { "type": "condition", "value": "useDatabase === true" }
     },
     {
       "id": "databaseUrl",
       "type": "input",
       "message": "Database connection URL",
-      "enabled": {
-        "condition": "useDatabase === true"
-      }
+      "enabled": { "type": "condition", "value": "useDatabase === true" }
     }
   ]
 }
 ```
 
 #### Complex Conditional Logic
-
-Using string expression:
 
 ```json
 {
@@ -1063,41 +1029,17 @@ Using string expression:
       "type": "input",
       "message": "Path to tsconfig.json",
       "default": "./tsconfig.json",
-      "enabled": "useTypeScript === true && (framework === 'react' || framework === 'vue')"
-    }
-  ]
-}
-```
-
-Using conditional object:
-
-```json
-{
-  "prompts": [
-    {
-      "id": "framework",
-      "type": "select",
-      "message": "Select framework",
-      "choices": [
-        { "name": "React", "value": "react" },
-        { "name": "Vue", "value": "vue" },
-        { "name": "Svelte", "value": "svelte" }
-      ]
-    },
-    {
-      "id": "useTypeScript",
-      "type": "confirm",
-      "message": "Use TypeScript?",
-      "default": true
+      "enabled": {
+        "type": "condition",
+        "value": "useTypeScript === true && (framework === 'react' || framework === 'vue')"
+      }
     },
     {
       "id": "reactRouter",
       "type": "confirm",
       "message": "Include React Router?",
       "default": true,
-      "enabled": {
-        "condition": "framework === 'react'"
-      }
+      "enabled": { "type": "condition", "value": "framework === 'react'" }
     },
     {
       "id": "tsConfigStrict",
@@ -1105,12 +1047,15 @@ Using conditional object:
       "message": "Enable strict TypeScript mode?",
       "default": true,
       "enabled": {
-        "condition": "useTypeScript === true && (framework === 'react' || framework === 'vue')"
+        "type": "condition",
+        "value": "useTypeScript === true && (framework === 'react' || framework === 'vue')"
       }
     }
   ]
 }
 ```
+
+````
 
 ## Prompt Collection Order
 
@@ -1161,7 +1106,7 @@ Prompt values can also be used directly in condition expressions for tasks and w
     }
   ]
 }
-```
+````
 
 In this example:
 
