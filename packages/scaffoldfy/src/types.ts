@@ -85,39 +85,71 @@ export type DefaultValue<T = string | number | boolean> =
   | ConditionalDefaultConfig<T>;
 
 /**
- * Conditional enabled configuration for prompts and tasks
- * Allows dynamic enabling/disabling based on runtime conditions
+ * Conditional enabled/required configuration with new structure
+ * Evaluates a JavaScript expression at runtime
  */
-export interface ConditionalEnabled {
-  condition: ConditionExpression; // JavaScript expression evaluated at runtime
+export interface ConditionalConfig {
+  type: 'condition';
+  value: string; // JavaScript expression evaluated at runtime
 }
 
 /**
- * Executable enabled configuration
- * Determines enabled state by executing a shell command
+ * Executable enabled/required configuration with new structure
+ * Determines state by executing a shell command
  */
-export interface ExecutableEnabled {
+export interface ExecutableConfig {
   type: 'exec';
   value: string; // Shell command to execute
 }
 
 /**
- * Type for enabled field that can be boolean, string condition, conditional object, or executable
- * - boolean: Simple true/false
- * - string: JavaScript expression to evaluate (shorthand for { condition: "..." })
- * - ConditionalEnabled: Object with condition property
- * - ExecutableEnabled: Object with type='exec' and value=command
+ * @deprecated Old conditional enabled configuration. For backwards compatibility.
  */
-export type EnabledValue = boolean | string | ConditionalEnabled | ExecutableEnabled;
+export interface ConditionalEnabled {
+  condition: ConditionExpression;
+}
+
+/**
+ * @deprecated Old executable enabled configuration. For backwards compatibility.
+ */
+export interface ExecutableEnabled {
+  type: 'exec';
+  value: string;
+}
+
+/**
+ * Type for enabled/required field with consistent object structure
+ * Supports both new and old formats for backwards compatibility
+ *
+ * New format (recommended):
+ * - boolean: Simple true/false
+ * - ConditionalConfig: Object with type='condition' and value=expression
+ * - ExecutableConfig: Object with type='exec' and value=command
+ *
+ * Old format (deprecated but supported):
+ * - string: JavaScript expression (shorthand)
+ * - ConditionalEnabled: Object with condition property
+ */
+export type DynamicBooleanValue =
+  | boolean
+  | string
+  | ConditionalConfig
+  | ExecutableConfig
+  | ConditionalEnabled;
+
+/**
+ * @deprecated Use DynamicBooleanValue instead. Kept for backwards compatibility.
+ */
+export type EnabledValue = DynamicBooleanValue;
 
 export interface BasePrompt {
   id: string; // Unique identifier for the prompt value
   type: PromptType;
   message: string;
-  required?: boolean; // If true, value must be provided (not empty)
-  enabled?: EnabledValue; // If false or condition evaluates to false, prompt is skipped
+  required?: DynamicBooleanValue; // Whether value must be provided (supports boolean or dynamic evaluation)
+  enabled?: DynamicBooleanValue; // Whether prompt should be shown (supports boolean or dynamic evaluation)
   override?: MergeStrategy; // Strategy for merging with base prompt: 'merge' (default, intelligent) or 'replace' (complete override)
-  $templateEnabled?: EnabledValue; // Internal: Enabled condition of the template this prompt came from (for lazy evaluation)
+  $templateEnabled?: DynamicBooleanValue; // Internal: Enabled condition of the template this prompt came from (for lazy evaluation)
   transformers?: string[]; // Array of transformer(s) to apply to the prompt value after input
 }
 
@@ -156,8 +188,10 @@ export type PromptDefinition = InputPrompt | NumberPrompt | SelectPrompt | Confi
 export interface VariableDefinition {
   id: string; // Unique identifier for the variable
   value: DefaultValue; // The value of the variable (static or executable)
+  enabled?: DynamicBooleanValue; // Whether variable should be evaluated (supports boolean or dynamic evaluation)
+  required?: DynamicBooleanValue; // Whether variable value is required (supports boolean or dynamic evaluation)
   override?: MergeStrategy; // Strategy for merging with base variable: 'merge' (default, intelligent) or 'replace' (complete override)
-  $templateEnabled?: EnabledValue; // Internal: Enabled condition of the template this variable came from (for lazy evaluation)
+  $templateEnabled?: DynamicBooleanValue; // Internal: Enabled condition of the template this variable came from (for lazy evaluation)
   transformers?: string[]; // Array of transformer(s) to apply to the variable value after resolution
 }
 
@@ -201,8 +235,8 @@ export interface TaskDefinition {
   id: string;
   name: string;
   description?: string; // Optional description of what the task does (defaults to empty)
-  required?: boolean; // Optional: Whether failure of this task should stop the process (defaults to true)
-  enabled?: EnabledValue; // Optional: Can be boolean or conditional expression (defaults to true)
+  required?: DynamicBooleanValue; // Whether failure of this task should stop the process (supports boolean or dynamic evaluation, defaults to true)
+  enabled?: DynamicBooleanValue; // Whether task should be executed (supports boolean or dynamic evaluation, defaults to true)
   type: TaskType;
   // Task-specific configuration object, validated at runtime
   config:
@@ -224,7 +258,7 @@ export interface TaskDefinition {
   rollback?: RollbackConfig; // How to rollback if something fails
   override?: MergeStrategy; // Strategy for merging with base task: 'merge' (default, intelligent) or 'replace' (complete override)
   $sourceUrl?: string; // Internal: URL or path of the template file this task came from (for resolving relative paths)
-  $templateEnabled?: EnabledValue; // Internal: Enabled condition of the template this task came from (for lazy evaluation)
+  $templateEnabled?: DynamicBooleanValue; // Internal: Enabled condition of the template this task came from (for lazy evaluation)
 }
 
 /**
@@ -233,7 +267,7 @@ export interface TaskDefinition {
 export interface TasksConfiguration {
   name: string; // Human-readable name for this template
   description?: string; // Optional detailed description of what this template does
-  enabled?: EnabledValue; // Optional: whether this entire template should be executed (defaults to true)
+  enabled?: DynamicBooleanValue; // Whether this entire template should be executed (supports boolean or dynamic evaluation, defaults to true)
   dependencies?: string[]; // Optional: Names or identifiers of other templates this template depends on
   extends?: string | string[]; // Path(s) or URL(s) to base template file(s) to inherit from
   transformers?: import('./transformers/types.js').Transformer[]; // Optional: Array of transformer definitions

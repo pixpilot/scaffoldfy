@@ -20,8 +20,8 @@ Every task has the following properties:
 ### Optional Properties
 
 - **`description`** (string): Detailed description of what the task does. Defaults to empty string if omitted.
-- **`required`** (boolean): Whether failure of this task should stop the process. Defaults to `true` if omitted. Set to `false` for non-critical tasks.
-- **`enabled`** (boolean | string | object): Whether this task should execute. Defaults to `true` if omitted. Can be a boolean, a string expression, or conditional expression object (see below).
+- **`required`** (boolean | object): Whether failure of this task should stop the process. Defaults to `true` if omitted. Can be a boolean or conditional object with `type` field (see "Conditional Task Execution" section). Set to `false` for non-critical tasks.
+- **`enabled`** (boolean | object): Whether this task should execute. Defaults to `true` if omitted. Can be a boolean or conditional object with `type` field (see "Conditional Task Execution" section).
 - **`config`** (object): Task-specific configuration (varies by task type)
 - **`dependencies`** (string[]): IDs of tasks that must run before this one
 - **`rollback`** (object): How to rollback if something fails
@@ -45,17 +45,18 @@ This will use defaults: `description: ""`, `required: true`, `enabled: true`.
 
 ## Conditional Task Execution
 
-Tasks can be conditionally enabled using the `enabled` field. This allows you to dynamically skip or run tasks based on runtime conditions.
+Tasks can be conditionally enabled using the `enabled` field, or can be dynamically set as required/optional using the `required` field. Both fields support the same conditional formats.
 
-### Enabled Field
+### Enabled and Required Fields
 
-The `enabled` field can be:
+Both `enabled` and `required` fields support the following formats:
 
-1. **Omitted** (default): Task is always enabled (defaults to `true`)
+1. **Omitted** (default):
+   - `enabled` defaults to `true` (task will run)
+   - `required` defaults to `true` (task failure stops execution)
 2. **Simple boolean**: `true` or `false`
-3. **String expression**: Direct JavaScript expression (shorthand for `{ "condition": "..." }`)
-4. **Conditional object**: `{ "condition": "JavaScript expression" }`
-5. **Executable object**: `{ "type": "exec", "value": "shell command" }` - Run a command to determine enabled state
+3. **Conditional object**: `{ "type": "condition", "value": "JavaScript expression" }`
+4. **Executable object**: `{ "type": "exec", "value": "shell command" }` - Run a command to determine the value
 
 ### Simple Boolean
 
@@ -72,33 +73,15 @@ The `enabled` field can be:
 }
 ```
 
-### String Expression (Shorthand)
-
-You can use a string directly as a condition expression:
-
-```json
-{
-  "id": "typescript-setup",
-  "name": "Setup TypeScript",
-  "enabled": "useTypeScript === true",
-  "type": "write",
-  "config": {
-    "file": "tsconfig.json",
-    "template": "{ \"compilerOptions\": {} }"
-  }
-}
-```
-
-This is equivalent to using the conditional object syntax but more concise.
-
-### Conditional Enabled
+### Conditional with Type Field
 
 ```json
 {
   "id": "typescript-setup",
   "name": "Setup TypeScript",
   "enabled": {
-    "condition": "useTypeScript === true"
+    "type": "condition",
+    "value": "useTypeScript === true"
   },
   "type": "write",
   "config": {
@@ -133,6 +116,60 @@ The command output is parsed as a boolean:
 - Everything else = `true`
 - Failed commands = `false`
 
+### Conditional Required Field
+
+The `required` field supports the same conditional formats as `enabled`. This allows you to dynamically determine whether a task failure should stop execution based on runtime conditions.
+
+**Simple boolean:**
+
+```json
+{
+  "id": "optional-cleanup",
+  "name": "Cleanup temporary files",
+  "type": "delete",
+  "required": false,
+  "config": {
+    "paths": ["temp/**"]
+  }
+}
+```
+
+**Conditional required:**
+
+```json
+{
+  "id": "production-checks",
+  "name": "Production environment checks",
+  "type": "exec",
+  "required": {
+    "type": "condition",
+    "value": "environment === 'production'"
+  },
+  "config": {
+    "command": "npm run verify"
+  }
+}
+```
+
+**Executable required:**
+
+```json
+{
+  "id": "critical-in-ci",
+  "name": "CI-only critical task",
+  "type": "exec",
+  "required": {
+    "type": "exec",
+    "value": "test -n \"$CI\""
+  },
+  "config": {
+    "command": "npm run critical-checks"
+  }
+}
+```
+
+In this example, the task is only required (failure stops execution) when running in a CI environment. In local development, failure will log a warning but continue.
+
 ### How Conditional Enabled Works
 
 1. Conditions are **JavaScript expressions** evaluated at runtime
@@ -155,35 +192,6 @@ This two-phase approach allows you to use prompt values in task `enabled` condit
 
 #### Enable Based on Prompt Value
 
-Using string expression (shorthand):
-
-```json
-{
-  "prompts": [
-    {
-      "id": "useTypeScript",
-      "type": "confirm",
-      "message": "Use TypeScript?",
-      "default": true
-    }
-  ],
-  "tasks": [
-    {
-      "id": "setup-typescript",
-      "name": "Setup TypeScript",
-      "enabled": "useTypeScript === true",
-      "type": "write",
-      "config": {
-        "file": "tsconfig.json",
-        "template": "{ \"compilerOptions\": {} }"
-      }
-    }
-  ]
-}
-```
-
-Using conditional object (verbose):
-
 ```json
 {
   "prompts": [
@@ -199,7 +207,8 @@ Using conditional object (verbose):
       "id": "setup-typescript",
       "name": "Setup TypeScript",
       "enabled": {
-        "condition": "useTypeScript === true"
+        "type": "condition",
+        "value": "useTypeScript === true"
       },
       "type": "write",
       "config": {
@@ -213,29 +222,13 @@ Using conditional object (verbose):
 
 #### Complex Conditional Logic
 
-Using string expression:
-
-```json
-{
-  "id": "setup-ci",
-  "name": "Setup CI/CD",
-  "enabled": "includeCI === true && (platform === 'github' || platform === 'gitlab')",
-  "type": "write",
-  "config": {
-    "file": ".github/workflows/ci.yml",
-    "template": "name: CI"
-  }
-}
-```
-
-Using conditional object:
-
 ```json
 {
   "id": "setup-ci",
   "name": "Setup CI/CD",
   "enabled": {
-    "condition": "includeCI === true && (platform === 'github' || platform === 'gitlab')"
+    "type": "condition",
+    "value": "includeCI === true && (platform === 'github' || platform === 'gitlab')"
   },
   "type": "write",
   "config": {

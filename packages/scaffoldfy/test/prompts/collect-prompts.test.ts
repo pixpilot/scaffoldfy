@@ -41,6 +41,7 @@ describe('collectPrompts', () => {
     expect(result).toEqual({ name: 'John Doe' });
     expect(input).toHaveBeenCalledWith({
       message: 'Enter your name',
+      required: true,
     });
   });
 
@@ -61,6 +62,7 @@ describe('collectPrompts', () => {
     expect(input).toHaveBeenCalledWith({
       message: 'Enter your name',
       default: 'Default Name',
+      required: true,
     });
   });
 
@@ -117,6 +119,7 @@ describe('collectPrompts', () => {
       message: 'Enter your age',
       min: 1,
       max: 120,
+      required: true,
     });
   });
 
@@ -137,6 +140,7 @@ describe('collectPrompts', () => {
     expect(number).toHaveBeenCalledWith({
       message: 'Enter your age',
       default: 18,
+      required: true,
     });
   });
 

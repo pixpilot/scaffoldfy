@@ -37,25 +37,15 @@ The root-level `enabled` property allows you to enable or disable an entire temp
 }
 ```
 
-#### String Expression (Shorthand)
-
-```json
-{
-  "$schema": "https://unpkg.com/@pixpilot/scaffoldfy/schema",
-  "name": "conditional-template",
-  "enabled": "process.env.NODE_ENV === 'development'",
-  "tasks": []
-}
-```
-
-#### Conditional Object
+#### Conditional Format
 
 ```json
 {
   "$schema": "https://unpkg.com/@pixpilot/scaffoldfy/schema",
   "name": "conditional-template",
   "enabled": {
-    "condition": "projectType === 'monorepo'"
+    "type": "condition",
+    "value": "projectType === 'monorepo'"
   },
   "tasks": []
 }
@@ -134,7 +124,10 @@ Enable templates based on variables from dependency templates:
   "name": "typescript-config",
   "description": "TypeScript configuration",
   "dependencies": ["project-info"],
-  "enabled": "useTypeScript === true",
+  "enabled": {
+    "type": "condition",
+    "value": "useTypeScript === true"
+  },
   "tasks": [
     {
       "id": "create-tsconfig",

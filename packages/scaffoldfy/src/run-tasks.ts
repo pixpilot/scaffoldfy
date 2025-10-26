@@ -20,6 +20,7 @@ import { registerBuiltInPlugins, runTask } from './task-executors.js';
 import { topologicalSort } from './task-resolver.js';
 import { transformerManager } from './transformers/index.js';
 import { evaluateEnabled, evaluateEnabledAsync, log, logInfo } from './utils.js';
+import { evaluateRequiredAsync } from './utils/evaluate-required.js';
 import { displayValidationErrors, validateAllTasks } from './validation.js';
 import {
   collectVariables,
@@ -308,8 +309,11 @@ export async function runTasks(
       debug(`Calling afterTask hook for task: ${task.name}`);
       await callHook('afterTask', task, config);
     } else {
-      // Only count as failure if task is required (defaults to true)
-      if (task.required !== false) {
+      // Evaluate if task is required (defaults to true)
+      const isRequired = await evaluateRequiredAsync(task.required, config);
+
+      // Only count as failure if task is required
+      if (isRequired) {
         failedTasks++;
         failedTaskNames.push(task.name);
       }
@@ -597,8 +601,11 @@ export async function runTemplatesSequentially(
       completedTasks++;
       await callHook('afterTask', task, config);
     } else {
-      // Only count as failure if task is required (defaults to true)
-      if (task.required !== false) {
+      // Evaluate if task is required (defaults to true)
+      const isRequired = await evaluateRequiredAsync(task.required, config);
+
+      // Only count as failure if task is required
+      if (isRequired) {
         failedTasks++;
         failedTaskNames.push(task.name);
       }

@@ -2,6 +2,8 @@
  * Transformer types for value transformation
  */
 
+import type { DynamicBooleanValue } from '../types.js';
+
 type BuiltInTransformerType =
   | 'lowercase'
   | 'uppercase'
@@ -38,6 +40,7 @@ export interface BaseTransformer {
   id: string;
   name?: string;
   description?: string;
+  enabled?: DynamicBooleanValue; // Whether transformer should be applied (supports boolean or dynamic evaluation)
 }
 
 /**

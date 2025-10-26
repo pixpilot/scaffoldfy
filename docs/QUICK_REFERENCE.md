@@ -259,10 +259,24 @@ await runWithTasks(tasks, {
   "id": "setup-typescript",
   "name": "Setup TypeScript",
   "type": "write",
-  "enabled": "{{useTypeScript}}",
+  "enabled": {
+    "type": "condition",
+    "value": "useTypeScript === true"
+  },
   "config": {
     "file": "tsconfig.json",
     "template": "{\"compilerOptions\": {\"strict\": true}}"
+  }
+}
+```
+
+**Alternative formats:**
+
+```json
+{
+  "enabled": {
+    "type": "exec",
+    "value": "git rev-parse --is-inside-work-tree" // Execute command
   }
 }
 ```
@@ -389,9 +403,10 @@ try {
 
 1. **Always use `--dry-run` first** to preview changes
 2. **Use descriptive task IDs** for better error messages
-3. **Set `required: false`** for optional tasks that shouldn't stop execution
-4. **Use dependencies** to ensure tasks run in the correct order
-5. **Validate your template** with the JSON schema for IntelliSense
+3. **Set `required: false`** for optional tasks, or use conditional `required` with `{ "type": "condition", "value": "expression" }` for dynamic behavior
+4. **Use the typed format** for `enabled` and `required` fields: `{ "type": "condition"|"exec", "value": "..." }`
+5. **Use dependencies** to ensure tasks run in the correct order
+6. **Validate your template** with the JSON schema for IntelliSense
 
 ### 🔥 Common Gotchas
 

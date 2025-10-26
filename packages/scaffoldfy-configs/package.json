@@ -30,6 +30,7 @@
     "@internal/prettier-config": "workspace:*",
     "@internal/tsdown-config": "workspace:*",
     "@internal/vitest-config": "workspace:*",
+    "@pixpilot/scaffoldfy": "workspace:*",
     "@types/node": "catalog:dev",
     "eslint": "catalog:dev"
   },

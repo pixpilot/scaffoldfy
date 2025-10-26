@@ -19,47 +19,7 @@
       "type": "string",
       "description": "Detailed description of what this Write does"
     },
-    "enabled": {
-      "description": "Whether this item should be executed/displayed. Can be a boolean, a string expression, or an object with executable or conditional configuration (optional, defaults to true).",
-      "default": true,
-      "oneOf": [
-        {
-          "type": "boolean",
-          "description": "Static enabled state"
-        },
-        {
-          "type": "string",
-          "description": "JavaScript expression to evaluate."
-        },
-        {
-          "type": "object",
-          "description": "Conditional enabled configuration",
-          "required": ["condition"],
-          "properties": {
-            "condition": {
-              "type": "string",
-              "description": "JavaScript expression to evaluate."
-            }
-          }
-        },
-        {
-          "type": "object",
-          "description": "Executable enabled configuration - determines enabled state by running a command",
-          "required": ["type", "value"],
-          "properties": {
-            "type": {
-              "type": "string",
-              "enum": ["exec"],
-              "description": "Type of enabled value. 'exec' executes a shell command to determine enabled state."
-            },
-            "value": {
-              "type": "string",
-              "description": "Shell command to execute. The command output will be trimmed and parsed as a boolean. Non-empty output or '1', 'true', 'yes' (case-insensitive) evaluates to true."
-            }
-          }
-        }
-      ]
-    },
+    "enabled": { "$ref": "#/$defs/enabled" },
     "transformers": {
       "type": "array",
       "description": "Array of transformer definitions",
@@ -117,11 +77,7 @@
             "type": "string",
             "description": "Detailed description of what the task does (optional, defaults to empty string)"
           },
-          "required": {
-            "type": "boolean",
-            "description": "Whether failure of this task should stop the process (optional, defaults to true)",
-            "default": true
-          },
+          "required": { "$ref": "#/$defs/required" },
           "enabled": { "$ref": "#/$defs/enabled" },
           "dependencies": {
             "type": "array",
@@ -261,8 +217,99 @@
       ],
       "description": "Built-in transformer ID"
     },
+    "valueConfig": {
+      "description": "Configuration for a value that can be static, dynamic, or conditional. Supports static primitives, command execution, interpolation with {{variable}} placeholders, or conditional evaluation.",
+      "oneOf": [
+        {
+          "type": ["string", "number", "boolean"],
+          "description": "Static value (string, number, or boolean)"
+        },
+        {
+          "type": "object",
+          "description": "Configuration for static, executable, or interpolate values",
+          "required": ["type"],
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["static", "exec", "interpolate"],
+              "description": "Type of value configuration. 'static' for explicit static values, 'exec' for command execution, 'interpolate' for strings with {{variable}} placeholders."
+            },
+            "value": {
+              "description": "For 'static' type: the static value. For 'exec' type: the shell command to execute (output will be trimmed and auto-parsed as JSON, number, or boolean). For 'interpolate' type: string with {{variable}} placeholders."
+            }
+          },
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "type": { "enum": ["static", "exec", "interpolate"] }
+                }
+              },
+              "then": {
+                "required": ["value"]
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "type": { "const": "exec" }
+                }
+              },
+              "then": {
+                "properties": {
+                  "value": {
+                    "type": "string",
+                    "description": "Shell command to execute"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "type": "object",
+          "description": "Conditional value configuration",
+          "required": ["type", "condition", "ifTrue", "ifFalse"],
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["conditional"],
+              "description": "Type of value configuration. 'conditional' for condition-based values."
+            },
+            "condition": {
+              "type": "string",
+              "description": "JavaScript expression to evaluate. Can reference variables, prompts, and config values."
+            },
+            "ifTrue": {
+              "description": "Value to use if condition evaluates to true. Can be a static value or an object with type property for interpolation (e.g., { type: 'interpolate', value: '{{variable}}' })."
+            },
+            "ifFalse": {
+              "description": "Value to use if condition evaluates to false. Can be a static value or an object with type property for interpolation (e.g., { type: 'interpolate', value: '{{variable}}' })."
+            }
+          }
+        }
+      ]
+    },
+    "transformersArray": {
+      "description": "Array of transformer(s) to apply to a value. Each item can be a built-in transformer ID, custom transformer ID reference, or inline transformer definition.",
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "type": "string",
+            "description": "Transformer ID (built-in or custom reference)"
+          },
+          {
+            "$ref": "#/$defs/transformerItem",
+            "description": "Inline transformer definition"
+          }
+        ]
+      }
+    },
     "enabled": {
-      "description": "Whether this item should be executed/displayed. Can be a boolean, a string expression, or an object with executable or conditional configuration (optional, defaults to true).",
+      "description": "Controls whether this item should be executed/displayed. Can be a static boolean or dynamic configuration with explicit type field (optional, defaults to true).",
       "default": true,
       "oneOf": [
         {
@@ -271,32 +318,61 @@
         },
         {
           "type": "string",
-          "description": "JavaScript expression to evaluate."
+          "description": "JavaScript expression to evaluate (deprecated, use { type: 'condition', value: 'expression' } instead)"
         },
         {
           "type": "object",
-          "description": "Conditional enabled configuration",
+          "description": "Conditional enabled configuration (deprecated format)",
           "required": ["condition"],
+          "additionalProperties": false,
           "properties": {
             "condition": {
               "type": "string",
-              "description": "JavaScript expression to evaluate."
+              "description": "JavaScript expression to evaluate"
             }
           }
         },
         {
           "type": "object",
-          "description": "Executable enabled configuration - determines enabled state by running a command",
+          "description": "Dynamic enabled configuration",
           "required": ["type", "value"],
+          "additionalProperties": false,
           "properties": {
             "type": {
               "type": "string",
-              "enum": ["exec"],
-              "description": "Type of enabled value. 'exec' executes a shell command to determine enabled state."
+              "enum": ["condition", "exec"],
+              "description": "Type of dynamic check. 'condition' evaluates JavaScript expression, 'exec' executes shell command."
             },
             "value": {
               "type": "string",
-              "description": "Shell command to execute. The command output will be trimmed and parsed as a boolean. Non-empty output or '1', 'true', 'yes' (case-insensitive) evaluates to true."
+              "description": "For 'condition': JavaScript expression to evaluate. For 'exec': Shell command to execute. Command output will be trimmed and parsed as boolean."
+            }
+          }
+        }
+      ]
+    },
+    "required": {
+      "description": "Controls whether this item is required. Can be a static boolean or dynamic configuration with explicit type field (optional, defaults to true).",
+      "default": true,
+      "oneOf": [
+        {
+          "type": "boolean",
+          "description": "Static required state"
+        },
+        {
+          "type": "object",
+          "description": "Dynamic required configuration",
+          "required": ["type", "value"],
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["condition", "exec"],
+              "description": "Type of dynamic check. 'condition' evaluates JavaScript expression, 'exec' executes shell command."
+            },
+            "value": {
+              "type": "string",
+              "description": "For 'condition': JavaScript expression to evaluate. For 'exec': Shell command to execute. Command output will be trimmed and parsed as boolean."
             }
           }
         }
@@ -309,7 +385,7 @@
     "override": {
       "type": "string",
       "enum": ["merge", "replace"],
-      "description": "Strategy for merging with base item when extending templates"
+      "description": "Strategy for merging with base item when extending templates. 'merge' (default) intelligently merges properties, 'replace' completely replaces the base item. Must be specified when item ID conflicts with base template."
     },
     "promptItem": {
       "type": "object",
@@ -330,59 +406,11 @@
           "type": "string",
           "description": "Prompt message to display to the user"
         },
-        "required": {
-          "type": "boolean",
-          "description": "Whether the prompt value is required (cannot be empty)"
-        },
+        "required": { "$ref": "#/$defs/required" },
         "enabled": { "$ref": "#/$defs/enabled" },
-        "default": {
-          "description": "Default value for the prompt. Can be a static value, an object with 'type' and 'value' properties for executable defaults, or a conditional default configuration.",
-          "oneOf": [
-            {
-              "type": ["string", "number", "boolean"],
-              "description": "Static default value (string, number, or boolean)"
-            },
-            {
-              "type": "object",
-              "description": "Default value configuration for executable or interpolate values",
-              "required": ["type", "value"],
-              "additionalProperties": false,
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "enum": ["static", "exec", "interpolate"],
-                  "description": "Type of default value. 'static' for explicit static values, 'exec' for command execution, 'interpolate' for interpolate strings with {{variable}} placeholders."
-                },
-                "value": {
-                  "description": "For 'static' type: the static value. For 'exec' type: the shell command to execute. For 'interpolate' type: interpolate string with {{variable}} placeholders. Commands can be any shell command including git, npm, node, etc. The command output will be trimmed and auto-parsed as JSON, number, or boolean when applicable."
-                }
-              }
-            },
-            {
-              "type": "object",
-              "description": "Conditional default value configuration",
-              "required": ["type", "condition", "ifTrue", "ifFalse"],
-              "additionalProperties": false,
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "enum": ["conditional"],
-                  "description": "Type of default value. 'conditional' for condition-based defaults."
-                },
-                "condition": {
-                  "type": "string",
-                  "description": "JavaScript expression to evaluate. Can reference variables, prompts, and config values."
-                },
-                "ifTrue": {
-                  "description": "Value to use if condition evaluates to true. Can be a static value or an object with type property for interpolation (e.g., { type: 'interpolate', value: '{{variable}}' })."
-                },
-                "ifFalse": {
-                  "description": "Value to use if condition evaluates to false. Can be a static value or an object with type property for interpolation (e.g., { type: 'interpolate', value: '{{variable}}' })."
-                }
-              }
-            }
-          ]
-        },
+        "default": { "$ref": "#/$defs/valueConfig" },
+        "transformers": { "$ref": "#/$defs/transformersArray" },
+        "override": { "$ref": "#/$defs/override" },
         "min": {
           "type": "number",
           "description": "Minimum value (for number prompts)"
@@ -407,26 +435,36 @@
               }
             }
           }
-        },
-        "transformers": {
-          "description": "Array of transformer(s) to apply to the prompt value after input. Each item can be a built-in transformer ID or a custom transformer ID.",
-          "type": "array",
-          "items": {
-            "anyOf": [
-              { "$ref": "#/$defs/builtInTransformers" },
-              {
-                "type": "string",
-                "description": "Custom transformer ID (references a transformer defined in the 'transformers' array)"
-              }
-            ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "type": { "const": "number" }
+            }
+          },
+          "then": {
+            "properties": {
+              "min": true,
+              "max": true
+            }
           }
         },
-        "override": {
-          "type": "string",
-          "enum": ["merge", "replace"],
-          "description": "Strategy for merging with base prompt when extending templates. 'merge' (default) intelligently merges properties, 'replace' completely replaces the base prompt. Must be specified when prompt ID conflicts with base template."
+        {
+          "if": {
+            "properties": {
+              "type": { "const": "select" }
+            }
+          },
+          "then": {
+            "required": ["choices"],
+            "properties": {
+              "choices": true
+            }
+          }
         }
-      }
+      ]
     },
     "variableItem": {
       "type": "object",
@@ -438,99 +476,11 @@
           "description": "Unique identifier for the variable (must be a valid JavaScript identifier: start with letter, underscore, or $, followed by letters, digits, underscores, or $)",
           "pattern": "^[a-zA-Z_$][a-zA-Z0-9_$]*$"
         },
-        "value": {
-          "description": "Variable value. Can be a static value or an object with 'type' and 'value' properties for executable values, or a conditional configuration.",
-          "oneOf": [
-            {
-              "type": ["string", "number", "boolean"],
-              "description": "Static value (string, number, or boolean)"
-            },
-            {
-              "type": "object",
-              "description": "Value configuration for static, executable, or interpolate values",
-              "required": ["type"],
-              "additionalProperties": false,
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "enum": ["static", "exec", "interpolate"],
-                  "description": "Type of value. 'static' for explicit static values, 'exec' for command execution, 'interpolate' for interpolate strings with {{variable}} placeholders."
-                },
-                "value": {
-                  "description": "For 'static' type: the static value. For 'exec' type: the shell command to execute. For 'interpolate' type: interpolate string with {{variable}} placeholders. Commands output will be trimmed and auto-parsed as JSON, number, or boolean when applicable."
-                }
-              },
-              "allOf": [
-                {
-                  "if": {
-                    "properties": {
-                      "type": { "enum": ["static", "exec", "interpolate"] }
-                    }
-                  },
-                  "then": {
-                    "required": ["value"]
-                  }
-                },
-                {
-                  "if": {
-                    "properties": {
-                      "type": { "const": "exec" }
-                    }
-                  },
-                  "then": {
-                    "properties": {
-                      "value": {
-                        "type": "string",
-                        "description": "Shell command to execute"
-                      }
-                    }
-                  }
-                }
-              ]
-            },
-            {
-              "type": "object",
-              "description": "Conditional value configuration",
-              "required": ["type", "condition", "ifTrue", "ifFalse"],
-              "additionalProperties": false,
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "enum": ["conditional"],
-                  "description": "Type of value. 'conditional' for condition-based values."
-                },
-                "condition": {
-                  "type": "string",
-                  "description": "JavaScript expression to evaluate. Can reference other variables, prompts, and config values."
-                },
-                "ifTrue": {
-                  "description": "Value to use if condition evaluates to true. Can be a static value or an object with type property for interpolation (e.g., { type: 'interpolate', value: '{{variable}}' })."
-                },
-                "ifFalse": {
-                  "description": "Value to use if condition evaluates to false. Can be a static value or an object with type property for interpolation (e.g., { type: 'interpolate', value: '{{variable}}' })."
-                }
-              }
-            }
-          ]
-        },
-        "transformers": {
-          "description": "Array of transformer(s) to apply to the variable value after resolution. Each item can be a built-in transformer ID or a custom transformer ID.",
-          "type": "array",
-          "items": {
-            "anyOf": [
-              { "$ref": "#/$defs/builtInTransformers" },
-              {
-                "type": "string",
-                "description": "Custom transformer ID (references a transformer defined in the 'transformers' array)"
-              }
-            ]
-          }
-        },
-        "override": {
-          "type": "string",
-          "enum": ["merge", "replace"],
-          "description": "Strategy for merging with base variable when extending templates. 'merge' (default) replaces the value, 'replace' completely replaces the variable. Must be specified when variable ID conflicts with base template."
-        }
+        "enabled": { "$ref": "#/$defs/enabled" },
+        "required": { "$ref": "#/$defs/required" },
+        "value": { "$ref": "#/$defs/valueConfig" },
+        "transformers": { "$ref": "#/$defs/transformersArray" },
+        "override": { "$ref": "#/$defs/override" }
       }
     },
     "transformerItem": {
@@ -542,6 +492,7 @@
           "type": "string",
           "description": "Unique identifier for the transformer"
         },
+        "enabled": { "$ref": "#/$defs/enabled" },
         "name": {
           "type": "string",
           "description": "Optional display name for the transformer"

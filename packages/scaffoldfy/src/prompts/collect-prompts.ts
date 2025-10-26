@@ -7,6 +7,7 @@ import { confirm, input, number, password, select } from '@inquirer/prompts';
 import { PromptValidationError } from '../errors/other.js';
 import { transformerManager } from '../transformers/index.js';
 import { evaluateEnabledAsync, log } from '../utils.js';
+import { evaluateRequiredAsync } from '../utils/evaluate-required.js';
 import { resolveDefaultValue } from './resolve-default-value.js';
 
 /**
@@ -82,14 +83,16 @@ export async function collectPrompts(
           if (defaultValue !== undefined) {
             inputOptions.default = String(defaultValue);
           }
-          if (prompt.required !== undefined) {
-            inputOptions.required = prompt.required;
+          // Evaluate required dynamically
+          const isRequired = await evaluateRequiredAsync(prompt.required, currentContext);
+          if (isRequired !== undefined) {
+            inputOptions.required = isRequired;
           }
           answer = await input(inputOptions);
 
           // Validate required
           if (
-            prompt.required &&
+            isRequired &&
             (answer == null || (typeof answer === 'string' && answer.trim() === ''))
           ) {
             log(`${prompt.message} is required`, 'error');
@@ -104,9 +107,15 @@ export async function collectPrompts(
             mask: '*',
           });
 
+          // Evaluate required dynamically
+          const isRequiredPwd = await evaluateRequiredAsync(
+            prompt.required,
+            currentContext,
+          );
+
           // Validate required
           if (
-            prompt.required &&
+            isRequiredPwd &&
             (answer == null || (typeof answer === 'string' && answer.trim() === ''))
           ) {
             log(`${prompt.message} is required`, 'error');
@@ -128,8 +137,13 @@ export async function collectPrompts(
           if (defaultValue !== undefined) {
             numberOptions.default = Number(defaultValue);
           }
-          if (prompt.required !== undefined) {
-            numberOptions.required = prompt.required;
+          // Evaluate required dynamically
+          const isRequiredNum = await evaluateRequiredAsync(
+            prompt.required,
+            currentContext,
+          );
+          if (isRequiredNum !== undefined) {
+            numberOptions.required = isRequiredNum;
           }
           if (prompt.min !== undefined) {
             numberOptions.min = prompt.min;
@@ -140,7 +154,7 @@ export async function collectPrompts(
           answer = await number(numberOptions);
 
           // Validate required
-          if (prompt.required && answer == null) {
+          if (isRequiredNum && answer == null) {
             log(`${prompt.message} is required`, 'error');
             throw PromptValidationError.required(prompt.id);
           }

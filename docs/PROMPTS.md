@@ -112,21 +112,7 @@ Collect text input from the user.
 
 #### Conditional Enabled
 
-You can conditionally enable/disable prompts based on runtime conditions using a string expression (shorthand) or conditional object:
-
-**String expression (shorthand):**
-
-```json
-{
-  "id": "tsConfigPath",
-  "type": "input",
-  "message": "Path to tsconfig.json",
-  "default": "./tsconfig.json",
-  "enabled": "useTypeScript === true"
-}
-```
-
-**Conditional object (verbose):**
+You can conditionally enable/disable prompts based on runtime conditions:
 
 ```json
 {
@@ -135,12 +121,15 @@ You can conditionally enable/disable prompts based on runtime conditions using a
   "message": "Path to tsconfig.json",
   "default": "./tsconfig.json",
   "enabled": {
-    "condition": "useTypeScript === true"
+    "type": "condition",
+    "value": "useTypeScript === true"
   }
 }
 ```
 
-In these examples, the `tsConfigPath` prompt is only shown if `useTypeScript` is `true`. Prompts are evaluated in order, so later prompts can depend on earlier prompt values.
+In this example, the `tsConfigPath` prompt is only shown if `useTypeScript` is `true`. Prompts are evaluated in order, so later prompts can depend on earlier prompt values.
+
+See the "Conditional Enabled and Required for Prompts" section below for complete documentation.
 
 ### 2. Password Prompt
 
@@ -881,9 +870,27 @@ Here's a complete example showing how to use prompts with executable defaults in
 }
 ```
 
-## Conditional Enabled for Prompts
+## Conditional Enabled and Required for Prompts
 
-Root-level prompts support a conditional `enabled` field. This allows you to dynamically show or hide prompts based on runtime conditions.
+Root-level prompts support conditional `enabled` and `required` fields. These allow you to dynamically show or hide prompts, or make validation optional based on runtime conditions.
+
+### Conditional Enabled
+
+The `enabled` field determines whether a prompt is shown to the user. It supports the following formats:
+
+1. **Simple boolean**: `true` (default) or `false`
+2. **String expression** (deprecated): Direct JavaScript expression
+3. **Conditional object** (recommended): `{ "type": "condition", "value": "expression" }`
+4. **Executable object**: `{ "type": "exec", "value": "command" }`
+
+### Conditional Required
+
+The `required` field determines whether a prompt value must be provided. It supports the same formats as `enabled`:
+
+1. **Simple boolean**: `true` (default) or `false`
+2. **String expression** (deprecated): Direct JavaScript expression
+3. **conditional object** (recommended): `{ "type": "condition", "value": "expression" }`
+4. **Executable object**: `{ "type": "exec", "value": "command" }`
 
 ### Simple Boolean
 
@@ -892,27 +899,12 @@ Root-level prompts support a conditional `enabled` field. This allows you to dyn
   "id": "projectName",
   "type": "input",
   "message": "Project name",
-  "enabled": true
+  "enabled": true,
+  "required": true
 }
 ```
 
-### String Expression (Shorthand)
-
-You can use a string directly as a condition expression:
-
-```json
-{
-  "id": "tsConfigPath",
-  "type": "input",
-  "message": "Path to tsconfig.json",
-  "default": "./tsconfig.json",
-  "enabled": "useTypeScript === true"
-}
-```
-
-This is equivalent to using the conditional object syntax but more concise.
-
-### Conditional Object
+### New Conditional Format
 
 ```json
 {
@@ -921,14 +913,19 @@ This is equivalent to using the conditional object syntax but more concise.
   "message": "Path to tsconfig.json",
   "default": "./tsconfig.json",
   "enabled": {
-    "condition": "useTypeScript === true"
+    "type": "condition",
+    "value": "useTypeScript === true"
+  },
+  "required": {
+    "type": "condition",
+    "value": "isProduction === true"
   }
 }
 ```
 
-### Executable Enabled
+### Executable Enabled/Required
 
-Run a shell command to determine if the prompt should be displayed:
+Run a shell command to determine if the prompt should be displayed or if it's required:
 
 ```json
 {
@@ -938,15 +935,24 @@ Run a shell command to determine if the prompt should be displayed:
   "enabled": {
     "type": "exec",
     "value": "git rev-parse --is-inside-work-tree"
+  },
+  "required": {
+    "type": "exec",
+    "value": "test -n \"$CI\""
   }
 }
 ```
 
 The command output is parsed as a boolean:
 
-- Empty string, `"0"`, `"false"`, or `"no"` (case-insensitive) = `false` (prompt skipped)
-- Everything else = `true` (prompt shown)
-- Failed commands = `false` (prompt skipped)
+- Empty string, `"0"`, `"false"`, or `"no"` (case-insensitive) = `false`
+- Everything else = `true`
+- Failed commands = `false`
+
+In this example:
+
+- The prompt is only shown if inside a Git repository
+- The prompt is only required (validation enforced) when running in CI
 
 ### How Conditional Enabled Works
 

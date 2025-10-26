@@ -7,6 +7,7 @@
  */
 
 import type {
+  DynamicBooleanValue,
   EnabledValue,
   MergeStrategy,
   PromptDefinition,
@@ -530,7 +531,7 @@ export function mergeTemplates(templates: TasksConfiguration[]): TasksConfigurat
   const promptMap = new Map<string, PromptDefinition>();
 
   // Track template enabled conditions for lazy evaluation
-  const templateEnabledMap: Record<string, EnabledValue> = {};
+  const templateEnabledMap: Record<string, DynamicBooleanValue | EnabledValue> = {};
 
   // Process templates in order (earlier templates have lower priority)
   for (const template of templates) {
