@@ -19,7 +19,7 @@ import { renamePlugin } from './plugins/rename/index.js';
 import { replaceInFilePlugin } from './plugins/replace-in-file/index.js';
 import { updateJsonPlugin } from './plugins/update-json/index.js';
 import { writePlugin } from './plugins/write/index.js';
-import { log } from './utils.js';
+import { log } from './utils';
 
 // Register all built-in plugins
 export function registerBuiltInPlugins(): void {

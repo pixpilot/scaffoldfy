@@ -5,7 +5,7 @@
 import type { TaskDefinition } from './types.js';
 import { isPluginTaskType } from './plugin.js';
 import { validateTemplateConfig } from './template-utils.js';
-import { log } from './utils.js';
+import { log } from './utils';
 
 /**
  * Validate all tasks before user starts inputting

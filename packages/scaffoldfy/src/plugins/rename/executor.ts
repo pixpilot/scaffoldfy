@@ -8,7 +8,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
 import { promisify } from 'node:util';
-import { evaluateCondition, interpolateTemplate, log } from '../../utils.js';
+import { evaluateCondition, interpolateTemplate, log } from '../../utils';
 
 const rename = promisify(fs.rename);
 

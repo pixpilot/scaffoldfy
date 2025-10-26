@@ -7,7 +7,7 @@ import type { DeleteConfig } from './types.js';
 import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
-import { evaluateCondition, log } from '../../utils.js';
+import { evaluateCondition, log } from '../../utils';
 
 /**
  * Execute delete task

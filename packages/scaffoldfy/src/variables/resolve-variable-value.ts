@@ -5,7 +5,7 @@
 import type { DefaultValue, InitConfig } from '../types.js';
 import { execSync } from 'node:child_process';
 import { executeScriptFile } from '../plugins/exec-file/execute-script-file.js';
-import { interpolateTemplate, log } from '../utils.js';
+import { interpolateTemplate, log } from '../utils';
 
 /**
  * Resolve a variable value that may be static, executable, or conditional
@@ -59,7 +59,7 @@ export async function resolveVariableValue<T = string | number | boolean>(
 
     try {
       // Evaluate the condition
-      const { evaluateCondition } = await import('../utils.js');
+      const { evaluateCondition } = await import('../utils');
       const conditionResult = evaluateCondition(config.condition, context);
 
       // Get the appropriate value based on condition

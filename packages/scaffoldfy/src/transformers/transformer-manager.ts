@@ -14,7 +14,7 @@ import {
   upperCase,
 } from 'case-anything';
 import { TransformerError } from '../errors/other.js';
-import { log } from '../utils.js';
+import { log } from '../utils';
 
 /**
  * Context provided to transformers for evaluation

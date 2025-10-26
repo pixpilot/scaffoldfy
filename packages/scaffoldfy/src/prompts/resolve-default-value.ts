@@ -4,7 +4,7 @@
  */
 
 import type { DefaultValue, InitConfig, PromptDefinition } from '../types.js';
-import { resolveValue } from '../utils.js';
+import { resolveValue } from '../utils';
 
 /**
  * Resolve a default value that may be static or executable

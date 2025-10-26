@@ -4,7 +4,7 @@
 
 import type { InitConfig, TasksConfiguration } from '../../src/types.js';
 import { describe, expect, it } from 'vitest';
-import { interpolateTemplate } from '../../src/utils.js';
+import { interpolateTemplate } from '../../src/utils';
 
 describe('root-level prompts', () => {
   it('should support root-level prompts available to all tasks', () => {

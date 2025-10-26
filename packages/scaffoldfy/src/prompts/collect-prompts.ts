@@ -6,7 +6,7 @@ import type { InitConfig, PromptDefinition } from '../types.js';
 import { confirm, input, number, password, select } from '@inquirer/prompts';
 import { PromptValidationError } from '../errors/other.js';
 import { transformerManager } from '../transformers/index.js';
-import { evaluateEnabledAsync, log } from '../utils.js';
+import { evaluateEnabledAsync, log } from '../utils';
 import { evaluateRequiredAsync } from '../utils/evaluate-required.js';
 import { resolveDefaultValue } from './resolve-default-value.js';
 

@@ -21,8 +21,7 @@ describe('lazy template enabled evaluation', () => {
 
     // Mock utils
     vi.doMock('../src/utils.js', async () => {
-      const actual =
-        await vi.importActual<typeof import('../src/utils.js')>('../src/utils.js');
+      const actual = await vi.importActual<typeof import('../src/utils')>('../src/utils');
       return {
         ...actual,
         log: mockLog,

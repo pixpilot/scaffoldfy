@@ -15,9 +15,8 @@ describe('root-level template enabled', () => {
     vi.resetModules();
 
     // Mock utils
-    vi.doMock('../src/utils.js', async () => {
-      const actual =
-        await vi.importActual<typeof import('../src/utils.js')>('../src/utils.js');
+    vi.doMock('../src/utils', async () => {
+      const actual = await vi.importActual<typeof import('../src/utils')>('../src/utils');
       return {
         ...actual,
         log: mockLog,

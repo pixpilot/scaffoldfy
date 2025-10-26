@@ -6,7 +6,7 @@
  */
 
 import type { InitConfig, PluginHooks, TaskDefinition, TaskPlugin } from './types.js';
-import { debug, log } from './utils.js';
+import { debug, log } from './utils';
 
 /**
  * Registry of installed plugins

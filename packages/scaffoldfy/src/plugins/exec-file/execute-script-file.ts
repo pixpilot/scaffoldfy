@@ -9,7 +9,7 @@ import os from 'node:os';
 import path from 'node:path';
 import process from 'node:process';
 import { fetchTemplateFile } from '../../template-inheritance.js';
-import { debug, interpolateTemplate, log } from '../../utils.js';
+import { debug, interpolateTemplate, log } from '../../utils';
 import { resolveFilePath } from '../../utils/resolve-file-path.js';
 import {
   detectRuntimeFromExtension,

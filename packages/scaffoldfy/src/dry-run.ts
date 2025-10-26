@@ -26,12 +26,13 @@ import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
 import { promisify } from 'node:util';
+
 import {
   getTemplateSourceDescription,
   hasInlineTemplate,
   processTemplate,
 } from './template-utils.js';
-import { evaluateCondition, interpolateTemplate } from './utils.js';
+import { evaluateCondition, interpolateTemplate } from './utils';
 import { setNestedProperty } from './utils/object.js';
 
 const readFile = promisify(fs.readFile);

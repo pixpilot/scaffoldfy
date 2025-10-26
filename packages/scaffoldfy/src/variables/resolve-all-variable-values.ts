@@ -4,7 +4,7 @@
 
 /* eslint-disable no-await-in-loop */
 import type { InitConfig, VariableDefinition } from '../types.js';
-import { evaluateEnabledAsync, resolveValue } from '../utils.js';
+import { evaluateEnabledAsync, resolveValue } from '../utils';
 
 /**
  * Resolve all variable values sequentially to allow lazy evaluation of template enabled conditions

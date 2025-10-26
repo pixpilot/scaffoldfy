@@ -144,7 +144,7 @@ export async function evaluateRequiredAsync(
     if (normalizedRequired.type === 'exec') {
       try {
         const { execSync } = await import('node:child_process');
-        const { interpolateTemplate } = await import('../utils.js');
+        const { interpolateTemplate } = await import('../utils');
 
         // Interpolate template variables in the command
         const command = interpolateTemplate(normalizedRequired.value, config);
@@ -156,7 +156,7 @@ export async function evaluateRequiredAsync(
         return true; // Exit code 0 = success = required
       } catch (error) {
         // Command failed (non-zero exit code) or error executing
-        const { log } = await import('../utils.js');
+        const { log } = await import('../utils');
 
         // Check if it's an error with status property (exit code)
         if (

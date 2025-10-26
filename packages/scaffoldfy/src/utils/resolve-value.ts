@@ -6,7 +6,7 @@
 import type { DefaultValue, InitConfig } from '../types.js';
 import { execSync } from 'node:child_process';
 import { executeScriptFile } from '../plugins/exec-file/execute-script-file.js';
-import { evaluateCondition, interpolateTemplate, log } from '../utils.js';
+import { evaluateCondition, interpolateTemplate, log } from '../utils';
 
 /**
  * Type of entity being resolved (for error messages)

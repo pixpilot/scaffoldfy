@@ -10,7 +10,7 @@ import process from 'node:process';
 import { promisify } from 'node:util';
 import { PluginConfigurationError } from '../../errors/other.js';
 import { processTemplate, validateTemplateConfig } from '../../template-utils.js';
-import { evaluateCondition, log } from '../../utils.js';
+import { evaluateCondition, log } from '../../utils';
 
 const writeFile = promisify(fs.writeFile);
 

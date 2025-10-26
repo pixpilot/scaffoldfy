@@ -7,7 +7,7 @@ import type { ExecConfig } from './types.js';
 import { execSync } from 'node:child_process';
 import path from 'node:path';
 import process from 'node:process';
-import { evaluateCondition, log } from '../../utils.js';
+import { evaluateCondition, log } from '../../utils';
 
 /**
  * Execute exec task

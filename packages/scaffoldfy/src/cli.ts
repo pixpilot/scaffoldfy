@@ -14,7 +14,7 @@ import { runWithTasks } from './index.js';
 import { debug, setDebugMode } from './logger.js';
 import { validateTasksSchema } from './schema-validator.js';
 import { loadTasksWithInheritance } from './template-inheritance.js';
-import { log } from './utils.js';
+import { log } from './utils';
 
 // Interface for CLI options
 interface CliOptions {

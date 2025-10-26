@@ -4,7 +4,7 @@
 
 import type { InitConfig, TaskDefinition } from '../../types.js';
 import type { ExecFileConfig } from './types.js';
-import { evaluateCondition } from '../../utils.js';
+import { evaluateCondition } from '../../utils';
 import { executeScriptFile } from './execute-script-file.js';
 
 /**

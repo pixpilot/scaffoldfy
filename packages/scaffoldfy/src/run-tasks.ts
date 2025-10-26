@@ -19,7 +19,7 @@ import {
 import { registerBuiltInPlugins, runTask } from './task-executors.js';
 import { topologicalSort } from './task-resolver.js';
 import { transformerManager } from './transformers/index.js';
-import { evaluateEnabled, evaluateEnabledAsync, log, logInfo } from './utils.js';
+import { evaluateEnabled, evaluateEnabledAsync, log, logInfo } from './utils';
 import { evaluateRequiredAsync } from './utils/evaluate-required.js';
 import { displayValidationErrors, validateAllTasks } from './validation.js';
 import {

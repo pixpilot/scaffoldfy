@@ -3,7 +3,7 @@
  */
 
 import type { DynamicBooleanValue, EnabledValue, InitConfig } from '../types.js';
-import { evaluateCondition } from '../utils.js';
+import { evaluateCondition } from '../utils';
 
 /**
  * Evaluate whether a prompt or task is enabled (synchronous version)
@@ -80,7 +80,7 @@ export async function evaluateEnabledAsync(
     if (enabled.type === 'exec') {
       try {
         const { execSync } = await import('node:child_process');
-        const { interpolateTemplate } = await import('../utils.js');
+        const { interpolateTemplate } = await import('../utils');
 
         // Interpolate template variables in the command
         const command = interpolateTemplate(enabled.value, config);
@@ -101,7 +101,7 @@ export async function evaluateEnabledAsync(
         return true;
       } catch (error) {
         // If command fails, log warning and return false
-        const { log } = await import('../utils.js');
+        const { log } = await import('../utils');
         log(`Failed to execute enabled command: ${enabled.value}`, 'warn');
         if (error instanceof Error) {
           log(`  Error: ${error.message}`, 'warn');

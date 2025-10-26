@@ -4,7 +4,7 @@
 
 import type { InitConfig } from '../src/types.js';
 import { describe, expect, it } from 'vitest';
-import { evaluateCondition, evaluateEnabled, interpolateTemplate } from '../src/utils.js';
+import { evaluateCondition, evaluateEnabled, interpolateTemplate } from '../src/utils';
 
 describe('template Interpolation', () => {
   const config: InitConfig = {

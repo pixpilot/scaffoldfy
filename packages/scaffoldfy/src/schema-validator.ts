@@ -8,7 +8,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import Ajv from 'ajv';
-import { log } from './utils.js';
+import { log } from './utils';
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);

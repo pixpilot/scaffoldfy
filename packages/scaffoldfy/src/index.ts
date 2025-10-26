@@ -18,7 +18,7 @@ import type { PromptDefinition, TaskDefinition, VariableDefinition } from './typ
 import process from 'node:process';
 
 import { runTasks } from './run-tasks.js';
-import { log } from './utils.js';
+import { log } from './utils';
 
 // ============================================================================
 // Constants
@@ -193,13 +193,6 @@ export {
   validateTemplateConfig,
 } from './template-utils.js';
 export type * from './types.js';
-export {
-  evaluateCondition,
-  interpolateTemplate,
-  log,
-  prompt,
-  promptYesNo,
-} from './utils.js';
 
 export {
   collectVariables,

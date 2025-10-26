@@ -7,7 +7,7 @@
 
 import type { InitConfig, TaskDefinition } from './types.js';
 import { fetchTemplateFile } from './template-inheritance.js';
-import { interpolateTemplate } from './utils.js';
+import { interpolateTemplate } from './utils';
 import { resolveFilePath } from './utils/resolve-file-path.js';
 
 /**
