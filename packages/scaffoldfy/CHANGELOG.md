@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy
 
+## 0.36.0
+
+### Minor Changes
+
+- refactor utility functions and add nested property methods
+
 ## 0.35.0
 
 ### Minor Changes
