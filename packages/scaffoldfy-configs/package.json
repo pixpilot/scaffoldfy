@@ -1,7 +1,7 @@
 {
   "name": "@pixpilot/scaffoldfy-configs",
   "type": "module",
-  "version": "0.10.0",
+  "version": "0.10.1",
   "packageManager": "pnpm@10.17.0",
   "author": "PixPilot <m.doaie@hotmail.com>",
   "license": "MIT",
