@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy
 
+## 0.33.0
+
+### Minor Changes
+
+- add JSON Validation link to Reference section
+
 ## 0.32.0
 
 ### Minor Changes
