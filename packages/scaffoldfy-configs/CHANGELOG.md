@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy-configs
 
+## 0.10.1
+
+### Patch Changes
+
+- update author field to use dynamic values
+
 ## 0.10.0
 
 ### Minor Changes
