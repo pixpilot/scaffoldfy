@@ -615,6 +615,8 @@ export async function getTaskDiff(
         return getGitInitDiff(task.config as GitInitConfig);
       case 'exec':
         return getExecDiff(task.config as ExecConfig, initConfig);
+      case 'exec-file':
+        return getExecDiff(task.config as ExecConfig, initConfig);
       default: {
         // Handle plugin tasks or unknown types
         const unknownType: string = task.type;
