@@ -71,7 +71,7 @@
       "message": "Organization name for packages (used in package scopes)",
       "default": {
         "type": "interpolate",
-        "value": "{{orgNameVar}}"
+        "value": "{{orgNameCapital}}"
       },
       "required": false
     },

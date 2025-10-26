@@ -2,7 +2,7 @@ import { packageGenerator } from '@pixpilot/workspace-package-generator';
 
 module.exports = function generator(plop: unknown) {
   packageGenerator(plop, {
-    author: 'ccpu',
+    author: '{{#if author}}{{author}}{{else}}{{repoOwner}}{{/if}}{{#if authorEmail}} <{{authorEmail}}>{{/if}}',
     defaultBundler: 'tsdown',
     orgName: 'pixpilot',
   });
