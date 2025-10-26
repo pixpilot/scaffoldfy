@@ -9,6 +9,7 @@ import { appendPlugin } from './plugins/append/index.js';
 import { copyPlugin } from './plugins/copy/index.js';
 import { createPlugin } from './plugins/create/index.js';
 import { deletePlugin } from './plugins/delete/index.js';
+import { execFilePlugin } from './plugins/exec-file/index.js';
 import { execPlugin } from './plugins/exec/index.js';
 import { gitInitPlugin } from './plugins/git-init/index.js';
 import { mkdirPlugin } from './plugins/mkdir/index.js';
@@ -36,6 +37,7 @@ export function registerBuiltInPlugins(): void {
   registerPlugin(renamePlugin);
   registerPlugin(gitInitPlugin);
   registerPlugin(execPlugin);
+  registerPlugin(execFilePlugin);
   registerPlugin(movePlugin);
   registerPlugin(copyPlugin);
   registerPlugin(appendPlugin);

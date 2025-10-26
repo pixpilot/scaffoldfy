@@ -78,6 +78,11 @@ Welcome to the official documentation for **@pixpilot/scaffoldfy** (formerly sca
 </div>
 
 <div style="padding: 15px; background: #f6f8fa; border-radius: 6px; margin: 15px 0;">
+  <strong><a href="EXEC_FILE_PLUGIN.html">🚀 Exec File Plugin</a></strong><br>
+  <em>Execute local or remote script files with multiple runtimes and variable interpolation</em>
+</div>
+
+<div style="padding: 15px; background: #f6f8fa; border-radius: 6px; margin: 15px 0;">
   <strong><a href="DRY_RUN.html">🔍 Dry Run Mode</a></strong><br>
   <em>Preview changes with detailed diffs before applying them</em>
 </div>

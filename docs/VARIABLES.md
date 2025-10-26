@@ -138,6 +138,119 @@ Examples:
 }
 ```
 
+### Script File Execution (`exec-file`)
+
+Execute script files to get variable values. This is useful for running complex logic in separate script files rather than inline shell commands.
+
+```json
+{
+  "id": "projectVersion",
+  "value": {
+    "type": "exec-file",
+    "file": "scripts/get-version.js"
+  }
+}
+```
+
+#### Script File Properties
+
+| Property     | Type                  | Required | Description                                                                            |
+| ------------ | --------------------- | -------- | -------------------------------------------------------------------------------------- |
+| `type`       | string                | Yes      | Must be `"exec-file"`                                                                  |
+| `file`       | string                | Yes      | Path to script file (local or remote URL). Supports `{{variable}}` interpolation.      |
+| `runtime`    | string                | No       | Runtime to use (`node`, `bash`, `sh`, `pwsh`, `powershell`). Auto-detected if omitted. |
+| `args`       | string[]              | No       | Arguments to pass to the script. Each supports `{{variable}}` interpolation.           |
+| `parameters` | Record<string,string> | No       | Environment variables for the script. Values support `{{variable}}` interpolation.     |
+| `cwd`        | string                | No       | Working directory. Supports `{{variable}}` interpolation.                              |
+
+#### Runtime Auto-Detection
+
+If `runtime` is not specified, it's automatically detected from the file extension:
+
+- `.js`, `.cjs`, `.mjs` → `node`
+- `.sh`, `.bash` → `bash`
+- `.ps1` → `pwsh`
+- Unknown → `node` (default)
+
+#### Auto-Parsing
+
+Script output is automatically parsed as:
+
+- **JSON**: If output starts with `{` or `[`
+- **Number**: If output matches a number pattern
+- **Boolean**: If output is exactly `true` or `false`
+- **String**: Otherwise
+
+#### Examples
+
+**Basic Script Execution:**
+
+```json
+{
+  "id": "appVersion",
+  "value": {
+    "type": "exec-file",
+    "file": "scripts/version.js"
+  }
+}
+```
+
+**Script with Arguments:**
+
+```json
+{
+  "id": "buildNumber",
+  "value": {
+    "type": "exec-file",
+    "file": "scripts/get-build.js",
+    "args": ["--branch={{gitBranch}}", "--env=production"]
+  }
+}
+```
+
+**Script with Environment Variables:**
+
+```json
+{
+  "id": "envConfig",
+  "value": {
+    "type": "exec-file",
+    "file": "scripts/load-config.js",
+    "parameters": {
+      "CONFIG_PATH": "{{configPath}}",
+      "ENVIRONMENT": "{{environment}}"
+    }
+  }
+}
+```
+
+**Bash Script:**
+
+```json
+{
+  "id": "currentBranch",
+  "value": {
+    "type": "exec-file",
+    "file": "scripts/git-branch.sh"
+    // Runtime auto-detected as 'bash' from .sh extension
+  }
+}
+```
+
+**Remote Script:**
+
+```json
+{
+  "id": "latestVersion",
+  "value": {
+    "type": "exec-file",
+    "file": "https://example.com/scripts/latest-version.js"
+  }
+}
+```
+
+See [Exec File Plugin documentation](./EXEC_FILE_PLUGIN.md) for more details.
+
 ### Conditional Values
 
 Conditional variables evaluate an expression and return different values based on the result. This is useful for deriving values based on other variables or prompts:

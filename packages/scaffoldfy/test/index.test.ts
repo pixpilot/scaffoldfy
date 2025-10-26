@@ -37,6 +37,7 @@ describe('jSON Schema Validation', () => {
       'rename',
       'git-init',
       'exec',
+      'exec-file',
       'move',
       'copy',
       'append',
@@ -51,8 +52,8 @@ describe('jSON Schema Validation', () => {
       (def: any) => def.title && def.title.endsWith('Config'),
     ) as { title: string; required: string[] }[];
 
-    // Should have 9 config schemas (one for each task type)
-    expect(configSchemas).toHaveLength(13);
+    // Should have 14 config schemas (one for each task type)
+    expect(configSchemas).toHaveLength(14);
 
     // Verify each config schema has required properties
     const expectedConfigs = [

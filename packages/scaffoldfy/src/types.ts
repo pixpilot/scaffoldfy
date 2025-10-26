@@ -49,8 +49,14 @@ export type PromptType = 'input' | 'select' | 'confirm' | 'password' | 'number';
  * - 'exec': Execute a command to get the value dynamically
  * - 'conditional': Choose value based on a condition
  * - 'interpolate': Reference string with {{variable}} placeholders that will be interpolated with previously resolved prompts/variables
+ * - 'exec-file': Execute a script file to get the value dynamically
  */
-export type DefaultValueType = 'static' | 'exec' | 'conditional' | 'interpolate';
+export type DefaultValueType =
+  | 'static'
+  | 'exec'
+  | 'conditional'
+  | 'interpolate'
+  | 'exec-file';
 
 /**
  * Conditional default value configuration
@@ -61,6 +67,24 @@ export interface ConditionalDefaultConfig<T = string | number | boolean> {
   condition: string; // JavaScript expression to evaluate
   ifTrue: T | DefaultValueConfig<T>; // Value if condition is true (for interpolation, use { type: 'interpolate', value: '{{variable}}' })
   ifFalse: T | DefaultValueConfig<T>; // Value if condition is false (for interpolation, use { type: 'interpolate', value: '{{variable}}' })
+}
+
+/**
+ * Runtime environment for executing script files
+ */
+export type ExecFileRuntime = 'node' | 'bash' | 'sh' | 'pwsh' | 'powershell';
+
+/**
+ * Exec-file default value configuration
+ * Executes a script file to get the value dynamically
+ */
+export interface ExecFileValueConfig {
+  type: 'exec-file';
+  file: string; // Path to script file (local or remote URL), supports {{variable}} interpolation
+  runtime?: ExecFileRuntime; // Runtime to use, auto-detected from file extension if not specified
+  args?: string[]; // Arguments to pass to the script, each supports {{variable}} interpolation
+  parameters?: Record<string, string>; // Environment variables for the script, values support {{variable}} interpolation
+  cwd?: string; // Working directory, supports {{variable}} interpolation
 }
 
 /**
@@ -78,11 +102,13 @@ export interface DefaultValueConfig<T = string | number | boolean> {
  * - For explicit static values, use { type: 'static', value: yourValue }
  * - For conditional defaults, use { type: 'conditional', condition: 'expression', ifTrue: value, ifFalse: value }
  * - For interpolate strings, use { type: 'interpolate', value: '{{variable}}' } (will be interpolated with previously resolved prompts/variables)
+ * - For exec-file, use { type: 'exec-file', file: 'path/to/script.js', args: [...], parameters: {...} }
  */
 export type DefaultValue<T = string | number | boolean> =
   | T
   | DefaultValueConfig<T>
-  | ConditionalDefaultConfig<T>;
+  | ConditionalDefaultConfig<T>
+  | ExecFileValueConfig;
 
 /**
  * Conditional enabled/required configuration with new structure
@@ -189,6 +215,7 @@ export type TaskType =
   | 'rename'
   | 'git-init'
   | 'exec'
+  | 'exec-file'
   | 'move'
   | 'copy'
   | 'append'

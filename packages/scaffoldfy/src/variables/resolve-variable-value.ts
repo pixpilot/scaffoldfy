@@ -4,6 +4,7 @@
 
 import type { DefaultValue, InitConfig } from '../types.js';
 import { execSync } from 'node:child_process';
+import { executeScriptFile } from '../plugins/exec-file/execute-script-file.js';
 import { interpolateTemplate, log } from '../utils.js';
 
 /**
@@ -168,10 +169,98 @@ export async function resolveVariableValue<T = string | number | boolean>(
       );
       return interpolateValue as T;
     }
+  } else if (config.type === 'exec-file') {
+    // Handle exec-file type - execute a script file and return its output
+    if (!context) {
+      log(
+        `Variable "${variableId}": exec-file value requires context but none provided`,
+        'warn',
+      );
+      return undefined;
+    }
+
+    // Type assertion for exec-file config
+    const execFileConfig = config as {
+      type: 'exec-file';
+      file: string;
+      runtime?: string;
+      args?: string[];
+      parameters?: Record<string, string>;
+      cwd?: string;
+    };
+
+    if (typeof execFileConfig.file !== 'string') {
+      log(`Variable "${variableId}": exec-file value must have a file path`, 'error');
+      return undefined;
+    }
+
+    try {
+      // Execute the script file and capture output
+      const output = await executeScriptFile(
+        {
+          file: execFileConfig.file,
+          ...(execFileConfig.runtime != null &&
+            execFileConfig.runtime.trim() !== '' && {
+              runtime: execFileConfig.runtime as
+                | 'node'
+                | 'bash'
+                | 'sh'
+                | 'pwsh'
+                | 'powershell',
+            }),
+          ...(execFileConfig.args && { args: execFileConfig.args }),
+          ...(execFileConfig.parameters && { parameters: execFileConfig.parameters }),
+          ...(execFileConfig.cwd !== undefined &&
+            execFileConfig.cwd.trim() !== '' && { cwd: execFileConfig.cwd }),
+          captureOutput: true,
+        },
+        context,
+      );
+
+      if (output === undefined) {
+        return undefined;
+      }
+
+      // Trim whitespace and newlines
+      const result = output.trim();
+
+      // Try to parse as JSON if it looks like JSON
+      if (result.startsWith('{') || result.startsWith('[')) {
+        try {
+          return JSON.parse(result) as T;
+        } catch {
+          // Not JSON, return as string
+          return result as T;
+        }
+      }
+
+      // Try to parse as number if it looks like a number
+      if (/^-?\d+(?:\.\d+)?$/u.test(result)) {
+        const numValue = Number.parseFloat(result);
+        if (!Number.isNaN(numValue)) {
+          return numValue as T;
+        }
+      }
+
+      // Try to parse as boolean if it looks like a boolean
+      if (result === 'true' || result === 'false') {
+        return (result === 'true') as T;
+      }
+
+      return result as T;
+    } catch (error) {
+      log(
+        `Variable "${variableId}": failed to execute script file: ${
+          error instanceof Error ? error.message : 'Unknown error'
+        }`,
+        'warn',
+      );
+      return undefined;
+    }
   } else if (config.type !== undefined) {
     // Unknown type specified
     log(
-      `Variable "${variableId}": unknown value type "${config.type}". Expected "static", "exec", "conditional", or "interpolate".`,
+      `Variable "${variableId}": unknown value type "${config.type}". Expected "static", "exec", "conditional", "interpolate", or "exec-file".`,
       'error',
     );
     return undefined;

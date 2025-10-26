@@ -98,6 +98,7 @@
               "rename",
               "git-init",
               "exec",
+              "exec-file",
               "move",
               "copy",
               "append",
@@ -167,6 +168,12 @@
           },
           {
             "properties": {
+              "type": { "const": "exec-file" },
+              "config": { "$ref": "#/$defs/config-exec-file" }
+            }
+          },
+          {
+            "properties": {
               "type": { "const": "move" },
               "config": { "$ref": "#/$defs/config-move" }
             }
@@ -218,7 +225,7 @@
       "description": "Built-in transformer ID"
     },
     "valueConfig": {
-      "description": "Configuration for a value that can be static, dynamic, or conditional. Supports static primitives, command execution, interpolation with {{variable}} placeholders, or conditional evaluation.",
+      "description": "Configuration for a value that can be static, dynamic, or conditional. Supports static primitives, command execution, script file execution, interpolation with {{variable}} placeholders, or conditional evaluation.",
       "oneOf": [
         {
           "type": ["string", "number", "boolean"],
@@ -266,6 +273,42 @@
               }
             }
           ]
+        },
+        {
+          "type": "object",
+          "description": "Exec-file value configuration - execute a script file and return its output",
+          "required": ["type", "file"],
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["exec-file"],
+              "description": "Type of value configuration. 'exec-file' for script file execution."
+            },
+            "file": {
+              "type": "string",
+              "description": "Path to script file (local or remote URL). Supports {{variable}} interpolation. Runtime will be auto-detected from file extension (.js/.cjs/.mjs -> node, .sh/.bash -> bash, .ps1 -> pwsh)."
+            },
+            "runtime": {
+              "type": "string",
+              "enum": ["node", "bash", "sh", "pwsh", "powershell"],
+              "description": "Runtime to execute the file with. If not specified, will be auto-detected from file extension."
+            },
+            "args": {
+              "type": "array",
+              "items": { "type": "string" },
+              "description": "Arguments to pass to the script. Each supports {{variable}} interpolation."
+            },
+            "parameters": {
+              "type": "object",
+              "additionalProperties": { "type": "string" },
+              "description": "Environment variables to pass to the script. Values support {{variable}} interpolation."
+            },
+            "cwd": {
+              "type": "string",
+              "description": "Working directory for script execution. Supports {{variable}} interpolation."
+            }
+          }
         },
         {
           "type": "object",
@@ -820,6 +863,38 @@
         "condition": { "$ref": "#/$defs/condition" }
       },
       "required": ["command"]
+    },
+    "config-exec-file": {
+      "title": "Exec File Config",
+      "additionalProperties": false,
+      "type": "object",
+      "properties": {
+        "file": {
+          "type": "string",
+          "description": "Path to the file to execute (local or remote URL). Supports {{variable}} interpolation. Runtime will be auto-detected from file extension if not specified."
+        },
+        "runtime": {
+          "type": "string",
+          "enum": ["node", "bash", "sh", "pwsh", "powershell"],
+          "description": "Runtime environment to execute the file with. If not specified, will be auto-detected from file extension (.js/.cjs/.mjs -> node, .sh/.bash -> bash, .ps1 -> pwsh)."
+        },
+        "args": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Arguments to pass to the script. Each argument supports {{variable}} interpolation."
+        },
+        "parameters": {
+          "type": "object",
+          "additionalProperties": { "type": "string" },
+          "description": "Environment variables to pass to the script. Values support {{variable}} interpolation."
+        },
+        "cwd": {
+          "type": "string",
+          "description": "Working directory for script execution. Supports {{variable}} interpolation."
+        },
+        "condition": { "$ref": "#/$defs/condition" }
+      },
+      "required": ["file"]
     },
     "config-move": {
       "title": "Move Config",

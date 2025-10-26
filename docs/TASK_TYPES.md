@@ -1038,6 +1038,114 @@ Be careful with exec tasks as they can run arbitrary commands. Only use in trust
 
 ---
 
+## exec-file
+
+Execute local or remote script files with support for multiple runtimes (Node.js, Bash, PowerShell, etc.).
+
+### Configuration
+
+```typescript
+interface Config {
+  file: string; // Path to script (local or remote URL), supports {{variables}}
+  runtime?: 'node' | 'bash' | 'sh' | 'pwsh' | 'powershell'; // Default: 'node'
+  args?: string[]; // Arguments (supports {{variables}} in each arg)
+  parameters?: Record<string, string>; // Environment variables (values support {{variables}})
+  cwd?: string; // Working directory (supports {{variables}})
+  condition?: string; // Optional: only execute if condition evaluates to true
+}
+```
+
+### Example: Basic Node.js Script
+
+```json
+{
+  "type": "exec-file",
+  "config": {
+    "file": "scripts/setup.js",
+    "runtime": "node"
+  }
+}
+```
+
+### Example: Script with Variable Interpolation
+
+```json
+{
+  "type": "exec-file",
+  "config": {
+    "file": "scripts/{{projectName}}-setup.js",
+    "runtime": "node",
+    "args": ["--name={{projectName}}", "--author={{author}}"],
+    "parameters": {
+      "PROJECT_NAME": "{{projectName}}",
+      "AUTHOR": "{{author}}"
+    }
+  }
+}
+```
+
+### Example: Remote Script
+
+```json
+{
+  "type": "exec-file",
+  "config": {
+    "file": "https://raw.githubusercontent.com/your-org/scripts/main/setup.js",
+    "runtime": "node",
+    "args": ["--project={{projectName}}"]
+  }
+}
+```
+
+### Example: Bash Script
+
+```json
+{
+  "type": "exec-file",
+  "config": {
+    "file": "scripts/setup.sh",
+    "runtime": "bash",
+    "args": ["{{projectName}}"]
+  }
+}
+```
+
+### Conditional Example
+
+```json
+{
+  "type": "exec-file",
+  "config": {
+    "file": "scripts/advanced-setup.js",
+    "runtime": "node",
+    "condition": "advancedMode === true"
+  }
+}
+```
+
+### Features
+
+- Execute local or remote script files
+- Support for multiple runtimes: Node.js, Bash, Shell, PowerShell
+- **Full variable interpolation** in `file`, `args`, `parameters`, and `cwd`
+- Pass arguments to scripts
+- Pass environment variables via `parameters`
+- Custom working directory
+- Remote scripts are automatically fetched and cleaned up
+- **Optional condition:** JavaScript expression evaluation (skips task if false)
+
+### Security Note
+
+Be careful with exec-file tasks, especially when executing remote scripts. Only use scripts from trusted sources.
+
+### See Also
+
+For comprehensive documentation, examples, and best practices, see:
+
+- **[Exec File Plugin Documentation](EXEC_FILE_PLUGIN.md)** - Complete guide with advanced examples
+
+---
+
 ## Common Features Across All Tasks
 
 ### Conditional Execution
@@ -1134,4 +1242,7 @@ All tasks respect `--dry-run` flag:
 | Create directories                 | `mkdir`                                  |
 | Reset git history                  | `git-init`                               |
 | Run commands                       | `exec`                                   |
+| Execute script files               | `exec-file`                              |
+| Execute remote scripts             | `exec-file` (with URL)                   |
+| Run scripts with custom runtime    | `exec-file` (with `runtime`)             |
 | Execute only when user agrees      | Any task type (with prompt + `enabled`)  |

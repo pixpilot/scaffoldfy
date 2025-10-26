@@ -412,6 +412,101 @@ Or use a simpler approach:
 }
 ```
 
+### Script File Default Values (`exec-file`)
+
+Execute script files to generate default values. This is useful for complex default value logic that's better expressed in separate script files.
+
+```json
+{
+  "id": "suggestedName",
+  "type": "input",
+  "message": "Project name",
+  "default": {
+    "type": "exec-file",
+    "file": "scripts/suggest-name.js"
+  }
+}
+```
+
+#### Script File Properties
+
+| Property     | Type                  | Required | Description                                                                            |
+| ------------ | --------------------- | -------- | -------------------------------------------------------------------------------------- |
+| `type`       | string                | Yes      | Must be `"exec-file"`                                                                  |
+| `file`       | string                | Yes      | Path to script file (local or remote URL). Supports `{{variable}}` interpolation.      |
+| `runtime`    | string                | No       | Runtime to use (`node`, `bash`, `sh`, `pwsh`, `powershell`). Auto-detected if omitted. |
+| `args`       | string[]              | No       | Arguments to pass to the script. Each supports `{{variable}}` interpolation.           |
+| `parameters` | Record<string,string> | No       | Environment variables for the script. Values support `{{variable}}` interpolation.     |
+| `cwd`        | string                | No       | Working directory. Supports `{{variable}}` interpolation.                              |
+
+#### Runtime Auto-Detection
+
+If `runtime` is not specified, it's automatically detected from the file extension:
+
+- `.js`, `.cjs`, `.mjs` → `node`
+- `.sh`, `.bash` → `bash`
+- `.ps1` → `pwsh`
+- Unknown → `node` (default)
+
+#### Examples
+
+**Basic Script Default:**
+
+```json
+{
+  "id": "gitUser",
+  "type": "input",
+  "message": "Git username",
+  "default": {
+    "type": "exec-file",
+    "file": "scripts/get-git-user.sh"
+  }
+}
+```
+
+**Script with Arguments:**
+
+```json
+{
+  "id": "apiEndpoint",
+  "type": "input",
+  "message": "API endpoint",
+  "default": {
+    "type": "exec-file",
+    "file": "scripts/get-endpoint.js",
+    "args": ["--env={{environment}}"]
+  }
+}
+```
+
+**Boolean Confirm with Script:**
+
+```json
+{
+  "id": "useTypeScript",
+  "type": "confirm",
+  "message": "Use TypeScript?",
+  "default": {
+    "type": "exec-file",
+    "file": "scripts/detect-typescript.js"
+  }
+}
+```
+
+Example detect-typescript.js script:
+
+```javascript
+const fs = require('node:fs');
+
+const hasTsConfig = fs.existsSync('tsconfig.json');
+const hasTsDeps =
+  fs.existsSync('package.json') &&
+  JSON.parse(fs.readFileSync('package.json')).dependencies?.typescript;
+console.log(hasTsConfig || hasTsDeps);
+```
+
+See [Exec File Plugin documentation](./EXEC_FILE_PLUGIN.md) for more details.
+
 ### Explicit Value Type
 
 You can also explicitly mark a static value using the `value` type:
