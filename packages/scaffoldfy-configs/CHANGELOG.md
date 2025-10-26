@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy-configs
 
+## 0.10.0
+
+### Minor Changes
+
+- add exec-file support
+
 ## 0.9.0
 
 ### Minor Changes
