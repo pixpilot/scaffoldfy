@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy
 
+## 0.32.0
+
+### Minor Changes
+
+- removed deprecated and ad tests
+
 ## 0.31.0
 
 ### Minor Changes
