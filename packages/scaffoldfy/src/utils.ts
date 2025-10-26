@@ -3,46 +3,14 @@
  */
 
 import type { InitConfig } from './types.js';
-import { execSync } from 'node:child_process';
+
 import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
 import readline from 'node:readline';
 import Handlebars from 'handlebars';
 import { TemplateFileNotFoundError } from './errors/template.js';
-
-/**
- * Get Git repository information from the current directory
- */
-export function getGitRepoInfo(): {
-  owner: string;
-  name: string;
-  url: string;
-} | null {
-  try {
-    const remoteUrl = execSync('git remote get-url origin', {
-      encoding: 'utf-8',
-    }).trim();
-
-    // Parse GitHub URL (https or git format)
-    const match = remoteUrl.match(/github\.com[:/](?<owner>[^/]+)\/(?<name>[^/]+)$/u);
-    if (match?.groups) {
-      const { owner, name: rawName } = match.groups as {
-        owner: string;
-        name: string;
-      };
-      let name = rawName;
-      if (name.endsWith('.git')) {
-        name = name.slice(0, -'.git'.length);
-      }
-      return { owner, name, url: remoteUrl };
-    }
-
-    return null;
-  } catch {
-    return null;
-  }
-}
+import { getNestedProperty } from './utils/object.js';
 
 /**
  * Prompt user for input with optional default value
@@ -124,58 +92,6 @@ export function interpolateTemplate(template: string, config: InitConfig): strin
     const value = getNestedProperty(config as unknown as Record<string, unknown>, key);
     return value?.toString() ?? '';
   });
-}
-
-/**
- * Set a nested property in an object using dot notation
- */
-export function setNestedProperty(
-  obj: Record<string, unknown>,
-  propertyPath: string,
-  value: unknown,
-): void {
-  const keys = propertyPath.split('.');
-  let current = obj;
-
-  for (let i = 0; i < keys.length - 1; i++) {
-    const key = keys[i];
-    if (key != null && key !== '') {
-      if (
-        !(key in current) ||
-        typeof current[key] !== 'object' ||
-        current[key] === null
-      ) {
-        current[key] = {};
-      }
-      current = current[key] as Record<string, unknown>;
-    }
-  }
-
-  const lastKey = keys[keys.length - 1];
-  if (lastKey != null && lastKey !== '') {
-    current[lastKey] = value;
-  }
-}
-
-/**
- * Get a nested property from an object using dot notation
- */
-export function getNestedProperty(
-  obj: Record<string, unknown>,
-  propertyPath: string,
-): unknown {
-  const keys = propertyPath.split('.');
-  let current: unknown = obj;
-
-  for (const key of keys) {
-    if (key !== '' && typeof current === 'object' && current !== null) {
-      current = (current as Record<string, unknown>)[key];
-    } else {
-      return undefined;
-    }
-  }
-
-  return current;
 }
 
 /**

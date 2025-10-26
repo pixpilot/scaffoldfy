@@ -31,7 +31,8 @@ import {
   hasInlineTemplate,
   processTemplate,
 } from './template-utils.js';
-import { evaluateCondition, interpolateTemplate, setNestedProperty } from './utils.js';
+import { evaluateCondition, interpolateTemplate } from './utils.js';
+import { setNestedProperty } from './utils/object.js';
 
 const readFile = promisify(fs.readFile);
 const JSON_INDENT = 2;

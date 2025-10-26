@@ -195,12 +195,10 @@ export {
 export type * from './types.js';
 export {
   evaluateCondition,
-  getGitRepoInfo,
   interpolateTemplate,
   log,
   prompt,
   promptYesNo,
-  setNestedProperty,
 } from './utils.js';
 
 export {
