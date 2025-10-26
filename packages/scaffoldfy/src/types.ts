@@ -151,6 +151,7 @@ export interface BasePrompt {
   enabled?: DynamicBooleanValue; // Whether prompt should be shown (supports boolean or dynamic evaluation)
   override?: MergeStrategy; // Strategy for merging with base prompt: 'merge' (default, intelligent) or 'replace' (complete override)
   $templateEnabled?: DynamicBooleanValue; // Internal: Enabled condition of the template this prompt came from (for lazy evaluation)
+  $sourceUrl?: string; // Internal: URL or path of the template file this prompt came from (for resolving relative paths in exec-file)
   transformers?: string[]; // Array of transformer(s) to apply to the prompt value after input
 }
 
@@ -193,6 +194,7 @@ export interface VariableDefinition {
   required?: DynamicBooleanValue; // Whether variable value is required (supports boolean or dynamic evaluation)
   override?: MergeStrategy; // Strategy for merging with base variable: 'merge' (default, intelligent) or 'replace' (complete override)
   $templateEnabled?: DynamicBooleanValue; // Internal: Enabled condition of the template this variable came from (for lazy evaluation)
+  $sourceUrl?: string; // Internal: URL or path of the template file this variable came from (for resolving relative paths in exec-file)
   transformers?: string[]; // Array of transformer(s) to apply to the variable value after resolution
 }
 

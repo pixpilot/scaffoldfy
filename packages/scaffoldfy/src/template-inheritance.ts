@@ -27,10 +27,10 @@ import {
   TemplateFetchError,
   TemplateFileNotFoundError,
   TemplateParseError,
-  TemplateResolutionError,
 } from './errors/index.js';
 import { topologicalSortTemplates } from './topological-sort.js';
-import { debug, log } from './utils.js';
+import { debug, log } from './utils';
+import { isUrl } from './utils/is-url.js';
 
 const readFile = promisify(fs.readFile);
 
@@ -58,61 +58,6 @@ function getSourceDisplayName(sourceUrl?: string): string {
     return path.relative(cwd, sourceUrl);
   }
   return sourceUrl;
-}
-
-/**
- * Check if a string is a URL
- * @param str - String to check
- * @returns True if the string is a valid HTTP/HTTPS URL
- */
-function isUrl(str: string): boolean {
-  try {
-    const url = new URL(str);
-    return url.protocol === 'http:' || url.protocol === 'https:';
-  } catch {
-    return false;
-  }
-}
-
-/**
- * Resolve a templateFile path relative to a source URL or path
- * @param templateFilePath - The templateFile path (can be relative or absolute)
- * @param sourceUrl - The URL or path of the template that references this file
- * @returns The resolved absolute path or URL
- */
-export function resolveTemplateFilePath(
-  templateFilePath: string,
-  sourceUrl?: string,
-): string {
-  // If templateFilePath is already a URL, return as-is
-  if (isUrl(templateFilePath)) {
-    return templateFilePath;
-  }
-
-  // If no sourceUrl is provided, resolve relative to CWD
-  if (sourceUrl == null || sourceUrl === '') {
-    return path.isAbsolute(templateFilePath)
-      ? templateFilePath
-      : path.resolve(process.cwd(), templateFilePath);
-  }
-
-  // If sourceUrl is a URL, resolve templateFilePath relative to it
-  if (isUrl(sourceUrl)) {
-    try {
-      // Use URL resolution to handle relative paths
-      const baseUrl = new URL('.', sourceUrl); // Get directory URL
-      const resolvedUrl = new URL(templateFilePath, baseUrl);
-      return resolvedUrl.href;
-    } catch {
-      throw TemplateResolutionError.forRemoteTemplate(templateFilePath, sourceUrl);
-    }
-  }
-
-  // Otherwise, sourceUrl is a local path, resolve relative to it
-  const sourceDir = path.dirname(sourceUrl);
-  return path.isAbsolute(templateFilePath)
-    ? templateFilePath
-    : path.resolve(sourceDir, templateFilePath);
 }
 
 /**
@@ -252,6 +197,20 @@ export async function loadTemplate(
   // Annotate each task with the source URL/path for resolving relative templateFile references
   for (const task of config.tasks) {
     task.$sourceUrl = resolvedPath;
+  }
+
+  // Annotate each variable with the source URL/path for resolving relative file references in exec-file
+  if (config.variables !== undefined) {
+    for (const variable of config.variables) {
+      variable.$sourceUrl = resolvedPath;
+    }
+  }
+
+  // Annotate each prompt with the source URL/path for resolving relative file references in exec-file defaults
+  if (config.prompts !== undefined) {
+    for (const prompt of config.prompts) {
+      prompt.$sourceUrl = resolvedPath;
+    }
   }
 
   // Cache the loaded template
@@ -456,9 +415,13 @@ function mergeVariable(
   // But we log it for clarity
   log(`  → Variable "${override.id}" merged (value replaced)`, 'info');
 
+  // Use override's $sourceUrl if present, otherwise keep base's
+  const sourceUrl = override.$sourceUrl ?? base.$sourceUrl;
+
   const result = {
     ...base,
     ...override,
+    ...(sourceUrl != null && { $sourceUrl: sourceUrl }),
   } as Record<string, unknown>;
 
   // Remove override field from final variable
@@ -491,9 +454,13 @@ function mergePrompt(
   // Strategy is 'merge' - intelligently merge prompt properties
   log(`  → Prompt "${override.id}" merged`, 'info');
 
+  // Use override's $sourceUrl if present, otherwise keep base's
+  const sourceUrl = override.$sourceUrl ?? base.$sourceUrl;
+
   const result = {
     ...base,
     ...override,
+    ...(sourceUrl != null && { $sourceUrl: sourceUrl }),
   } as Record<string, unknown>;
 
   // Remove override field from final prompt

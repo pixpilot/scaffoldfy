@@ -316,4 +316,58 @@ describe('resolveVariableValue with exec-file', () => {
       fs.unlinkSync(scriptPath);
     }
   });
+
+  it('should resolve relative file paths using sourceUrl', async () => {
+    // Create a temporary directory structure
+    const tempDir = os.tmpdir();
+    const testDir = path.join(tempDir, `test-source-url-${Date.now()}`);
+    fs.mkdirSync(testDir, { recursive: true });
+
+    // Create a script in a subdirectory
+    const scriptsDir = path.join(testDir, 'scripts');
+    fs.mkdirSync(scriptsDir, { recursive: true });
+    const scriptPath = path.join(scriptsDir, 'test-script.cjs');
+    fs.writeFileSync(scriptPath, 'console.log("resolved from relative path");', 'utf-8');
+
+    try {
+      // Simulate a config file at testDir/config.json referencing ./scripts/test-script.cjs
+      const configPath = path.join(testDir, 'config.json');
+
+      const result = await resolveVariableValue(
+        {
+          type: 'exec-file',
+          file: './scripts/test-script.cjs', // Relative path
+        },
+        'testVar',
+        {},
+        configPath, // sourceUrl - should resolve relative to this file's directory
+      );
+
+      expect(result).toBe('resolved from relative path');
+    } finally {
+      fs.rmSync(testDir, { recursive: true, force: true });
+    }
+  });
+
+  it('should resolve absolute file paths regardless of sourceUrl', async () => {
+    const tempDir = os.tmpdir();
+    const scriptPath = path.join(tempDir, `test-script-${Date.now()}.cjs`);
+    fs.writeFileSync(scriptPath, 'console.log("absolute path works");', 'utf-8');
+
+    try {
+      const result = await resolveVariableValue(
+        {
+          type: 'exec-file',
+          file: scriptPath, // Absolute path
+        },
+        'testVar',
+        {},
+        '/some/other/path/config.json', // sourceUrl should be ignored for absolute paths
+      );
+
+      expect(result).toBe('absolute path works');
+    } finally {
+      fs.unlinkSync(scriptPath);
+    }
+  });
 });

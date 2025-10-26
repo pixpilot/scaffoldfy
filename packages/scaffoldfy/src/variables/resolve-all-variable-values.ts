@@ -4,8 +4,7 @@
 
 /* eslint-disable no-await-in-loop */
 import type { InitConfig, VariableDefinition } from '../types.js';
-import { evaluateEnabledAsync } from '../utils.js';
-import { resolveVariableValue } from './resolve-variable-value.js';
+import { evaluateEnabledAsync, resolveValue } from '../utils.js';
 
 /**
  * Resolve all variable values sequentially to allow lazy evaluation of template enabled conditions
@@ -67,7 +66,12 @@ export async function resolveAllVariableValues(
       currentContext[id] = value;
     }
 
-    const value = await resolveVariableValue(variable.value, variable.id, currentContext);
+    const value = await resolveValue(variable.value, {
+      id: variable.id,
+      contextType: 'Variable',
+      context: currentContext,
+      ...(variable.$sourceUrl != null && { sourceUrl: variable.$sourceUrl }),
+    });
 
     if (value !== undefined) {
       resolved.set(variable.id, value);

@@ -20,7 +20,12 @@ export async function resolveAllDefaultValues(
   // Collect all prompts with defaults to resolve
   const resolutionPromises = prompts.map(async (prompt) => {
     if (prompt.default !== undefined) {
-      const resolved = await resolveDefaultValue(prompt.default, prompt.id, context);
+      const resolved = await resolveDefaultValue(
+        prompt.default,
+        prompt.id,
+        context,
+        prompt,
+      );
       if (resolved !== undefined) {
         resolvedDefaults.set(prompt.id, resolved);
       }

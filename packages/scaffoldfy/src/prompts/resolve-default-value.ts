@@ -1,183 +1,34 @@
 /**
  * Resolve a default value that may be static or executable
+ * This is now a wrapper around the unified resolveValue utility
  */
 
-import type { DefaultValue, InitConfig } from '../types.js';
-import { execSync } from 'node:child_process';
-import { debug, interpolateTemplate, log } from '../utils.js';
+import type { DefaultValue, InitConfig, PromptDefinition } from '../types.js';
+import { resolveValue } from '../utils.js';
 
 /**
  * Resolve a default value that may be static or executable
  * @param defaultValue - The default value configuration
  * @param promptId - The prompt ID for error reporting
  * @param context - Optional context for interpolating template variables in string defaults
+ * @param prompt - Optional prompt definition for accessing $sourceUrl
  * @returns The resolved default value
  */
 export async function resolveDefaultValue<T = string | number | boolean>(
   defaultValue: DefaultValue<T> | undefined,
   promptId: string,
   context?: InitConfig,
+  prompt?: PromptDefinition,
 ): Promise<T | undefined> {
   if (defaultValue === undefined) {
     return undefined;
   }
 
-  // If it's a simple value (not an object), return it as-is
-  if (
-    typeof defaultValue !== 'object' ||
-    defaultValue === null ||
-    Array.isArray(defaultValue)
-  ) {
-    return defaultValue as T;
-  }
-
-  // Check if it's a DefaultValueConfig
-  const config = defaultValue as {
-    type?: string;
-    value?: unknown;
-    condition?: string;
-    ifTrue?: unknown;
-    ifFalse?: unknown;
-  };
-
-  if (config.type === 'conditional') {
-    // Handle conditional defaults
-    if (!context) {
-      return undefined;
-    }
-
-    if (typeof config.condition !== 'string') {
-      log(
-        `Prompt "${promptId}": conditional default must have a string condition`,
-        'error',
-      );
-      return undefined;
-    }
-
-    try {
-      // Evaluate the condition
-      const { evaluateCondition } = await import('../utils.js');
-      const conditionResult = evaluateCondition(config.condition, context);
-
-      // Get the appropriate value based on condition
-      const selectedValue = conditionResult ? config.ifTrue : config.ifFalse;
-
-      // If the selected value is an object with type, recursively resolve it
-      if (typeof selectedValue === 'object' && selectedValue !== null) {
-        return await resolveDefaultValue(
-          selectedValue as DefaultValue<T>,
-          promptId,
-          context,
-        );
-      }
-
-      return selectedValue as T;
-    } catch (error) {
-      log(
-        `Prompt "${promptId}": failed to evaluate conditional default: ${
-          error instanceof Error ? error.message : 'Unknown error'
-        }`,
-        'warn',
-      );
-      // Return undefined so the prompt will have no default value
-      // This is safer than returning the entire config object
-      return undefined;
-    }
-  }
-
-  if (config.type === 'exec') {
-    const command = config.value;
-    if (typeof command !== 'string') {
-      log(`Prompt "${promptId}": exec default value must have a string command`, 'error');
-      return undefined;
-    }
-
-    try {
-      // Execute the command and capture output
-      const output = execSync(command, {
-        encoding: 'utf-8',
-        stdio: ['pipe', 'pipe', 'pipe'],
-        timeout: 10000, // 10 second timeout
-      });
-
-      // Trim whitespace and newlines
-      const result = output.trim();
-
-      // Try to parse as JSON if it looks like JSON
-      if (result.startsWith('{') || result.startsWith('[')) {
-        try {
-          return JSON.parse(result) as T;
-        } catch {
-          // Not JSON, return as string
-          return result as T;
-        }
-      }
-
-      // Try to parse as number if it looks like a number
-      if (/^-?\d+(?:\.\d+)?$/u.test(result)) {
-        const numValue = Number.parseFloat(result);
-        if (!Number.isNaN(numValue)) {
-          return numValue as T;
-        }
-      }
-
-      // Try to parse as boolean if it looks like a boolean
-      if (result === 'true' || result === 'false') {
-        return (result === 'true') as T;
-      }
-
-      return result as T;
-    } catch (error) {
-      debug(
-        `Prompt "${promptId}": failed to execute default value command: ${
-          error instanceof Error ? error.message : 'Unknown error'
-        }`,
-      );
-      return undefined;
-    }
-  } else if (config.type === 'static') {
-    return config.value as T;
-  } else if (config.type === 'interpolate') {
-    // Handle interpolate type - interpolate {{variable}} placeholders
-    const interpolateValue = config.value;
-    if (typeof interpolateValue !== 'string') {
-      log(
-        `Prompt "${promptId}": interpolate default value must be a string with {{variable}} placeholders`,
-        'error',
-      );
-      return undefined;
-    }
-
-    if (!context) {
-      log(
-        `Prompt "${promptId}": interpolate default value requires context but none provided`,
-        'warn',
-      );
-      return interpolateValue as T;
-    }
-
-    // Interpolate the interpolate string with context
-    try {
-      const resolved = interpolateTemplate(interpolateValue, context);
-      return resolved as T;
-    } catch (error) {
-      log(
-        `Prompt "${promptId}": failed to interpolate interpolate default value: ${
-          error instanceof Error ? error.message : 'Unknown error'
-        }`,
-        'warn',
-      );
-      return interpolateValue as T;
-    }
-  } else if (config.type !== undefined) {
-    // Unknown type specified
-    log(
-      `Prompt "${promptId}": unknown default value type "${config.type}". Expected "static", "exec", "conditional", or "interpolate".`,
-      'error',
-    );
-    return undefined;
-  }
-
-  // If type is not specified, treat the whole object as the static value
-  return defaultValue as T;
+  // Use the unified resolveValue utility
+  return resolveValue(defaultValue, {
+    id: promptId,
+    contextType: 'Prompt',
+    ...(context != null && { context }),
+    ...(prompt?.$sourceUrl != null && { sourceUrl: prompt.$sourceUrl }),
+  });
 }

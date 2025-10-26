@@ -1157,61 +1157,7 @@ describe('template inheritance', () => {
     });
   });
 
-  describe('resolveTemplateFilePath and fetchTemplateFile', () => {
-    it('should return absolute URLs as-is', async () => {
-      const { resolveTemplateFilePath } = await import('../src/template-inheritance.js');
-      const url = 'https://example.com/templates/file.hbs';
-      const resolved = resolveTemplateFilePath(url);
-      expect(resolved).toBe(url);
-    });
-
-    it('should resolve relative path to CWD when no sourceUrl provided', async () => {
-      const { resolveTemplateFilePath } = await import('../src/template-inheritance.js');
-      const resolved = resolveTemplateFilePath('test.hbs');
-      expect(path.isAbsolute(resolved)).toBe(true);
-      expect(resolved).toContain('test.hbs');
-    });
-
-    it('should resolve relative path to remote source URL', async () => {
-      const { resolveTemplateFilePath } = await import('../src/template-inheritance.js');
-      const sourceUrl = 'https://example.com/templates/main.json';
-      const templateFile = './config.hbs';
-      const resolved = resolveTemplateFilePath(templateFile, sourceUrl);
-      expect(resolved).toBe('https://example.com/templates/config.hbs');
-    });
-
-    it('should resolve parent directory path to remote source URL', async () => {
-      const { resolveTemplateFilePath } = await import('../src/template-inheritance.js');
-      const sourceUrl = 'https://example.com/templates/main.json';
-      const templateFile = '../shared/config.hbs';
-      const resolved = resolveTemplateFilePath(templateFile, sourceUrl);
-      expect(resolved).toBe('https://example.com/shared/config.hbs');
-    });
-
-    it('should resolve nested relative path to remote source URL', async () => {
-      const { resolveTemplateFilePath } = await import('../src/template-inheritance.js');
-      const sourceUrl = 'https://example.com/templates/project/main.json';
-      const templateFile = './files/tsconfig.hbs';
-      const resolved = resolveTemplateFilePath(templateFile, sourceUrl);
-      expect(resolved).toBe('https://example.com/templates/project/files/tsconfig.hbs');
-    });
-
-    it('should resolve relative path to local source path', async () => {
-      const { resolveTemplateFilePath } = await import('../src/template-inheritance.js');
-      const sourceUrl = path.join(testDir, 'templates', 'main.json');
-      const templateFile = './config.hbs';
-      const resolved = resolveTemplateFilePath(templateFile, sourceUrl);
-      const expected = path.join(testDir, 'templates', 'config.hbs');
-      expect(resolved).toBe(expected);
-    });
-
-    it('should handle absolute local paths', async () => {
-      const { resolveTemplateFilePath } = await import('../src/template-inheritance.js');
-      const absolutePath = path.join(testDir, 'template.hbs');
-      const resolved = resolveTemplateFilePath(absolutePath);
-      expect(resolved).toBe(absolutePath);
-    });
-
+  describe('fetchTemplateFile', () => {
     it('should fetch from remote URL', async () => {
       const { fetchTemplateFile } = await import('../src/template-inheritance.js');
       const mockFetch = (async (url: string) => {
@@ -1354,6 +1300,60 @@ describe('template inheritance', () => {
       // The overridden task should have the child's source URL
       expect(merged.tasks).toBeDefined();
       expect(merged.tasks![0]?.$sourceUrl).toBe(childPath);
+    });
+
+    it('should annotate variables with source URL from local template', async () => {
+      const config: TasksConfiguration = {
+        name: 'test-template',
+        variables: [
+          {
+            id: 'testVar',
+            value: { type: 'exec-file', file: './script.js' },
+          },
+        ],
+      };
+
+      const filePath = createTemplateFile('with-variables.json', config);
+      const loaded = await loadTemplate(filePath);
+
+      expect(loaded.variables).toBeDefined();
+      expect(loaded.variables).toHaveLength(1);
+      expect(loaded.variables![0]?.$sourceUrl).toBe(filePath);
+      expect(loaded.variables![0]?.id).toBe('testVar');
+    });
+
+    it('should preserve $sourceUrl when merging variables', async () => {
+      const baseConfig: TasksConfiguration = {
+        name: 'base-template',
+        variables: [
+          {
+            id: 'var1',
+            value: 'base-value',
+          },
+        ],
+      };
+
+      const childConfig: TasksConfiguration = {
+        name: 'child-template',
+        extends: 'base-vars.json',
+        variables: [
+          {
+            id: 'var1',
+            value: 'overridden-value',
+            override: 'merge',
+          },
+        ],
+      };
+
+      createTemplateFile('base-vars.json', baseConfig);
+      const childPath = createTemplateFile('child-vars.json', childConfig);
+
+      const merged = await loadAndMergeTemplate(childPath);
+
+      // The overridden variable should have the child's source URL
+      expect(merged.variables).toBeDefined();
+      expect(merged.variables![0]?.$sourceUrl).toBe(childPath);
+      expect(merged.variables![0]?.value).toBe('overridden-value');
     });
   });
 

@@ -5,6 +5,14 @@
 
   "variables": [
     {
+      "id": "repoUrlVar",
+      "value": {
+        "type": "exec",
+        "value": "git config --get remote.origin.url"
+      },
+      "required": false
+    },
+    {
       "id": "currentYear",
       "value": {
         "type": "exec",
@@ -20,9 +28,11 @@
     },
     {
       "id": "orgNameVar",
+      "transformers": ["capitalize"],
       "value": {
-        "type": "interpolate",
-        "value": "{{repoOwnerVar}}"
+        "type": "exec-file",
+        "file": "./detect-git-hub-org.js",
+        "args": ["--repoUrl={{repoUrlVar}}", "--env=production"]
       }
     },
     {
@@ -30,7 +40,7 @@
       "transformers": ["capitalize"],
       "value": {
         "type": "interpolate",
-        "value": "{{repoOwnerVar}}"
+        "value": "{{orgNameVar}}"
       }
     }
   ],
@@ -90,8 +100,8 @@
       "type": "input",
       "message": "Repository URL",
       "default": {
-        "type": "exec",
-        "value": "git config --get remote.origin.url"
+        "type": "interpolate",
+        "value": "{{repoUrlVar}}"
       },
       "required": false
     },

@@ -285,3 +285,146 @@ describe('interpolate type default values', () => {
     expect(result).toBe('John-john@example.com');
   });
 });
+
+describe('exec-file default values', () => {
+  it('should resolve exec-file default values with relative paths', async () => {
+    const fs = await import('node:fs');
+    const os = await import('node:os');
+    const path = await import('node:path');
+
+    // Create a temporary directory structure
+    const tempDir = os.tmpdir();
+    const testDir = path.join(tempDir, `test-prompt-exec-file-${Date.now()}`);
+    fs.mkdirSync(testDir, { recursive: true });
+
+    // Create a script in a subdirectory
+    const scriptsDir = path.join(testDir, 'scripts');
+    fs.mkdirSync(scriptsDir, { recursive: true });
+    const scriptPath = path.join(scriptsDir, 'get-default.cjs');
+    fs.writeFileSync(scriptPath, 'console.log("default-value-from-script");', 'utf-8');
+
+    try {
+      // Simulate a config file at testDir/config.json
+      const configPath = path.join(testDir, 'config.json');
+
+      const defaultValue: DefaultValue<string> = {
+        type: 'exec-file',
+        file: './scripts/get-default.cjs', // Relative path
+      };
+
+      vi.mocked(execSync).mockImplementation((command: any) => {
+        // Only mock if it's our script
+        if (typeof command === 'string' && command.includes('get-default.cjs')) {
+          return 'default-value-from-script\n' as any;
+        }
+        // Shouldn't reach here in this test
+        throw new Error('Unexpected command executed');
+      });
+
+      const result = await resolveDefaultValue(
+        defaultValue,
+        'test-prompt',
+        { someVar: 'test' },
+        {
+          id: 'test-prompt',
+          type: 'input',
+          message: 'Test',
+          $sourceUrl: configPath,
+        } as any,
+      );
+
+      expect(result).toBe('default-value-from-script');
+    } finally {
+      fs.rmSync(testDir, { recursive: true, force: true });
+    }
+  });
+
+  it('should support exec-file with args and context interpolation', async () => {
+    const fs = await import('node:fs');
+    const os = await import('node:os');
+    const path = await import('node:path');
+
+    const tempDir = os.tmpdir();
+    const scriptPath = path.join(tempDir, `test-prompt-exec-args-${Date.now()}.cjs`);
+    fs.writeFileSync(
+      scriptPath,
+      'console.log(process.argv.slice(2).join(" "));',
+      'utf-8',
+    );
+
+    try {
+      const defaultValue: DefaultValue<string> = {
+        type: 'exec-file',
+        file: scriptPath,
+        args: ['--name={{userName}}', '--id={{userId}}'],
+      };
+
+      vi.mocked(execSync).mockImplementation((command: any) => {
+        // Only mock if it's our script with args
+        if (typeof command === 'string' && command.includes('test-prompt-exec-args')) {
+          return '--name=Alice --id=42\n' as any;
+        }
+        throw new Error('Unexpected command executed');
+      });
+
+      const result = await resolveDefaultValue(defaultValue, 'test-prompt', {
+        userName: 'Alice',
+        userId: 42,
+      });
+
+      expect(result).toBe('--name=Alice --id=42');
+    } finally {
+      fs.unlinkSync(scriptPath);
+    }
+  });
+
+  it('should handle exec-file errors gracefully', async () => {
+    const defaultValue: DefaultValue<string> = {
+      type: 'exec-file',
+      file: '/non/existent/script.js',
+    };
+
+    const result = await resolveDefaultValue(defaultValue, 'test-prompt', {
+      someVar: 'test',
+    });
+
+    expect(result).toBeUndefined();
+  });
+
+  it('should parse JSON output from exec-file', async () => {
+    const fs = await import('node:fs');
+    const os = await import('node:os');
+    const path = await import('node:path');
+
+    const tempDir = os.tmpdir();
+    const scriptPath = path.join(tempDir, `test-prompt-json-${Date.now()}.cjs`);
+    fs.writeFileSync(
+      scriptPath,
+      'console.log(JSON.stringify({ value: "test", count: 42 }));',
+      'utf-8',
+    );
+
+    try {
+      const defaultValue: DefaultValue<any> = {
+        type: 'exec-file',
+        file: scriptPath,
+      };
+
+      vi.mocked(execSync).mockImplementation((command: any) => {
+        // Only mock if it's our script
+        if (typeof command === 'string' && command.includes('test-prompt-json')) {
+          return '{"value":"test","count":42}\n' as any;
+        }
+        throw new Error('Unexpected command executed');
+      });
+
+      const result = await resolveDefaultValue(defaultValue, 'test-prompt', {
+        someVar: 'test',
+      });
+
+      expect(result).toEqual({ value: 'test', count: 42 });
+    } finally {
+      fs.unlinkSync(scriptPath);
+    }
+  });
+});

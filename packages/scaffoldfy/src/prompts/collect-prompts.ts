@@ -68,6 +68,7 @@ export async function collectPrompts(
           prompt.default,
           prompt.id,
           currentContext,
+          prompt,
         );
       }
 

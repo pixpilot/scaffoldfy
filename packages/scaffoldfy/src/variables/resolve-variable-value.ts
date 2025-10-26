@@ -12,12 +12,14 @@ import { interpolateTemplate, log } from '../utils.js';
  * @param value - The variable value configuration
  * @param variableId - The variable ID for error reporting
  * @param context - Optional context for evaluating conditional values
+ * @param sourceUrl - Optional source URL for resolving relative file paths in exec-file
  * @returns The resolved variable value
  */
 export async function resolveVariableValue<T = string | number | boolean>(
   value: DefaultValue<T>,
   variableId: string,
   context?: InitConfig,
+  sourceUrl?: string,
 ): Promise<T | undefined> {
   if (value === undefined || value === null) {
     return undefined;
@@ -69,6 +71,7 @@ export async function resolveVariableValue<T = string | number | boolean>(
           selectedValue as DefaultValue<T>,
           variableId,
           context,
+          sourceUrl,
         );
       }
 
@@ -212,6 +215,7 @@ export async function resolveVariableValue<T = string | number | boolean>(
           ...(execFileConfig.parameters && { parameters: execFileConfig.parameters }),
           ...(execFileConfig.cwd !== undefined &&
             execFileConfig.cwd.trim() !== '' && { cwd: execFileConfig.cwd }),
+          ...(sourceUrl != null && { sourceUrl }),
           captureOutput: true,
         },
         context,

@@ -6,8 +6,9 @@
  */
 
 import type { InitConfig, TaskDefinition } from './types.js';
-import { fetchTemplateFile, resolveTemplateFilePath } from './template-inheritance.js';
+import { fetchTemplateFile } from './template-inheritance.js';
 import { interpolateTemplate } from './utils.js';
+import { resolveFilePath } from './utils/resolve-file-path.js';
 
 /**
  * Configuration for template/templateFile properties
@@ -132,7 +133,7 @@ export async function processTemplate(
     const useHandlebars = enableHandlebars && shouldUseHandlebars(templateFile);
 
     // Resolve the templateFile path relative to the task's source
-    const resolvedTemplatePath = resolveTemplateFilePath(templateFile, sourceUrl);
+    const resolvedTemplatePath = resolveFilePath(templateFile, sourceUrl);
 
     // Fetch the template file (from URL or local filesystem)
     const templateContent = await fetchTemplateFile(resolvedTemplatePath);

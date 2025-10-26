@@ -8,11 +8,9 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import process from 'node:process';
-import {
-  fetchTemplateFile,
-  resolveTemplateFilePath,
-} from '../../template-inheritance.js';
-import { interpolateTemplate, log } from '../../utils.js';
+import { fetchTemplateFile } from '../../template-inheritance.js';
+import { debug, interpolateTemplate, log } from '../../utils.js';
+import { resolveFilePath } from '../../utils/resolve-file-path.js';
 import {
   detectRuntimeFromExtension,
   getFileExtension,
@@ -104,7 +102,7 @@ export async function executeScriptFile(
 
   if (isUrl(interpolatedFile)) {
     // Remote file - fetch it
-    log(`Fetching remote script: ${interpolatedFile}`, 'info');
+    debug(`Fetching remote script: ${interpolatedFile}`);
     fileContent = await fetchTemplateFile(interpolatedFile);
     isRemote = true;
 
@@ -123,13 +121,13 @@ export async function executeScriptFile(
     fs.writeFileSync(resolvedFilePath, fileContent, 'utf-8');
   } else {
     // Local file - resolve path relative to source or cwd
-    resolvedFilePath = resolveTemplateFilePath(interpolatedFile, options.sourceUrl);
+    resolvedFilePath = resolveFilePath(interpolatedFile, options.sourceUrl);
 
     if (!fs.existsSync(resolvedFilePath)) {
       throw new Error(`Script file not found: ${resolvedFilePath}`);
     }
 
-    log(`Using local script: ${resolvedFilePath}`, 'info');
+    debug(`Using local script: ${resolvedFilePath}`);
   }
 
   // Detect runtime from file extension if not specified
@@ -145,7 +143,7 @@ export async function executeScriptFile(
     const argsString = interpolatedArgs.join(' ');
     const fullCommand = argsString ? `${command} ${argsString}` : command;
 
-    log(`Executing: ${fullCommand}`, 'info');
+    debug(`Executing: ${fullCommand}`);
 
     // Execute the file
     const result = execSync(fullCommand, {
@@ -159,11 +157,11 @@ export async function executeScriptFile(
     });
 
     if (options.captureOutput) {
-      log(`Script executed successfully with output`, 'info');
+      debug(`Script executed successfully with output`);
       return typeof result === 'string' ? result : undefined;
     }
 
-    log(`Script executed successfully`, 'info');
+    debug(`Script executed successfully`);
     return undefined;
   } finally {
     // Clean up temporary file for remote scripts
