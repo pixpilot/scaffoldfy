@@ -363,9 +363,7 @@ describe('executeExecFile', () => {
       runtime: 'node',
     };
 
-    await expect(executeExecFile(config, mockConfig)).rejects.toThrow(
-      'Script file not found',
-    );
+    await expect(executeExecFile(config, mockConfig)).rejects.toThrow('File not found');
   });
 
   it('should interpolate cwd path', async () => {

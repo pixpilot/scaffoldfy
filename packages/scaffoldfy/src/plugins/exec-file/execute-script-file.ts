@@ -4,18 +4,17 @@
 
 import type { ExecFileRuntime, InitConfig } from '../../types.js';
 import { execSync } from 'node:child_process';
-import fs from 'node:fs';
-import os from 'node:os';
 import path from 'node:path';
 import process from 'node:process';
-import { fetchTemplateFile } from '../../template-inheritance.js';
 import { debug, interpolateTemplate, log } from '../../utils';
-import { resolveFilePath } from '../../utils/resolve-file-path.js';
+import {
+  cleanupTempFile,
+  resolveAndFetchFile,
+} from '../../utils/resolve-and-fetch-file.js';
 import {
   detectRuntimeFromExtension,
   getFileExtension,
   getRuntimeCommand,
-  isUrl,
 } from './runtime-utils.js';
 
 /**
@@ -95,40 +94,18 @@ export async function executeScriptFile(
       ? path.join(process.cwd(), interpolateTemplate(options.cwd, config))
       : process.cwd();
 
-  // Resolve file path (handle remote and local paths)
-  let resolvedFilePath: string;
-  let fileContent: string;
-  let isRemote = false;
+  // Resolve and fetch the file (handles both local and remote files)
+  const fileInfo = await resolveAndFetchFile({
+    file: interpolatedFile,
+    ...(options.sourceUrl != null &&
+      options.sourceUrl !== '' && { sourceUrl: options.sourceUrl }),
+    tempFileExtension: getFileExtension(
+      options.runtime ?? detectRuntimeFromExtension(interpolatedFile) ?? 'node',
+    ),
+    tempFilePrefix: 'scaffoldfy-exec',
+  });
 
-  if (isUrl(interpolatedFile)) {
-    // Remote file - fetch it
-    debug(`Fetching remote script: ${interpolatedFile}`);
-    fileContent = await fetchTemplateFile(interpolatedFile);
-    isRemote = true;
-
-    // Detect runtime from file extension if not specified
-    const runtime =
-      options.runtime ?? detectRuntimeFromExtension(interpolatedFile) ?? 'node';
-    if (!options.runtime && !detectRuntimeFromExtension(interpolatedFile)) {
-      log(`Could not detect runtime from file extension, defaulting to 'node'`, 'warn');
-    }
-
-    // Create temporary file
-    const tempDir = os.tmpdir();
-    const tempFileName = `scaffoldfy-exec-${Date.now()}${getFileExtension(runtime)}`;
-    resolvedFilePath = path.join(tempDir, tempFileName);
-
-    fs.writeFileSync(resolvedFilePath, fileContent, 'utf-8');
-  } else {
-    // Local file - resolve path relative to source or cwd
-    resolvedFilePath = resolveFilePath(interpolatedFile, options.sourceUrl);
-
-    if (!fs.existsSync(resolvedFilePath)) {
-      throw new Error(`Script file not found: ${resolvedFilePath}`);
-    }
-
-    debug(`Using local script: ${resolvedFilePath}`);
-  }
+  const { localFilePath: resolvedFilePath } = fileInfo;
 
   // Detect runtime from file extension if not specified
   const runtime =
@@ -165,17 +142,6 @@ export async function executeScriptFile(
     return undefined;
   } finally {
     // Clean up temporary file for remote scripts
-    if (isRemote && fs.existsSync(resolvedFilePath)) {
-      try {
-        fs.unlinkSync(resolvedFilePath);
-      } catch (error) {
-        log(
-          `Warning: Failed to clean up temporary file: ${
-            error instanceof Error ? error.message : String(error)
-          }`,
-          'warn',
-        );
-      }
-    }
+    cleanupTempFile(fileInfo);
   }
 }
