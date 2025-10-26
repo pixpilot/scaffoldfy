@@ -148,4 +148,11 @@ yarn-error.log*
 # -----------------------------
 .turbo/
 .turbo-*
+# -----------------------------
+# Test Files
+# -----------------------------
+packages/scaffoldfy/test/scaffoldfy-config-json-validator/abs-path.json
+packages/scaffoldfy/test/scaffoldfy-config-json-validator/no-schema.json
+packages/scaffoldfy/test/scaffoldfy-config-json-validator/rel-path.json
+packages/scaffoldfy/test/scaffoldfy-config-json-validator/relative-schema.json
 

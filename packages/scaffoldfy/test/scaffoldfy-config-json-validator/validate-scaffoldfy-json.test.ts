@@ -11,6 +11,22 @@ function createTempJsonFile(content: object, filename: string) {
 }
 
 describe('validateScaffoldfyJsonFile', () => {
+  afterAll(() => {
+    // Clean up test files
+    const testFiles = [
+      'abs-path.json',
+      'rel-path.json',
+      'no-schema.json',
+      'relative-schema.json',
+    ];
+    testFiles.forEach((filename) => {
+      const filePath = path.join(__dirname, filename);
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+      }
+    });
+  });
+
   it('validates a file with absolute path', () => {
     const schemaPath = path.join(__dirname, '../../schema/scaffoldfy.schema.json');
     if (!fs.existsSync(schemaPath)) {
