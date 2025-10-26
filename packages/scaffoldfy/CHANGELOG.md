@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy
 
+## 0.34.0
+
+### Minor Changes
+
+- 2257d17: nre release
+
 ## 0.33.0
 
 ### Minor Changes

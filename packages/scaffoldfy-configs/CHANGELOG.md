@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy-configs
 
+## 0.8.0
+
+### Minor Changes
+
+- 2257d17: nre release
+
 ## 0.7.0
 
 ### Minor Changes
