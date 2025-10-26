@@ -1,5 +1,12 @@
 # @pixpilot/scaffoldfy
 
+## 0.35.0
+
+### Minor Changes
+
+- add plugin for executing scripts
+- 4902b1c: add exec-file plugin for executing scripts
+
 ## 0.34.0
 
 ### Minor Changes
