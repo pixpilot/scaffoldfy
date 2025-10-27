@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy-configs
 
+## 0.12.0
+
+### Minor Changes
+
+- add bugs URL to package.json updates
+
 ## 0.11.0
 
 ### Minor Changes
