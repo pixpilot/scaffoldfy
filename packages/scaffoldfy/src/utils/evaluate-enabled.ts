@@ -2,7 +2,7 @@
  * Evaluate enabled value (boolean or conditional expression)
  */
 
-import type { DynamicBooleanValue, EnabledValue, InitConfig } from '../types.js';
+import type { DynamicBooleanValue, EnabledValue, InitConfig } from '../types';
 import { evaluateCondition } from '../utils';
 
 /**

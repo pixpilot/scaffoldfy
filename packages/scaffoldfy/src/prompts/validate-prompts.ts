@@ -2,7 +2,7 @@
  * Validate prompt definitions
  */
 
-import type { PromptDefinition } from '../types.js';
+import type { PromptDefinition } from '../types';
 
 /**
  * Validate prompt definitions

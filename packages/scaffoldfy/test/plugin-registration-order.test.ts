@@ -2,13 +2,13 @@
  * Test to verify that built-in plugins are registered before validation runs
  */
 
-import type { TaskDefinition } from '../src/types.js';
+import type { TaskDefinition } from '../src/types';
 
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
-import { clearPlugins, isPluginTaskType } from '../src/plugin.js';
-import { registerBuiltInPlugins } from '../src/task-executors.js';
-import { validateAllTasks } from '../src/validation.js';
+import { clearPlugins, isPluginTaskType } from '../src/plugin';
+import { registerBuiltInPlugins } from '../src/task-executors';
+import { validateAllTasks } from '../src/validation';
 
 describe('plugin registration order', () => {
   beforeEach(() => {

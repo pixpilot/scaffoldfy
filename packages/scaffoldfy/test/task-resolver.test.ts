@@ -2,10 +2,10 @@
  * Tests for task dependency resolution
  */
 
-import type { DeleteConfig, TaskDefinition } from '../src/types.js';
+import type { DeleteConfig, TaskDefinition } from '../src/types';
 import { describe, expect, it } from 'vitest';
-import { CircularDependencyError } from '../src/errors/index.js';
-import { topologicalSort } from '../src/task-resolver.js';
+import { CircularDependencyError } from '../src/errors/index';
+import { topologicalSort } from '../src/task-resolver';
 
 describe('task Dependency Resolution', () => {
   it('should sort tasks with no dependencies', () => {

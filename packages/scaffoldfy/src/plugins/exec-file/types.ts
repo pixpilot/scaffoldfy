@@ -2,7 +2,7 @@
  * exec-file plugin types
  */
 
-import type { ConditionExpression } from '../../types.js';
+import type { ConditionExpression } from '../../types';
 
 /**
  * Runtime environment for executing the file
@@ -16,8 +16,8 @@ export interface ExecFileConfig {
   /**
    * Path to the file to execute (local or remote URL)
    * Supports template variable interpolation: {{variable}}
-   * - Local: 'scripts/setup.js' or './scripts/setup.sh'
-   * - Remote: 'https://example.com/scripts/setup.js'
+   * - Local: 'scripts/setup' or './scripts/setup.sh'
+   * - Remote: 'https://example.com/scripts/setup'
    */
   file: string;
 

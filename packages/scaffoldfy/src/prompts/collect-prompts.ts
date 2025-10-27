@@ -2,13 +2,13 @@
  * Collect prompt answers from task-defined prompts
  */
 
-import type { InitConfig, PromptDefinition } from '../types.js';
+import type { InitConfig, PromptDefinition } from '../types';
 import { confirm, input, number, password, select } from '@inquirer/prompts';
-import { PromptValidationError } from '../errors/other.js';
-import { transformerManager } from '../transformers/index.js';
+import { PromptValidationError } from '../errors/other';
+import { transformerManager } from '../transformers/index';
 import { evaluateEnabledAsync, log } from '../utils';
-import { evaluateRequiredAsync } from '../utils/evaluate-required.js';
-import { resolveDefaultValue } from './resolve-default-value.js';
+import { evaluateRequiredAsync } from '../utils/evaluate-required';
+import { resolveDefaultValue } from './resolve-default-value';
 
 /**
  * Collect prompt answers from task-defined prompts

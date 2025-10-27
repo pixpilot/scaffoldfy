@@ -2,14 +2,14 @@
  * Tests for root-level config enabled functionality
  */
 
-import type { EnabledValue } from '../src/types.js';
+import type { EnabledValue } from '../src/types';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 describe('root-level config enabled', () => {
   const mockLog = vi.fn();
   const mockInfo = vi.fn();
-  let runTasks: typeof import('../src/run-tasks.js').runTasks;
-  let evaluateEnabledAsync: typeof import('../src/utils/evaluate-enabled.js').evaluateEnabledAsync;
+  let runTasks: typeof import('../src/run-tasks').runTasks;
+  let evaluateEnabledAsync: typeof import('../src/utils/evaluate-enabled').evaluateEnabledAsync;
 
   beforeEach(async () => {
     vi.resetModules();
@@ -24,10 +24,11 @@ describe('root-level config enabled', () => {
     });
 
     // Mock logger
-    vi.doMock('../src/utils/logger.js', async () => {
-      const actual = await vi.importActual<typeof import('../src/utils/logger.js')>(
-        '../src/utils/logger.js',
-      );
+    vi.doMock('../src/utils/logger', async () => {
+      const actual =
+        await vi.importActual<typeof import('../src/utils/logger')>(
+          '../src/utils/logger',
+        );
       return {
         ...actual,
         info: mockInfo,
@@ -35,10 +36,10 @@ describe('root-level config enabled', () => {
     });
 
     // Import after mocking
-    const runTasksModule = await import('../src/run-tasks.js');
+    const runTasksModule = await import('../src/run-tasks');
     runTasks = runTasksModule.runTasks;
 
-    const evaluateModule = await import('../src/utils/evaluate-enabled.js');
+    const evaluateModule = await import('../src/utils/evaluate-enabled');
     evaluateEnabledAsync = evaluateModule.evaluateEnabledAsync;
   });
 

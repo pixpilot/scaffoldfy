@@ -2,9 +2,9 @@
  * create plugin registration
  */
 
-import type { InitConfig, TaskDefinition, TaskPlugin } from '../../types.js';
-import type { CreateConfig } from './types.js';
-import { executeCreate } from './executor.js';
+import type { InitConfig, TaskDefinition, TaskPlugin } from '../../types';
+import type { CreateConfig } from './types';
+import { executeCreate } from './executor';
 
 export const createPlugin: TaskPlugin = {
   name: 'create',

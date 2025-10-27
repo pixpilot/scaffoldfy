@@ -5,28 +5,28 @@ import type {
   PromptDefinition,
   TaskDefinition,
   VariableDefinition,
-} from './types.js';
+} from './types';
 import process from 'node:process';
-import { createInitialConfig } from './config.js';
+import { createInitialConfig } from './config';
 import { displayTasksDiff } from './dry-run';
-import { callHook } from './plugin.js';
+import { callHook } from './plugin';
 import {
   collectPrompts,
   resolveAllDefaultValues,
   validatePrompts,
-} from './prompts/index.js';
-import { registerBuiltInPlugins, runTask } from './task-executors.js';
-import { topologicalSort } from './task-resolver.js';
-import { transformerManager } from './transformers/index.js';
+} from './prompts/index';
+import { registerBuiltInPlugins, runTask } from './task-executors';
+import { topologicalSort } from './task-resolver';
+import { transformerManager } from './transformers/index';
 import { evaluateEnabled, evaluateEnabledAsync, log, logInfo } from './utils';
-import { evaluateRequiredAsync } from './utils/evaluate-required.js';
-import { debug, info, success as logSuccess, warn } from './utils/logger.js';
-import { displayValidationErrors, validateAllTasks } from './validation.js';
+import { evaluateRequiredAsync } from './utils/evaluate-required';
+import { debug, info, success as logSuccess, warn } from './utils/logger';
+import { displayValidationErrors, validateAllTasks } from './validation';
 import {
   collectVariables,
   resolveAllVariableValues,
   validateVariables,
-} from './variables/index.js';
+} from './variables/index';
 
 // =================================================================
 // Main Execution
@@ -44,7 +44,7 @@ export async function runTasks(
     variables?: VariableDefinition[];
     prompts?: PromptDefinition[];
     configEnabled?: EnabledValue;
-    transformers?: import('./transformers/types.js').Transformer[];
+    transformers?: import('./transformers/types').Transformer[];
   },
 ): Promise<void> {
   // ============================================================================
@@ -352,13 +352,13 @@ export async function runTasks(
  * while still executing all tasks together after all variables/prompts are resolved
  */
 export async function runTemplatesSequentially(
-  templates: import('./types.js').TasksConfiguration[],
+  templates: import('./types').TasksConfiguration[],
   options: {
     dryRun: boolean;
     force: boolean;
     configFilePath: string | undefined;
   },
-  config: import('./types.js').InitConfig = {},
+  config: import('./types').InitConfig = {},
 ): Promise<void> {
   debug('Running templates with sequential variable/prompt resolution...');
   debug(`Total templates to process: ${templates.length}`);

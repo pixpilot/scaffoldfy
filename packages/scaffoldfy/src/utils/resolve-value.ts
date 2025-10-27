@@ -3,9 +3,9 @@
  * Supports static, exec, exec-file, conditional, and interpolate types
  */
 
-import type { DefaultValue, InitConfig } from '../types.js';
+import type { DefaultValue, InitConfig } from '../types';
 import { execSync } from 'node:child_process';
-import { executeScriptFile } from '../plugins/exec-file/execute-script-file.js';
+import { executeScriptFile } from '../plugins/exec-file/execute-script-file';
 import { evaluateCondition, interpolateTemplate, log } from '../utils';
 
 /**

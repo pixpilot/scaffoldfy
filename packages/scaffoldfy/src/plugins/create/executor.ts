@@ -2,14 +2,14 @@
  * create plugin executor
  */
 
-import type { InitConfig, TaskDefinition } from '../../types.js';
-import type { CreateConfig } from './types.js';
+import type { InitConfig, TaskDefinition } from '../../types';
+import type { CreateConfig } from './types';
 import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
 import { promisify } from 'node:util';
-import { PluginConfigurationError } from '../../errors/other.js';
-import { processTemplate, validateTemplateConfig } from '../../template-utils.js';
+import { PluginConfigurationError } from '../../errors/other';
+import { processTemplate, validateTemplateConfig } from '../../template-utils';
 import { evaluateCondition, log } from '../../utils';
 
 const writeFile = promisify(fs.writeFile);

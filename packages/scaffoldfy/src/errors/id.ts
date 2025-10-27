@@ -2,7 +2,7 @@
  * ID-related error classes
  */
 
-import { ScaffoldfyError } from './base.js';
+import { ScaffoldfyError } from './base';
 
 /**
  * Error thrown when duplicate IDs are found

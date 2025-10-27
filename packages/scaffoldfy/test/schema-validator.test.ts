@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { validateTasksSchema } from '../src/schema-validator.js';
+import { validateTasksSchema } from '../src/schema-validator';
 
 describe('schema-validator', () => {
   describe('validateTasksSchema', () => {

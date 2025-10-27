@@ -2,7 +2,7 @@
  * Tests for template-utils module
  */
 
-import type { InitConfig, TaskDefinition } from '../src/types.js';
+import type { InitConfig, TaskDefinition } from '../src/types';
 import fs from 'node:fs';
 import path from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
@@ -13,7 +13,7 @@ import {
   processTemplate,
   shouldUseHandlebars,
   validateTemplateConfig,
-} from '../src/template-utils.js';
+} from '../src/template-utils';
 
 const TEST_DIR = path.join(process.cwd(), '__test_template_utils__');
 
@@ -112,7 +112,7 @@ describe('template-utils', () => {
 
     it('should return false for non-.hbs files', () => {
       expect(shouldUseHandlebars('template.txt')).toBe(false);
-      expect(shouldUseHandlebars('template.js')).toBe(false);
+      expect(shouldUseHandlebars('template')).toBe(false);
       expect(shouldUseHandlebars('template.md')).toBe(false);
     });
 

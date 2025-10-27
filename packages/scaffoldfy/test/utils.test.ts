@@ -2,7 +2,7 @@
  * Tests for utility functions
  */
 
-import type { InitConfig } from '../src/types.js';
+import type { InitConfig } from '../src/types';
 import { describe, expect, it } from 'vitest';
 import { evaluateCondition, evaluateEnabled, interpolateTemplate } from '../src/utils';
 

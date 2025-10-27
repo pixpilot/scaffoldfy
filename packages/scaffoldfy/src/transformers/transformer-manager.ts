@@ -2,7 +2,7 @@
  * Transformer Manager - handles registration and execution of value transformers
  */
 
-import type { BuiltInTransformer, Transformer } from './types.js';
+import type { BuiltInTransformer, Transformer } from './types';
 import {
   camelCase,
   capitalCase,
@@ -13,7 +13,7 @@ import {
   snakeCase,
   upperCase,
 } from 'case-anything';
-import { TransformerError } from '../errors/other.js';
+import { TransformerError } from '../errors/other';
 import { log } from '../utils';
 
 /**

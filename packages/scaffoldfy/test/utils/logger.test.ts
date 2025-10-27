@@ -8,7 +8,7 @@ import {
   setDebugMode,
   success,
   warn,
-} from '../../src/utils/logger.js';
+} from '../../src/utils/logger';
 
 describe('logger', () => {
   let consoleLogSpy: ReturnType<typeof vi.spyOn>;

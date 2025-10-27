@@ -2,7 +2,7 @@
  * Integration tests for prompts with tasks
  */
 
-import type { InitConfig, TasksConfiguration } from '../../src/types.js';
+import type { InitConfig, TasksConfiguration } from '../../src/types';
 import { describe, expect, it } from 'vitest';
 import { interpolateTemplate } from '../../src/utils';
 

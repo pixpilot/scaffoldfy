@@ -3,7 +3,7 @@
  */
 
 /* eslint-disable no-await-in-loop */
-import type { InitConfig, VariableDefinition } from '../types.js';
+import type { InitConfig, VariableDefinition } from '../types';
 import { evaluateEnabledAsync, resolveValue } from '../utils';
 
 /**

@@ -2,12 +2,12 @@
  * Tests for rename plugin executor
  */
 
-import type { RenameConfig } from '../../../src/plugins/rename/types.js';
-import type { InitConfig } from '../../../src/types.js';
+import type { RenameConfig } from '../../../src/plugins/rename/types';
+import type { InitConfig } from '../../../src/types';
 import fs from 'node:fs';
 import path from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { executeRename } from '../../../src/plugins/rename/executor.js';
+import { executeRename } from '../../../src/plugins/rename/executor';
 
 const TEST_DIR = path.join(process.cwd(), '__test_rename__');
 

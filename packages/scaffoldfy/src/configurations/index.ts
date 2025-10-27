@@ -1,12 +1,12 @@
-export { clearConfigurationCache } from './cache.js';
+export { clearConfigurationCache } from './cache';
 export {
   fetchConfigurationFile,
   fetchRemoteConfiguration,
-} from './fetch-configuration-file.js';
-export { loadConfiguration } from './load-configuration.js';
-export { loadConfigurationsInOrder } from './load-configurations-in-order.js';
+} from './fetch-configuration-file';
+export { loadConfiguration } from './load-configuration';
+export { loadConfigurationsInOrder } from './load-configurations-in-order';
 export {
   loadAndMergeConfiguration,
   loadTasksWithInheritance,
-} from './load-tasks-with-inheritance.js';
-export { mergeConfigurations } from './merge-configurations.js';
+} from './load-tasks-with-inheritance';
+export { mergeConfigurations } from './merge-configurations';

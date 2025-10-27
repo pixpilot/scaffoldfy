@@ -2,12 +2,12 @@
  * Tests for exec-file value resolution in variables
  */
 
-import type { InitConfig } from '../../src/types.js';
+import type { InitConfig } from '../../src/types';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { resolveVariableValue } from '../../src/variables/resolve-variable-value.js';
+import { resolveVariableValue } from '../../src/variables/resolve-variable-value';
 
 describe('resolveVariableValue with exec-file', () => {
   it('should execute a local Node.js script and return its output', async () => {
@@ -287,7 +287,7 @@ describe('resolveVariableValue with exec-file', () => {
     const result = await resolveVariableValue(
       {
         type: 'exec-file',
-        file: '/non/existent/file.js',
+        file: '/non/existent/file',
       },
       'testVar',
       {},

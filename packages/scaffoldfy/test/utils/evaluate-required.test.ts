@@ -1,9 +1,9 @@
-import type { DynamicBooleanValue, InitConfig } from '../../src/types.js';
+import type { DynamicBooleanValue, InitConfig } from '../../src/types';
 import { describe, expect, it } from 'vitest';
 import {
   evaluateRequired,
   evaluateRequiredAsync,
-} from '../../src/utils/evaluate-required.js';
+} from '../../src/utils/evaluate-required';
 
 describe('evaluateRequired', () => {
   const mockConfig: InitConfig = {};

@@ -4,7 +4,7 @@
 
 import { describe, expect, it } from 'vitest';
 
-import { formatDiffLine, generateDiff } from '../../src/dry-run/utils.js';
+import { formatDiffLine, generateDiff } from '../../src/dry-run/utils';
 
 describe('formatDiffLine', () => {
   it('should format add lines', () => {

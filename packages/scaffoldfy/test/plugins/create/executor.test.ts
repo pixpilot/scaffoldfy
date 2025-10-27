@@ -2,12 +2,12 @@
  * Tests for create plugin executor
  */
 
-import type { CreateConfig } from '../../../src/plugins/create/types.js';
-import type { InitConfig, TaskDefinition } from '../../../src/types.js';
+import type { CreateConfig } from '../../../src/plugins/create/types';
+import type { InitConfig, TaskDefinition } from '../../../src/types';
 import fs from 'node:fs';
 import path from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { executeCreate } from '../../../src/plugins/create/executor.js';
+import { executeCreate } from '../../../src/plugins/create/executor';
 
 const TEST_DIR = path.join(process.cwd(), '__test_create__');
 
@@ -98,11 +98,11 @@ describe('executeCreate', () => {
   it('should resolve templateFile relative to task $sourceUrl (local path)', async () => {
     // Create a subdirectory with template
     fs.mkdirSync('templates', { recursive: true });
-    fs.writeFileSync('templates/script.js', 'console.log("{{projectName}}");');
+    fs.writeFileSync('templates/script', 'console.log("{{projectName}}");');
 
     const config: CreateConfig = {
-      file: 'generated-script.js',
-      templateFile: './script.js',
+      file: 'generated-script',
+      templateFile: './script',
     };
 
     const task: TaskDefinition = {
@@ -118,8 +118,8 @@ describe('executeCreate', () => {
 
     await executeCreate(config, mockConfig, task);
 
-    expect(fs.existsSync('generated-script.js')).toBe(true);
-    const content = fs.readFileSync('generated-script.js', 'utf-8');
+    expect(fs.existsSync('generated-script')).toBe(true);
+    const content = fs.readFileSync('generated-script', 'utf-8');
     expect(content).toBe('console.log("test-repo");');
   });
 

@@ -1,4 +1,4 @@
-import type { TasksConfiguration } from '../types.js';
+import type { TasksConfiguration } from '../types';
 
 /**
  * Cache for loaded configurations to avoid reloading

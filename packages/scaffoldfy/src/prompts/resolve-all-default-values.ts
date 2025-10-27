@@ -2,8 +2,8 @@
  * Pre-resolve all executable default values in parallel
  */
 
-import type { InitConfig, PromptDefinition } from '../types.js';
-import { resolveDefaultValue } from './resolve-default-value.js';
+import type { InitConfig, PromptDefinition } from '../types';
+import { resolveDefaultValue } from './resolve-default-value';
 
 /**
  * Pre-resolve all executable default values in parallel

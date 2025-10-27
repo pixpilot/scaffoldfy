@@ -4,10 +4,10 @@ import type {
   TaskDefinition,
   TasksConfiguration,
   VariableDefinition,
-} from '../types.js';
+} from '../types';
 import { debug, log } from '../utils';
-import { loadConfigurationsInOrder } from './load-configurations-in-order.js';
-import { mergeConfigurations } from './merge-configurations.js';
+import { loadConfigurationsInOrder } from './load-configurations-in-order';
+import { mergeConfigurations } from './merge-configurations';
 
 /**
  * Recursively load and merge configurations
@@ -48,7 +48,7 @@ export async function loadTasksWithInheritance(
   prompts?: PromptDefinition[];
   enabled?: EnabledValue;
   configs?: TasksConfiguration[];
-  transformers?: import('../transformers/types.js').Transformer[];
+  transformers?: import('../transformers/types').Transformer[];
 }> {
   debug(`Loading tasks from ${tasksFilePath}...`);
 
@@ -87,7 +87,7 @@ export async function loadTasksWithInheritance(
     variables?: VariableDefinition[];
     prompts?: PromptDefinition[];
     enabled?: EnabledValue;
-    transformers?: import('../transformers/types.js').Transformer[];
+    transformers?: import('../transformers/types').Transformer[];
   } = {
     tasks: config.tasks ?? [],
   };

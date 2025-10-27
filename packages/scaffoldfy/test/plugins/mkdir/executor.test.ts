@@ -2,12 +2,12 @@
  * Tests for mkdir plugin executor
  */
 
-import type { MkdirConfig } from '../../../src/plugins/mkdir/types.js';
-import type { InitConfig } from '../../../src/types.js';
+import type { MkdirConfig } from '../../../src/plugins/mkdir/types';
+import type { InitConfig } from '../../../src/types';
 import fs from 'node:fs';
 import path from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { executeMkdir } from '../../../src/plugins/mkdir/executor.js';
+import { executeMkdir } from '../../../src/plugins/mkdir/executor';
 
 const TEST_DIR = path.join(process.cwd(), '__test_mkdir__');
 

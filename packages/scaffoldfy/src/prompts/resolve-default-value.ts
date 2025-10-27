@@ -3,7 +3,7 @@
  * This is now a wrapper around the unified resolveValue utility
  */
 
-import type { DefaultValue, InitConfig, PromptDefinition } from '../types.js';
+import type { DefaultValue, InitConfig, PromptDefinition } from '../types';
 import { resolveValue } from '../utils';
 
 /**

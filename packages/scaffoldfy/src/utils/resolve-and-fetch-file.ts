@@ -5,10 +5,10 @@
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { fetchConfigurationFile } from '../configurations/index.js';
-import { isUrl } from './is-url.js';
-import { debug } from './logger.js';
-import { resolveFilePath } from './resolve-file-path.js';
+import { fetchConfigurationFile } from '../configurations/index';
+import { isUrl } from './is-url';
+import { debug } from './logger';
+import { resolveFilePath } from './resolve-file-path';
 
 /**
  * Result of resolving and fetching a file

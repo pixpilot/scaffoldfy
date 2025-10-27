@@ -1,6 +1,6 @@
 import path from 'node:path';
 import { describe, expect, it, vi } from 'vitest';
-import { resolveFilePath } from '../../src/utils/resolve-file-path.js';
+import { resolveFilePath } from '../../src/utils/resolve-file-path';
 
 describe('resolveFilePath', () => {
   describe('url handling', () => {

@@ -2,11 +2,11 @@
  * Tests for collecting variables
  */
 
-import type { VariableDefinition } from '../../src/types.js';
+import type { VariableDefinition } from '../../src/types';
 
 import { describe, expect, it } from 'vitest';
 
-import { collectVariables } from '../../src/variables/collect-variables.js';
+import { collectVariables } from '../../src/variables/collect-variables';
 
 describe('collectVariables', () => {
   it('should collect variables from resolved values', async () => {

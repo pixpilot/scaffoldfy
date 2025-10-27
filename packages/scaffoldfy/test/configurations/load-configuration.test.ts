@@ -2,7 +2,7 @@
  * Tests for loadConfiguration functionality
  */
 
-import type { TasksConfiguration } from '../../src/types.js';
+import type { TasksConfiguration } from '../../src/types';
 import fs from 'node:fs';
 import path from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
@@ -10,11 +10,8 @@ import {
   clearConfigurationCache,
   loadAndMergeConfiguration,
   loadConfiguration,
-} from '../../src/configurations/index.js';
-import {
-  ConfigParseError,
-  ConfigurationFileNotFoundError,
-} from '../../src/errors/index.js';
+} from '../../src/configurations/index';
+import { ConfigParseError, ConfigurationFileNotFoundError } from '../../src/errors/index';
 
 const testDir = path.join(process.cwd(), 'test-fixtures', 'load-configuration');
 

@@ -2,9 +2,9 @@
  * replace-in-file plugin registration
  */
 
-import type { InitConfig, TaskDefinition, TaskPlugin } from '../../types.js';
-import type { ReplaceInFileConfig } from './types.js';
-import { executeReplaceInFile } from './executor.js';
+import type { InitConfig, TaskDefinition, TaskPlugin } from '../../types';
+import type { ReplaceInFileConfig } from './types';
+import { executeReplaceInFile } from './executor';
 
 export const replaceInFilePlugin: TaskPlugin = {
   name: 'replace-in-file',

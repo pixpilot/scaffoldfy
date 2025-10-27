@@ -2,7 +2,7 @@
  * rename plugin types
  */
 
-import type { ConditionExpression } from '../../types.js';
+import type { ConditionExpression } from '../../types';
 
 export interface RenameConfig {
   from: string;

@@ -2,23 +2,23 @@
  * Task execution functions and built-in plugin registration
  */
 
-import type { InitConfig, TaskDefinition } from './types.js';
+import type { InitConfig, TaskDefinition } from './types';
 import process from 'node:process';
-import { executePluginTask, isPluginTaskType, registerPlugin } from './plugin.js';
-import { appendPlugin } from './plugins/append/index.js';
-import { copyPlugin } from './plugins/copy/index.js';
-import { createPlugin } from './plugins/create/index.js';
-import { deletePlugin } from './plugins/delete/index.js';
-import { execFilePlugin } from './plugins/exec-file/index.js';
-import { execPlugin } from './plugins/exec/index.js';
-import { gitInitPlugin } from './plugins/git-init/index.js';
-import { mkdirPlugin } from './plugins/mkdir/index.js';
-import { movePlugin } from './plugins/move/index.js';
-import { regexReplacePlugin } from './plugins/regex-replace/index.js';
-import { renamePlugin } from './plugins/rename/index.js';
-import { replaceInFilePlugin } from './plugins/replace-in-file/index.js';
-import { updateJsonPlugin } from './plugins/update-json/index.js';
-import { writePlugin } from './plugins/write/index.js';
+import { executePluginTask, isPluginTaskType, registerPlugin } from './plugin';
+import { appendPlugin } from './plugins/append/index';
+import { copyPlugin } from './plugins/copy/index';
+import { createPlugin } from './plugins/create/index';
+import { deletePlugin } from './plugins/delete/index';
+import { execFilePlugin } from './plugins/exec-file/index';
+import { execPlugin } from './plugins/exec/index';
+import { gitInitPlugin } from './plugins/git-init/index';
+import { mkdirPlugin } from './plugins/mkdir/index';
+import { movePlugin } from './plugins/move/index';
+import { regexReplacePlugin } from './plugins/regex-replace/index';
+import { renamePlugin } from './plugins/rename/index';
+import { replaceInFilePlugin } from './plugins/replace-in-file/index';
+import { updateJsonPlugin } from './plugins/update-json/index';
+import { writePlugin } from './plugins/write/index';
 import { log } from './utils';
 
 // Register all built-in plugins

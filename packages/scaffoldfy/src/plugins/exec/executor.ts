@@ -2,8 +2,8 @@
  * exec plugin executor
  */
 
-import type { InitConfig } from '../../types.js';
-import type { ExecConfig } from './types.js';
+import type { InitConfig } from '../../types';
+import type { ExecConfig } from './types';
 import { execSync } from 'node:child_process';
 import path from 'node:path';
 import process from 'node:process';

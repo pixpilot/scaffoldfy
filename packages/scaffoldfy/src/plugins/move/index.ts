@@ -2,9 +2,9 @@
  * move plugin registration
  */
 
-import type { InitConfig, TaskDefinition, TaskPlugin } from '../../types.js';
-import type { MoveConfig } from './types.js';
-import { executeMove } from './executor.js';
+import type { InitConfig, TaskDefinition, TaskPlugin } from '../../types';
+import type { MoveConfig } from './types';
+import { executeMove } from './executor';
 
 export const movePlugin: TaskPlugin = {
   name: 'move',

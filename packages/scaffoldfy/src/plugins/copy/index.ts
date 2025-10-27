@@ -2,9 +2,9 @@
  * copy plugin registration
  */
 
-import type { InitConfig, TaskDefinition, TaskPlugin } from '../../types.js';
-import type { CopyConfig } from './types.js';
-import { executeCopy } from './executor.js';
+import type { InitConfig, TaskDefinition, TaskPlugin } from '../../types';
+import type { CopyConfig } from './types';
+import { executeCopy } from './executor';
 
 export const copyPlugin: TaskPlugin = {
   name: 'copy',

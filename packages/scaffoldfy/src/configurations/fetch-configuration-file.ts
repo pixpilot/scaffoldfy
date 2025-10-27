@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 import { promisify } from 'node:util';
-import { ConfigFetchError, ConfigurationFileNotFoundError } from '../errors/index.js';
+import { ConfigFetchError, ConfigurationFileNotFoundError } from '../errors/index';
 import { isUrl } from '../utils';
 
 const readFile = promisify(fs.readFile);

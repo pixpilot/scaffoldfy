@@ -5,7 +5,7 @@
  * the template initialization system with custom task types.
  */
 
-import type { InitConfig, PluginHooks, TaskDefinition, TaskPlugin } from './types.js';
+import type { InitConfig, PluginHooks, TaskDefinition, TaskPlugin } from './types';
 import { debug, log } from './utils';
 
 /**

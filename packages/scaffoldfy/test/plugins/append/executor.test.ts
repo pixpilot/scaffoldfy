@@ -2,12 +2,12 @@
  * Tests for append plugin executor
  */
 
-import type { AppendConfig } from '../../../src/plugins/append/types.js';
-import type { InitConfig } from '../../../src/types.js';
+import type { AppendConfig } from '../../../src/plugins/append/types';
+import type { InitConfig } from '../../../src/types';
 import fs from 'node:fs';
 import path from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { executeAppend } from '../../../src/plugins/append/executor.js';
+import { executeAppend } from '../../../src/plugins/append/executor';
 
 const TEST_DIR = path.join(process.cwd(), '__test_append__');
 

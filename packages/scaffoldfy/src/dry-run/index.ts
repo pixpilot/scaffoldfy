@@ -21,13 +21,13 @@ import type {
   TaskDefinition,
   UpdateJsonConfig,
   WriteConfig,
-} from '../types.js';
+} from '../types';
 
 import {
   getRegexReplaceDiff,
   getReplaceInFileDiff,
   getUpdateJsonDiff,
-} from './content-tasks.js';
+} from './content-tasks';
 import {
   getAppendDiff,
   getCopyDiff,
@@ -37,9 +37,9 @@ import {
   getMoveDiff,
   getRenameDiff,
   getWriteDiff,
-} from './file-tasks.js';
-import { getExecDiff, getGitInitDiff } from './system-tasks.js';
-import { colors, SEPARATOR_LENGTH } from './utils.js';
+} from './file-tasks';
+import { getExecDiff, getGitInitDiff } from './system-tasks';
+import { colors, SEPARATOR_LENGTH } from './utils';
 
 /**
  * Get diff for any task type
@@ -135,7 +135,7 @@ export {
   getRegexReplaceDiff,
   getReplaceInFileDiff,
   getUpdateJsonDiff,
-} from './content-tasks.js';
+} from './content-tasks';
 export {
   getAppendDiff,
   getCopyDiff,
@@ -145,5 +145,5 @@ export {
   getMoveDiff,
   getRenameDiff,
   getWriteDiff,
-} from './file-tasks.js';
-export { getExecDiff, getGitInitDiff } from './system-tasks.js';
+} from './file-tasks';
+export { getExecDiff, getGitInitDiff } from './system-tasks';

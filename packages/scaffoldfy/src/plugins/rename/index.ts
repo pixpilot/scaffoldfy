@@ -2,9 +2,9 @@
  * rename plugin registration
  */
 
-import type { InitConfig, TaskDefinition, TaskPlugin } from '../../types.js';
-import type { RenameConfig } from './types.js';
-import { executeRename } from './executor.js';
+import type { InitConfig, TaskDefinition, TaskPlugin } from '../../types';
+import type { RenameConfig } from './types';
+import { executeRename } from './executor';
 
 export const renamePlugin: TaskPlugin = {
   name: 'rename',

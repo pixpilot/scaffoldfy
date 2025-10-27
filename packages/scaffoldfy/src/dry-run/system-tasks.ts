@@ -4,12 +4,12 @@
  * Functions for generating diffs for tasks that perform system operations.
  */
 
-import type { ExecConfig, GitInitConfig, InitConfig } from '../types.js';
+import type { ExecConfig, GitInitConfig, InitConfig } from '../types';
 
 import process from 'node:process';
 
 import { evaluateCondition, interpolateTemplate } from '../utils';
-import { colors, fileExists } from './utils.js';
+import { colors, fileExists } from './utils';
 
 /**
  * Get diff for git-init task

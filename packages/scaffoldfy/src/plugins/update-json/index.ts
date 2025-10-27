@@ -2,9 +2,9 @@
  * update-json plugin registration
  */
 
-import type { InitConfig, TaskDefinition, TaskPlugin } from '../../types.js';
-import type { UpdateJsonConfig } from './types.js';
-import { executeUpdateJson } from './executor.js';
+import type { InitConfig, TaskDefinition, TaskPlugin } from '../../types';
+import type { UpdateJsonConfig } from './types';
+import { executeUpdateJson } from './executor';
 
 export const updateJsonPlugin: TaskPlugin = {
   name: 'update-json',

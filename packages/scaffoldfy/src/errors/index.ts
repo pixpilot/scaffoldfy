@@ -3,7 +3,7 @@
  */
 
 // Base errors
-export { CircularDependencyError, ScaffoldfyError } from './base.js';
+export { CircularDependencyError, ScaffoldfyError } from './base';
 
 // Template errors
 export {
@@ -12,14 +12,14 @@ export {
   ConfigurationFileNotFoundError,
   ConfigurationResolutionError,
   InvalidConfigError,
-} from './config.js';
+} from './config';
 
 // ID errors
-export { DuplicateIdError, IdConflictError } from './id.js';
+export { DuplicateIdError, IdConflictError } from './id';
 
 // Other errors
 export {
   PluginConfigurationError,
   PromptValidationError,
   TaskNotFoundError,
-} from './other.js';
+} from './other';

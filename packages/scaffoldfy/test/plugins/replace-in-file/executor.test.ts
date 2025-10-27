@@ -2,12 +2,12 @@
  * Tests for replace-in-file plugin executor
  */
 
-import type { ReplaceInFileConfig } from '../../../src/plugins/replace-in-file/types.js';
-import type { InitConfig } from '../../../src/types.js';
+import type { ReplaceInFileConfig } from '../../../src/plugins/replace-in-file/types';
+import type { InitConfig } from '../../../src/types';
 import fs from 'node:fs';
 import path from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { executeReplaceInFile } from '../../../src/plugins/replace-in-file/executor.js';
+import { executeReplaceInFile } from '../../../src/plugins/replace-in-file/executor';
 
 const TEST_DIR = path.join(process.cwd(), '__test_replace_in_file__');
 

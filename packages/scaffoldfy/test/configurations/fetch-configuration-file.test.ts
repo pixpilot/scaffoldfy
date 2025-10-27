@@ -28,7 +28,7 @@ describe('fetchConfigurationFile', () => {
   });
 
   it('should fetch from remote URL', async () => {
-    const { fetchConfigurationFile } = await import('../../src/configurations/index.js');
+    const { fetchConfigurationFile } = await import('../../src/configurations/index');
     const mockFetch = (async (url: string) => {
       if (url === 'https://example.com/template.hbs') {
         return Promise.resolve(
@@ -48,7 +48,7 @@ describe('fetchConfigurationFile', () => {
   });
 
   it('should read from local file', async () => {
-    const { fetchConfigurationFile } = await import('../../src/configurations/index.js');
+    const { fetchConfigurationFile } = await import('../../src/configurations/index');
     const templatePath = path.join(testDir, 'local-template.hbs');
     fs.mkdirSync(testDir, { recursive: true });
     fs.writeFileSync(templatePath, 'Local content: {{name}}');
@@ -58,7 +58,7 @@ describe('fetchConfigurationFile', () => {
   });
 
   it('should throw error for non-existent local file', async () => {
-    const { fetchConfigurationFile } = await import('../../src/configurations/index.js');
+    const { fetchConfigurationFile } = await import('../../src/configurations/index');
     const nonExistentPath = path.join(testDir, 'does-not-exist.hbs');
     await expect(fetchConfigurationFile(nonExistentPath)).rejects.toThrow(
       'Configuration file not found',

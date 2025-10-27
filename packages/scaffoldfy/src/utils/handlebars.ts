@@ -2,14 +2,14 @@
  * Utility functions for template initialization
  */
 
-import type { InitConfig } from '../types.js';
+import type { InitConfig } from '../types';
 import fs from 'node:fs';
 import path from 'node:path';
 
 import process from 'node:process';
 import Handlebars from 'handlebars';
-import { ConfigurationFileNotFoundError } from '../errors/config.js';
-import { log } from './logger.js';
+import { ConfigurationFileNotFoundError } from '../errors/config';
+import { log } from './logger';
 
 // Re-export logger functions for convenience
 export {
@@ -17,7 +17,7 @@ export {
   info as logInfo,
   success as logSuccess,
   warn as logWarn,
-} from './logger.js';
+} from './logger';
 
 /**
  * Compile a template file using Handlebars

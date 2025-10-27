@@ -2,12 +2,12 @@
  * Tests for regex-replace plugin executor
  */
 
-import type { RegexReplaceConfig } from '../../../src/plugins/regex-replace/types.js';
-import type { InitConfig } from '../../../src/types.js';
+import type { RegexReplaceConfig } from '../../../src/plugins/regex-replace/types';
+import type { InitConfig } from '../../../src/types';
 import fs from 'node:fs';
 import path from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { executeRegexReplace } from '../../../src/plugins/regex-replace/executor.js';
+import { executeRegexReplace } from '../../../src/plugins/regex-replace/executor';
 
 const TEST_DIR = path.join(process.cwd(), '__test_regex_replace__');
 

@@ -6,7 +6,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 import {
   clearConfigurationCache,
   configurationCache,
-} from '../../src/configurations/cache.js';
+} from '../../src/configurations/cache';
 
 describe('configurationCache', () => {
   afterEach(() => {

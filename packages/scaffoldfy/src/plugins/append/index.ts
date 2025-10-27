@@ -2,9 +2,9 @@
  * append plugin registration
  */
 
-import type { InitConfig, TaskDefinition, TaskPlugin } from '../../types.js';
-import type { AppendConfig } from './types.js';
-import { executeAppend } from './executor.js';
+import type { InitConfig, TaskDefinition, TaskPlugin } from '../../types';
+import type { AppendConfig } from './types';
+import { executeAppend } from './executor';
 
 export const appendPlugin: TaskPlugin = {
   name: 'append',

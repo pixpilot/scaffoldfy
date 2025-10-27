@@ -2,9 +2,9 @@
  * Tests for mergeConfigurations functionality
  */
 
-import type { TaskDefinition, TasksConfiguration } from '../../src/types.js';
+import type { TaskDefinition, TasksConfiguration } from '../../src/types';
 import { describe, expect, it } from 'vitest';
-import { mergeConfigurations } from '../../src/configurations/index.js';
+import { mergeConfigurations } from '../../src/configurations/index';
 
 describe('mergeConfigurations', () => {
   it('should merge tasks from multiple configurations', () => {

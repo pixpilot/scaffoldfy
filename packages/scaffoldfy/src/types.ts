@@ -3,19 +3,19 @@
  */
 
 // Import and re-export config types from plugins
-import type { AppendConfig } from './plugins/append/types.js';
-import type { CopyConfig } from './plugins/copy/types.js';
-import type { CreateConfig } from './plugins/create/types.js';
-import type { DeleteConfig } from './plugins/delete/types.js';
-import type { ExecConfig } from './plugins/exec/types.js';
-import type { GitInitConfig } from './plugins/git-init/types.js';
-import type { MkdirConfig } from './plugins/mkdir/types.js';
-import type { MoveConfig } from './plugins/move/types.js';
-import type { RegexReplaceConfig } from './plugins/regex-replace/types.js';
-import type { RenameConfig } from './plugins/rename/types.js';
-import type { ReplaceInFileConfig } from './plugins/replace-in-file/types.js';
-import type { UpdateJsonConfig } from './plugins/update-json/types.js';
-import type { WriteConfig } from './plugins/write/types.js';
+import type { AppendConfig } from './plugins/append/types';
+import type { CopyConfig } from './plugins/copy/types';
+import type { CreateConfig } from './plugins/create/types';
+import type { DeleteConfig } from './plugins/delete/types';
+import type { ExecConfig } from './plugins/exec/types';
+import type { GitInitConfig } from './plugins/git-init/types';
+import type { MkdirConfig } from './plugins/mkdir/types';
+import type { MoveConfig } from './plugins/move/types';
+import type { RegexReplaceConfig } from './plugins/regex-replace/types';
+import type { RenameConfig } from './plugins/rename/types';
+import type { ReplaceInFileConfig } from './plugins/replace-in-file/types';
+import type { UpdateJsonConfig } from './plugins/update-json/types';
+import type { WriteConfig } from './plugins/write/types';
 
 export type {
   AppendConfig,
@@ -102,7 +102,7 @@ export interface DefaultValueConfig<T = string | number | boolean> {
  * - For explicit static values, use { type: 'static', value: yourValue }
  * - For conditional defaults, use { type: 'conditional', condition: 'expression', ifTrue: value, ifFalse: value }
  * - For interpolate strings, use { type: 'interpolate', value: '{{variable}}' } (will be interpolated with previously resolved prompts/variables)
- * - For exec-file, use { type: 'exec-file', file: 'path/to/script.js', args: [...], parameters: {...} }
+ * - For exec-file, use { type: 'exec-file', file: 'path/to/script', args: [...], parameters: {...} }
  */
 export type DefaultValue<T = string | number | boolean> =
   | T
@@ -274,7 +274,7 @@ export interface TasksConfiguration {
   enabled?: DynamicBooleanValue; // Whether this entire template should be executed (supports boolean or dynamic evaluation, defaults to true)
   dependencies?: string[]; // Optional: Names or identifiers of other templates this template depends on
   extends?: string | string[]; // Path(s) or URL(s) to base template file(s) to inherit from
-  transformers?: import('./transformers/types.js').Transformer[]; // Optional: Array of transformer definitions
+  transformers?: import('./transformers/types').Transformer[]; // Optional: Array of transformer definitions
   variables?: VariableDefinition[]; // Optional top-level global variables available to all tasks
   prompts?: PromptDefinition[]; // Optional top-level global prompts collected once upfront
   tasks?: TaskDefinition[]; // Optional tasks array - can be omitted when extending templates that only provide prompts/variables

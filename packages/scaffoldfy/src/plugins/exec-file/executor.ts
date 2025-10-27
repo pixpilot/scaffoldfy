@@ -2,10 +2,10 @@
  * exec-file plugin executor
  */
 
-import type { InitConfig, TaskDefinition } from '../../types.js';
-import type { ExecFileConfig } from './types.js';
+import type { InitConfig, TaskDefinition } from '../../types';
+import type { ExecFileConfig } from './types';
 import { evaluateCondition } from '../../utils';
-import { executeScriptFile } from './execute-script-file.js';
+import { executeScriptFile } from './execute-script-file';
 
 /**
  * Execute exec-file task

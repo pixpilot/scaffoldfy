@@ -2,7 +2,7 @@
  * Tests for file-tasks dry-run functions
  */
 
-import type { InitConfig, TaskDefinition } from '../../src/types.js';
+import type { InitConfig, TaskDefinition } from '../../src/types';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {
@@ -14,20 +14,20 @@ import {
   getMoveDiff,
   getRenameDiff,
   getWriteDiff,
-} from '../../src/dry-run/file-tasks.js';
+} from '../../src/dry-run/file-tasks';
 
 // Mock dependencies
 vi.mock('../../src/utils', () => ({
   evaluateCondition: vi.fn(() => true),
   interpolateTemplate: vi.fn((template) => template),
 }));
-vi.mock('../../src/template-utils.js', () => ({
+vi.mock('../../src/template-utils', () => ({
   getTemplateSourceDescription: vi.fn(() => 'template'),
   hasInlineTemplate: vi.fn(() => true),
   processTemplate: vi.fn((template) => template),
 }));
-vi.mock('../../src/dry-run/utils.js', async () => {
-  const actual = await vi.importActual('../../src/dry-run/utils.js');
+vi.mock('../../src/dry-run/utils', async () => {
+  const actual = await vi.importActual('../../src/dry-run/utils');
   return {
     ...actual,
     readFileContent: vi.fn(),
@@ -43,17 +43,17 @@ const mockInterpolateTemplate = vi.mocked(
   await import('../../src/utils'),
 ).interpolateTemplate;
 const mockReadFileContent = vi.mocked(
-  await import('../../src/dry-run/utils.js'),
+  await import('../../src/dry-run/utils'),
 ).readFileContent;
-const mockFileExists = vi.mocked(await import('../../src/dry-run/utils.js')).fileExists;
+const mockFileExists = vi.mocked(await import('../../src/dry-run/utils')).fileExists;
 const mockGetTemplateSourceDescription = vi.mocked(
-  await import('../../src/template-utils.js'),
+  await import('../../src/template-utils'),
 ).getTemplateSourceDescription;
 const _mockHasInlineTemplate = vi.mocked(
-  await import('../../src/template-utils.js'),
+  await import('../../src/template-utils'),
 ).hasInlineTemplate;
 const mockProcessTemplate = vi.mocked(
-  await import('../../src/template-utils.js'),
+  await import('../../src/template-utils'),
 ).processTemplate;
 
 const mockConfig: InitConfig = {

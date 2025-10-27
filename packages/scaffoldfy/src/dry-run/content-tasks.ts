@@ -9,17 +9,11 @@ import type {
   RegexReplaceConfig,
   ReplaceInFileConfig,
   UpdateJsonConfig,
-} from '../types.js';
+} from '../types';
 
 import { evaluateCondition, interpolateTemplate } from '../utils';
-import { setNestedProperty } from '../utils/object.js';
-import {
-  colors,
-  fileExists,
-  generateDiff,
-  JSON_INDENT,
-  readFileContent,
-} from './utils.js';
+import { setNestedProperty } from '../utils/object';
+import { colors, fileExists, generateDiff, JSON_INDENT, readFileContent } from './utils';
 
 /**
  * Get diff for update-json task

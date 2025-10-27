@@ -2,7 +2,7 @@
  * Other error classes
  */
 
-import { ScaffoldfyError } from './base.js';
+import { ScaffoldfyError } from './base';
 
 /**
  * Error thrown when a task cannot be found

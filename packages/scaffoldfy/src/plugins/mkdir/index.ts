@@ -2,9 +2,9 @@
  * mkdir plugin registration
  */
 
-import type { InitConfig, TaskDefinition, TaskPlugin } from '../../types.js';
-import type { MkdirConfig } from './types.js';
-import { executeMkdir } from './executor.js';
+import type { InitConfig, TaskDefinition, TaskPlugin } from '../../types';
+import type { MkdirConfig } from './types';
+import { executeMkdir } from './executor';
 
 export const mkdirPlugin: TaskPlugin = {
   name: 'mkdir',

@@ -2,7 +2,7 @@
  * Tests for url-based configuration loading functionality
  */
 
-import type { TasksConfiguration } from '../../src/types.js';
+import type { TasksConfiguration } from '../../src/types';
 import fs from 'node:fs';
 import path from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
@@ -11,12 +11,12 @@ import {
   loadAndMergeConfiguration,
   loadConfiguration,
   loadTasksWithInheritance,
-} from '../../src/configurations/index.js';
+} from '../../src/configurations/index';
 import {
   CircularDependencyError,
   ConfigFetchError,
   ConfigParseError,
-} from '../../src/errors/index.js';
+} from '../../src/errors/index';
 
 const testDir = path.join(
   process.cwd(),

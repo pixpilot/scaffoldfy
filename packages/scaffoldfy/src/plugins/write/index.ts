@@ -2,9 +2,9 @@
  * write plugin registration
  */
 
-import type { InitConfig, TaskDefinition, TaskPlugin } from '../../types.js';
-import type { WriteConfig } from './types.js';
-import { executeWrite } from './executor.js';
+import type { InitConfig, TaskDefinition, TaskPlugin } from '../../types';
+import type { WriteConfig } from './types';
+import { executeWrite } from './executor';
 
 export const writePlugin: TaskPlugin = {
   name: 'write',

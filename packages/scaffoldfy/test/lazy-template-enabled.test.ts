@@ -3,24 +3,20 @@
  * Tests that config enabled conditions are evaluated with access to prompts and variables
  */
 
-import type {
-  PromptDefinition,
-  TaskDefinition,
-  VariableDefinition,
-} from '../src/types.js';
+import type { PromptDefinition, TaskDefinition, VariableDefinition } from '../src/types';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 describe('lazy config enabled evaluation', () => {
   const mockLog = vi.fn();
-  let collectPrompts: typeof import('../src/prompts/collect-prompts.js').collectPrompts;
-  let resolveAllVariableValues: typeof import('../src/variables/resolve-all-variable-values.js').resolveAllVariableValues;
-  let runTasks: typeof import('../src/run-tasks.js').runTasks;
+  let collectPrompts: typeof import('../src/prompts/collect-prompts').collectPrompts;
+  let resolveAllVariableValues: typeof import('../src/variables/resolve-all-variable-values').resolveAllVariableValues;
+  let runTasks: typeof import('../src/run-tasks').runTasks;
 
   beforeEach(async () => {
     vi.resetModules();
 
     // Mock utils
-    vi.doMock('../src/utils.js', async () => {
+    vi.doMock('../src/utils', async () => {
       const actual = await vi.importActual<typeof import('../src/utils')>('../src/utils');
       return {
         ...actual,
@@ -52,15 +48,13 @@ describe('lazy config enabled evaluation', () => {
     }));
 
     // Import after mocking
-    const promptsModule = await import('../src/prompts/collect-prompts.js');
+    const promptsModule = await import('../src/prompts/collect-prompts');
     collectPrompts = promptsModule.collectPrompts;
 
-    const variablesModule = await import(
-      '../src/variables/resolve-all-variable-values.js'
-    );
+    const variablesModule = await import('../src/variables/resolve-all-variable-values');
     resolveAllVariableValues = variablesModule.resolveAllVariableValues;
 
-    const runTasksModule = await import('../src/run-tasks.js');
+    const runTasksModule = await import('../src/run-tasks');
     runTasks = runTasksModule.runTasks;
   });
 

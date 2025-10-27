@@ -2,9 +2,9 @@
  * git-init plugin registration
  */
 
-import type { InitConfig, TaskDefinition, TaskPlugin } from '../../types.js';
-import type { GitInitConfig } from './types.js';
-import { executeGitInit } from './executor.js';
+import type { InitConfig, TaskDefinition, TaskPlugin } from '../../types';
+import type { GitInitConfig } from './types';
+import { executeGitInit } from './executor';
 
 export const gitInitPlugin: TaskPlugin = {
   name: 'git-init',

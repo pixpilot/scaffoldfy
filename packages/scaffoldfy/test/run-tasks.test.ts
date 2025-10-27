@@ -2,24 +2,24 @@
  * Tests for run-tasks module
  */
 
-import type { InitConfig, TaskDefinition } from '../src/types.js';
+import type { InitConfig, TaskDefinition } from '../src/types';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { createInitialConfig } from '../src/config.js';
+import { createInitialConfig } from '../src/config';
 import { displayTasksDiff } from '../src/dry-run';
-import { runTasks } from '../src/run-tasks.js';
-import { runTask } from '../src/task-executors.js';
-import { topologicalSort } from '../src/task-resolver.js';
+import { runTasks } from '../src/run-tasks';
+import { runTask } from '../src/task-executors';
+import { topologicalSort } from '../src/task-resolver';
 import { evaluateEnabled, evaluateEnabledAsync } from '../src/utils';
-import { validateAllTasks } from '../src/validation.js';
+import { validateAllTasks } from '../src/validation';
 
 // Mock dependencies
-vi.mock('../src/config.js');
-vi.mock('../src/task-executors.js');
-vi.mock('../src/task-resolver.js');
+vi.mock('../src/config');
+vi.mock('../src/task-executors');
+vi.mock('../src/task-resolver');
 vi.mock('../src/utils');
 vi.mock('../src/dry-run');
-vi.mock('../src/validation.js');
+vi.mock('../src/validation');
 vi.mock('node:process', () => ({
   default: {
     exit: vi.fn(() => {

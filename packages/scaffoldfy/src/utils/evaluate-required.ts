@@ -2,7 +2,7 @@
  * Evaluate required value (boolean or conditional expression)
  */
 
-import type { DynamicBooleanValue, InitConfig } from '../types.js';
+import type { DynamicBooleanValue, InitConfig } from '../types';
 
 /**
  * Evaluate a condition for the 'required' property

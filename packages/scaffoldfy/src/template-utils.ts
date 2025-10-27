@@ -5,10 +5,10 @@
  * including validation, resolution, and content processing.
  */
 
-import type { InitConfig, TaskDefinition } from './types.js';
-import { fetchConfigurationFile } from './configurations/index.js';
+import type { InitConfig, TaskDefinition } from './types';
+import { fetchConfigurationFile } from './configurations/index';
 import { interpolateTemplate } from './utils';
-import { resolveFilePath } from './utils/resolve-file-path.js';
+import { resolveFilePath } from './utils/resolve-file-path';
 
 /**
  * Configuration for template/templateFile properties

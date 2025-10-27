@@ -3,7 +3,7 @@
  */
 
 import { describe, expect, it } from 'vitest';
-import { createInitialConfig } from '../src/config.js';
+import { createInitialConfig } from '../src/config';
 
 describe('configuration Initialization', () => {
   it('should create empty initial config', () => {

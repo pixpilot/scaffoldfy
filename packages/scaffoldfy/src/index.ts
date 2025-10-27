@@ -1,8 +1,8 @@
-import type { PromptDefinition, TaskDefinition, VariableDefinition } from './types.js';
+import type { PromptDefinition, TaskDefinition, VariableDefinition } from './types';
 
 import process from 'node:process';
 
-import { runTasks } from './run-tasks.js';
+import { runTasks } from './run-tasks';
 import { log } from './utils';
 
 // ============================================================================
@@ -37,8 +37,8 @@ export async function runWithTasks(
     configFilePath?: string | undefined;
     variables?: VariableDefinition[] | undefined;
     prompts?: PromptDefinition[] | undefined;
-    configEnabled?: import('./types.js').EnabledValue | undefined;
-    transformers?: import('./transformers/types.js').Transformer[] | undefined;
+    configEnabled?: import('./types').EnabledValue | undefined;
+    transformers?: import('./transformers/types').Transformer[] | undefined;
   },
 ): Promise<void> {
   try {
@@ -83,7 +83,7 @@ export {
   loadConfiguration,
   loadTasksWithInheritance,
   mergeConfigurations,
-} from './configurations/index.js';
+} from './configurations/index';
 
 // Dry-run and diff API (documented in DRY_RUN.md)
 export {
@@ -96,7 +96,7 @@ export {
   getReplaceInFileDiff,
   getTaskDiff,
   getUpdateJsonDiff,
-} from './dry-run/index.js';
+} from './dry-run/index';
 
 // Plugin API (documented in PLUGINS.md)
 export {
@@ -110,10 +110,10 @@ export {
   registerHooks,
   registerPlugin,
   unregisterPlugin,
-} from './plugin.js';
+} from './plugin';
 
 // JSON validation API (documented in JSON_VALIDATION.md)
 export { validateScaffoldfyJsonFile } from './scaffoldfy-config-json-validator';
 
 // Type exports
-export type * from './types.js';
+export type * from './types';

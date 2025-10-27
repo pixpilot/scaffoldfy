@@ -2,9 +2,9 @@
  * Resolve a variable value that may be static or executable
  */
 
-import type { DefaultValue, InitConfig } from '../types.js';
+import type { DefaultValue, InitConfig } from '../types';
 import { execSync } from 'node:child_process';
-import { executeScriptFile } from '../plugins/exec-file/execute-script-file.js';
+import { executeScriptFile } from '../plugins/exec-file/execute-script-file';
 import { interpolateTemplate, log } from '../utils';
 
 /**

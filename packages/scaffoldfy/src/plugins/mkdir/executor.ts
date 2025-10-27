@@ -2,8 +2,8 @@
  * mkdir plugin executor
  */
 
-import type { InitConfig } from '../../types.js';
-import type { MkdirConfig } from './types.js';
+import type { InitConfig } from '../../types';
+import type { MkdirConfig } from './types';
 import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';

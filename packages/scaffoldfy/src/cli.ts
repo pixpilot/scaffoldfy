@@ -4,17 +4,17 @@
  * CLI for task automation
  */
 
-import type { PromptDefinition, TaskDefinition, VariableDefinition } from './types.js';
+import type { PromptDefinition, TaskDefinition, VariableDefinition } from './types';
 import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
 import { Command } from 'commander';
-import { loadTasksWithInheritance } from './configurations/index.js';
-import { EXIT_CODE_ERROR } from './constants.js';
-import { runWithTasks } from './index.js';
-import { validateTasksSchema } from './schema-validator.js';
+import { loadTasksWithInheritance } from './configurations/index';
+import { EXIT_CODE_ERROR } from './constants';
+import { runWithTasks } from './index';
+import { validateTasksSchema } from './schema-validator';
 import { log } from './utils';
-import { debug, setDebugMode } from './utils/logger.js';
+import { debug, setDebugMode } from './utils/logger';
 
 // Interface for CLI options
 interface CliOptions {
@@ -68,8 +68,8 @@ program
       let tasks: TaskDefinition[] = [];
       let variables: VariableDefinition[] | undefined;
       let prompts: PromptDefinition[] | undefined;
-      let configEnabled: import('./types.js').EnabledValue | undefined;
-      let transformers: import('./transformers/types.js').Transformer[] | undefined;
+      let configEnabled: import('./types').EnabledValue | undefined;
+      let transformers: import('./transformers/types').Transformer[] | undefined;
       let configFilePath: string | undefined;
 
       // Load config file (supports both .json and .ts/.mjs)
@@ -142,8 +142,8 @@ program
 
               // If we have templates (sequential mode), run them sequentially
               if (config.configs != null && config.configs.length > 0) {
-                const { runTemplatesSequentially } = await import('./run-tasks.js');
-                const { createInitialConfig } = await import('./config.js');
+                const { runTemplatesSequentially } = await import('./run-tasks');
+                const { createInitialConfig } = await import('./config');
 
                 await runTemplatesSequentially(
                   config.configs,

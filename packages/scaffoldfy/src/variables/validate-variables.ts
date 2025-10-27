@@ -4,7 +4,7 @@
  * This function only checks for duplicate IDs, which JSON Schema cannot validate.
  */
 
-import type { VariableDefinition } from '../types.js';
+import type { VariableDefinition } from '../types';
 
 /**
  * Validate variable definitions for duplicate IDs

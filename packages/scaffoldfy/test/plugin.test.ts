@@ -2,7 +2,7 @@
  * Tests for plugin system
  */
 
-import type { InitConfig, TaskDefinition, TaskPlugin } from '../src/types.js';
+import type { InitConfig, TaskDefinition, TaskPlugin } from '../src/types';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   callHook,
@@ -18,7 +18,7 @@ import {
   registerPlugin,
   unregisterPlugin,
   validatePluginTask,
-} from '../src/plugin.js';
+} from '../src/plugin';
 
 describe('plugin system', () => {
   beforeEach(() => {

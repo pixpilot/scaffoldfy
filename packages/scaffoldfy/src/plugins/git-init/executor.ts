@@ -2,8 +2,8 @@
  * git-init plugin executor
  */
 
-import type { InitConfig } from '../../types.js';
-import type { GitInitConfig } from './types.js';
+import type { InitConfig } from '../../types';
+import type { GitInitConfig } from './types';
 import { execSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';

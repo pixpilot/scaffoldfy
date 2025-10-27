@@ -2,10 +2,10 @@
  * Tests for resolving all default values
  */
 
-import type { PromptDefinition } from '../../src/types.js';
+import type { PromptDefinition } from '../../src/types';
 import { execSync } from 'node:child_process';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { resolveAllDefaultValues } from '../../src/prompts/index.js';
+import { resolveAllDefaultValues } from '../../src/prompts/index';
 
 // Mock execSync for testing command execution
 vi.mock('node:child_process', () => ({

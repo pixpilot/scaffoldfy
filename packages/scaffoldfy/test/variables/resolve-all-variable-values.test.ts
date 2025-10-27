@@ -2,11 +2,11 @@
  * Tests for resolving all variable values
  */
 
-import type { VariableDefinition } from '../../src/types.js';
+import type { VariableDefinition } from '../../src/types';
 
 import { describe, expect, it } from 'vitest';
 
-import { resolveAllVariableValues } from '../../src/variables/resolve-all-variable-values.js';
+import { resolveAllVariableValues } from '../../src/variables/resolve-all-variable-values';
 
 describe('resolveAllVariableValues', () => {
   it('should resolve multiple variables', async () => {

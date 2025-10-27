@@ -2,13 +2,13 @@
  * Tests for exec-enabled in tasks and prompts
  */
 
-import type { EnabledValue } from '../src/types.js';
+import type { EnabledValue } from '../src/types';
 import { describe, expect, it } from 'vitest';
 
 describe('exec-enabled for tasks and prompts', () => {
   describe('evaluateEnabledAsync with exec type', () => {
     it('should support exec-enabled returning true', async () => {
-      const { evaluateEnabledAsync } = await import('../src/utils/evaluate-enabled.js');
+      const { evaluateEnabledAsync } = await import('../src/utils/evaluate-enabled');
 
       const execEnabled: EnabledValue = {
         type: 'exec',
@@ -20,7 +20,7 @@ describe('exec-enabled for tasks and prompts', () => {
     });
 
     it('should support exec-enabled returning false', async () => {
-      const { evaluateEnabledAsync } = await import('../src/utils/evaluate-enabled.js');
+      const { evaluateEnabledAsync } = await import('../src/utils/evaluate-enabled');
 
       const execEnabled: EnabledValue = {
         type: 'exec',
@@ -32,7 +32,7 @@ describe('exec-enabled for tasks and prompts', () => {
     });
 
     it('should support exec-enabled with "no" returning false', async () => {
-      const { evaluateEnabledAsync } = await import('../src/utils/evaluate-enabled.js');
+      const { evaluateEnabledAsync } = await import('../src/utils/evaluate-enabled');
 
       const execEnabled: EnabledValue = {
         type: 'exec',
@@ -44,7 +44,7 @@ describe('exec-enabled for tasks and prompts', () => {
     });
 
     it('should support exec-enabled with "0" returning false', async () => {
-      const { evaluateEnabledAsync } = await import('../src/utils/evaluate-enabled.js');
+      const { evaluateEnabledAsync } = await import('../src/utils/evaluate-enabled');
 
       const execEnabled: EnabledValue = {
         type: 'exec',
@@ -56,7 +56,7 @@ describe('exec-enabled for tasks and prompts', () => {
     });
 
     it('should support exec-enabled with non-empty output returning true', async () => {
-      const { evaluateEnabledAsync } = await import('../src/utils/evaluate-enabled.js');
+      const { evaluateEnabledAsync } = await import('../src/utils/evaluate-enabled');
 
       const execEnabled: EnabledValue = {
         type: 'exec',
@@ -68,7 +68,7 @@ describe('exec-enabled for tasks and prompts', () => {
     });
 
     it('should return false when exec command fails', async () => {
-      const { evaluateEnabledAsync } = await import('../src/utils/evaluate-enabled.js');
+      const { evaluateEnabledAsync } = await import('../src/utils/evaluate-enabled');
 
       const execEnabled: EnabledValue = {
         type: 'exec',
@@ -80,7 +80,7 @@ describe('exec-enabled for tasks and prompts', () => {
     });
 
     it('should support template interpolation in exec commands', async () => {
-      const { evaluateEnabledAsync } = await import('../src/utils/evaluate-enabled.js');
+      const { evaluateEnabledAsync } = await import('../src/utils/evaluate-enabled');
 
       const execEnabled: EnabledValue = {
         type: 'exec',
@@ -95,7 +95,7 @@ describe('exec-enabled for tasks and prompts', () => {
 
   describe('evaluateEnabled with exec type (synchronous)', () => {
     it('should return true in lazy mode for exec-enabled', async () => {
-      const { evaluateEnabled } = await import('../src/utils/evaluate-enabled.js');
+      const { evaluateEnabled } = await import('../src/utils/evaluate-enabled');
 
       const execEnabled: EnabledValue = {
         type: 'exec',
@@ -108,7 +108,7 @@ describe('exec-enabled for tasks and prompts', () => {
     });
 
     it('should return false in non-lazy mode for exec-enabled', async () => {
-      const { evaluateEnabled } = await import('../src/utils/evaluate-enabled.js');
+      const { evaluateEnabled } = await import('../src/utils/evaluate-enabled');
 
       const execEnabled: EnabledValue = {
         type: 'exec',

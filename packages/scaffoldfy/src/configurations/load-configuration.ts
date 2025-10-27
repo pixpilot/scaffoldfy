@@ -1,19 +1,19 @@
-import type { TasksConfiguration } from '../types.js';
+import type { TasksConfiguration } from '../types';
 import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
 import { promisify } from 'node:util';
 
-import { CircularDependencyError } from '../errors/base.js';
+import { CircularDependencyError } from '../errors/base';
 import {
   ConfigParseError,
   ConfigurationFileNotFoundError,
   InvalidConfigError,
-} from '../errors/index.js';
+} from '../errors/index';
 import { isUrl } from '../utils';
 
-import { configurationCache } from './cache.js';
-import { fetchRemoteConfiguration } from './fetch-configuration-file.js';
+import { configurationCache } from './cache';
+import { fetchRemoteConfiguration } from './fetch-configuration-file';
 
 const readFile = promisify(fs.readFile);
 

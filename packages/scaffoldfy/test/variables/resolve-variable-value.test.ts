@@ -4,7 +4,7 @@
 
 import { describe, expect, it } from 'vitest';
 
-import { resolveVariableValue } from '../../src/variables/resolve-variable-value.js';
+import { resolveVariableValue } from '../../src/variables/resolve-variable-value';
 
 describe('resolveVariableValue', () => {
   it('should resolve static string values', async () => {

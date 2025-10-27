@@ -2,7 +2,7 @@
  * Transformer types for value transformation
  */
 
-import type { DynamicBooleanValue } from '../types.js';
+import type { DynamicBooleanValue } from '../types';
 
 type BuiltInTransformerType =
   | 'lowercase'

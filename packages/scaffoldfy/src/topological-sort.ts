@@ -6,8 +6,8 @@
  * of independent configs.
  */
 
-import type { TasksConfiguration } from './types.js';
-import { CircularDependencyError } from './errors/base.js';
+import type { TasksConfiguration } from './types';
+import { CircularDependencyError } from './errors/base';
 
 /**
  * Topologically sort configs based on their dependencies

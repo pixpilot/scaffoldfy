@@ -5,7 +5,7 @@
  * and can also be used for config file operations.
  */
 
-import { ScaffoldfyError } from './base.js';
+import { ScaffoldfyError } from './base';
 
 /**
  * Error thrown when a configuration or config file cannot be found or accessed

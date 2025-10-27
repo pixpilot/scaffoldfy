@@ -1,10 +1,10 @@
-import type { TasksConfiguration } from '../types.js';
+import type { TasksConfiguration } from '../types';
 import path from 'node:path';
 import process from 'node:process';
-import { CircularDependencyError } from '../errors/base.js';
-import { topologicalSortConfigs } from '../topological-sort.js';
+import { CircularDependencyError } from '../errors/base';
+import { topologicalSortConfigs } from '../topological-sort';
 import { isUrl } from '../utils';
-import { loadConfiguration } from './load-configuration.js';
+import { loadConfiguration } from './load-configuration';
 
 /**
  * Load all configurations recursively (without merging)

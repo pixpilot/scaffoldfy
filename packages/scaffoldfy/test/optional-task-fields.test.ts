@@ -2,7 +2,7 @@
  * Tests for optional task fields with defaults
  */
 
-import type { TaskDefinition } from '../src/types.js';
+import type { TaskDefinition } from '../src/types';
 import { describe, expect, it } from 'vitest';
 
 describe('optional task fields', () => {

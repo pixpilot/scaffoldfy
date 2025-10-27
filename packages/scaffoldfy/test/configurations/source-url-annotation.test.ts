@@ -2,7 +2,7 @@
  * Tests for $sourceUrl annotation functionality
  */
 
-import type { TasksConfiguration } from '../../src/types.js';
+import type { TasksConfiguration } from '../../src/types';
 import fs from 'node:fs';
 import path from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
@@ -10,7 +10,7 @@ import {
   clearConfigurationCache,
   loadAndMergeConfiguration,
   loadConfiguration,
-} from '../../src/configurations/index.js';
+} from '../../src/configurations/index';
 
 const testDir = path.join(process.cwd(), 'test-fixtures', 'source-url-annotation');
 
@@ -150,7 +150,7 @@ describe('$sourceUrl annotation', () => {
       variables: [
         {
           id: 'testVar',
-          value: { type: 'exec-file', file: './script.js' },
+          value: { type: 'exec-file', file: './script' },
         },
       ],
     };

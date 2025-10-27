@@ -2,9 +2,9 @@
  * regex-replace plugin registration
  */
 
-import type { InitConfig, TaskDefinition, TaskPlugin } from '../../types.js';
-import type { RegexReplaceConfig } from './types.js';
-import { executeRegexReplace } from './executor.js';
+import type { InitConfig, TaskDefinition, TaskPlugin } from '../../types';
+import type { RegexReplaceConfig } from './types';
+import { executeRegexReplace } from './executor';
 
 export const regexReplacePlugin: TaskPlugin = {
   name: 'regex-replace',

@@ -2,25 +2,25 @@
  * Tests for content-tasks dry-run functions
  */
 
-import type { InitConfig } from '../../src/types.js';
+import type { InitConfig } from '../../src/types';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {
   getRegexReplaceDiff,
   getReplaceInFileDiff,
   getUpdateJsonDiff,
-} from '../../src/dry-run/content-tasks.js';
+} from '../../src/dry-run/content-tasks';
 
 // Mock dependencies
 vi.mock('../../src/utils', () => ({
   evaluateCondition: vi.fn(() => true),
   interpolateTemplate: vi.fn((template) => template),
 }));
-vi.mock('../../src/utils/object.js', () => ({
+vi.mock('../../src/utils/object', () => ({
   setNestedProperty: vi.fn(),
 }));
-vi.mock('../../src/dry-run/utils.js', async () => {
-  const actual = await vi.importActual('../../src/dry-run/utils.js');
+vi.mock('../../src/dry-run/utils', async () => {
+  const actual = await vi.importActual('../../src/dry-run/utils');
   return {
     ...actual,
     readFileContent: vi.fn(),
@@ -36,15 +36,13 @@ const mockInterpolateTemplate = vi.mocked(
   await import('../../src/utils'),
 ).interpolateTemplate;
 const _mockSetNestedProperty = vi.mocked(
-  await import('../../src/utils/object.js'),
+  await import('../../src/utils/object'),
 ).setNestedProperty;
 const mockReadFileContent = vi.mocked(
-  await import('../../src/dry-run/utils.js'),
+  await import('../../src/dry-run/utils'),
 ).readFileContent;
-const mockFileExists = vi.mocked(await import('../../src/dry-run/utils.js')).fileExists;
-const _mockGenerateDiff = vi.mocked(
-  await import('../../src/dry-run/utils.js'),
-).generateDiff;
+const mockFileExists = vi.mocked(await import('../../src/dry-run/utils')).fileExists;
+const _mockGenerateDiff = vi.mocked(await import('../../src/dry-run/utils')).generateDiff;
 
 const mockConfig: InitConfig = {
   projectName: 'test-repo',

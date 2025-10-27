@@ -2,10 +2,10 @@
  * Tests for prompt collection
  */
 
-import type { PromptDefinition } from '../../src/types.js';
+import type { PromptDefinition } from '../../src/types';
 import { confirm, input, number, password, select } from '@inquirer/prompts';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { collectPrompts } from '../../src/prompts/collect-prompts.js';
+import { collectPrompts } from '../../src/prompts/collect-prompts';
 
 // Mock @inquirer/prompts
 vi.mock('@inquirer/prompts', () => ({

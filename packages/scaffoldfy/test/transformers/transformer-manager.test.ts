@@ -7,12 +7,12 @@ import type {
   ComputedTransformer,
   RegexTransformer,
   Transformer,
-} from '../../src/transformers/index.js';
+} from '../../src/transformers/index';
 
 import { beforeEach, describe, expect, it } from 'vitest';
 
-import { TransformerError } from '../../src/errors/other.js';
-import { TransformerManager } from '../../src/transformers/index.js';
+import { TransformerError } from '../../src/errors/other';
+import { TransformerManager } from '../../src/transformers/index';
 
 describe('transformerManager', () => {
   let manager: TransformerManager;

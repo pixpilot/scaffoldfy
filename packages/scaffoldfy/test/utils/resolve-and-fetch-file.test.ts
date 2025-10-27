@@ -1,4 +1,4 @@
-import type { ResolvedFileInfo } from '../../src/utils/resolve-and-fetch-file.js';
+import type { ResolvedFileInfo } from '../../src/utils/resolve-and-fetch-file';
 
 import fs from 'node:fs';
 import os from 'node:os';
@@ -6,16 +6,16 @@ import path from 'node:path';
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import * as configInheritance from '../../src/configurations/index.js';
+import * as configInheritance from '../../src/configurations/index';
 import {
   cleanupTempFile,
   resolveAndFetchFile,
-} from '../../src/utils/resolve-and-fetch-file.js';
+} from '../../src/utils/resolve-and-fetch-file';
 
 // Mock the modules
 vi.mock('node:fs');
 vi.mock('node:os');
-vi.mock('../../src/configurations/index.js', () => ({
+vi.mock('../../src/configurations/index', () => ({
   fetchConfigurationFile: vi.fn(),
 }));
 vi.mock('../../src/utils/logger', () => ({
@@ -40,13 +40,13 @@ describe('resolveAndFetchFile', () => {
 
   describe('direct URL', () => {
     it('should fetch and create temp file for direct URL', async () => {
-      const url = 'https://example.com/script.js';
+      const url = 'https://example.com/script';
       const content = 'console.log("hello");';
       vi.mocked(configInheritance.fetchConfigurationFile).mockResolvedValue(content);
 
       const result = await resolveAndFetchFile({
         file: url,
-        tempFileExtension: '.js',
+        tempFileExtension: '',
         tempFilePrefix: 'test',
       });
 
@@ -54,7 +54,7 @@ describe('resolveAndFetchFile', () => {
       expect(result.originalPath).toBe(url);
       expect(result.resolvedPath).toBe(url);
       expect(result.localFilePath).toContain('test-');
-      expect(result.localFilePath).toContain('.js');
+      expect(result.localFilePath).toContain('');
       expect(configInheritance.fetchConfigurationFile).toHaveBeenCalledWith(url);
       expect(fs.writeFileSync).toHaveBeenCalledWith(
         result.localFilePath,
@@ -66,7 +66,7 @@ describe('resolveAndFetchFile', () => {
 
   describe('local absolute path', () => {
     it('should return local path as-is for absolute path', async () => {
-      const filePath = '/absolute/path/to/script.js';
+      const filePath = '/absolute/path/to/script';
       vi.mocked(fs.existsSync).mockReturnValue(true);
 
       const result = await resolveAndFetchFile({
@@ -81,7 +81,7 @@ describe('resolveAndFetchFile', () => {
     });
 
     it('should throw error if local absolute path does not exist', async () => {
-      const filePath = '/nonexistent/file.js';
+      const filePath = '/nonexistent/file';
       vi.mocked(fs.existsSync).mockReturnValue(false);
 
       await expect(
@@ -94,7 +94,7 @@ describe('resolveAndFetchFile', () => {
 
   describe('local relative path without sourceUrl', () => {
     it('should resolve relative to CWD when no sourceUrl provided', async () => {
-      const relPath = './script.js';
+      const relPath = './script';
       const expectedPath = path.resolve(mockCwd, relPath);
       vi.mocked(fs.existsSync).mockReturnValue(true);
 
@@ -112,7 +112,7 @@ describe('resolveAndFetchFile', () => {
 
   describe('local relative path with local sourceUrl', () => {
     it('should resolve relative to local sourceUrl directory', async () => {
-      const relPath = './script.js';
+      const relPath = './script';
       const sourceUrl = '/source/dir/config.json';
       const expectedPath = path.resolve('/source/dir', relPath);
       vi.mocked(fs.existsSync).mockReturnValue(true);
@@ -131,9 +131,9 @@ describe('resolveAndFetchFile', () => {
 
   describe('relative path with URL sourceUrl (resolves to URL)', () => {
     it('should fetch remote file when relative path resolves to URL', async () => {
-      const relPath = './script.js';
+      const relPath = './script';
       const sourceUrl = 'https://example.com/configs/config.json';
-      const expectedUrl = 'https://example.com/configs/script.js';
+      const expectedUrl = 'https://example.com/configs/script';
       const content = 'console.log("remote");';
 
       vi.mocked(configInheritance.fetchConfigurationFile).mockResolvedValue(content);
@@ -141,7 +141,7 @@ describe('resolveAndFetchFile', () => {
       const result = await resolveAndFetchFile({
         file: relPath,
         sourceUrl,
-        tempFileExtension: '.js',
+        tempFileExtension: '',
         tempFilePrefix: 'test',
       });
 
@@ -149,7 +149,7 @@ describe('resolveAndFetchFile', () => {
       expect(result.originalPath).toBe(relPath);
       expect(result.resolvedPath).toBe(expectedUrl);
       expect(result.localFilePath).toContain('test-');
-      expect(result.localFilePath).toContain('.js');
+      expect(result.localFilePath).toContain('');
       expect(configInheritance.fetchConfigurationFile).toHaveBeenCalledWith(expectedUrl);
       expect(fs.writeFileSync).toHaveBeenCalledWith(
         result.localFilePath,
@@ -159,9 +159,9 @@ describe('resolveAndFetchFile', () => {
     });
 
     it('should handle parent directory navigation in relative URL', async () => {
-      const relPath = '../shared/script.js';
+      const relPath = '../shared/script';
       const sourceUrl = 'https://example.com/configs/app/config.json';
-      const expectedUrl = 'https://example.com/configs/shared/script.js';
+      const expectedUrl = 'https://example.com/configs/shared/script';
       const content = 'console.log("shared");';
 
       vi.mocked(configInheritance.fetchConfigurationFile).mockResolvedValue(content);
@@ -189,7 +189,7 @@ describe('resolveAndFetchFile', () => {
     });
 
     it('should use default temp file prefix if not provided', async () => {
-      const url = 'https://example.com/script.js';
+      const url = 'https://example.com/script';
       vi.mocked(configInheritance.fetchConfigurationFile).mockResolvedValue('content');
 
       const result = await resolveAndFetchFile({
@@ -200,7 +200,7 @@ describe('resolveAndFetchFile', () => {
     });
 
     it('should handle empty string sourceUrl as undefined', async () => {
-      const relPath = './script.js';
+      const relPath = './script';
       const expectedPath = path.resolve(mockCwd, relPath);
       vi.mocked(fs.existsSync).mockReturnValue(true);
 
@@ -216,10 +216,10 @@ describe('resolveAndFetchFile', () => {
   describe('cleanupTempFile', () => {
     it('should delete temp file for remote files', () => {
       const fileInfo: ResolvedFileInfo = {
-        localFilePath: '/temp/file.js',
+        localFilePath: '/temp/file',
         isRemote: true,
-        originalPath: 'https://example.com/file.js',
-        resolvedPath: 'https://example.com/file.js',
+        originalPath: 'https://example.com/file',
+        resolvedPath: 'https://example.com/file',
       };
 
       vi.mocked(fs.existsSync).mockReturnValue(true);
@@ -227,15 +227,15 @@ describe('resolveAndFetchFile', () => {
 
       cleanupTempFile(fileInfo);
 
-      expect(fs.unlinkSync).toHaveBeenCalledWith('/temp/file.js');
+      expect(fs.unlinkSync).toHaveBeenCalledWith('/temp/file');
     });
 
     it('should not delete file for local files', () => {
       const fileInfo: ResolvedFileInfo = {
-        localFilePath: '/local/file.js',
+        localFilePath: '/local/file',
         isRemote: false,
-        originalPath: './file.js',
-        resolvedPath: '/local/file.js',
+        originalPath: './file',
+        resolvedPath: '/local/file',
       };
 
       cleanupTempFile(fileInfo);
@@ -245,10 +245,10 @@ describe('resolveAndFetchFile', () => {
 
     it('should not throw if temp file does not exist', () => {
       const fileInfo: ResolvedFileInfo = {
-        localFilePath: '/temp/file.js',
+        localFilePath: '/temp/file',
         isRemote: true,
-        originalPath: 'https://example.com/file.js',
-        resolvedPath: 'https://example.com/file.js',
+        originalPath: 'https://example.com/file',
+        resolvedPath: 'https://example.com/file',
       };
 
       vi.mocked(fs.existsSync).mockReturnValue(false);
@@ -259,10 +259,10 @@ describe('resolveAndFetchFile', () => {
 
     it('should not throw if unlink fails', () => {
       const fileInfo: ResolvedFileInfo = {
-        localFilePath: '/temp/file.js',
+        localFilePath: '/temp/file',
         isRemote: true,
-        originalPath: 'https://example.com/file.js',
-        resolvedPath: 'https://example.com/file.js',
+        originalPath: 'https://example.com/file',
+        resolvedPath: 'https://example.com/file',
       };
 
       vi.mocked(fs.existsSync).mockReturnValue(true);

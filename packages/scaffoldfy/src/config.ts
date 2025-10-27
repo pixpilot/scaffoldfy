@@ -19,7 +19,7 @@
  * }
  */
 
-import type { InitConfig } from './types.js';
+import type { InitConfig } from './types';
 
 /**
  * Create an empty initial configuration object.

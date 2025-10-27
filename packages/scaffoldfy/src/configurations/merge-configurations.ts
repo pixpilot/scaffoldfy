@@ -6,10 +6,10 @@ import type {
   TaskDefinition,
   TasksConfiguration,
   VariableDefinition,
-} from '../types.js';
+} from '../types';
 import path from 'node:path';
 import process from 'node:process';
-import { IdConflictError } from '../errors/index.js';
+import { IdConflictError } from '../errors/index';
 import { isUrl, log } from '../utils';
 import { validateUniqueIds } from './validate-unique-ids';
 

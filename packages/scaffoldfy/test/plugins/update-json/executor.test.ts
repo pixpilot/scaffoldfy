@@ -2,12 +2,12 @@
  * Tests for update-json plugin executor
  */
 
-import type { UpdateJsonConfig } from '../../../src/plugins/update-json/types.js';
-import type { InitConfig } from '../../../src/types.js';
+import type { UpdateJsonConfig } from '../../../src/plugins/update-json/types';
+import type { InitConfig } from '../../../src/types';
 import fs from 'node:fs';
 import path from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { executeUpdateJson } from '../../../src/plugins/update-json/executor.js';
+import { executeUpdateJson } from '../../../src/plugins/update-json/executor';
 
 const TEST_DIR = path.join(process.cwd(), '__test_update_json__');
 

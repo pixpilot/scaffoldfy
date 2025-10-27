@@ -2,8 +2,8 @@
  * Utility functions for template initialization
  */
 
-import type { InitConfig } from '../types.js';
-import { log } from './logger.js';
+import type { InitConfig } from '../types';
+import { log } from './logger';
 
 // Re-export logger functions for convenience
 export {
@@ -12,7 +12,7 @@ export {
   info as logInfo,
   success as logSuccess,
   warn as logWarn,
-} from './logger.js';
+} from './logger';
 
 /**
  * Evaluate a condition expression with the given config

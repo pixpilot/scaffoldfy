@@ -6,7 +6,7 @@ import type {
   PromptDefinition,
   TaskDefinition,
   VariableDefinition,
-} from '../../src/types.js';
+} from '../../src/types';
 import { describe, expect, it } from 'vitest';
 import { validateUniqueIds } from '../../src/configurations/validate-unique-ids';
 

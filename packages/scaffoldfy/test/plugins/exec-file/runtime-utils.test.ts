@@ -7,7 +7,7 @@ import {
   detectRuntimeFromExtension,
   getFileExtension,
   getRuntimeCommand,
-} from '../../../src/plugins/exec-file/runtime-utils.js';
+} from '../../../src/plugins/exec-file/runtime-utils';
 
 describe('detectRuntimeFromExtension', () => {
   it('should detect node for .js files', () => {

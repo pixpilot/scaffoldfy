@@ -13,7 +13,7 @@ import type {
   TaskType,
   UpdateJsonConfig,
   WriteConfig,
-} from '../src/types.js';
+} from '../src/types';
 import fs from 'node:fs';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';

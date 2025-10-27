@@ -4,11 +4,11 @@
  * This only tests duplicate ID detection, which JSON Schema cannot validate.
  */
 
-import type { VariableDefinition } from '../../src/types.js';
+import type { VariableDefinition } from '../../src/types';
 
 import { describe, expect, it } from 'vitest';
 
-import { validateVariables } from '../../src/variables/validate-variables.js';
+import { validateVariables } from '../../src/variables/validate-variables';
 
 describe('validateVariables', () => {
   it('should pass validation for valid variables with no duplicates', () => {

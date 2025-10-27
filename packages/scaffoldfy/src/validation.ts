@@ -2,9 +2,9 @@
  * Task validation functions - validates tasks before execution
  */
 
-import type { TaskDefinition } from './types.js';
-import { isPluginTaskType } from './plugin.js';
-import { validateTemplateConfig } from './template-utils.js';
+import type { TaskDefinition } from './types';
+import { isPluginTaskType } from './plugin';
+import { validateTemplateConfig } from './template-utils';
 import { log } from './utils';
 
 /**

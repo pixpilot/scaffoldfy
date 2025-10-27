@@ -2,10 +2,10 @@
  * Tests for default value resolution
  */
 
-import type { DefaultValue } from '../../src/types.js';
+import type { DefaultValue } from '../../src/types';
 import { execSync } from 'node:child_process';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { resolveDefaultValue } from '../../src/prompts/index.js';
+import { resolveDefaultValue } from '../../src/prompts/index';
 
 // Mock execSync for testing command execution
 vi.mock('node:child_process', () => ({
@@ -381,7 +381,7 @@ describe('exec-file default values', () => {
   it('should handle exec-file errors gracefully', async () => {
     const defaultValue: DefaultValue<string> = {
       type: 'exec-file',
-      file: '/non/existent/script.js',
+      file: '/non/existent/script',
     };
 
     const result = await resolveDefaultValue(defaultValue, 'test-prompt', {

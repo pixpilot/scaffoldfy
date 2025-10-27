@@ -2,9 +2,9 @@
  * exec-file plugin registration
  */
 
-import type { InitConfig, TaskDefinition, TaskPlugin } from '../../types.js';
-import type { ExecFileConfig } from './types.js';
-import { executeExecFile } from './executor.js';
+import type { InitConfig, TaskDefinition, TaskPlugin } from '../../types';
+import type { ExecFileConfig } from './types';
+import { executeExecFile } from './executor';
 
 export const execFilePlugin: TaskPlugin = {
   name: 'exec-file',

@@ -2,7 +2,7 @@
  * Tests for duplicate ID validation functionality
  */
 
-import type { TasksConfiguration } from '../../src/types.js';
+import type { TasksConfiguration } from '../../src/types';
 import fs from 'node:fs';
 import path from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
@@ -10,7 +10,7 @@ import {
   clearConfigurationCache,
   loadAndMergeConfiguration,
   mergeConfigurations,
-} from '../../src/configurations/index.js';
+} from '../../src/configurations/index';
 
 const testDir = path.join(process.cwd(), 'test-fixtures', 'duplicate-id-validation');
 

@@ -2,12 +2,12 @@
  * Tests for copy plugin executor
  */
 
-import type { CopyConfig } from '../../../src/plugins/copy/types.js';
-import type { InitConfig } from '../../../src/types.js';
+import type { CopyConfig } from '../../../src/plugins/copy/types';
+import type { InitConfig } from '../../../src/types';
 import fs from 'node:fs';
 import path from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { executeCopy } from '../../../src/plugins/copy/executor.js';
+import { executeCopy } from '../../../src/plugins/copy/executor';
 
 const TEST_DIR = path.join(process.cwd(), '__test_copy__');
 

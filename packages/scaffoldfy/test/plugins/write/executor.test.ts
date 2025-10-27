@@ -2,12 +2,12 @@
  * Tests for write plugin executor
  */
 
-import type { WriteConfig } from '../../../src/plugins/write/types.js';
-import type { InitConfig } from '../../../src/types.js';
+import type { WriteConfig } from '../../../src/plugins/write/types';
+import type { InitConfig } from '../../../src/types';
 import fs from 'node:fs';
 import path from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { executeWrite } from '../../../src/plugins/write/executor.js';
+import { executeWrite } from '../../../src/plugins/write/executor';
 
 const TEST_DIR = path.join(process.cwd(), '__test_write__');
 

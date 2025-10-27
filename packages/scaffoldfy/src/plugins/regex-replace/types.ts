@@ -2,7 +2,7 @@
  * regex-replace plugin types
  */
 
-import type { ConditionExpression } from '../../types.js';
+import type { ConditionExpression } from '../../types';
 
 export interface RegexReplaceConfig {
   file: string;

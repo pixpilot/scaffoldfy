@@ -15,13 +15,13 @@ import type {
   RenameConfig,
   TaskDefinition,
   WriteConfig,
-} from '../types.js';
+} from '../types';
 
 import {
   getTemplateSourceDescription,
   hasInlineTemplate,
   processTemplate,
-} from '../template-utils.js';
+} from '../template-utils';
 import { evaluateCondition, interpolateTemplate } from '../utils';
 import {
   colors,
@@ -29,7 +29,7 @@ import {
   generateDiff,
   PREVIEW_LINES,
   readFileContent,
-} from './utils.js';
+} from './utils';
 
 /**
  * Get diff for write task

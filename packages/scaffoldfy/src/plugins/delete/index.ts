@@ -2,9 +2,9 @@
  * delete plugin registration
  */
 
-import type { InitConfig, TaskDefinition, TaskPlugin } from '../../types.js';
-import type { DeleteConfig } from './types.js';
-import { executeDelete } from './executor.js';
+import type { InitConfig, TaskDefinition, TaskPlugin } from '../../types';
+import type { DeleteConfig } from './types';
+import { executeDelete } from './executor';
 
 export const deletePlugin: TaskPlugin = {
   name: 'delete',

@@ -2,12 +2,12 @@
  * Tests for move plugin executor
  */
 
-import type { MoveConfig } from '../../../src/plugins/move/types.js';
-import type { InitConfig } from '../../../src/types.js';
+import type { MoveConfig } from '../../../src/plugins/move/types';
+import type { InitConfig } from '../../../src/types';
 import fs from 'node:fs';
 import path from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { executeMove } from '../../../src/plugins/move/executor.js';
+import { executeMove } from '../../../src/plugins/move/executor';
 
 const TEST_DIR = path.join(process.cwd(), '__test_move__');
 

@@ -2,9 +2,9 @@
  * Tests for prompt validation
  */
 
-import type { PromptDefinition } from '../../src/types.js';
+import type { PromptDefinition } from '../../src/types';
 import { describe, expect, it } from 'vitest';
-import { validatePrompts } from '../../src/prompts/index.js';
+import { validatePrompts } from '../../src/prompts/index';
 
 describe('validatePrompts', () => {
   it('should return no errors for valid prompts', () => {

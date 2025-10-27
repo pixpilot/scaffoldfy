@@ -2,8 +2,8 @@
  * Collect variable values (no user interaction - just resolve and return)
  */
 
-import type { InitConfig, VariableDefinition } from '../types.js';
-import { transformerManager } from '../transformers/index.js';
+import type { InitConfig, VariableDefinition } from '../types';
+import { transformerManager } from '../transformers/index';
 
 /**
  * Collect variable values from resolved variables
