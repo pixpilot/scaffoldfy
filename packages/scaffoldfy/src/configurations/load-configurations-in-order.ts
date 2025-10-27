@@ -2,9 +2,9 @@ import type { TasksConfiguration } from '../types';
 import path from 'node:path';
 import process from 'node:process';
 import { CircularDependencyError } from '../errors/base';
-import { topologicalSortConfigs } from '../topological-sort';
 import { isUrl } from '../utils';
 import { loadConfiguration } from './load-configuration';
+import { topologicalSortConfigs } from './topological-sort';
 
 /**
  * Load all configurations recursively (without merging)

@@ -2,10 +2,10 @@
  * Tests for topological sort functionality
  */
 
-import type { TasksConfiguration } from '../src/types';
+import type { TasksConfiguration } from '../../src/types';
 import { describe, expect, it } from 'vitest';
-import { CircularDependencyError } from '../src/errors/base';
-import { topologicalSortConfigs } from '../src/topological-sort';
+import { topologicalSortConfigs } from '../../src/configurations/topological-sort';
+import { CircularDependencyError } from '../../src/errors';
 
 describe('topologicalSortConfigs', () => {
   it('should handle empty array', () => {
