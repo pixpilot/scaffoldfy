@@ -18,7 +18,10 @@
             "type": "git",
             "url": "{{repoUrl}}"
           },
-          "homepage": "{{baseRepoUrl}}"
+          "homepage": "{{baseRepoUrl}}",
+          "bugs": {
+            "url": "{{baseRepoUrl}}/issues"
+          }
         }
       }
     }
