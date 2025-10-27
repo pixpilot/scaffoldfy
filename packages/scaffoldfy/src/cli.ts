@@ -9,12 +9,12 @@ import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
 import { Command } from 'commander';
-import { loadTasksWithInheritance } from './config-inheritance.js';
+import { loadTasksWithInheritance } from './configurations/index.js';
 import { EXIT_CODE_ERROR } from './constants.js';
 import { runWithTasks } from './index.js';
-import { debug, setDebugMode } from './logger.js';
 import { validateTasksSchema } from './schema-validator.js';
 import { log } from './utils';
+import { debug, setDebugMode } from './utils/logger.js';
 
 // Interface for CLI options
 interface CliOptions {
@@ -141,12 +141,12 @@ program
               });
 
               // If we have templates (sequential mode), run them sequentially
-              if (config.templates != null && config.templates.length > 0) {
+              if (config.configs != null && config.configs.length > 0) {
                 const { runTemplatesSequentially } = await import('./run-tasks.js');
                 const { createInitialConfig } = await import('./config.js');
 
                 await runTemplatesSequentially(
-                  config.templates,
+                  config.configs,
                   {
                     dryRun: options.dryRun ?? false,
                     force: options.force ?? false,

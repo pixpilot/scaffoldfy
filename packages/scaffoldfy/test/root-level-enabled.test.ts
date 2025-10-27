@@ -24,9 +24,10 @@ describe('root-level config enabled', () => {
     });
 
     // Mock logger
-    vi.doMock('../src/logger.js', async () => {
-      const actual =
-        await vi.importActual<typeof import('../src/logger.js')>('../src/logger.js');
+    vi.doMock('../src/utils/logger.js', async () => {
+      const actual = await vi.importActual<typeof import('../src/utils/logger.js')>(
+        '../src/utils/logger.js',
+      );
       return {
         ...actual,
         info: mockInfo,

@@ -83,7 +83,7 @@ export {
   loadConfiguration,
   loadTasksWithInheritance,
   mergeConfigurations,
-} from './config-inheritance.js';
+} from './configurations/index.js';
 
 // Dry-run and diff API (documented in DRY_RUN.md)
 export {

@@ -6,7 +6,7 @@ import path from 'node:path';
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import * as configInheritance from '../../src/config-inheritance.js';
+import * as configInheritance from '../../src/configurations/index.js';
 import {
   cleanupTempFile,
   resolveAndFetchFile,
@@ -15,7 +15,7 @@ import {
 // Mock the modules
 vi.mock('node:fs');
 vi.mock('node:os');
-vi.mock('../../src/config-inheritance.js', () => ({
+vi.mock('../../src/configurations/index.js', () => ({
   fetchConfigurationFile: vi.fn(),
 }));
 vi.mock('../../src/utils/logger', () => ({

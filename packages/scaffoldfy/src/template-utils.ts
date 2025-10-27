@@ -6,7 +6,7 @@
  */
 
 import type { InitConfig, TaskDefinition } from './types.js';
-import { fetchConfigurationFile } from './config-inheritance.js';
+import { fetchConfigurationFile } from './configurations/index.js';
 import { interpolateTemplate } from './utils';
 import { resolveFilePath } from './utils/resolve-file-path.js';
 

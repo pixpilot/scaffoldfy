@@ -9,7 +9,6 @@ import type {
 import process from 'node:process';
 import { createInitialConfig } from './config.js';
 import { displayTasksDiff } from './dry-run.js';
-import { debug, info, success as logSuccess, warn } from './logger.js';
 import { callHook } from './plugin.js';
 import {
   collectPrompts,
@@ -21,6 +20,7 @@ import { topologicalSort } from './task-resolver.js';
 import { transformerManager } from './transformers/index.js';
 import { evaluateEnabled, evaluateEnabledAsync, log, logInfo } from './utils';
 import { evaluateRequiredAsync } from './utils/evaluate-required.js';
+import { debug, info, success as logSuccess, warn } from './utils/logger.js';
 import { displayValidationErrors, validateAllTasks } from './validation.js';
 import {
   collectVariables,

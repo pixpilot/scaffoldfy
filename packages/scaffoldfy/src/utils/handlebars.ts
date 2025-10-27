@@ -9,7 +9,7 @@ import path from 'node:path';
 import process from 'node:process';
 import Handlebars from 'handlebars';
 import { ConfigurationFileNotFoundError } from '../errors/config.js';
-import { log } from '../logger.js';
+import { log } from './logger.js';
 
 // Re-export logger functions for convenience
 export {

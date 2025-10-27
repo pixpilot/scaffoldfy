@@ -7,7 +7,10 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { clearConfigurationCache, loadConfiguration } from '../src/config-inheritance.js';
+import {
+  clearConfigurationCache,
+  loadConfiguration,
+} from '../src/configurations/index.js';
 import { InvalidConfigError } from '../src/errors/config.js';
 
 describe('template name validation and dependencies', () => {

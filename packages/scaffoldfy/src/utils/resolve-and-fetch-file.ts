@@ -5,7 +5,7 @@
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { fetchConfigurationFile } from '../config-inheritance.js';
+import { fetchConfigurationFile } from '../configurations/index.js';
 import { isUrl } from './is-url.js';
 import { debug } from './logger.js';
 import { resolveFilePath } from './resolve-file-path.js';
