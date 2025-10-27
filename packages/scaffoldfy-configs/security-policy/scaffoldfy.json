@@ -3,6 +3,7 @@
   "description": "Security policy template with configurable contact email",
   "name": "security-policy",
   "dependencies": ["project-info"],
+
   "prompts": [
     {
       "id": "addSecurityFile",
@@ -22,7 +23,7 @@
       },
       "default": {
         "type": "conditional",
-        "condition": "orgName === 'pixpilot'",
+        "condition": "is_pixpilot_organization === true",
         "ifTrue": "security@pixpilot.com",
         "ifFalse": {
           "type": "interpolate",

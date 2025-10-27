@@ -12,6 +12,15 @@
         "ifTrue": true,
         "ifFalse": false
       }
+    },
+    {
+      "id": "is_pixpilot_organization",
+      "value": {
+        "type": "conditional",
+        "condition": "repoOwner === 'pixpilot' || orgName === 'PixPilot' || orgName === 'pixpilot'",
+        "ifTrue": true,
+        "ifFalse": false
+      }
     }
   ]
 }
