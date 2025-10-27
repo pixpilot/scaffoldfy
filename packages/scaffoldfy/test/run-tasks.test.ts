@@ -6,7 +6,7 @@ import type { InitConfig, TaskDefinition } from '../src/types.js';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { createInitialConfig } from '../src/config.js';
-import { displayTasksDiff } from '../src/dry-run.js';
+import { displayTasksDiff } from '../src/dry-run';
 import { runTasks } from '../src/run-tasks.js';
 import { runTask } from '../src/task-executors.js';
 import { topologicalSort } from '../src/task-resolver.js';
@@ -18,7 +18,7 @@ vi.mock('../src/config.js');
 vi.mock('../src/task-executors.js');
 vi.mock('../src/task-resolver.js');
 vi.mock('../src/utils');
-vi.mock('../src/dry-run.js');
+vi.mock('../src/dry-run');
 vi.mock('../src/validation.js');
 vi.mock('node:process', () => ({
   default: {

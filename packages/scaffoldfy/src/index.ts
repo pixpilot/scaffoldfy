@@ -96,7 +96,7 @@ export {
   getReplaceInFileDiff,
   getTaskDiff,
   getUpdateJsonDiff,
-} from './dry-run.js';
+} from './dry-run/index.js';
 
 // Plugin API (documented in PLUGINS.md)
 export {

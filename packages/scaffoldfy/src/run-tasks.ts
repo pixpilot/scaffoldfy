@@ -8,7 +8,7 @@ import type {
 } from './types.js';
 import process from 'node:process';
 import { createInitialConfig } from './config.js';
-import { displayTasksDiff } from './dry-run.js';
+import { displayTasksDiff } from './dry-run';
 import { callHook } from './plugin.js';
 import {
   collectPrompts,
