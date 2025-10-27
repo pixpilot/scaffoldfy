@@ -1,5 +1,16 @@
 # @pixpilot/scaffoldfy
 
+## 0.41.0
+
+### Minor Changes
+
+- move `createInitialConfig` to `configurations/initial-config`
+- refactor test directories to use `getTestTempFilesDir`
+
+### Patch Changes
+
+- update path structure in `getTestTempFilesDir`
+
 ## 0.40.0
 
 ### Minor Changes
