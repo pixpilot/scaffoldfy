@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy
 
+## 0.39.0
+
+### Minor Changes
+
+- refactor config handlers
+
 ## 0.38.0
 
 ### Minor Changes
