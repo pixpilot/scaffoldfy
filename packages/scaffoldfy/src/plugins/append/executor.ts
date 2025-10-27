@@ -9,7 +9,7 @@ import path from 'node:path';
 import process from 'node:process';
 import { promisify } from 'node:util';
 import { PluginConfigurationError } from '../../errors/other';
-import { processTemplate, validateTemplateConfig } from '../../template-utils';
+import { processTemplate, validateTemplateConfig } from '../../template';
 import { evaluateCondition, log } from '../../utils';
 
 const appendFile = promisify(fs.appendFile);

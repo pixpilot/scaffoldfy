@@ -110,7 +110,7 @@ export {
   registerHooks,
   registerPlugin,
   unregisterPlugin,
-} from './plugin';
+} from './plugin-registry';
 
 // JSON validation API (documented in JSON_VALIDATION.md)
 export { validateScaffoldfyJsonFile } from './scaffoldfy-config-json-validator';

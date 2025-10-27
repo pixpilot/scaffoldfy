@@ -13,7 +13,7 @@ import {
   processTemplate,
   shouldUseHandlebars,
   validateTemplateConfig,
-} from '../src/template-utils';
+} from '../src/template';
 
 const TEST_DIR = path.join(process.cwd(), '__test_template_utils__');
 

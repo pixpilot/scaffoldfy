@@ -9,7 +9,7 @@ import type {
 import process from 'node:process';
 import { createInitialConfig } from './config';
 import { displayTasksDiff } from './dry-run';
-import { callHook } from './plugin';
+import { callHook } from './plugin-registry';
 import {
   collectPrompts,
   resolveAllDefaultValues,

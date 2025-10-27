@@ -3,8 +3,8 @@
  */
 
 import type { TaskDefinition } from './types';
-import { isPluginTaskType } from './plugin';
-import { validateTemplateConfig } from './template-utils';
+import { isPluginTaskType } from './plugin-registry';
+import { validateTemplateConfig } from './template/template-utils';
 import { log } from './utils';
 
 /**

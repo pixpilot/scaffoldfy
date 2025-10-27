@@ -4,7 +4,7 @@
 
 import type { InitConfig, TaskDefinition } from './types';
 import process from 'node:process';
-import { executePluginTask, isPluginTaskType, registerPlugin } from './plugin';
+import { executePluginTask, isPluginTaskType, registerPlugin } from './plugin-registry';
 import { appendPlugin } from './plugins/append/index';
 import { copyPlugin } from './plugins/copy/index';
 import { createPlugin } from './plugins/create/index';

@@ -21,10 +21,12 @@ vi.mock('../../src/utils', () => ({
   evaluateCondition: vi.fn(() => true),
   interpolateTemplate: vi.fn((template) => template),
 }));
-vi.mock('../../src/template-utils', () => ({
+vi.mock('../../src/template/template-utils', () => ({
   getTemplateSourceDescription: vi.fn(() => 'template'),
   hasInlineTemplate: vi.fn(() => true),
-  processTemplate: vi.fn((template) => template),
+}));
+vi.mock('../../src/template/process-template', () => ({
+  processTemplate: vi.fn(),
 }));
 vi.mock('../../src/dry-run/utils', async () => {
   const actual = await vi.importActual('../../src/dry-run/utils');
@@ -47,13 +49,11 @@ const mockReadFileContent = vi.mocked(
 ).readFileContent;
 const mockFileExists = vi.mocked(await import('../../src/dry-run/utils')).fileExists;
 const mockGetTemplateSourceDescription = vi.mocked(
-  await import('../../src/template-utils'),
+  await import('../../src/template/template-utils'),
 ).getTemplateSourceDescription;
-const _mockHasInlineTemplate = vi.mocked(
-  await import('../../src/template-utils'),
-).hasInlineTemplate;
+
 const mockProcessTemplate = vi.mocked(
-  await import('../../src/template-utils'),
+  await import('../../src/template/process-template'),
 ).processTemplate;
 
 const mockConfig: InitConfig = {

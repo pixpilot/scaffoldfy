@@ -21,7 +21,7 @@ import {
   getTemplateSourceDescription,
   hasInlineTemplate,
   processTemplate,
-} from '../template-utils';
+} from '../template';
 import { evaluateCondition, interpolateTemplate } from '../utils';
 import {
   colors,
