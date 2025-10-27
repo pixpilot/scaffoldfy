@@ -16,6 +16,29 @@ const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
 
 /**
+ * Find the schema file by checking multiple possible locations
+ * This handles both dev (src/) and prod (dist/) environments
+ */
+function findSchemaPath(): string {
+  // Possible schema locations relative to this file
+  const possiblePaths = [
+    // From dist/scaffoldfy-config-validator/ or dist/ (chunk files)
+    path.join(dirname, '..', 'schema', 'scaffoldfy.schema.json'),
+    // From src/scaffoldfy-config-validator/
+    path.join(dirname, '..', '..', 'schema', 'scaffoldfy.schema.json'),
+  ];
+
+  for (const schemaPath of possiblePaths) {
+    if (fs.existsSync(schemaPath)) {
+      return schemaPath;
+    }
+  }
+
+  // Fallback to the most common location
+  return path.join(dirname, '..', 'schema', 'scaffoldfy.schema.json');
+}
+
+/**
  * Create and configure Ajv instance
  */
 function createValidator(): Ajv {
@@ -74,10 +97,14 @@ function validateAgainstSchema(
  * Resolve schema path from $schema reference
  */
 function resolveSchemaPath(schemaRef: string, jsonFilePath: string): string | null {
-  // Handle HTTP URLs
+  // Handle HTTP URLs - these should resolve to the local schema file
   if (schemaRef.startsWith('http')) {
-    if (schemaRef.includes('scaffoldfy/schema')) {
-      return path.join(dirname, '..', '..', 'schema', 'scaffoldfy.schema.json');
+    // Check if it's referencing the scaffoldfy schema (supports various URL formats)
+    if (
+      schemaRef.includes('scaffoldfy/schema') ||
+      schemaRef.includes('@pixpilot/scaffoldfy')
+    ) {
+      return findSchemaPath();
     }
     return null;
   }
@@ -255,7 +282,7 @@ export function validateTasksSchema(
   options: { silent?: boolean } = {},
 ): { valid: boolean; errors: string[] } {
   try {
-    const schemaPath = path.join(dirname, '..', '..', 'schema', 'scaffoldfy.schema.json');
+    const schemaPath = findSchemaPath();
     const schema = loadSchema(schemaPath);
 
     const result = validateAgainstSchema(tasksConfig, schema, {
