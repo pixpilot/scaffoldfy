@@ -143,7 +143,9 @@ program
               // If we have templates (sequential mode), run them sequentially
               if (config.configs != null && config.configs.length > 0) {
                 const { runTemplatesSequentially } = await import('./run-tasks');
-                const { createInitialConfig } = await import('./config');
+                const { createInitialConfig } = await import(
+                  './configurations/initial-config'
+                );
 
                 await runTemplatesSequentially(
                   config.configs,

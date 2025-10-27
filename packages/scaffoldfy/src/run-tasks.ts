@@ -7,7 +7,7 @@ import type {
   VariableDefinition,
 } from './types';
 import process from 'node:process';
-import { createInitialConfig } from './config';
+import { createInitialConfig } from './configurations/initial-config';
 import { displayTasksDiff } from './dry-run';
 import { callHook } from './plugin-registry';
 import {

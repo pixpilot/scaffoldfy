@@ -5,7 +5,7 @@
 import type { InitConfig, TaskDefinition } from '../src/types';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { createInitialConfig } from '../src/config';
+import { createInitialConfig } from '../src/configurations/initial-config';
 import { displayTasksDiff } from '../src/dry-run';
 import { runTasks } from '../src/run-tasks';
 import { runTask } from '../src/task-executors';
@@ -14,7 +14,7 @@ import { evaluateEnabled, evaluateEnabledAsync } from '../src/utils';
 import { validateAllTasks } from '../src/validation';
 
 // Mock dependencies
-vi.mock('../src/config');
+vi.mock('../src/configurations/initial-config');
 vi.mock('../src/task-executors');
 vi.mock('../src/task-resolver');
 vi.mock('../src/utils');
