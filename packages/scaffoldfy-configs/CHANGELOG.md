@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy-configs
 
+## 0.11.0
+
+### Minor Changes
+
+- add conditional check for PixPilot organization
+
 ## 0.10.1
 
 ### Patch Changes
