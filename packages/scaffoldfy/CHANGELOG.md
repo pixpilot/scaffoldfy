@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy
 
+## 0.42.0
+
+### Minor Changes
+
+- enhance schema path resolution for validation
+
 ## 0.41.0
 
 ### Minor Changes
