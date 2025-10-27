@@ -1,4 +1,4 @@
-import type { TasksConfiguration } from '../types';
+import type { ScaffoldfyConfiguration } from '../types';
 import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
@@ -26,7 +26,7 @@ const readFile = promisify(fs.readFile);
 export async function loadConfiguration(
   configPath: string,
   visitedPaths: Set<string> = new Set(),
-): Promise<TasksConfiguration> {
+): Promise<ScaffoldfyConfiguration> {
   // Check if it's a URL
   const isRemote = isUrl(configPath);
 
@@ -70,10 +70,10 @@ export async function loadConfiguration(
   }
 
   // Parse the configuration file
-  let config: TasksConfiguration;
+  let config: ScaffoldfyConfiguration;
 
   try {
-    config = JSON.parse(content) as TasksConfiguration;
+    config = JSON.parse(content) as ScaffoldfyConfiguration;
   } catch (error) {
     throw ConfigParseError.forFile(
       resolvedPath,

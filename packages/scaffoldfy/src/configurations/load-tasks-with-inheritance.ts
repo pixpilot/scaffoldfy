@@ -1,8 +1,8 @@
 import type {
   EnabledValue,
   PromptDefinition,
+  ScaffoldfyConfiguration,
   TaskDefinition,
-  TasksConfiguration,
   VariableDefinition,
 } from '../types';
 import { debug, log } from '../utils';
@@ -20,7 +20,7 @@ export async function loadAndMergeConfiguration(
   configPath: string,
   baseDir?: string,
   visitedPaths: Set<string> = new Set(),
-): Promise<TasksConfiguration> {
+): Promise<ScaffoldfyConfiguration> {
   // Use the new loadConfigurationsInOrder function
   const sortedConfigurations = await loadConfigurationsInOrder(
     configPath,
@@ -47,7 +47,7 @@ export async function loadTasksWithInheritance(
   variables?: VariableDefinition[];
   prompts?: PromptDefinition[];
   enabled?: EnabledValue;
-  configs?: TasksConfiguration[];
+  configs?: ScaffoldfyConfiguration[];
   transformers?: import('../transformers/types').Transformer[];
 }> {
   debug(`Loading tasks from ${tasksFilePath}...`);

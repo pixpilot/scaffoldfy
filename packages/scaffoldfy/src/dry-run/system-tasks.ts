@@ -4,7 +4,7 @@
  * Functions for generating diffs for tasks that perform system operations.
  */
 
-import type { ExecConfig, GitInitConfig, InitConfig } from '../types';
+import type { CurrentConfigurationContext, ExecConfig, GitInitConfig } from '../types';
 
 import process from 'node:process';
 
@@ -42,7 +42,10 @@ export function getGitInitDiff(config: GitInitConfig): string {
 /**
  * Get diff for exec task
  */
-export function getExecDiff(config: ExecConfig, initConfig: InitConfig): string {
+export function getExecDiff(
+  config: ExecConfig,
+  initConfig: CurrentConfigurationContext,
+): string {
   // Check condition
   if (config.condition != null && config.condition !== '') {
     const shouldExecute = evaluateCondition(config.condition, initConfig);

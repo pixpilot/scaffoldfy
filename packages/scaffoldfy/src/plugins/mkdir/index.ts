@@ -2,7 +2,11 @@
  * mkdir plugin registration
  */
 
-import type { InitConfig, TaskDefinition, TaskPlugin } from '../../types';
+import type {
+  CurrentConfigurationContext,
+  TaskDefinition,
+  TaskPlugin,
+} from '../../types';
 import type { MkdirConfig } from './types';
 import { executeMkdir } from './executor';
 
@@ -12,7 +16,7 @@ export const mkdirPlugin: TaskPlugin = {
   taskTypes: ['mkdir'],
   execute: async (
     task: TaskDefinition,
-    config: InitConfig,
+    config: CurrentConfigurationContext,
     options: { dryRun: boolean },
   ): Promise<void> => {
     if (options.dryRun) {

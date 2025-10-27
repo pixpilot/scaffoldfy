@@ -3,7 +3,7 @@
  */
 
 import type { MoveConfig } from '../../../src/plugins/move/types';
-import type { InitConfig } from '../../../src/types';
+import type { CurrentConfigurationContext } from '../../../src/types';
 import fs from 'node:fs';
 import path from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
@@ -12,7 +12,7 @@ import { getTestTempFilesDir } from '../../test-utils';
 
 const TEST_DIR = getTestTempFilesDir('__test_move__');
 
-const mockConfig: InitConfig = {
+const mockConfig: CurrentConfigurationContext = {
   projectName: 'test-repo',
   shouldMove: true,
 };

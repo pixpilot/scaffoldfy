@@ -2,7 +2,7 @@
  * Tests for dry-run module
  */
 
-import type { InitConfig, TaskDefinition } from '../../src/types';
+import type { CurrentConfigurationContext, TaskDefinition } from '../../src/types';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { displayTasksDiff, getTaskDiff } from '../../src/dry-run/index';
@@ -53,7 +53,7 @@ const mockReadFileContent = vi.mocked(
 ).readFileContent;
 const mockFileExists = vi.mocked(await import('../../src/dry-run/utils')).fileExists;
 
-const mockConfig: InitConfig = {
+const mockConfig: CurrentConfigurationContext = {
   projectName: 'test-repo',
   owner: 'test-owner',
   repoUrl: 'https://github.com/test-owner/test-repo.git',

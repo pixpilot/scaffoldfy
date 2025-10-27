@@ -19,12 +19,12 @@
  * }
  */
 
-import type { InitConfig } from '../types';
+import type { CurrentConfigurationContext } from '../types';
 
 /**
  * Create an empty initial configuration object.
  * Configuration will be populated by prompts.
  */
-export function createInitialConfig(): InitConfig {
+export function createInitialConfig(): CurrentConfigurationContext {
   return {};
 }

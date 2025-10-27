@@ -2,7 +2,7 @@
  * Utility functions for template initialization
  */
 
-import type { InitConfig } from '../types';
+import type { CurrentConfigurationContext } from '../types';
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -24,7 +24,7 @@ export {
  */
 export function compileHandlebarsTemplateFile(
   templatePath: string,
-  config: InitConfig,
+  config: CurrentConfigurationContext,
 ): string {
   try {
     const absolutePath = path.isAbsolute(templatePath)
@@ -49,7 +49,10 @@ export function compileHandlebarsTemplateFile(
 /**
  * Compile a template string using Handlebars
  */
-export function compileHandlebarsTemplate(template: string, config: InitConfig): string {
+export function compileHandlebarsTemplate(
+  template: string,
+  config: CurrentConfigurationContext,
+): string {
   try {
     const compiledTemplate = Handlebars.compile(template);
     return compiledTemplate(config);

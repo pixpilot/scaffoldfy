@@ -2,7 +2,11 @@
  * update-json plugin registration
  */
 
-import type { InitConfig, TaskDefinition, TaskPlugin } from '../../types';
+import type {
+  CurrentConfigurationContext,
+  TaskDefinition,
+  TaskPlugin,
+} from '../../types';
 import type { UpdateJsonConfig } from './types';
 import { executeUpdateJson } from './executor';
 
@@ -12,7 +16,7 @@ export const updateJsonPlugin: TaskPlugin = {
   taskTypes: ['update-json'],
   execute: async (
     task: TaskDefinition,
-    config: InitConfig,
+    config: CurrentConfigurationContext,
     options: { dryRun: boolean },
   ): Promise<void> => {
     if (options.dryRun) {

@@ -1,6 +1,7 @@
 export * from './conditions';
 export * from './evaluate-enabled';
 export * from './evaluate-required';
+export * from './get-source-display-name';
 export * from './handlebars';
 export * from './is-url';
 export * from './logger';

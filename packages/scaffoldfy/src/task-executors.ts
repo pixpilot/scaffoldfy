@@ -2,7 +2,7 @@
  * Task execution functions and built-in plugin registration
  */
 
-import type { InitConfig, TaskDefinition } from './types';
+import type { CurrentConfigurationContext, TaskDefinition } from './types';
 import process from 'node:process';
 import { executePluginTask, isPluginTaskType, registerPlugin } from './plugin-registry';
 import { appendPlugin } from './plugins/append/index';
@@ -49,7 +49,7 @@ export function registerBuiltInPlugins(): void {
  */
 export async function executeTask(
   task: TaskDefinition,
-  config: InitConfig,
+  config: CurrentConfigurationContext,
   dryRun = false,
 ): Promise<void> {
   // Ensure built-in plugins are registered
@@ -75,7 +75,7 @@ export async function executeTask(
  */
 export async function runTask(
   task: TaskDefinition,
-  config: InitConfig,
+  config: CurrentConfigurationContext,
   taskNumber: number,
   totalTasks: number,
   dryRun = false,

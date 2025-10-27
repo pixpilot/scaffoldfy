@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { validateScaffoldfyJsonFile } from '../../src/scaffoldfy-config-json-validator/validate-scaffoldfy-json';
+import { validateScaffoldfyJsonFile } from '../../src/scaffoldfy-config-validator/validate-scaffoldfy-json';
 
 // Helper to create a temp JSON file for testing
 function createTempJsonFile(content: object, filename: string) {

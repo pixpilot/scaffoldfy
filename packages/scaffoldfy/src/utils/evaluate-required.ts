@@ -2,14 +2,17 @@
  * Evaluate required value (boolean or conditional expression)
  */
 
-import type { DynamicBooleanValue, InitConfig } from '../types';
+import type { CurrentConfigurationContext, DynamicBooleanValue } from '../types';
 
 /**
  * Evaluate a condition for the 'required' property
  * Unlike evaluateCondition which returns false on errors,
  * this returns true on errors (fail-safe: treat as required when uncertain)
  */
-function evaluateRequiredCondition(condition: string, config: InitConfig): boolean {
+function evaluateRequiredCondition(
+  condition: string,
+  config: CurrentConfigurationContext,
+): boolean {
   try {
     // Use all config properties as context
     const context = { ...config };
@@ -72,7 +75,7 @@ function normalizeRequiredValue(
  */
 export function evaluateRequired(
   required: DynamicBooleanValue | undefined,
-  config: InitConfig,
+  config: CurrentConfigurationContext,
 ): boolean {
   // Normalize to new format for consistent handling
   const normalizedRequired = normalizeRequiredValue(required);
@@ -119,7 +122,7 @@ export function evaluateRequired(
  */
 export async function evaluateRequiredAsync(
   required: DynamicBooleanValue | undefined,
-  config: InitConfig,
+  config: CurrentConfigurationContext,
 ): Promise<boolean> {
   // Normalize to new format for consistent handling
   const normalizedRequired = normalizeRequiredValue(required);

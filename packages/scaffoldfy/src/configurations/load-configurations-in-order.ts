@@ -1,4 +1,4 @@
-import type { TasksConfiguration } from '../types';
+import type { ScaffoldfyConfiguration } from '../types';
 import path from 'node:path';
 import process from 'node:process';
 import { CircularDependencyError } from '../errors/base';
@@ -20,7 +20,7 @@ async function loadAllConfigurationsRecursive(
   baseDir: string | undefined,
   visitedPaths: Set<string>,
   visitingPaths: Set<string>,
-  allConfigurations: TasksConfiguration[],
+  allConfigurations: ScaffoldfyConfiguration[],
 ): Promise<void> {
   // Check if configPath is a URL
   const isRemote = isUrl(configPath);
@@ -102,9 +102,9 @@ export async function loadConfigurationsInOrder(
   configPath: string,
   baseDir?: string,
   visitedPaths: Set<string> = new Set(),
-): Promise<TasksConfiguration[]> {
+): Promise<ScaffoldfyConfiguration[]> {
   // Collect all configurations first (without merging)
-  const allConfigurations: TasksConfiguration[] = [];
+  const allConfigurations: ScaffoldfyConfiguration[] = [];
   const visitingPaths = new Set<string>();
   await loadAllConfigurationsRecursive(
     configPath,

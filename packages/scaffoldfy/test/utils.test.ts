@@ -2,12 +2,12 @@
  * Tests for utility functions
  */
 
-import type { InitConfig } from '../src/types';
+import type { CurrentConfigurationContext } from '../src/types';
 import { describe, expect, it } from 'vitest';
 import { evaluateCondition, evaluateEnabled, interpolateTemplate } from '../src/utils';
 
 describe('template Interpolation', () => {
-  const config: InitConfig = {
+  const config: CurrentConfigurationContext = {
     projectName: 'my-repo',
     repoUrl: 'https://github.com/my-owner/my-repo.git',
     author: 'John Doe',
@@ -52,7 +52,7 @@ Author: {{author}}`;
 });
 
 describe('condition Evaluation', () => {
-  const config: InitConfig = {
+  const config: CurrentConfigurationContext = {
     projectType: 'monorepo',
     orgName: '@test',
     keepExamples: true,
@@ -94,12 +94,12 @@ describe('condition Evaluation', () => {
   });
 
   it('should return false for undefined variables in normal mode', () => {
-    const emptyConfig: InitConfig = {};
+    const emptyConfig: CurrentConfigurationContext = {};
     expect(evaluateCondition('undefinedVar === true', emptyConfig)).toBe(false);
   });
 
   it('should return true for undefined variables in lazy mode', () => {
-    const emptyConfig: InitConfig = {};
+    const emptyConfig: CurrentConfigurationContext = {};
     expect(evaluateCondition('undefinedVar === true', emptyConfig, { lazy: true })).toBe(
       true,
     );
@@ -114,7 +114,7 @@ describe('condition Evaluation', () => {
   });
 
   it('should handle complex conditions with undefined variables in lazy mode', () => {
-    const emptyConfig: InitConfig = {};
+    const emptyConfig: CurrentConfigurationContext = {};
     // In lazy mode, if any variable is undefined (ReferenceError), return true
     expect(
       evaluateCondition('addSecurityFile === true', emptyConfig, { lazy: true }),
@@ -123,7 +123,7 @@ describe('condition Evaluation', () => {
 });
 
 describe('evaluate Enabled', () => {
-  const config: InitConfig = {
+  const config: CurrentConfigurationContext = {
     useTypeScript: true,
     projectType: 'monorepo',
   };
@@ -168,14 +168,14 @@ describe('evaluate Enabled', () => {
   });
 
   it('should return false for undefined variables in normal mode', () => {
-    const emptyConfig: InitConfig = {};
+    const emptyConfig: CurrentConfigurationContext = {};
     expect(
       evaluateEnabled({ type: 'condition', value: 'missingVar === true' }, emptyConfig),
     ).toBe(false);
   });
 
   it('should return true for undefined variables in lazy mode', () => {
-    const emptyConfig: InitConfig = {};
+    const emptyConfig: CurrentConfigurationContext = {};
     expect(
       evaluateEnabled({ type: 'condition', value: 'missingVar === true' }, emptyConfig, {
         lazy: true,
@@ -197,7 +197,7 @@ describe('evaluate Enabled', () => {
   });
 
   it('should handle complex conditions with undefined variables in lazy mode', () => {
-    const emptyConfig: InitConfig = {};
+    const emptyConfig: CurrentConfigurationContext = {};
     expect(
       evaluateEnabled(
         { type: 'condition', value: 'addSecurityFile === true' },

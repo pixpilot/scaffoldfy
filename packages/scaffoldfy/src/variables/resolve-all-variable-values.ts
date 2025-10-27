@@ -3,7 +3,7 @@
  */
 
 /* eslint-disable no-await-in-loop */
-import type { InitConfig, VariableDefinition } from '../types';
+import type { CurrentConfigurationContext, VariableDefinition } from '../types';
 import { evaluateEnabledAsync, resolveValue } from '../utils';
 
 /**
@@ -17,7 +17,7 @@ import { evaluateEnabledAsync, resolveValue } from '../utils';
  */
 export async function resolveAllVariableValues(
   variables: VariableDefinition[],
-  context?: InitConfig,
+  context?: CurrentConfigurationContext,
   options?: { skipConditional?: boolean },
 ): Promise<Map<string, unknown>> {
   const resolved = new Map<string, unknown>();

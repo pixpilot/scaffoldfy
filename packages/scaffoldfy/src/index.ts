@@ -113,7 +113,7 @@ export {
 } from './plugin-registry';
 
 // JSON validation API (documented in JSON_VALIDATION.md)
-export { validateScaffoldfyJsonFile } from './scaffoldfy-config-json-validator';
+export { validateScaffoldfyJsonFile } from './scaffoldfy-config-validator';
 
 // Type exports
 export type * from './types';

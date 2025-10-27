@@ -2,7 +2,7 @@
  * copy plugin executor
  */
 
-import type { InitConfig } from '../../types';
+import type { CurrentConfigurationContext } from '../../types';
 import type { CopyConfig } from './types';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -41,7 +41,7 @@ async function copyDirectory(src: string, dest: string): Promise<void> {
  */
 export async function executeCopy(
   config: CopyConfig,
-  initConfig: InitConfig,
+  initConfig: CurrentConfigurationContext,
 ): Promise<void> {
   // Check condition if specified
   if (config.condition != null && config.condition !== '') {

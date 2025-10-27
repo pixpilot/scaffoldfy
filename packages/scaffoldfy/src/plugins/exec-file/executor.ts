@@ -2,7 +2,7 @@
  * exec-file plugin executor
  */
 
-import type { InitConfig, TaskDefinition } from '../../types';
+import type { CurrentConfigurationContext, TaskDefinition } from '../../types';
 import type { ExecFileConfig } from './types';
 import { evaluateCondition } from '../../utils';
 import { executeScriptFile } from './execute-script-file';
@@ -12,7 +12,7 @@ import { executeScriptFile } from './execute-script-file';
  */
 export async function executeExecFile(
   config: ExecFileConfig,
-  initConfig: InitConfig,
+  initConfig: CurrentConfigurationContext,
   task?: TaskDefinition,
 ): Promise<void> {
   // Check condition if specified

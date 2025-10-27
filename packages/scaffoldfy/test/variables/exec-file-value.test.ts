@@ -2,7 +2,7 @@
  * Tests for exec-file value resolution in variables
  */
 
-import type { InitConfig } from '../../src/types';
+import type { CurrentConfigurationContext } from '../../src/types';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -156,7 +156,7 @@ describe('resolveVariableValue with exec-file', () => {
       'utf-8',
     );
 
-    const context: InitConfig = {
+    const context: CurrentConfigurationContext = {
       name: 'Alice',
       age: 30,
     };
@@ -212,7 +212,7 @@ describe('resolveVariableValue with exec-file', () => {
     const scriptPath = path.join(tempDir, `test-script-${Date.now()}.cjs`);
     fs.writeFileSync(scriptPath, 'console.log(process.env.USER_NAME);', 'utf-8');
 
-    const context: InitConfig = {
+    const context: CurrentConfigurationContext = {
       userName: 'Bob',
     };
 
@@ -241,7 +241,7 @@ describe('resolveVariableValue with exec-file', () => {
     const scriptPath = path.join(tempDir, scriptName);
     fs.writeFileSync(scriptPath, 'console.log("interpolated path");', 'utf-8');
 
-    const context: InitConfig = {
+    const context: CurrentConfigurationContext = {
       tempDir,
       scriptName,
     };

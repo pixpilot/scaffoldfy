@@ -2,7 +2,11 @@
  * Tests for task execution functions
  */
 
-import type { InitConfig, TaskDefinition, TaskPlugin } from '../../src/types';
+import type {
+  CurrentConfigurationContext,
+  TaskDefinition,
+  TaskPlugin,
+} from '../../src/types';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   clearPlugins,
@@ -42,7 +46,7 @@ describe('task execution', () => {
         config: { test: true },
       };
 
-      const config: InitConfig = {
+      const config: CurrentConfigurationContext = {
         repoName: 'test',
         repoOwner: 'owner',
         repoUrl: 'url',
@@ -67,7 +71,7 @@ describe('task execution', () => {
         config: {},
       };
 
-      const config: InitConfig = {
+      const config: CurrentConfigurationContext = {
         repoName: 'test',
         repoOwner: 'owner',
         repoUrl: 'url',
@@ -104,7 +108,7 @@ describe('task execution', () => {
         config: {},
       };
 
-      const config: InitConfig = {
+      const config: CurrentConfigurationContext = {
         repoName: 'test',
         repoOwner: 'owner',
         repoUrl: 'url',
@@ -138,7 +142,7 @@ describe('task execution', () => {
         config: {},
       };
 
-      const config: InitConfig = {
+      const config: CurrentConfigurationContext = {
         repoName: 'test',
         repoOwner: 'owner',
         repoUrl: 'url',
@@ -163,7 +167,7 @@ describe('task execution', () => {
         config: {},
       };
 
-      const config: InitConfig = {
+      const config: CurrentConfigurationContext = {
         repoName: 'test',
         repoOwner: 'owner',
         repoUrl: 'url',

@@ -9,10 +9,10 @@ import type {
   AppendConfig,
   CopyConfig,
   CreateConfig,
+  CurrentConfigurationContext,
   DeleteConfig,
   ExecConfig,
   GitInitConfig,
-  InitConfig,
   MkdirConfig,
   MoveConfig,
   RegexReplaceConfig,
@@ -46,7 +46,7 @@ import { colors, SEPARATOR_LENGTH } from './utils';
  */
 export async function getTaskDiff(
   task: TaskDefinition,
-  initConfig: InitConfig,
+  initConfig: CurrentConfigurationContext,
 ): Promise<string> {
   try {
     switch (task.type) {
@@ -96,7 +96,7 @@ export async function getTaskDiff(
  */
 export async function displayTasksDiff(
   tasks: TaskDefinition[],
-  initConfig: InitConfig,
+  initConfig: CurrentConfigurationContext,
 ): Promise<void> {
   console.log(
     `${colors.blue}═══════════════════════════════════════════════════════${colors.reset}`,

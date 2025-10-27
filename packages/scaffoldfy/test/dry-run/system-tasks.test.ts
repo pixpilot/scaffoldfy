@@ -2,7 +2,7 @@
  * Tests for system-tasks dry-run functions
  */
 
-import type { InitConfig } from '../../src/types';
+import type { CurrentConfigurationContext } from '../../src/types';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { getExecDiff, getGitInitDiff } from '../../src/dry-run/system-tasks';
@@ -28,7 +28,7 @@ const mockInterpolateTemplate = vi.mocked(
 ).interpolateTemplate;
 const mockFileExists = vi.mocked(await import('../../src/dry-run/utils')).fileExists;
 
-const mockConfig: InitConfig = {
+const mockConfig: CurrentConfigurationContext = {
   projectName: 'test-repo',
   owner: 'test-owner',
   repoUrl: 'https://github.com/test-owner/test-repo.git',

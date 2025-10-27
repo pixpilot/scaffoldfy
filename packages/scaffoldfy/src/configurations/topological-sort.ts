@@ -6,7 +6,7 @@
  * of independent configs.
  */
 
-import type { TasksConfiguration } from '../types';
+import type { ScaffoldfyConfiguration } from '../types';
 import { CircularDependencyError } from '../errors/base';
 
 /**
@@ -17,16 +17,16 @@ import { CircularDependencyError } from '../errors/base';
  * will maintain their original position in the array. Only configs with
  * dependency relationships will be reordered.
  *
- * @param templates - Array of configs to sort
+ * @param configs - Array of configs to sort
  * @returns Sorted array of configs
  */
 export function topologicalSortConfigs(
-  templates: TasksConfiguration[],
-): TasksConfiguration[] {
+  configs: ScaffoldfyConfiguration[],
+): ScaffoldfyConfiguration[] {
   // If all configs have unique names, use name-based sorting
   // If there are duplicate names, just return configs in order (can't sort by name)
-  const nameToConfigs = new Map<string, TasksConfiguration[]>();
-  for (const config of templates) {
+  const nameToConfigs = new Map<string, ScaffoldfyConfiguration[]>();
+  for (const config of configs) {
     const existing = nameToConfigs.get(config.name) || [];
     existing.push(config);
     nameToConfigs.set(config.name, existing);
@@ -40,15 +40,15 @@ export function topologicalSortConfigs(
   if (hasDuplicateNames) {
     // Cannot do topological sort with duplicate names
     // Just return configs in the order they were loaded
-    return templates;
+    return configs;
   }
 
   // Build a dependency graph
-  const configMap = new Map<string, TasksConfiguration>();
+  const configMap = new Map<string, ScaffoldfyConfiguration>();
   const dependents = new Map<string, Set<string>>(); // Map of config name -> configs that depend on it
   const dependencies = new Map<string, Set<string>>(); // Map of config name -> configs it depends on
 
-  for (const config of templates) {
+  for (const config of configs) {
     configMap.set(config.name, config);
     dependencies.set(config.name, new Set());
 
@@ -70,8 +70,8 @@ export function topologicalSortConfigs(
   const independentConfigs = new Set<string>();
   const independentPositions = new Map<string, number>(); // Track original positions
 
-  for (let i = 0; i < templates.length; i++) {
-    const config = templates[i]!;
+  for (let i = 0; i < configs.length; i++) {
+    const config = configs[i]!;
     const hasDeps = dependencies.get(config.name)!.size > 0;
     const isDependedUpon =
       dependents.has(config.name) && dependents.get(config.name)!.size > 0;
@@ -83,12 +83,10 @@ export function topologicalSortConfigs(
   }
 
   // Get configs that need to be sorted (have dependencies or are depended upon)
-  const configsToSort = templates.filter(
-    (config) => !independentConfigs.has(config.name),
-  );
+  const configsToSort = configs.filter((config) => !independentConfigs.has(config.name));
 
   // Perform topological sort on dependent configs only
-  const sorted: TasksConfiguration[] = [];
+  const sorted: ScaffoldfyConfiguration[] = [];
   const visited = new Set<string>();
   const visiting = new Set<string>();
 
@@ -99,7 +97,7 @@ export function topologicalSortConfigs(
 
     if (visiting.has(configName)) {
       // Circular dependency detected
-      throw CircularDependencyError.forTemplateDependencies(
+      throw CircularDependencyError.forConfigDependencies(
         Array.from(visiting),
         configName,
       );
@@ -132,11 +130,11 @@ export function topologicalSortConfigs(
   }
 
   // Now merge the sorted configs back with independent configs at their original positions
-  const result: TasksConfiguration[] = [];
+  const result: ScaffoldfyConfiguration[] = [];
   let sortedIndex = 0;
 
-  for (let i = 0; i < templates.length; i++) {
-    const config = templates[i]!;
+  for (let i = 0; i < configs.length; i++) {
+    const config = configs[i]!;
 
     if (independentConfigs.has(config.name)) {
       // Keep independent config at its original position

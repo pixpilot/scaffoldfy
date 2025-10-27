@@ -2,7 +2,7 @@
  * Tests for template-utils module
  */
 
-import type { InitConfig, TaskDefinition } from '../src/types';
+import type { CurrentConfigurationContext, TaskDefinition } from '../src/types';
 import fs from 'node:fs';
 import path from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
@@ -18,7 +18,7 @@ import { getTestTempFilesDir } from './test-utils';
 
 const TEST_DIR = getTestTempFilesDir('__test_template_utils__');
 
-const mockConfig: InitConfig = {
+const mockConfig: CurrentConfigurationContext = {
   projectName: 'test-project',
   author: 'Test Author',
 };

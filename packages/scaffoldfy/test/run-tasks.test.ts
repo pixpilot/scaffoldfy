@@ -2,21 +2,22 @@
  * Tests for run-tasks module
  */
 
-import type { InitConfig, TaskDefinition } from '../src/types';
+import type { CurrentConfigurationContext, TaskDefinition } from '../src/types';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { createInitialConfig } from '../src/configurations/initial-config';
 import { displayTasksDiff } from '../src/dry-run';
 import { runTasks } from '../src/run-tasks';
 import { runTask } from '../src/task-executors';
-import { topologicalSort } from '../src/task-resolver';
+
+import { topologicalSort, validateAllTasks } from '../src/tasks';
+
 import { evaluateEnabled, evaluateEnabledAsync } from '../src/utils';
-import { validateAllTasks } from '../src/validation';
 
 // Mock dependencies
 vi.mock('../src/configurations/initial-config');
+vi.mock('../src/tasks');
 vi.mock('../src/task-executors');
-vi.mock('../src/task-resolver');
 vi.mock('../src/utils');
 vi.mock('../src/dry-run');
 vi.mock('../src/validation');
@@ -39,7 +40,7 @@ const mockEvaluateEnabled = vi.mocked(evaluateEnabled);
 const mockEvaluateEnabledAsync = vi.mocked(evaluateEnabledAsync);
 const mockValidateAllTasks = vi.mocked(validateAllTasks);
 
-const mockConfig: InitConfig = {
+const mockConfig: CurrentConfigurationContext = {
   projectName: 'test-repo',
   owner: 'test-owner',
   repoUrl: 'https://github.com/test-owner/test-repo.git',

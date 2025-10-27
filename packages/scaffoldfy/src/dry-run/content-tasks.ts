@@ -5,7 +5,7 @@
  */
 
 import type {
-  InitConfig,
+  CurrentConfigurationContext,
   RegexReplaceConfig,
   ReplaceInFileConfig,
   UpdateJsonConfig,
@@ -20,7 +20,7 @@ import { colors, fileExists, generateDiff, JSON_INDENT, readFileContent } from '
  */
 export async function getUpdateJsonDiff(
   config: UpdateJsonConfig,
-  initConfig: InitConfig,
+  initConfig: CurrentConfigurationContext,
 ): Promise<string> {
   // Check condition
   if (config.condition != null && config.condition !== '') {
@@ -89,7 +89,7 @@ export async function getUpdateJsonDiff(
  */
 export async function getRegexReplaceDiff(
   config: RegexReplaceConfig,
-  initConfig: InitConfig,
+  initConfig: CurrentConfigurationContext,
 ): Promise<string> {
   // Check condition
   if (config.condition != null && config.condition !== '') {
@@ -129,7 +129,7 @@ export async function getRegexReplaceDiff(
  */
 export async function getReplaceInFileDiff(
   config: ReplaceInFileConfig,
-  initConfig: InitConfig,
+  initConfig: CurrentConfigurationContext,
 ): Promise<string> {
   // Check condition
   if (config.condition != null && config.condition !== '') {

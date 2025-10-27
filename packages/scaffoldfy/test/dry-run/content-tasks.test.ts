@@ -2,7 +2,7 @@
  * Tests for content-tasks dry-run functions
  */
 
-import type { InitConfig } from '../../src/types';
+import type { CurrentConfigurationContext } from '../../src/types';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {
@@ -44,7 +44,7 @@ const mockReadFileContent = vi.mocked(
 const mockFileExists = vi.mocked(await import('../../src/dry-run/utils')).fileExists;
 const _mockGenerateDiff = vi.mocked(await import('../../src/dry-run/utils')).generateDiff;
 
-const mockConfig: InitConfig = {
+const mockConfig: CurrentConfigurationContext = {
   projectName: 'test-repo',
   owner: 'test-owner',
   repoUrl: 'https://github.com/test-owner/test-repo.git',

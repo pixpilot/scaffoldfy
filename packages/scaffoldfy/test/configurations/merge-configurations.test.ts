@@ -2,13 +2,13 @@
  * Tests for mergeConfigurations functionality
  */
 
-import type { TaskDefinition, TasksConfiguration } from '../../src/types';
+import type { ScaffoldfyConfiguration, TaskDefinition } from '../../src/types';
 import { describe, expect, it } from 'vitest';
 import { mergeConfigurations } from '../../src/configurations/index';
 
 describe('mergeConfigurations', () => {
   it('should merge tasks from multiple configurations', () => {
-    const template1: TasksConfiguration = {
+    const template1: ScaffoldfyConfiguration = {
       name: 'test-config',
       tasks: [
         {
@@ -23,7 +23,7 @@ describe('mergeConfigurations', () => {
       ],
     };
 
-    const template2: TasksConfiguration = {
+    const template2: ScaffoldfyConfiguration = {
       name: 'test-config',
       tasks: [
         {
@@ -47,7 +47,7 @@ describe('mergeConfigurations', () => {
   });
 
   it('should override tasks with same ID', () => {
-    const template1: TasksConfiguration = {
+    const template1: ScaffoldfyConfiguration = {
       name: 'test-config',
       tasks: [
         {
@@ -62,7 +62,7 @@ describe('mergeConfigurations', () => {
       ],
     };
 
-    const template2: TasksConfiguration = {
+    const template2: ScaffoldfyConfiguration = {
       name: 'test-config',
       tasks: [
         {
@@ -127,7 +127,7 @@ describe('mergeConfigurations', () => {
   });
 
   it('should merge configuration with only prompts/variables (no tasks)', () => {
-    const baseTemplate: TasksConfiguration = {
+    const baseTemplate: ScaffoldfyConfiguration = {
       name: 'test-config',
       prompts: [
         {
@@ -149,7 +149,7 @@ describe('mergeConfigurations', () => {
       ],
     };
 
-    const childTemplate: TasksConfiguration = {
+    const childTemplate: ScaffoldfyConfiguration = {
       name: 'test-config',
       tasks: [
         {
@@ -176,7 +176,7 @@ describe('mergeConfigurations', () => {
   });
 
   it('should return single configuration as-is', () => {
-    const template: TasksConfiguration = {
+    const template: ScaffoldfyConfiguration = {
       name: 'test-config',
       tasks: [
         {
@@ -196,7 +196,7 @@ describe('mergeConfigurations', () => {
   });
 
   it('should preserve enabled field from last configuration when merging', () => {
-    const template1: TasksConfiguration = {
+    const template1: ScaffoldfyConfiguration = {
       name: 'base-template',
       enabled: true,
       tasks: [
@@ -212,7 +212,7 @@ describe('mergeConfigurations', () => {
       ],
     };
 
-    const template2: TasksConfiguration = {
+    const template2: ScaffoldfyConfiguration = {
       name: 'child-template',
       enabled: false, // This should be preserved in the merged result
       tasks: [
@@ -234,7 +234,7 @@ describe('mergeConfigurations', () => {
   });
 
   it('should preserve enabled field as undefined when not specified in last configuration', () => {
-    const template1: TasksConfiguration = {
+    const template1: ScaffoldfyConfiguration = {
       name: 'base-template',
       enabled: false,
       tasks: [
@@ -250,7 +250,7 @@ describe('mergeConfigurations', () => {
       ],
     };
 
-    const template2: TasksConfiguration = {
+    const template2: ScaffoldfyConfiguration = {
       name: 'child-template',
       // enabled not specified, should be undefined
       tasks: [
@@ -272,13 +272,13 @@ describe('mergeConfigurations', () => {
   });
 
   it('should preserve conditional enabled field', () => {
-    const template1: TasksConfiguration = {
+    const template1: ScaffoldfyConfiguration = {
       name: 'base-template',
       enabled: true,
       tasks: [],
     };
 
-    const template2: TasksConfiguration = {
+    const template2: ScaffoldfyConfiguration = {
       name: 'child-template',
       enabled: { type: 'condition', value: 'useTypeScript === true' },
       tasks: [],
@@ -293,13 +293,13 @@ describe('mergeConfigurations', () => {
   });
 
   it('should preserve executable enabled field', () => {
-    const template1: TasksConfiguration = {
+    const template1: ScaffoldfyConfiguration = {
       name: 'base-template',
       enabled: true,
       tasks: [],
     };
 
-    const template2: TasksConfiguration = {
+    const template2: ScaffoldfyConfiguration = {
       name: 'child-template',
       enabled: { type: 'exec', value: 'node -e "console.log(true)"' },
       tasks: [],
@@ -314,7 +314,7 @@ describe('mergeConfigurations', () => {
   });
 
   it('should skip tasks from configurations with enabled: false', () => {
-    const template1: TasksConfiguration = {
+    const template1: ScaffoldfyConfiguration = {
       name: 'enabled-template',
       enabled: true,
       tasks: [
@@ -330,7 +330,7 @@ describe('mergeConfigurations', () => {
       ],
     };
 
-    const template2: TasksConfiguration = {
+    const template2: ScaffoldfyConfiguration = {
       name: 'disabled-template',
       enabled: false, // This template's tasks should be skipped
       tasks: [
@@ -346,7 +346,7 @@ describe('mergeConfigurations', () => {
       ],
     };
 
-    const template3: TasksConfiguration = {
+    const template3: ScaffoldfyConfiguration = {
       name: 'another-enabled-template',
       tasks: [
         {
@@ -371,7 +371,7 @@ describe('mergeConfigurations', () => {
   });
 
   it('should skip prompts and variables from configurations with enabled: false', () => {
-    const template1: TasksConfiguration = {
+    const template1: ScaffoldfyConfiguration = {
       name: 'enabled-template',
       prompts: [
         {
@@ -389,7 +389,7 @@ describe('mergeConfigurations', () => {
       tasks: [],
     };
 
-    const template2: TasksConfiguration = {
+    const template2: ScaffoldfyConfiguration = {
       name: 'disabled-template',
       enabled: false,
       prompts: [

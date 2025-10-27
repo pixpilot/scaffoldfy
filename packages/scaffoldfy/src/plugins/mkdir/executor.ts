@@ -2,7 +2,7 @@
  * mkdir plugin executor
  */
 
-import type { InitConfig } from '../../types';
+import type { CurrentConfigurationContext } from '../../types';
 import type { MkdirConfig } from './types';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -17,7 +17,7 @@ const mkdir = promisify(fs.mkdir);
  */
 export async function executeMkdir(
   config: MkdirConfig,
-  initConfig: InitConfig,
+  initConfig: CurrentConfigurationContext,
 ): Promise<void> {
   // Check condition if specified
   if (config.condition != null && config.condition !== '') {

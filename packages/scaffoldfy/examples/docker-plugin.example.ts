@@ -11,7 +11,7 @@
 
 import { createTaskPlugin, registerPlugin } from '@pixpilot/scaffoldfy';
 import fs from 'node:fs';
-import type { InitConfig, TaskDefinition } from '@pixpilot/scaffoldfy';
+import type { CurrentConfigurationContext, TaskDefinition } from '@pixpilot/scaffoldfy';
 
 interface DockerConfig {
   baseImage: string;
@@ -26,7 +26,11 @@ const dockerPlugin = createTaskPlugin(
   'docker-plugin',
   'docker-setup',
   // Execute function
-  async (task: TaskDefinition, config: InitConfig, options: { dryRun: boolean }) => {
+  async (
+    task: TaskDefinition,
+    config: CurrentConfigurationContext,
+    options: { dryRun: boolean },
+  ) => {
     if (options.dryRun) return;
 
     const dockerConfig = task.config as unknown as DockerConfig;
@@ -82,7 +86,7 @@ dist
     version: '1.0.0',
 
     // Generate diff for dry-run mode
-    getDiff: async (task: TaskDefinition, config: InitConfig) => {
+    getDiff: async (task: TaskDefinition) => {
       const dockerConfig = task.config as unknown as DockerConfig;
 
       return `

@@ -2,7 +2,7 @@
  * append plugin executor
  */
 
-import type { InitConfig, TaskDefinition } from '../../types';
+import type { CurrentConfigurationContext, TaskDefinition } from '../../types';
 import type { AppendConfig } from './types';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -21,7 +21,7 @@ const stat = promisify(fs.stat);
  */
 export async function executeAppend(
   config: AppendConfig,
-  initConfig: InitConfig,
+  initConfig: CurrentConfigurationContext,
   task?: TaskDefinition,
 ): Promise<void> {
   // Check condition if specified

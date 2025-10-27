@@ -2,7 +2,7 @@
  * update-json plugin executor
  */
 
-import type { InitConfig } from '../../types';
+import type { CurrentConfigurationContext } from '../../types';
 import type { UpdateJsonConfig } from './types';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -21,7 +21,7 @@ const JSON_INDENT = 2;
  */
 export async function executeUpdateJson(
   config: UpdateJsonConfig,
-  initConfig: InitConfig,
+  initConfig: CurrentConfigurationContext,
 ): Promise<void> {
   // Check condition if specified
   if (config.condition != null && config.condition !== '') {

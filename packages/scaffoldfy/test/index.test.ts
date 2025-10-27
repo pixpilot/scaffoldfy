@@ -16,6 +16,7 @@ import type {
 } from '../src/types';
 import fs from 'node:fs';
 import path from 'node:path';
+
 import { describe, expect, it } from 'vitest';
 
 // Load JSON schema
@@ -315,5 +316,111 @@ describe('jSON Task Loading', () => {
 
       expect(parsed).toEqual(config);
     }
+  });
+});
+
+describe('runWithTasks', () => {
+  it('should export runWithTasks function', async () => {
+    const { runWithTasks } = await import('../src/index');
+    expect(runWithTasks).toBeDefined();
+    expect(typeof runWithTasks).toBe('function');
+  });
+});
+
+describe('exports', () => {
+  it('should export all configuration functions', async () => {
+    const {
+      clearConfigurationCache,
+      loadAndMergeConfiguration,
+      loadConfiguration,
+      loadTasksWithInheritance,
+      mergeConfigurations,
+    } = await import('../src/index');
+
+    expect(clearConfigurationCache).toBeDefined();
+    expect(typeof clearConfigurationCache).toBe('function');
+    expect(loadAndMergeConfiguration).toBeDefined();
+    expect(typeof loadAndMergeConfiguration).toBe('function');
+    expect(loadConfiguration).toBeDefined();
+    expect(typeof loadConfiguration).toBe('function');
+    expect(loadTasksWithInheritance).toBeDefined();
+    expect(typeof loadTasksWithInheritance).toBe('function');
+    expect(mergeConfigurations).toBeDefined();
+    expect(typeof mergeConfigurations).toBe('function');
+  });
+
+  it('should export all dry-run functions', async () => {
+    const {
+      displayTasksDiff,
+      getDeleteDiff,
+      getExecDiff,
+      getGitInitDiff,
+      getRegexReplaceDiff,
+      getRenameDiff,
+      getReplaceInFileDiff,
+      getTaskDiff,
+      getUpdateJsonDiff,
+    } = await import('../src/index');
+
+    expect(displayTasksDiff).toBeDefined();
+    expect(typeof displayTasksDiff).toBe('function');
+    expect(getDeleteDiff).toBeDefined();
+    expect(typeof getDeleteDiff).toBe('function');
+    expect(getExecDiff).toBeDefined();
+    expect(typeof getExecDiff).toBe('function');
+    expect(getGitInitDiff).toBeDefined();
+    expect(typeof getGitInitDiff).toBe('function');
+    expect(getRegexReplaceDiff).toBeDefined();
+    expect(typeof getRegexReplaceDiff).toBe('function');
+    expect(getRenameDiff).toBeDefined();
+    expect(typeof getRenameDiff).toBe('function');
+    expect(getReplaceInFileDiff).toBeDefined();
+    expect(typeof getReplaceInFileDiff).toBe('function');
+    expect(getTaskDiff).toBeDefined();
+    expect(typeof getTaskDiff).toBe('function');
+    expect(getUpdateJsonDiff).toBeDefined();
+    expect(typeof getUpdateJsonDiff).toBe('function');
+  });
+
+  it('should export all plugin functions', async () => {
+    const {
+      clearPlugins,
+      createTaskPlugin,
+      executePluginTask,
+      getPlugin,
+      getPluginForTaskType,
+      isPluginTaskType,
+      listPlugins,
+      registerHooks,
+      registerPlugin,
+      unregisterPlugin,
+    } = await import('../src/index');
+
+    expect(clearPlugins).toBeDefined();
+    expect(typeof clearPlugins).toBe('function');
+    expect(createTaskPlugin).toBeDefined();
+    expect(typeof createTaskPlugin).toBe('function');
+    expect(executePluginTask).toBeDefined();
+    expect(typeof executePluginTask).toBe('function');
+    expect(getPlugin).toBeDefined();
+    expect(typeof getPlugin).toBe('function');
+    expect(getPluginForTaskType).toBeDefined();
+    expect(typeof getPluginForTaskType).toBe('function');
+    expect(isPluginTaskType).toBeDefined();
+    expect(typeof isPluginTaskType).toBe('function');
+    expect(listPlugins).toBeDefined();
+    expect(typeof listPlugins).toBe('function');
+    expect(registerHooks).toBeDefined();
+    expect(typeof registerHooks).toBe('function');
+    expect(registerPlugin).toBeDefined();
+    expect(typeof registerPlugin).toBe('function');
+    expect(unregisterPlugin).toBeDefined();
+    expect(typeof unregisterPlugin).toBe('function');
+  });
+
+  it('should export JSON validation function', async () => {
+    const { validateScaffoldfyJsonFile } = await import('../src/index');
+    expect(validateScaffoldfyJsonFile).toBeDefined();
+    expect(typeof validateScaffoldfyJsonFile).toBe('function');
   });
 });

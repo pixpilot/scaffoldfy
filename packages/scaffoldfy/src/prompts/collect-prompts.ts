@@ -2,7 +2,7 @@
  * Collect prompt answers from task-defined prompts
  */
 
-import type { InitConfig, PromptDefinition } from '../types';
+import type { CurrentConfigurationContext, PromptDefinition } from '../types';
 import { confirm, input, number, password, select } from '@inquirer/prompts';
 import { PromptValidationError } from '../errors/other';
 import { transformerManager } from '../transformers/index';
@@ -22,7 +22,7 @@ import { resolveDefaultValue } from './resolve-default-value';
 export async function collectPrompts(
   prompts: PromptDefinition[],
   resolvedDefaults: Map<string, unknown> = new Map(),
-  config: InitConfig = {},
+  config: CurrentConfigurationContext = {},
 ): Promise<Record<string, unknown>> {
   const answers: Record<string, unknown> = {};
 

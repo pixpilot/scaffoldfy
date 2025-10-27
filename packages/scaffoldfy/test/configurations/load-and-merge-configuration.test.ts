@@ -2,7 +2,7 @@
  * Tests for loadAndMergeConfiguration functionality
  */
 
-import type { TasksConfiguration } from '../../src/types';
+import type { ScaffoldfyConfiguration } from '../../src/types';
 import fs from 'node:fs';
 import path from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
@@ -15,7 +15,7 @@ import { getTestTempFilesDir } from '../test-utils';
 const testDir = getTestTempFilesDir('test-fixtures', 'load-and-merge-configuration');
 
 // Helper to create test configuration files
-function createConfigFile(name: string, config: TasksConfiguration): string {
+function createConfigFile(name: string, config: ScaffoldfyConfiguration): string {
   const filePath = path.join(testDir, name);
   fs.mkdirSync(path.dirname(filePath), { recursive: true });
   fs.writeFileSync(filePath, JSON.stringify(config, null, 2));
@@ -39,7 +39,7 @@ describe('loadAndMergeConfiguration', () => {
   });
 
   it('should load configuration with only prompts/variables (no tasks) for extending', async () => {
-    const baseConfig: TasksConfiguration = {
+    const baseConfig: ScaffoldfyConfiguration = {
       name: 'test-config',
       prompts: [
         {
@@ -56,7 +56,7 @@ describe('loadAndMergeConfiguration', () => {
       ],
     };
 
-    const childConfig: TasksConfiguration = {
+    const childConfig: ScaffoldfyConfiguration = {
       name: 'child-template',
       extends: 'base.json',
       tasks: [
@@ -89,7 +89,7 @@ describe('loadAndMergeConfiguration', () => {
   });
 
   it('should load and merge configurations with extends', async () => {
-    const baseConfig: TasksConfiguration = {
+    const baseConfig: ScaffoldfyConfiguration = {
       name: 'test-config',
       tasks: [
         {
@@ -104,7 +104,7 @@ describe('loadAndMergeConfiguration', () => {
       ],
     };
 
-    const childConfig: TasksConfiguration = {
+    const childConfig: ScaffoldfyConfiguration = {
       name: 'child-template',
       extends: 'base.json',
       tasks: [
@@ -132,7 +132,7 @@ describe('loadAndMergeConfiguration', () => {
   });
 
   it('should support multiple extends', async () => {
-    const base1: TasksConfiguration = {
+    const base1: ScaffoldfyConfiguration = {
       name: 'test-config',
       tasks: [
         {
@@ -147,7 +147,7 @@ describe('loadAndMergeConfiguration', () => {
       ],
     };
 
-    const base2: TasksConfiguration = {
+    const base2: ScaffoldfyConfiguration = {
       name: 'test-config',
       tasks: [
         {
@@ -162,7 +162,7 @@ describe('loadAndMergeConfiguration', () => {
       ],
     };
 
-    const child: TasksConfiguration = {
+    const child: ScaffoldfyConfiguration = {
       name: 'child-template',
       extends: ['base1.json', 'base2.json'],
       tasks: [
@@ -190,7 +190,7 @@ describe('loadAndMergeConfiguration', () => {
   it('should resolve relative paths correctly', async () => {
     fs.mkdirSync(path.join(testDir, 'subdir'), { recursive: true });
 
-    const baseConfig: TasksConfiguration = {
+    const baseConfig: ScaffoldfyConfiguration = {
       name: 'test-config',
       tasks: [
         {
@@ -205,7 +205,7 @@ describe('loadAndMergeConfiguration', () => {
       ],
     };
 
-    const childConfig: TasksConfiguration = {
+    const childConfig: ScaffoldfyConfiguration = {
       name: 'test-template-1',
       extends: '../base.json',
       tasks: [],
@@ -222,7 +222,7 @@ describe('loadAndMergeConfiguration', () => {
   });
 
   it('should preserve enabled field from child configuration when extending', async () => {
-    const baseConfig: TasksConfiguration = {
+    const baseConfig: ScaffoldfyConfiguration = {
       name: 'base-template',
       enabled: true,
       tasks: [
@@ -238,7 +238,7 @@ describe('loadAndMergeConfiguration', () => {
       ],
     };
 
-    const childConfig: TasksConfiguration = {
+    const childConfig: ScaffoldfyConfiguration = {
       name: 'child-template',
       extends: 'base.json',
       enabled: false, // This should be preserved AND its tasks should be skipped
@@ -268,13 +268,13 @@ describe('loadAndMergeConfiguration', () => {
   });
 
   it('should preserve complex enabled field when extending', async () => {
-    const baseConfig: TasksConfiguration = {
+    const baseConfig: ScaffoldfyConfiguration = {
       name: 'base-template',
       enabled: true,
       tasks: [],
     };
 
-    const childConfig: TasksConfiguration = {
+    const childConfig: ScaffoldfyConfiguration = {
       name: 'child-template',
       extends: 'base.json',
       enabled: { type: 'condition', value: 'projectType === "monorepo"' },

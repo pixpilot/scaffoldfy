@@ -2,7 +2,11 @@
  * move plugin registration
  */
 
-import type { InitConfig, TaskDefinition, TaskPlugin } from '../../types';
+import type {
+  CurrentConfigurationContext,
+  TaskDefinition,
+  TaskPlugin,
+} from '../../types';
 import type { MoveConfig } from './types';
 import { executeMove } from './executor';
 
@@ -12,7 +16,7 @@ export const movePlugin: TaskPlugin = {
   taskTypes: ['move'],
   execute: async (
     task: TaskDefinition,
-    config: InitConfig,
+    config: CurrentConfigurationContext,
     options: { dryRun: boolean },
   ): Promise<void> => {
     if (options.dryRun) {

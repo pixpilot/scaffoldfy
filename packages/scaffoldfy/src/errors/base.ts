@@ -44,20 +44,6 @@ export class CircularDependencyError extends ScaffoldfyError {
   }
 
   /**
-   * @deprecated Use forConfigurationInheritance instead
-   * Create a circular dependency error for template inheritance (legacy)
-   */
-  static forTemplateInheritance(
-    visitedPaths: Set<string>,
-    resolvedPath: string,
-  ): CircularDependencyError {
-    return CircularDependencyError.forConfigurationInheritance(
-      visitedPaths,
-      resolvedPath,
-    );
-  }
-
-  /**
    * Create a circular dependency error for task dependencies
    */
   static forTaskDependency(taskId: string): CircularDependencyError {
@@ -68,7 +54,7 @@ export class CircularDependencyError extends ScaffoldfyError {
   /**
    * Create a circular dependency error for template dependencies
    */
-  static forTemplateDependencies(
+  static forConfigDependencies(
     visitingChain: string[],
     templateName: string,
   ): CircularDependencyError {

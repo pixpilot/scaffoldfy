@@ -1,4 +1,4 @@
-import type { InitConfig, TaskDefinition, TaskPlugin } from '../types';
+import type { CurrentConfigurationContext, TaskDefinition, TaskPlugin } from '../types';
 
 /**
  * Create a simple task plugin
@@ -16,12 +16,15 @@ export function createTaskPlugin(
   taskType: string,
   execute: (
     task: TaskDefinition,
-    config: InitConfig,
+    config: CurrentConfigurationContext,
     options: { dryRun: boolean },
   ) => Promise<void>,
   options?: {
     version?: string;
-    getDiff?: (task: TaskDefinition, config: InitConfig) => Promise<string>;
+    getDiff?: (
+      task: TaskDefinition,
+      config: CurrentConfigurationContext,
+    ) => Promise<string>;
     validate?: (task: TaskDefinition) => string[];
   },
 ): TaskPlugin {

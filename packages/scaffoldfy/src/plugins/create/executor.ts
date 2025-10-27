@@ -2,7 +2,7 @@
  * create plugin executor
  */
 
-import type { InitConfig, TaskDefinition } from '../../types';
+import type { CurrentConfigurationContext, TaskDefinition } from '../../types';
 import type { CreateConfig } from './types';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -19,7 +19,7 @@ const writeFile = promisify(fs.writeFile);
  */
 export async function executeCreate(
   config: CreateConfig,
-  initConfig: InitConfig,
+  initConfig: CurrentConfigurationContext,
   task?: TaskDefinition,
 ): Promise<void> {
   // Check condition if specified

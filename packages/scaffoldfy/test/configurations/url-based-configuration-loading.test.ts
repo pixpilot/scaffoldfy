@@ -2,7 +2,7 @@
  * Tests for url-based configuration loading functionality
  */
 
-import type { TasksConfiguration } from '../../src/types';
+import type { ScaffoldfyConfiguration } from '../../src/types';
 import fs from 'node:fs';
 import path from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
@@ -25,7 +25,7 @@ const testDir = path.join(
 );
 
 // Helper to create test configuration files
-function createConfigFile(name: string, config: TasksConfiguration): string {
+function createConfigFile(name: string, config: ScaffoldfyConfiguration): string {
   const filePath = path.join(testDir, name);
   fs.mkdirSync(path.dirname(filePath), { recursive: true });
   fs.writeFileSync(filePath, JSON.stringify(config, null, 2));
@@ -228,7 +228,7 @@ describe('url-based configuration loading', () => {
   });
 
   it('should support mixed local and remote templates', async () => {
-    const localConfig: TasksConfiguration = {
+    const localConfig: ScaffoldfyConfiguration = {
       name: 'local-template',
       extends: 'https://example.com/base.json',
       tasks: [

@@ -2,7 +2,11 @@
  * create plugin registration
  */
 
-import type { InitConfig, TaskDefinition, TaskPlugin } from '../../types';
+import type {
+  CurrentConfigurationContext,
+  TaskDefinition,
+  TaskPlugin,
+} from '../../types';
 import type { CreateConfig } from './types';
 import { executeCreate } from './executor';
 
@@ -12,7 +16,7 @@ export const createPlugin: TaskPlugin = {
   taskTypes: ['create'],
   execute: async (
     task: TaskDefinition,
-    config: InitConfig,
+    config: CurrentConfigurationContext,
     options: { dryRun: boolean },
   ): Promise<void> => {
     if (options.dryRun) {

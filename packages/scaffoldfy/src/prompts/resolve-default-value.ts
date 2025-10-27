@@ -3,7 +3,11 @@
  * This is now a wrapper around the unified resolveValue utility
  */
 
-import type { DefaultValue, InitConfig, PromptDefinition } from '../types';
+import type {
+  CurrentConfigurationContext,
+  DefaultValue,
+  PromptDefinition,
+} from '../types';
 import { resolveValue } from '../utils';
 
 /**
@@ -17,7 +21,7 @@ import { resolveValue } from '../utils';
 export async function resolveDefaultValue<T = string | number | boolean>(
   defaultValue: DefaultValue<T> | undefined,
   promptId: string,
-  context?: InitConfig,
+  context?: CurrentConfigurationContext,
   prompt?: PromptDefinition,
 ): Promise<T | undefined> {
   if (defaultValue === undefined) {

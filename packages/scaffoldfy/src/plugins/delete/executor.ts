@@ -2,7 +2,7 @@
  * delete plugin executor
  */
 
-import type { InitConfig } from '../../types';
+import type { CurrentConfigurationContext } from '../../types';
 import type { DeleteConfig } from './types';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -14,7 +14,7 @@ import { evaluateCondition, log } from '../../utils';
  */
 export async function executeDelete(
   config: DeleteConfig,
-  initConfig?: InitConfig,
+  initConfig?: CurrentConfigurationContext,
 ): Promise<void> {
   const { paths, condition } = config;
 

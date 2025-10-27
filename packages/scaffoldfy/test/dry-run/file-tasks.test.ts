@@ -2,7 +2,7 @@
  * Tests for file-tasks dry-run functions
  */
 
-import type { InitConfig, TaskDefinition } from '../../src/types';
+import type { CurrentConfigurationContext, TaskDefinition } from '../../src/types';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {
@@ -56,7 +56,7 @@ const mockProcessTemplate = vi.mocked(
   await import('../../src/template/process-template'),
 ).processTemplate;
 
-const mockConfig: InitConfig = {
+const mockConfig: CurrentConfigurationContext = {
   projectName: 'test-repo',
   owner: 'test-owner',
   repoUrl: 'https://github.com/test-owner/test-repo.git',

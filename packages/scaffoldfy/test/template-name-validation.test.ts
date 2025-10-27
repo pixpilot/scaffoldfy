@@ -2,7 +2,7 @@
  * Tests for template name validation and dependencies field
  */
 
-import type { TasksConfiguration } from '../src/types';
+import type { ScaffoldfyConfiguration } from '../src/types';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -106,7 +106,7 @@ describe('template name validation and dependencies', () => {
     });
 
     it('should accept valid name field', async () => {
-      const config: TasksConfiguration = {
+      const config: ScaffoldfyConfiguration = {
         name: 'my-template',
         tasks: [
           {
@@ -143,7 +143,7 @@ describe('template name validation and dependencies', () => {
       ];
 
       for (const name of validNames) {
-        const config: TasksConfiguration = {
+        const config: ScaffoldfyConfiguration = {
           name,
           tasks: [],
         };
@@ -259,7 +259,7 @@ describe('template name validation and dependencies', () => {
 
   describe('template description field', () => {
     it('should accept optional description field', async () => {
-      const config: TasksConfiguration = {
+      const config: ScaffoldfyConfiguration = {
         name: 'my-template',
         description: 'This is a test template',
         tasks: [],
@@ -273,7 +273,7 @@ describe('template name validation and dependencies', () => {
     });
 
     it('should work without description field', async () => {
-      const config: TasksConfiguration = {
+      const config: ScaffoldfyConfiguration = {
         name: 'my-template',
         tasks: [],
       };
@@ -288,7 +288,7 @@ describe('template name validation and dependencies', () => {
 
   describe('template dependencies field', () => {
     it('should accept optional dependencies field', async () => {
-      const config: TasksConfiguration = {
+      const config: ScaffoldfyConfiguration = {
         name: 'my-template',
         dependencies: ['base-template', 'utility-template'],
         tasks: [],
@@ -302,7 +302,7 @@ describe('template name validation and dependencies', () => {
     });
 
     it('should work without dependencies field', async () => {
-      const config: TasksConfiguration = {
+      const config: ScaffoldfyConfiguration = {
         name: 'my-template',
         tasks: [],
       };
@@ -315,7 +315,7 @@ describe('template name validation and dependencies', () => {
     });
 
     it('should accept empty dependencies array', async () => {
-      const config: TasksConfiguration = {
+      const config: ScaffoldfyConfiguration = {
         name: 'my-template',
         dependencies: [],
         tasks: [],
@@ -331,7 +331,7 @@ describe('template name validation and dependencies', () => {
 
   describe('complete template structure', () => {
     it('should accept template with all fields', async () => {
-      const config: TasksConfiguration = {
+      const config: ScaffoldfyConfiguration = {
         name: 'complete-template',
         description: 'A complete template with all optional fields',
         dependencies: ['base-template'],

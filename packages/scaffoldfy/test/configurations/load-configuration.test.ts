@@ -2,7 +2,7 @@
  * Tests for loadConfiguration functionality
  */
 
-import type { TasksConfiguration } from '../../src/types';
+import type { ScaffoldfyConfiguration } from '../../src/types';
 import fs from 'node:fs';
 import path from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
@@ -17,7 +17,7 @@ import { getTestTempFilesDir } from '../test-utils';
 const testDir = getTestTempFilesDir('test-fixtures', 'load-configuration');
 
 // Helper to create test configuration files
-function createConfigFile(name: string, config: TasksConfiguration): string {
+function createConfigFile(name: string, config: ScaffoldfyConfiguration): string {
   const filePath = path.join(testDir, name);
   fs.mkdirSync(path.dirname(filePath), { recursive: true });
   fs.writeFileSync(filePath, JSON.stringify(config, null, 2));
@@ -41,7 +41,7 @@ describe('loadConfiguration', () => {
   });
 
   it('should load a simple configuration file', async () => {
-    const config: TasksConfiguration = {
+    const config: ScaffoldfyConfiguration = {
       name: 'test-config',
       tasks: [
         {
@@ -105,12 +105,12 @@ describe('loadConfiguration', () => {
   });
 
   it('should detect circular dependencies', async () => {
-    const config1: TasksConfiguration = {
+    const config1: ScaffoldfyConfiguration = {
       name: 'test-template-1',
       extends: 'template2.json',
       tasks: [],
     };
-    const config2: TasksConfiguration = {
+    const config2: ScaffoldfyConfiguration = {
       name: 'test-template-2',
       extends: 'template1.json',
       tasks: [],

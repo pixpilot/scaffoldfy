@@ -2,7 +2,7 @@
  * Tests for topological sort functionality
  */
 
-import type { TasksConfiguration } from '../../src/types';
+import type { ScaffoldfyConfiguration } from '../../src/types';
 import { describe, expect, it } from 'vitest';
 import { topologicalSortConfigs } from '../../src/configurations/topological-sort';
 import { CircularDependencyError } from '../../src/errors';
@@ -14,7 +14,7 @@ describe('topologicalSortConfigs', () => {
   });
 
   it('should handle single config', () => {
-    const configs: TasksConfiguration[] = [
+    const configs: ScaffoldfyConfiguration[] = [
       {
         name: 'config-a',
         tasks: [],
@@ -26,7 +26,7 @@ describe('topologicalSortConfigs', () => {
   });
 
   it('should preserve order of independent configs with no dependencies', () => {
-    const configs: TasksConfiguration[] = [
+    const configs: ScaffoldfyConfiguration[] = [
       {
         name: 'config-a',
         tasks: [],
@@ -47,7 +47,7 @@ describe('topologicalSortConfigs', () => {
   });
 
   it('should sort configs with simple dependency chain', () => {
-    const configs: TasksConfiguration[] = [
+    const configs: ScaffoldfyConfiguration[] = [
       {
         name: 'config-c',
         dependencies: ['config-b'],
@@ -72,7 +72,7 @@ describe('topologicalSortConfigs', () => {
   });
 
   it('should keep independent config at original position when mixed with dependent configs', () => {
-    const configs: TasksConfiguration[] = [
+    const configs: ScaffoldfyConfiguration[] = [
       {
         name: 'project-info',
         tasks: [],
@@ -96,7 +96,7 @@ describe('topologicalSortConfigs', () => {
   });
 
   it('should preserve position of independent config at the end', () => {
-    const configs: TasksConfiguration[] = [
+    const configs: ScaffoldfyConfiguration[] = [
       {
         name: 'project-info',
         tasks: [],
@@ -127,7 +127,7 @@ describe('topologicalSortConfigs', () => {
   });
 
   it('should handle complex scenario with multiple independent and dependent configs', () => {
-    const configs: TasksConfiguration[] = [
+    const configs: ScaffoldfyConfiguration[] = [
       {
         name: 'project-info',
         tasks: [],
@@ -191,7 +191,7 @@ describe('topologicalSortConfigs', () => {
   });
 
   it('should handle configs with multiple dependencies', () => {
-    const configs: TasksConfiguration[] = [
+    const configs: ScaffoldfyConfiguration[] = [
       {
         name: 'config-d',
         dependencies: ['config-b', 'config-c'],
@@ -224,7 +224,7 @@ describe('topologicalSortConfigs', () => {
   });
 
   it('should detect circular dependencies', () => {
-    const configs: TasksConfiguration[] = [
+    const configs: ScaffoldfyConfiguration[] = [
       {
         name: 'config-a',
         dependencies: ['config-b'],
@@ -246,7 +246,7 @@ describe('topologicalSortConfigs', () => {
   });
 
   it('should detect self-referential circular dependency', () => {
-    const configs: TasksConfiguration[] = [
+    const configs: ScaffoldfyConfiguration[] = [
       {
         name: 'config-a',
         dependencies: ['config-a'],
@@ -258,7 +258,7 @@ describe('topologicalSortConfigs', () => {
   });
 
   it('should handle configs with duplicate names by preserving order', () => {
-    const configs: TasksConfiguration[] = [
+    const configs: ScaffoldfyConfiguration[] = [
       {
         name: 'config-a',
         tasks: [],
@@ -279,7 +279,7 @@ describe('topologicalSortConfigs', () => {
   });
 
   it('should handle long dependency chains', () => {
-    const configs: TasksConfiguration[] = [
+    const configs: ScaffoldfyConfiguration[] = [
       {
         name: 'config-e',
         dependencies: ['config-d'],
@@ -317,7 +317,7 @@ describe('topologicalSortConfigs', () => {
   });
 
   it('should handle mixed independent configs at different positions', () => {
-    const configs: TasksConfiguration[] = [
+    const configs: ScaffoldfyConfiguration[] = [
       {
         name: 'independent-1',
         tasks: [],
@@ -355,7 +355,7 @@ describe('topologicalSortConfigs', () => {
   });
 
   it('should handle real-world scenario from user example', () => {
-    const configs: TasksConfiguration[] = [
+    const configs: ScaffoldfyConfiguration[] = [
       {
         name: 'project-info',
         tasks: [],

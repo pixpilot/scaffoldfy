@@ -2,7 +2,7 @@
  * replace-in-file plugin executor
  */
 
-import type { InitConfig } from '../../types';
+import type { CurrentConfigurationContext } from '../../types';
 import type { ReplaceInFileConfig } from './types';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -18,7 +18,7 @@ const writeFile = promisify(fs.writeFile);
  */
 export async function executeReplaceInFile(
   config: ReplaceInFileConfig,
-  initConfig: InitConfig,
+  initConfig: CurrentConfigurationContext,
 ): Promise<void> {
   // Check condition if specified
   if (config.condition != null && config.condition !== '') {

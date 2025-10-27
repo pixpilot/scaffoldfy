@@ -2,7 +2,7 @@
  * Utility functions for template initialization
  */
 
-import type { InitConfig } from '../types';
+import type { CurrentConfigurationContext } from '../types';
 import { log } from './logger';
 
 // Re-export logger functions for convenience
@@ -25,7 +25,7 @@ export {
  */
 export function evaluateCondition(
   condition: string,
-  config: InitConfig,
+  config: CurrentConfigurationContext,
   options?: { lazy?: boolean; silent?: boolean },
 ): boolean {
   try {

@@ -2,7 +2,11 @@
  * replace-in-file plugin registration
  */
 
-import type { InitConfig, TaskDefinition, TaskPlugin } from '../../types';
+import type {
+  CurrentConfigurationContext,
+  TaskDefinition,
+  TaskPlugin,
+} from '../../types';
 import type { ReplaceInFileConfig } from './types';
 import { executeReplaceInFile } from './executor';
 
@@ -12,7 +16,7 @@ export const replaceInFilePlugin: TaskPlugin = {
   taskTypes: ['replace-in-file'],
   execute: async (
     task: TaskDefinition,
-    config: InitConfig,
+    config: CurrentConfigurationContext,
     options: { dryRun: boolean },
   ): Promise<void> => {
     if (options.dryRun) {

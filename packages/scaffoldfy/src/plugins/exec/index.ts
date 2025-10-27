@@ -2,7 +2,11 @@
  * exec plugin registration
  */
 
-import type { InitConfig, TaskDefinition, TaskPlugin } from '../../types';
+import type {
+  CurrentConfigurationContext,
+  TaskDefinition,
+  TaskPlugin,
+} from '../../types';
 import type { ExecConfig } from './types';
 import { executeExec } from './executor';
 
@@ -12,7 +16,7 @@ export const execPlugin: TaskPlugin = {
   taskTypes: ['exec'],
   execute: async (
     task: TaskDefinition,
-    config: InitConfig,
+    config: CurrentConfigurationContext,
     options: { dryRun: boolean },
   ): Promise<void> => {
     if (options.dryRun) {

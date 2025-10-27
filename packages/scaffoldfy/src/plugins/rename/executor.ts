@@ -2,7 +2,7 @@
  * rename plugin executor
  */
 
-import type { InitConfig } from '../../types';
+import type { CurrentConfigurationContext } from '../../types';
 import type { RenameConfig } from './types';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -17,7 +17,7 @@ const rename = promisify(fs.rename);
  */
 export async function executeRename(
   config: RenameConfig,
-  initConfig: InitConfig,
+  initConfig: CurrentConfigurationContext,
 ): Promise<void> {
   // Check condition if specified
   if (config.condition != null && config.condition !== '') {

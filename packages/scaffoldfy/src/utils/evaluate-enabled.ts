@@ -2,7 +2,11 @@
  * Evaluate enabled value (boolean or conditional expression)
  */
 
-import type { DynamicBooleanValue, EnabledValue, InitConfig } from '../types';
+import type {
+  CurrentConfigurationContext,
+  DynamicBooleanValue,
+  EnabledValue,
+} from '../types';
 import { evaluateCondition } from '../utils';
 
 /**
@@ -16,7 +20,7 @@ import { evaluateCondition } from '../utils';
  */
 export function evaluateEnabled(
   enabled: EnabledValue | DynamicBooleanValue | undefined,
-  config: InitConfig,
+  config: CurrentConfigurationContext,
   options?: { lazy?: boolean },
 ): boolean {
   // If enabled is not specified, default to true
@@ -61,7 +65,7 @@ export function evaluateEnabled(
  */
 export async function evaluateEnabledAsync(
   enabled: EnabledValue | DynamicBooleanValue | undefined,
-  config: InitConfig,
+  config: CurrentConfigurationContext,
   options?: { lazy?: boolean },
 ): Promise<boolean> {
   // If enabled is not specified, default to true

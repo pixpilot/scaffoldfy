@@ -2,7 +2,7 @@
  * move plugin executor
  */
 
-import type { InitConfig } from '../../types';
+import type { CurrentConfigurationContext } from '../../types';
 import type { MoveConfig } from './types';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -19,7 +19,7 @@ const mkdir = promisify(fs.mkdir);
  */
 export async function executeMove(
   config: MoveConfig,
-  initConfig: InitConfig,
+  initConfig: CurrentConfigurationContext,
 ): Promise<void> {
   // Check condition if specified
   if (config.condition != null && config.condition !== '') {

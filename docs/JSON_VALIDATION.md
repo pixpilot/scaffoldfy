@@ -34,8 +34,8 @@ After building the package, you can use the binary directly:
 
 ```bash
 # From the scaffoldfy package directory
-node dist/scaffoldfy-config-json-validator/cli.js --file examples/config-tasks-with-prompts.json
-node dist/scaffoldfy-config-json-validator/cli.js --dir examples
+node dist/scaffoldfy-config-validator/cli.js --file examples/config-tasks-with-prompts.json
+node dist/scaffoldfy-config-validator/cli.js --dir examples
 ```
 
 ### Programmatic API

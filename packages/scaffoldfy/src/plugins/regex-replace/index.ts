@@ -2,7 +2,11 @@
  * regex-replace plugin registration
  */
 
-import type { InitConfig, TaskDefinition, TaskPlugin } from '../../types';
+import type {
+  CurrentConfigurationContext,
+  TaskDefinition,
+  TaskPlugin,
+} from '../../types';
 import type { RegexReplaceConfig } from './types';
 import { executeRegexReplace } from './executor';
 
@@ -12,7 +16,7 @@ export const regexReplacePlugin: TaskPlugin = {
   taskTypes: ['regex-replace'],
   execute: async (
     task: TaskDefinition,
-    config: InitConfig,
+    config: CurrentConfigurationContext,
     options: { dryRun: boolean },
   ): Promise<void> => {
     if (options.dryRun) {

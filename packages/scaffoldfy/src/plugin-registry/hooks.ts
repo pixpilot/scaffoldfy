@@ -1,4 +1,4 @@
-import type { InitConfig, PluginHooks, TaskDefinition } from '../types';
+import type { CurrentConfigurationContext, PluginHooks, TaskDefinition } from '../types';
 import { log } from '../utils';
 import { hooksRegistry } from './registries';
 
@@ -31,7 +31,7 @@ export function registerHooks(hooks: Partial<PluginHooks>): void {
  */
 export async function callHook(
   hookName: 'beforeAll' | 'afterAll',
-  config: InitConfig,
+  config: CurrentConfigurationContext,
 ): Promise<void>;
 /**
  * Call a lifecycle hook
@@ -42,7 +42,7 @@ export async function callHook(
 export async function callHook(
   hookName: 'beforeTask' | 'afterTask',
   task: TaskDefinition,
-  config: InitConfig,
+  config: CurrentConfigurationContext,
 ): Promise<void>;
 /**
  * Call a lifecycle hook
@@ -71,12 +71,16 @@ export async function callHook(
 
   try {
     if (hookName === 'beforeAll' || hookName === 'afterAll') {
-      await (hook as (config: InitConfig) => Promise<void>)(args[0] as InitConfig);
-    } else if (hookName === 'beforeTask' || hookName === 'afterTask') {
-      await (hook as (task: TaskDefinition, config: InitConfig) => Promise<void>)(
-        args[0] as TaskDefinition,
-        args[1] as InitConfig,
+      await (hook as (config: CurrentConfigurationContext) => Promise<void>)(
+        args[0] as CurrentConfigurationContext,
       );
+    } else if (hookName === 'beforeTask' || hookName === 'afterTask') {
+      await (
+        hook as (
+          task: TaskDefinition,
+          config: CurrentConfigurationContext,
+        ) => Promise<void>
+      )(args[0] as TaskDefinition, args[1] as CurrentConfigurationContext);
     } else if (hookName === 'onError') {
       await (hook as (error: Error, task?: TaskDefinition) => Promise<void>)(
         args[0] as Error,

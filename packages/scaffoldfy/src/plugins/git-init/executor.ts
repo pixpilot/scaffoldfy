@@ -2,7 +2,7 @@
  * git-init plugin executor
  */
 
-import type { InitConfig } from '../../types';
+import type { CurrentConfigurationContext } from '../../types';
 import type { GitInitConfig } from './types';
 import { execSync } from 'node:child_process';
 import fs from 'node:fs';
@@ -15,7 +15,7 @@ import { evaluateCondition, log } from '../../utils';
  */
 export async function executeGitInit(
   config: GitInitConfig,
-  initConfig?: InitConfig,
+  initConfig?: CurrentConfigurationContext,
 ): Promise<void> {
   // Check condition if specified
   if (config.condition != null && config.condition !== '') {

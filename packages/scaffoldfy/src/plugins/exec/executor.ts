@@ -2,7 +2,7 @@
  * exec plugin executor
  */
 
-import type { InitConfig } from '../../types';
+import type { CurrentConfigurationContext } from '../../types';
 import type { ExecConfig } from './types';
 import { execSync } from 'node:child_process';
 import path from 'node:path';
@@ -14,7 +14,7 @@ import { evaluateCondition, log } from '../../utils';
  */
 export async function executeExec(
   config: ExecConfig,
-  initConfig?: InitConfig,
+  initConfig?: CurrentConfigurationContext,
 ): Promise<void> {
   // Check condition if specified
   if (config.condition != null && config.condition !== '') {

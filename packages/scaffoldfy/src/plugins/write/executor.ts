@@ -2,7 +2,7 @@
  * write plugin executor
  */
 
-import type { InitConfig, TaskDefinition } from '../../types';
+import type { CurrentConfigurationContext, TaskDefinition } from '../../types';
 import type { WriteConfig } from './types';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -19,7 +19,7 @@ const writeFile = promisify(fs.writeFile);
  */
 export async function executeWrite(
   config: WriteConfig,
-  initConfig: InitConfig,
+  initConfig: CurrentConfigurationContext,
   task?: TaskDefinition,
 ): Promise<void> {
   const { allowCreate = true } = config;

@@ -2,13 +2,16 @@
  * Integration tests for prompts with tasks
  */
 
-import type { InitConfig, TasksConfiguration } from '../../src/types';
+import type {
+  CurrentConfigurationContext,
+  ScaffoldfyConfiguration,
+} from '../../src/types';
 import { describe, expect, it } from 'vitest';
 import { interpolateTemplate } from '../../src/utils';
 
 describe('root-level prompts', () => {
   it('should support root-level prompts available to all tasks', () => {
-    const config: TasksConfiguration = {
+    const config: ScaffoldfyConfiguration = {
       name: 'test-template',
       prompts: [
         {
@@ -56,7 +59,7 @@ describe('root-level prompts', () => {
   });
 
   it('should use prompt values in multiple task configs', () => {
-    const configValues: InitConfig = {
+    const configValues: CurrentConfigurationContext = {
       repoName: 'test-repo',
       repoOwner: 'test-owner',
       repoUrl: 'https://github.com/test/repo',

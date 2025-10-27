@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { validateTasksSchema } from '../src/schema-validator';
+import { validateTasksSchema } from '../../src/scaffoldfy-config-validator';
 
 describe('schema-validator', () => {
   describe('validateTasksSchema', () => {

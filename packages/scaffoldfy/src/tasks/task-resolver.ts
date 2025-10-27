@@ -2,9 +2,9 @@
  * Task dependency resolution and topological sorting
  */
 
-import type { TaskDefinition } from './types';
-import { CircularDependencyError } from './errors/base';
-import { TaskNotFoundError } from './errors/other';
+import type { TaskDefinition } from '../types';
+import { CircularDependencyError } from '../errors/base';
+import { TaskNotFoundError } from '../errors/other';
 
 /**
  * Sort tasks by dependencies using topological sort

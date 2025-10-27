@@ -2,7 +2,11 @@
  * rename plugin registration
  */
 
-import type { InitConfig, TaskDefinition, TaskPlugin } from '../../types';
+import type {
+  CurrentConfigurationContext,
+  TaskDefinition,
+  TaskPlugin,
+} from '../../types';
 import type { RenameConfig } from './types';
 import { executeRename } from './executor';
 
@@ -12,7 +16,7 @@ export const renamePlugin: TaskPlugin = {
   taskTypes: ['rename'],
   execute: async (
     task: TaskDefinition,
-    config: InitConfig,
+    config: CurrentConfigurationContext,
     options: { dryRun: boolean },
   ): Promise<void> => {
     if (options.dryRun) {

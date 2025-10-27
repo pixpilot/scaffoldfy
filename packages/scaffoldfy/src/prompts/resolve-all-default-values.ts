@@ -2,7 +2,7 @@
  * Pre-resolve all executable default values in parallel
  */
 
-import type { InitConfig, PromptDefinition } from '../types';
+import type { CurrentConfigurationContext, PromptDefinition } from '../types';
 import { resolveDefaultValue } from './resolve-default-value';
 
 /**
@@ -13,7 +13,7 @@ import { resolveDefaultValue } from './resolve-default-value';
  */
 export async function resolveAllDefaultValues(
   prompts: PromptDefinition[],
-  context?: InitConfig,
+  context?: CurrentConfigurationContext,
 ): Promise<Map<string, unknown>> {
   const resolvedDefaults = new Map<string, unknown>();
 

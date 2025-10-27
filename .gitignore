@@ -151,10 +151,10 @@ yarn-error.log*
 # -----------------------------
 # Test Files
 # -----------------------------
-packages/scaffoldfy/test/scaffoldfy-config-json-validator/abs-path.json
-packages/scaffoldfy/test/scaffoldfy-config-json-validator/no-schema.json
-packages/scaffoldfy/test/scaffoldfy-config-json-validator/rel-path.json
-packages/scaffoldfy/test/scaffoldfy-config-json-validator/relative-schema.json
+packages/scaffoldfy/test/scaffoldfy-config-validator/abs-path.json
+packages/scaffoldfy/test/scaffoldfy-config-validator/no-schema.json
+packages/scaffoldfy/test/scaffoldfy-config-validator/rel-path.json
+packages/scaffoldfy/test/scaffoldfy-config-validator/relative-schema.json
 packages/scaffoldfy/__test_update_json__/package.json
 .temp
 

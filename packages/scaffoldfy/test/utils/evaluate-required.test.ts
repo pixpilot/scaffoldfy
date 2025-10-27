@@ -1,4 +1,4 @@
-import type { DynamicBooleanValue, InitConfig } from '../../src/types';
+import type { CurrentConfigurationContext, DynamicBooleanValue } from '../../src/types';
 import { describe, expect, it } from 'vitest';
 import {
   evaluateRequired,
@@ -6,7 +6,7 @@ import {
 } from '../../src/utils/evaluate-required';
 
 describe('evaluateRequired', () => {
-  const mockConfig: InitConfig = {};
+  const mockConfig: CurrentConfigurationContext = {};
 
   describe('boolean values', () => {
     it('should return true for true', () => {
@@ -28,7 +28,7 @@ describe('evaluateRequired', () => {
         type: 'condition',
         value: 'critical === true',
       };
-      const config: InitConfig = {
+      const config: CurrentConfigurationContext = {
         critical: true,
       };
       expect(evaluateRequired(required, config)).toBe(true);
@@ -39,7 +39,7 @@ describe('evaluateRequired', () => {
         type: 'condition',
         value: 'critical === true',
       };
-      const config: InitConfig = {
+      const config: CurrentConfigurationContext = {
         critical: false,
       };
       expect(evaluateRequired(required, config)).toBe(false);
@@ -50,7 +50,7 @@ describe('evaluateRequired', () => {
         type: 'condition',
         value: 'platform === "linux" && hasPermissions',
       };
-      const config: InitConfig = {
+      const config: CurrentConfigurationContext = {
         platform: 'linux',
         hasPermissions: true,
       };
@@ -88,7 +88,7 @@ describe('evaluateRequired', () => {
 });
 
 describe('evaluateRequiredAsync', () => {
-  const mockConfig: InitConfig = {};
+  const mockConfig: CurrentConfigurationContext = {};
 
   describe('boolean values', () => {
     it('should return true for true', async () => {
@@ -106,7 +106,7 @@ describe('evaluateRequiredAsync', () => {
 
   describe('string expressions (deprecated format)', () => {
     it('should evaluate string condition to true', async () => {
-      const config: InitConfig = {
+      const config: CurrentConfigurationContext = {
         deploy: true,
       };
       expect(
@@ -118,7 +118,7 @@ describe('evaluateRequiredAsync', () => {
     });
 
     it('should evaluate string condition to false', async () => {
-      const config: InitConfig = {
+      const config: CurrentConfigurationContext = {
         deploy: false,
       };
       expect(
@@ -136,7 +136,7 @@ describe('evaluateRequiredAsync', () => {
         type: 'condition',
         value: 'important === true',
       };
-      const config: InitConfig = {
+      const config: CurrentConfigurationContext = {
         important: true,
       };
       expect(await evaluateRequiredAsync(required, config)).toBe(true);
@@ -147,7 +147,7 @@ describe('evaluateRequiredAsync', () => {
         type: 'condition',
         value: 'important === true',
       };
-      const config: InitConfig = {
+      const config: CurrentConfigurationContext = {
         important: false,
       };
       expect(await evaluateRequiredAsync(required, config)).toBe(false);
@@ -218,7 +218,7 @@ describe('evaluateRequiredAsync', () => {
 
   describe('backwards compatibility', () => {
     it('should support all deprecated formats', async () => {
-      const config: InitConfig = {
+      const config: CurrentConfigurationContext = {
         test: true,
       };
 

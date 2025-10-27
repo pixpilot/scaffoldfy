@@ -1,4 +1,4 @@
-import type { InitConfig, TaskDefinition } from '../types';
+import type { CurrentConfigurationContext, TaskDefinition } from '../types';
 import type { ProcessTemplateOptions, TemplateSource } from './template-utils';
 import { fetchConfigurationFile } from '../configurations';
 import { interpolateTemplate, resolveFilePath } from '../utils';
@@ -18,7 +18,7 @@ import {
  */
 export async function processTemplate(
   config: TemplateSource,
-  initConfig: InitConfig,
+  initConfig: CurrentConfigurationContext,
   task?: TaskDefinition,
   options: ProcessTemplateOptions = {},
 ): Promise<string> {

@@ -24,7 +24,7 @@
   },
   "bin": {
     "scaffoldfy": "./dist/cli.js",
-    "validate-scaffoldfy-json": "./dist/scaffoldfy-config-json-validator/cli.js"
+    "validate-scaffoldfy-json": "./dist/scaffoldfy-config-validator/cli.js"
   },
   "files": [
     "dist",
@@ -49,8 +49,8 @@
   },
   "scripts": {
     "prepublishOnly": "pnpm run clean && pnpm run build",
-    "clean": "git clean -xdf .cache .turbo dist",
-    "clean:all": "git clean -xdf .cache .turbo dist node_modules",
+    "clean": "git clean -xdf .cache .turbo dist .temp",
+    "clean:all": "git clean -xdf .cache .turbo dist node_modules .temp",
     "build": "tsdown",
     "build:watch": "tsdown --watch",
     "test": "vitest --run --passWithNoTests",

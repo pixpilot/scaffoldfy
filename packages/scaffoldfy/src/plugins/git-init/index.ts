@@ -2,7 +2,11 @@
  * git-init plugin registration
  */
 
-import type { InitConfig, TaskDefinition, TaskPlugin } from '../../types';
+import type {
+  CurrentConfigurationContext,
+  TaskDefinition,
+  TaskPlugin,
+} from '../../types';
 import type { GitInitConfig } from './types';
 import { executeGitInit } from './executor';
 
@@ -12,7 +16,7 @@ export const gitInitPlugin: TaskPlugin = {
   taskTypes: ['git-init'],
   execute: async (
     task: TaskDefinition,
-    config: InitConfig,
+    config: CurrentConfigurationContext,
     options: { dryRun: boolean },
   ): Promise<void> => {
     if (options.dryRun) {

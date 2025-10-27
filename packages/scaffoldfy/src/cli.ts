@@ -12,7 +12,7 @@ import { Command } from 'commander';
 import { loadTasksWithInheritance } from './configurations/index';
 import { EXIT_CODE_ERROR } from './constants';
 import { runWithTasks } from './index';
-import { validateTasksSchema } from './schema-validator';
+import { validateTasksSchema } from './scaffoldfy-config-validator';
 import { log } from './utils';
 import { debug, setDebugMode } from './utils/logger';
 
@@ -142,12 +142,14 @@ program
 
               // If we have templates (sequential mode), run them sequentially
               if (config.configs != null && config.configs.length > 0) {
-                const { runTemplatesSequentially } = await import('./run-tasks');
+                const { runConfigurationSequentially } = await import(
+                  './configurations/run-configuration-sequentially'
+                );
                 const { createInitialConfig } = await import(
                   './configurations/initial-config'
                 );
 
-                await runTemplatesSequentially(
+                await runConfigurationSequentially(
                   config.configs,
                   {
                     dryRun: options.dryRun ?? false,

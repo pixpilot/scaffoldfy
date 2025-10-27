@@ -2,7 +2,7 @@
  * Tests for lifecycle hooks functions
  */
 
-import type { InitConfig, TaskDefinition } from '../../src/types';
+import type { CurrentConfigurationContext, TaskDefinition } from '../../src/types';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { callHook, registerHooks } from '../../src/plugin-registry';
 
@@ -21,7 +21,7 @@ describe('lifecycle hooks', () => {
       const beforeAllFn = vi.fn();
       registerHooks({ beforeAll: beforeAllFn });
 
-      const config: InitConfig = {
+      const config: CurrentConfigurationContext = {
         repoName: 'test',
         repoOwner: 'owner',
         repoUrl: 'url',
@@ -39,7 +39,7 @@ describe('lifecycle hooks', () => {
       const afterAllFn = vi.fn();
       registerHooks({ afterAll: afterAllFn });
 
-      const config: InitConfig = {
+      const config: CurrentConfigurationContext = {
         repoName: 'test',
         repoOwner: 'owner',
         repoUrl: 'url',
@@ -67,7 +67,7 @@ describe('lifecycle hooks', () => {
         config: {},
       };
 
-      const config: InitConfig = {
+      const config: CurrentConfigurationContext = {
         repoName: 'test',
         repoOwner: 'owner',
         repoUrl: 'url',
@@ -95,7 +95,7 @@ describe('lifecycle hooks', () => {
         config: {},
       };
 
-      const config: InitConfig = {
+      const config: CurrentConfigurationContext = {
         repoName: 'test',
         repoOwner: 'owner',
         repoUrl: 'url',
@@ -144,7 +144,7 @@ describe('lifecycle hooks', () => {
         onError: onErrorFn,
       });
 
-      const config: InitConfig = {
+      const config: CurrentConfigurationContext = {
         repoName: 'test',
         repoOwner: 'owner',
         repoUrl: 'url',
@@ -184,7 +184,7 @@ describe('lifecycle hooks', () => {
       const beforeAllFn = vi.fn();
       registerHooks({ beforeAll: beforeAllFn });
 
-      const config: InitConfig = {
+      const config: CurrentConfigurationContext = {
         repoName: 'test',
         repoOwner: 'owner',
         repoUrl: 'url',
@@ -212,7 +212,7 @@ describe('lifecycle hooks', () => {
         config: {},
       };
 
-      const config: InitConfig = {
+      const config: CurrentConfigurationContext = {
         repoName: 'test',
         repoOwner: 'owner',
         repoUrl: 'url',
@@ -250,7 +250,7 @@ describe('lifecycle hooks', () => {
       const errorThrowingHook = vi.fn().mockRejectedValue(new Error('Hook error'));
       registerHooks({ beforeAll: errorThrowingHook });
 
-      const config: InitConfig = {
+      const config: CurrentConfigurationContext = {
         repoName: 'test',
         repoOwner: 'owner',
         repoUrl: 'url',
@@ -264,7 +264,7 @@ describe('lifecycle hooks', () => {
     });
 
     it('should do nothing when no hook is registered', async () => {
-      const config: InitConfig = {
+      const config: CurrentConfigurationContext = {
         repoName: 'test',
         repoOwner: 'owner',
         repoUrl: 'url',

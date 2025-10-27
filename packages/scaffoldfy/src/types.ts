@@ -1,5 +1,5 @@
 /**
- * Task Types and Interfaces for Template Automation
+ * Task Types and Interfaces for Config Automation
  */
 
 // Import and re-export config types from plugins
@@ -33,7 +33,7 @@ export type {
   WriteConfig,
 };
 
-export interface InitConfig {
+export interface CurrentConfigurationContext {
   // Dynamic properties from prompts
   [key: string]: unknown;
 }
@@ -150,8 +150,8 @@ export interface BasePrompt {
   required?: DynamicBooleanValue; // Whether value must be provided (supports boolean or dynamic evaluation)
   enabled?: DynamicBooleanValue; // Whether prompt should be shown (supports boolean or dynamic evaluation)
   override?: MergeStrategy; // Strategy for merging with base prompt: 'merge' (default, intelligent) or 'replace' (complete override)
-  $configEnabled?: DynamicBooleanValue; // Internal: Enabled condition of the template this prompt came from (for lazy evaluation)
-  $sourceUrl?: string; // Internal: URL or path of the template file this prompt came from (for resolving relative paths in exec-file)
+  $configEnabled?: DynamicBooleanValue; // Internal: Enabled condition of the config this prompt came from (for lazy evaluation)
+  $sourceUrl?: string; // Internal: URL or path of the config file this prompt came from (for resolving relative paths in exec-file)
   transformers?: string[]; // Array of transformer(s) to apply to the prompt value after input
 }
 
@@ -261,23 +261,23 @@ export interface TaskDefinition {
   dependencies?: string[]; // IDs of tasks that must run before this one
   rollback?: RollbackConfig; // How to rollback if something fails
   override?: MergeStrategy; // Strategy for merging with base task: 'merge' (default, intelligent) or 'replace' (complete override)
-  $sourceUrl?: string; // Internal: URL or path of the template file this task came from (for resolving relative paths)
-  $configEnabled?: DynamicBooleanValue; // Internal: Enabled condition of the template this task came from (for lazy evaluation)
+  $sourceUrl?: string; // Internal: URL or path of the config file this task came from (for resolving relative paths)
+  $configEnabled?: DynamicBooleanValue; // Internal: Enabled condition of the config this task came from (for lazy evaluation)
 }
 
 /**
- * Configuration file structure for template tasks
+ * Configuration file structure for config tasks
  */
-export interface TasksConfiguration {
-  name: string; // Human-readable name for this template
-  description?: string; // Optional detailed description of what this template does
-  enabled?: DynamicBooleanValue; // Whether this entire template should be executed (supports boolean or dynamic evaluation, defaults to true)
-  dependencies?: string[]; // Optional: Names or identifiers of other templates this template depends on
-  extends?: string | string[]; // Path(s) or URL(s) to base template file(s) to inherit from
+export interface ScaffoldfyConfiguration {
+  name: string; // Human-readable name for this config
+  description?: string; // Optional detailed description of what this config does
+  enabled?: DynamicBooleanValue; // Whether this entire config should be executed (supports boolean or dynamic evaluation, defaults to true)
+  dependencies?: string[]; // Optional: Names or identifiers of other configs this config depends on
+  extends?: string | string[]; // Path(s) or URL(s) to base config file(s) to inherit from
   transformers?: import('./transformers/types').Transformer[]; // Optional: Array of transformer definitions
   variables?: VariableDefinition[]; // Optional top-level global variables available to all tasks
   prompts?: PromptDefinition[]; // Optional top-level global prompts collected once upfront
-  tasks?: TaskDefinition[]; // Optional tasks array - can be omitted when extending templates that only provide prompts/variables
+  tasks?: TaskDefinition[]; // Optional tasks array - can be omitted when extending configs that only provide prompts/variables
 }
 
 /**
@@ -289,10 +289,13 @@ export interface TaskPlugin {
   taskTypes: string[]; // Task types this plugin handles
   execute: (
     task: TaskDefinition,
-    config: InitConfig,
+    config: CurrentConfigurationContext,
     options: { dryRun: boolean },
   ) => Promise<void>;
-  getDiff?: (task: TaskDefinition, config: InitConfig) => Promise<string>;
+  getDiff?: (
+    task: TaskDefinition,
+    config: CurrentConfigurationContext,
+  ) => Promise<string>;
   validate?: (task: TaskDefinition) => string[];
 }
 
@@ -300,9 +303,15 @@ export interface TaskPlugin {
  * Plugin lifecycle hooks
  */
 export interface PluginHooks {
-  beforeAll?: (config: InitConfig) => Promise<void>;
-  afterAll?: (config: InitConfig) => Promise<void>;
-  beforeTask?: (task: TaskDefinition, config: InitConfig) => Promise<void>;
-  afterTask?: (task: TaskDefinition, config: InitConfig) => Promise<void>;
+  beforeAll?: (config: CurrentConfigurationContext) => Promise<void>;
+  afterAll?: (config: CurrentConfigurationContext) => Promise<void>;
+  beforeTask?: (
+    task: TaskDefinition,
+    config: CurrentConfigurationContext,
+  ) => Promise<void>;
+  afterTask?: (
+    task: TaskDefinition,
+    config: CurrentConfigurationContext,
+  ) => Promise<void>;
   onError?: (error: Error, task?: TaskDefinition) => Promise<void>;
 }

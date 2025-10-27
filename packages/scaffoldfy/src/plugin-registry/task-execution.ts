@@ -1,4 +1,4 @@
-import type { InitConfig, TaskDefinition } from '../types';
+import type { CurrentConfigurationContext, TaskDefinition } from '../types';
 import { getPluginForTaskType } from './task-type-mapping';
 
 /**
@@ -11,7 +11,7 @@ import { getPluginForTaskType } from './task-type-mapping';
  */
 export async function executePluginTask(
   task: TaskDefinition,
-  config: InitConfig,
+  config: CurrentConfigurationContext,
   options: { dryRun: boolean },
 ): Promise<void> {
   const plugin = getPluginForTaskType(task.type);
@@ -30,7 +30,7 @@ export async function executePluginTask(
  */
 export async function getPluginTaskDiff(
   task: TaskDefinition,
-  config: InitConfig,
+  config: CurrentConfigurationContext,
 ): Promise<string | undefined> {
   const plugin = getPluginForTaskType(task.type);
   if (plugin == null || plugin.getDiff == null) {

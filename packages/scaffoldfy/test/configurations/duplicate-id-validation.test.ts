@@ -2,7 +2,7 @@
  * Tests for duplicate ID validation functionality
  */
 
-import type { TasksConfiguration } from '../../src/types';
+import type { ScaffoldfyConfiguration } from '../../src/types';
 import fs from 'node:fs';
 import path from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
@@ -16,7 +16,7 @@ import { getTestTempFilesDir } from '../test-utils';
 const testDir = getTestTempFilesDir('test-fixtures', 'duplicate-id-validation');
 
 // Helper to create test configuration files
-function createConfigFile(name: string, config: TasksConfiguration): string {
+function createConfigFile(name: string, config: ScaffoldfyConfiguration): string {
   const filePath = path.join(testDir, name);
   fs.mkdirSync(path.dirname(filePath), { recursive: true });
   fs.writeFileSync(filePath, JSON.stringify(config, null, 2));
@@ -45,7 +45,7 @@ describe('duplicate ID validation', () => {
   });
 
   it('should throw error when duplicate IDs exist after inheritance merge', async () => {
-    const baseConfig: TasksConfiguration = {
+    const baseConfig: ScaffoldfyConfiguration = {
       name: 'test-config',
       variables: [
         {
@@ -55,7 +55,7 @@ describe('duplicate ID validation', () => {
       ],
     };
 
-    const childConfig: TasksConfiguration = {
+    const childConfig: ScaffoldfyConfiguration = {
       name: 'child-template',
       extends: 'base.json',
       tasks: [
@@ -80,7 +80,7 @@ describe('duplicate ID validation', () => {
   });
 
   it('should allow same ID when overriding (task to task)', async () => {
-    const baseConfig: TasksConfiguration = {
+    const baseConfig: ScaffoldfyConfiguration = {
       name: 'test-config',
       tasks: [
         {
@@ -95,7 +95,7 @@ describe('duplicate ID validation', () => {
       ],
     };
 
-    const childConfig: TasksConfiguration = {
+    const childConfig: ScaffoldfyConfiguration = {
       name: 'child-template',
       extends: 'base.json',
       tasks: [
@@ -122,7 +122,7 @@ describe('duplicate ID validation', () => {
   });
 
   it('should allow same ID when overriding variables', async () => {
-    const baseConfig: TasksConfiguration = {
+    const baseConfig: ScaffoldfyConfiguration = {
       name: 'test-config',
       variables: [
         {
@@ -132,7 +132,7 @@ describe('duplicate ID validation', () => {
       ],
     };
 
-    const childConfig: TasksConfiguration = {
+    const childConfig: ScaffoldfyConfiguration = {
       name: 'test-template-2',
       extends: 'base.json',
       variables: [
@@ -154,7 +154,7 @@ describe('duplicate ID validation', () => {
   });
 
   it('should allow same ID when overriding prompts', async () => {
-    const baseConfig: TasksConfiguration = {
+    const baseConfig: ScaffoldfyConfiguration = {
       name: 'test-config',
       prompts: [
         {
@@ -165,7 +165,7 @@ describe('duplicate ID validation', () => {
       ],
     };
 
-    const childConfig: TasksConfiguration = {
+    const childConfig: ScaffoldfyConfiguration = {
       name: 'test-template-3',
       extends: 'base.json',
       prompts: [
@@ -188,7 +188,7 @@ describe('duplicate ID validation', () => {
   });
 
   it('should allow same ID when overriding variables with replace strategy', async () => {
-    const baseConfig: TasksConfiguration = {
+    const baseConfig: ScaffoldfyConfiguration = {
       name: 'test-config',
       variables: [
         {
@@ -198,7 +198,7 @@ describe('duplicate ID validation', () => {
       ],
     };
 
-    const childConfig: TasksConfiguration = {
+    const childConfig: ScaffoldfyConfiguration = {
       name: 'test-template-4',
       extends: 'base.json',
       variables: [
@@ -222,7 +222,7 @@ describe('duplicate ID validation', () => {
   });
 
   it('should allow same ID when overriding prompts with replace strategy', async () => {
-    const baseConfig: TasksConfiguration = {
+    const baseConfig: ScaffoldfyConfiguration = {
       name: 'test-config',
       prompts: [
         {
@@ -234,7 +234,7 @@ describe('duplicate ID validation', () => {
       ],
     };
 
-    const childConfig: TasksConfiguration = {
+    const childConfig: ScaffoldfyConfiguration = {
       name: 'test-template-5',
       extends: 'base.json',
       prompts: [
@@ -261,7 +261,7 @@ describe('duplicate ID validation', () => {
   });
 
   it('should throw error when overriding variable without override strategy', () => {
-    const baseConfig: TasksConfiguration = {
+    const baseConfig: ScaffoldfyConfiguration = {
       name: 'test-config',
       variables: [
         {
@@ -271,7 +271,7 @@ describe('duplicate ID validation', () => {
       ],
     };
 
-    const childConfig: TasksConfiguration = {
+    const childConfig: ScaffoldfyConfiguration = {
       name: 'test-config',
       variables: [
         {
@@ -290,7 +290,7 @@ describe('duplicate ID validation', () => {
   });
 
   it('should throw error when overriding prompt without override strategy', () => {
-    const baseConfig: TasksConfiguration = {
+    const baseConfig: ScaffoldfyConfiguration = {
       name: 'test-config',
       prompts: [
         {
@@ -301,7 +301,7 @@ describe('duplicate ID validation', () => {
       ],
     };
 
-    const childConfig: TasksConfiguration = {
+    const childConfig: ScaffoldfyConfiguration = {
       name: 'test-config',
       prompts: [
         {

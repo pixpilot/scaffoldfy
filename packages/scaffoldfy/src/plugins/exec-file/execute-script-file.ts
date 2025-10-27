@@ -2,7 +2,7 @@
  * Shared exec-file execution logic for both task execution and value resolution
  */
 
-import type { ExecFileRuntime, InitConfig } from '../../types';
+import type { CurrentConfigurationContext, ExecFileRuntime } from '../../types';
 import { execSync } from 'node:child_process';
 import path from 'node:path';
 import process from 'node:process';
@@ -68,7 +68,7 @@ export interface ExecuteScriptFileOptions {
  */
 export async function executeScriptFile(
   options: ExecuteScriptFileOptions,
-  config: InitConfig,
+  config: CurrentConfigurationContext,
 ): Promise<string | undefined> {
   // Interpolate file path
   const interpolatedFile = interpolateTemplate(options.file, config);

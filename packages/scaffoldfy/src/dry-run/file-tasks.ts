@@ -8,8 +8,8 @@ import type {
   AppendConfig,
   CopyConfig,
   CreateConfig,
+  CurrentConfigurationContext,
   DeleteConfig,
-  InitConfig,
   MkdirConfig,
   MoveConfig,
   RenameConfig,
@@ -36,7 +36,7 @@ import {
  */
 export async function getWriteDiff(
   config: WriteConfig,
-  initConfig: InitConfig,
+  initConfig: CurrentConfigurationContext,
 ): Promise<string> {
   // Check condition
   if (config.condition != null && config.condition !== '') {
@@ -85,7 +85,7 @@ export async function getWriteDiff(
  */
 export async function getCreateDiff(
   config: CreateConfig,
-  initConfig: InitConfig,
+  initConfig: CurrentConfigurationContext,
   task?: TaskDefinition,
 ): Promise<string> {
   // Check condition
@@ -135,7 +135,7 @@ export async function getCreateDiff(
  */
 export async function getAppendDiff(
   config: AppendConfig,
-  initConfig: InitConfig,
+  initConfig: CurrentConfigurationContext,
   task?: TaskDefinition,
 ): Promise<string> {
   // Check condition
@@ -180,7 +180,10 @@ export async function getAppendDiff(
 /**
  * Get diff for delete task
  */
-export function getDeleteDiff(config: DeleteConfig, initConfig: InitConfig): string {
+export function getDeleteDiff(
+  config: DeleteConfig,
+  initConfig: CurrentConfigurationContext,
+): string {
   // Check condition
   if (config.condition != null && config.condition !== '') {
     const shouldExecute = evaluateCondition(config.condition, initConfig);
@@ -204,7 +207,10 @@ export function getDeleteDiff(config: DeleteConfig, initConfig: InitConfig): str
 /**
  * Get diff for rename task
  */
-export function getRenameDiff(config: RenameConfig, initConfig: InitConfig): string {
+export function getRenameDiff(
+  config: RenameConfig,
+  initConfig: CurrentConfigurationContext,
+): string {
   // Check condition
   if (config.condition != null && config.condition !== '') {
     const shouldExecute = evaluateCondition(config.condition, initConfig);
@@ -230,7 +236,10 @@ export function getRenameDiff(config: RenameConfig, initConfig: InitConfig): str
 /**
  * Get diff for move task
  */
-export function getMoveDiff(config: MoveConfig, initConfig: InitConfig): string {
+export function getMoveDiff(
+  config: MoveConfig,
+  initConfig: CurrentConfigurationContext,
+): string {
   // Check condition
   if (config.condition != null && config.condition !== '') {
     const shouldExecute = evaluateCondition(config.condition, initConfig);
@@ -256,7 +265,10 @@ export function getMoveDiff(config: MoveConfig, initConfig: InitConfig): string 
 /**
  * Get diff for copy task
  */
-export function getCopyDiff(config: CopyConfig, initConfig: InitConfig): string {
+export function getCopyDiff(
+  config: CopyConfig,
+  initConfig: CurrentConfigurationContext,
+): string {
   // Check condition
   if (config.condition != null && config.condition !== '') {
     const shouldExecute = evaluateCondition(config.condition, initConfig);
@@ -286,7 +298,10 @@ export function getCopyDiff(config: CopyConfig, initConfig: InitConfig): string 
 /**
  * Get diff for mkdir task
  */
-export function getMkdirDiff(config: MkdirConfig, initConfig: InitConfig): string {
+export function getMkdirDiff(
+  config: MkdirConfig,
+  initConfig: CurrentConfigurationContext,
+): string {
   // Check condition
   if (config.condition != null && config.condition !== '') {
     const shouldExecute = evaluateCondition(config.condition, initConfig);

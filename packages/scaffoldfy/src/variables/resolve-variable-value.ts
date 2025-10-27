@@ -2,7 +2,7 @@
  * Resolve a variable value that may be static or executable
  */
 
-import type { DefaultValue, InitConfig } from '../types';
+import type { CurrentConfigurationContext, DefaultValue } from '../types';
 import { execSync } from 'node:child_process';
 import { executeScriptFile } from '../plugins/exec-file/execute-script-file';
 import { interpolateTemplate, log } from '../utils';
@@ -18,7 +18,7 @@ import { interpolateTemplate, log } from '../utils';
 export async function resolveVariableValue<T = string | number | boolean>(
   value: DefaultValue<T>,
   variableId: string,
-  context?: InitConfig,
+  context?: CurrentConfigurationContext,
   sourceUrl?: string,
 ): Promise<T | undefined> {
   if (value === undefined || value === null) {

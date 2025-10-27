@@ -2,7 +2,7 @@
  * Collect variable values (no user interaction - just resolve and return)
  */
 
-import type { InitConfig, VariableDefinition } from '../types';
+import type { CurrentConfigurationContext, VariableDefinition } from '../types';
 import { transformerManager } from '../transformers/index';
 
 /**
@@ -18,7 +18,7 @@ import { transformerManager } from '../transformers/index';
 export async function collectVariables(
   variables: VariableDefinition[],
   resolvedValues: Map<string, unknown> = new Map(),
-  context: InitConfig = {},
+  context: CurrentConfigurationContext = {},
 ): Promise<Record<string, unknown>> {
   const collected: Record<string, unknown> = {};
 

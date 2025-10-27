@@ -2,7 +2,11 @@
  * append plugin registration
  */
 
-import type { InitConfig, TaskDefinition, TaskPlugin } from '../../types';
+import type {
+  CurrentConfigurationContext,
+  TaskDefinition,
+  TaskPlugin,
+} from '../../types';
 import type { AppendConfig } from './types';
 import { executeAppend } from './executor';
 
@@ -12,7 +16,7 @@ export const appendPlugin: TaskPlugin = {
   taskTypes: ['append'],
   execute: async (
     task: TaskDefinition,
-    config: InitConfig,
+    config: CurrentConfigurationContext,
     options: { dryRun: boolean },
   ): Promise<void> => {
     if (options.dryRun) {

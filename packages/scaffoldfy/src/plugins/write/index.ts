@@ -2,7 +2,11 @@
  * write plugin registration
  */
 
-import type { InitConfig, TaskDefinition, TaskPlugin } from '../../types';
+import type {
+  CurrentConfigurationContext,
+  TaskDefinition,
+  TaskPlugin,
+} from '../../types';
 import type { WriteConfig } from './types';
 import { executeWrite } from './executor';
 
@@ -12,7 +16,7 @@ export const writePlugin: TaskPlugin = {
   taskTypes: ['write'],
   execute: async (
     task: TaskDefinition,
-    config: InitConfig,
+    config: CurrentConfigurationContext,
     options: { dryRun: boolean },
   ): Promise<void> => {
     if (options.dryRun) {

@@ -5,7 +5,7 @@
 import type { DeleteConfig, TaskDefinition } from '../src/types';
 import { describe, expect, it } from 'vitest';
 import { CircularDependencyError } from '../src/errors/index';
-import { topologicalSort } from '../src/task-resolver';
+import { topologicalSort } from '../src/tasks';
 
 describe('task Dependency Resolution', () => {
   it('should sort tasks with no dependencies', () => {

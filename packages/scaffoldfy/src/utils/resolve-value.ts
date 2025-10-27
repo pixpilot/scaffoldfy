@@ -3,7 +3,7 @@
  * Supports static, exec, exec-file, conditional, and interpolate types
  */
 
-import type { DefaultValue, InitConfig } from '../types';
+import type { CurrentConfigurationContext, DefaultValue } from '../types';
 import { execSync } from 'node:child_process';
 import { executeScriptFile } from '../plugins/exec-file/execute-script-file';
 import { evaluateCondition, interpolateTemplate, log } from '../utils';
@@ -30,7 +30,7 @@ export interface ResolveValueOptions {
   /**
    * Optional context for evaluating conditional values and interpolation
    */
-  context?: InitConfig;
+  context?: CurrentConfigurationContext;
 
   /**
    * Optional source URL for resolving relative file paths in exec-file
