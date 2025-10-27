@@ -5,7 +5,7 @@ A collection of reusable scaffoldfy templates for generating common project conf
 ## Installation
 
 ```sh
-pnpm add @pixpilot/scaffoldfy @pixpilot/scaffoldfy-configs
+npm install @pixpilot/scaffoldfy @pixpilot/scaffoldfy-configs
 ```
 
 ## Available Templates

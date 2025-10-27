@@ -10,10 +10,10 @@ Use the convenient root script to validate files from anywhere in the monorepo:
 
 ```bash
 # Validate a single file
-pnpm validate:json --file packages/scaffoldfy/examples/config-tasks-with-prompts.json
+npm validate:json --file packages/scaffoldfy/examples/config-tasks-with-prompts.json
 
 # Validate all JSON files in a directory
-pnpm validate:json --dir packages/scaffoldfy/examples
+npm validate:json --dir packages/scaffoldfy/examples
 ```
 
 ### From the scaffoldfy Package
@@ -22,10 +22,10 @@ If you're working inside the `packages/scaffoldfy` directory:
 
 ```bash
 # Validate a single file
-pnpm run validate-scaffoldfy-json --file examples/config-tasks-with-prompts.json
+npm run validate-scaffoldfy-json --file examples/config-tasks-with-prompts.json
 
 # Validate all JSON files in a directory
-pnpm run validate-scaffoldfy-json --dir examples
+npm run validate-scaffoldfy-json --dir examples
 ```
 
 ### Using the Binary Directly
@@ -116,7 +116,7 @@ root: must have required property 'name'
 Validate a single JSON file.
 
 ```bash
-pnpm validate:json --file path/to/file.json
+npm validate:json --file path/to/file.json
 ```
 
 ### `--dir <path>` or `-d <path>`
@@ -128,7 +128,7 @@ Validate all JSON files in a directory recursively. The validator will:
 - Validate only files ending in `.json`
 
 ```bash
-pnpm validate:json --dir path/to/directory
+npm validate:json --dir path/to/directory
 ```
 
 ## Exit Codes
@@ -143,7 +143,7 @@ You can integrate the validator into your CI/CD pipeline:
 ```yaml
 # Example for GitHub Actions
 - name: Validate JSON files
-  run: pnpm validate:json --dir packages/scaffoldfy/examples
+  run: npm validate:json --dir packages/scaffoldfy/examples
 ```
 
 ## Tips

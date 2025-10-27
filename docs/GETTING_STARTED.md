@@ -9,16 +9,16 @@ This guide will help you get started with **@pixpilot/scaffoldfy** (formerly sca
 
 ## Installation
 
-Install the package using pnpm (or your preferred package manager):
+Install the package using npm (or your preferred package manager):
 
 ```sh
-pnpm add @pixpilot/scaffoldfy
+npm install @pixpilot/scaffoldfy
 ```
 
 Or install globally:
 
 ```sh
-pnpm add -g @pixpilot/scaffoldfy
+npm install -g @pixpilot/scaffoldfy
 ```
 
 ## Using without Installation

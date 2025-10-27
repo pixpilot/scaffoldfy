@@ -1005,7 +1005,7 @@ interface Config {
 {
   "type": "exec",
   "config": {
-    "command": "pnpm install && pnpm build",
+    "command": "npm install && npm build",
     "cwd": "./"
   }
 }

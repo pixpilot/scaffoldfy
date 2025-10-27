@@ -310,7 +310,7 @@ Detect which package manager is available:
   ],
   "default": {
     "type": "exec",
-    "value": "command -v pnpm > /dev/null && echo 'pnpm' || (command -v yarn > /dev/null && echo 'yarn' || echo 'npm')"
+    "value": "command -v npm > /dev/null && echo 'pnpm' || (command -v yarn > /dev/null && echo 'yarn' || echo 'npm')"
   }
 }
 ```
@@ -906,7 +906,7 @@ Here's a complete example showing how to use prompts with executable defaults in
       ],
       "default": {
         "type": "exec",
-        "value": "command -v pnpm > /dev/null && echo 'pnpm' || echo 'npm'"
+        "value": "command -v npm > /dev/null && echo 'pnpm' || echo 'npm'"
       }
     },
     {

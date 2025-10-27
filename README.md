@@ -18,7 +18,7 @@ A flexible and powerful task automation utility for project setup, cleanup, and 
 ### Installation
 
 ```sh
-pnpm add @pixpilot/scaffoldfy
+npm install @pixpilot/scaffoldfy
 ```
 
 ### Usage
