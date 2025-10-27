@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy
 
+## 0.40.0
+
+### Minor Changes
+
+- refactor template and plugin
+
 ## 0.39.0
 
 ### Minor Changes
