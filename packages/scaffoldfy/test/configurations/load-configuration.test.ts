@@ -12,8 +12,9 @@ import {
   loadConfiguration,
 } from '../../src/configurations/index';
 import { ConfigParseError, ConfigurationFileNotFoundError } from '../../src/errors/index';
+import { getTestTempFilesDir } from '../test-utils';
 
-const testDir = path.join(process.cwd(), 'test-fixtures', 'load-configuration');
+const testDir = getTestTempFilesDir('test-fixtures', 'load-configuration');
 
 // Helper to create test configuration files
 function createConfigFile(name: string, config: TasksConfiguration): string {

@@ -10,8 +10,9 @@ import {
   clearConfigurationCache,
   loadAndMergeConfiguration,
 } from '../../src/configurations/index';
+import { getTestTempFilesDir } from '../test-utils';
 
-const testDir = path.join(process.cwd(), 'test-fixtures', 'load-and-merge-configuration');
+const testDir = getTestTempFilesDir('test-fixtures', 'load-and-merge-configuration');
 
 // Helper to create test configuration files
 function createConfigFile(name: string, config: TasksConfiguration): string {

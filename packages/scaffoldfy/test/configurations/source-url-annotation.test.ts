@@ -11,8 +11,9 @@ import {
   loadAndMergeConfiguration,
   loadConfiguration,
 } from '../../src/configurations/index';
+import { getTestTempFilesDir } from '../test-utils';
 
-const testDir = path.join(process.cwd(), 'test-fixtures', 'source-url-annotation');
+const testDir = getTestTempFilesDir('test-fixtures', 'source-url-annotation');
 
 // Helper to create test configuration files
 function createConfigFile(name: string, config: TasksConfiguration): string {

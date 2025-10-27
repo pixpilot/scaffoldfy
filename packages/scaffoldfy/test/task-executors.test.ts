@@ -8,8 +8,9 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { afterEach, beforeEach, describe } from 'vitest';
+import { getTestTempFilesDir } from './test-utils';
 
-const TEST_DIR = path.join(process.cwd(), '__test_executors__');
+const TEST_DIR = getTestTempFilesDir('__test_executors__');
 
 describe('task Executors', () => {
   beforeEach(() => {

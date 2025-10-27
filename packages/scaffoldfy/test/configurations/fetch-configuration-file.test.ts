@@ -5,8 +5,9 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { getTestTempFilesDir } from '../test-utils';
 
-const testDir = path.join(process.cwd(), 'test-fixtures', 'inheritance');
+const testDir = getTestTempFilesDir('test-fixtures', 'inheritance');
 
 describe('fetchConfigurationFile', () => {
   // Mock fetch for testing

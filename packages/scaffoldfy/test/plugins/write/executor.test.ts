@@ -8,8 +8,9 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { executeWrite } from '../../../src/plugins/write/executor';
+import { getTestTempFilesDir } from '../../test-utils';
 
-const TEST_DIR = path.join(process.cwd(), '__test_write__');
+const TEST_DIR = getTestTempFilesDir('__test_write__');
 
 const mockConfig: InitConfig = {
   projectName: 'test-repo',

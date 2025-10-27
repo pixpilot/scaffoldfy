@@ -14,8 +14,9 @@ import {
   shouldUseHandlebars,
   validateTemplateConfig,
 } from '../src/template';
+import { getTestTempFilesDir } from './test-utils';
 
-const TEST_DIR = path.join(process.cwd(), '__test_template_utils__');
+const TEST_DIR = getTestTempFilesDir('__test_template_utils__');
 
 const mockConfig: InitConfig = {
   projectName: 'test-project',

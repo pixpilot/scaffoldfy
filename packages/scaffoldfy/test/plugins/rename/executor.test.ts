@@ -8,8 +8,9 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { executeRename } from '../../../src/plugins/rename/executor';
+import { getTestTempFilesDir } from '../../test-utils';
 
-const TEST_DIR = path.join(process.cwd(), '__test_rename__');
+const TEST_DIR = getTestTempFilesDir('__test_rename__');
 
 const mockConfig: InitConfig = {
   projectName: 'test-repo',

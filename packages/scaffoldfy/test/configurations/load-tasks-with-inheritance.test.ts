@@ -10,8 +10,9 @@ import {
   clearConfigurationCache,
   loadTasksWithInheritance,
 } from '../../src/configurations/index';
+import { getTestTempFilesDir } from '../test-utils';
 
-const testDir = path.join(process.cwd(), 'test-fixtures', 'load-tasks-with-inheritance');
+const testDir = getTestTempFilesDir('test-fixtures', 'load-tasks-with-inheritance');
 
 // Helper to create test configuration files
 function createConfigFile(name: string, config: TasksConfiguration): string {

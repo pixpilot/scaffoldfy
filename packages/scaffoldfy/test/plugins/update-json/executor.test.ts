@@ -8,8 +8,9 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { executeUpdateJson } from '../../../src/plugins/update-json/executor';
+import { getTestTempFilesDir } from '../../test-utils';
 
-const TEST_DIR = path.join(process.cwd(), '__test_update_json__');
+const TEST_DIR = getTestTempFilesDir('__test_update_json__');
 
 const mockConfig: InitConfig = {
   projectName: 'test-repo',
