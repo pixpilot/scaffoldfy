@@ -52,6 +52,7 @@ export class TransformerManager {
       { id: 'constantcase', type: 'constantcase' },
       { id: 'alphanumeric', type: 'alphanumeric' },
       { id: 'collapse-spaces', type: 'collapse-spaces' },
+      { id: 'capitalCase', type: 'capitalCase' },
       { id: 'remove-spaces', type: 'remove-spaces' },
       { id: 'urlencode', type: 'urlencode' },
       { id: 'dasherize', type: 'dasherize' },
@@ -212,6 +213,9 @@ export class TransformerManager {
 
       case 'titlecase':
         return this.executeTitlecase(value);
+
+      case 'capitalCase':
+        return this.executeCapitalCase(value);
 
       case 'camelcase':
         return this.executeCamelcase(value);
@@ -495,6 +499,10 @@ export class TransformerManager {
    */
   private executeUnderscore(value: unknown): string {
     return snakeCase(String(value));
+  }
+
+  private executeCapitalCase(value: unknown): string {
+    return capitalCase(String(value));
   }
 
   /**

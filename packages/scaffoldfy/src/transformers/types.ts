@@ -18,6 +18,7 @@ type BuiltInTransformerType =
   | 'constantcase'
   | 'alphanumeric'
   | 'collapse-spaces'
+  | 'capitalCase'
   | 'remove-spaces'
   | 'urlencode'
   | 'dasherize'

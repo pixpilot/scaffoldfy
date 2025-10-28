@@ -343,7 +343,7 @@ describe('transformerManager', () => {
 
   describe('utility methods', () => {
     it('should clear all transformers', () => {
-      // Initially has 17 built-in transformers
+      // Initially has 18 built-in transformers
       expect(manager.getIds().length).toBeGreaterThan(0);
 
       manager.registerAll([
@@ -357,9 +357,9 @@ describe('transformerManager', () => {
     });
 
     it('should get all transformer IDs', () => {
-      // Built-in transformers are auto-registered, so we expect 17 by default
+      // Built-in transformers are auto-registered, so we expect 18 by default
       const initialIds = manager.getIds();
-      expect(initialIds).toHaveLength(17);
+      expect(initialIds).toHaveLength(18);
 
       manager.registerAll([
         { id: 'lowercase', type: 'lowercase' },
@@ -369,8 +369,8 @@ describe('transformerManager', () => {
       const ids = manager.getIds();
       expect(ids).toContain('lowercase');
       expect(ids).toContain('uppercase');
-      // Should still have 17 since lowercase and uppercase are already registered
-      expect(ids).toHaveLength(17);
+      // Should still have 18 since lowercase and uppercase are already registered
+      expect(ids).toHaveLength(18);
     });
   });
 });

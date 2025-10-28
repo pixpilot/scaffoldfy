@@ -42,6 +42,14 @@
         "type": "interpolate",
         "value": "{{orgNameVar}}"
       }
+    },
+    {
+      "id": "projNameCapitalCase",
+      "transformers": ["capitalCase"],
+      "value": {
+        "type": "exec",
+        "value": "node -p \"require('path').basename(process.cwd())\""
+      }
     }
   ],
   "prompts": [
@@ -51,8 +59,8 @@
       "required": true,
       "message": "What is your project name?",
       "default": {
-        "type": "exec",
-        "value": "node -p \"require('path').basename(process.cwd())\""
+        "type": "interpolate",
+        "value": "{{projNameCapitalCase}}"
       }
     },
     {

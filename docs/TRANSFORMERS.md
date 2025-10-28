@@ -134,6 +134,24 @@ Converts the string to title case (capitalizes the first letter of each word).
 - Input: `"hello world example"`
 - Output: `"Hello World Example"`
 
+### `capitalCase`
+
+Converts the string to capital case (capitalizes the first letter of each word).
+
+```json
+{
+  "id": "headline",
+  "message": "Enter headline",
+  "type": "input",
+  "transformers": ["capitalCase"]
+}
+```
+
+**Example:**
+
+- Input: `"hello world example"`
+- Output: `"Hello World Example"`
+
 ### `camelcase`
 
 Converts the string to camelCase.
