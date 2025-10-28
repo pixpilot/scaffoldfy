@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy-configs
 
+## 0.15.0
+
+### Minor Changes
+
+- 73c6223: new release
+
 ## 0.14.0
 
 ### Minor Changes
