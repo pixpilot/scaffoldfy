@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy-configs
 
+## 0.14.0
+
+### Minor Changes
+
+- add new transformers and enhance titlecase functionality
+
 ## 0.13.0
 
 ### Minor Changes
