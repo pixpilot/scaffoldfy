@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy
 
+## 0.43.0
+
+### Minor Changes
+
+- add `capitalCase` transformer and update schema
+
 ## 0.42.0
 
 ### Minor Changes
