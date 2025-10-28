@@ -72,6 +72,15 @@ export async function collectPrompts(
         );
       }
 
+      // Apply transformers to the default value before showing it to the user
+      if (defaultValue !== undefined && prompt.transformers !== undefined) {
+        defaultValue = await transformerManager.apply(
+          prompt.transformers,
+          defaultValue,
+          currentContext,
+        );
+      }
+
       switch (prompt.type) {
         case 'input': {
           const inputOptions: {
@@ -198,11 +207,23 @@ export async function collectPrompts(
       }
 
       // Apply transformers if defined
+      // Only transform if:
+      // 1. There are transformers defined, AND
+      // 2. Either there's no default, OR the answer is different from the transformed default
       if (prompt.transformers !== undefined) {
-        answer = await transformerManager.apply(prompt.transformers, answer, {
-          ...currentContext,
-          ...answers,
-        });
+        // If the user accepted the default (answer equals the transformed default),
+        // don't transform again to avoid double transformation
+        const answerIsDefault =
+          defaultValue !== undefined &&
+          (answer === defaultValue || String(answer) === String(defaultValue));
+
+        if (!answerIsDefault) {
+          // User provided custom input, so transform it
+          answer = await transformerManager.apply(prompt.transformers, answer, {
+            ...currentContext,
+            ...answers,
+          });
+        }
       }
 
       answers[prompt.id] = answer;

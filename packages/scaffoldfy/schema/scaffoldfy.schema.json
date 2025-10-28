@@ -221,7 +221,14 @@
         "remove-spaces",
         "urlencode",
         "dasherize",
-        "underscore"
+        "underscore",
+        "adaCase",
+        "cobolCase",
+        "dotNotation",
+        "pathCase",
+        "spaceCase",
+        "trainCase",
+        "upperCamelCase"
       ],
       "description": "Built-in transformer ID"
     },
@@ -552,6 +559,13 @@
             "urlencode",
             "dasherize",
             "underscore",
+            "adaCase",
+            "cobolCase",
+            "dotNotation",
+            "pathCase",
+            "spaceCase",
+            "trainCase",
+            "upperCamelCase",
             "custom",
             "chain"
           ],

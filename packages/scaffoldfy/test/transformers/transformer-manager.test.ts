@@ -134,6 +134,365 @@ describe('transformerManager', () => {
     });
   });
 
+  describe('titlecase transformer', () => {
+    it('should convert camelCase to Title Case', async () => {
+      const transformer: Transformer = {
+        id: 'titlecase',
+        type: 'titlecase',
+      };
+
+      manager.register(transformer);
+      const result = await manager.execute('titlecase', 'fooBar');
+      expect(result).toBe('Foo Bar');
+    });
+
+    it('should convert kebab-case to Title Case', async () => {
+      const transformer: Transformer = {
+        id: 'titlecase',
+        type: 'titlecase',
+      };
+
+      manager.register(transformer);
+      const result = await manager.execute('titlecase', 'foo-bar');
+      expect(result).toBe('Foo Bar');
+    });
+
+    it('should convert snake_case to Title Case', async () => {
+      const transformer: Transformer = {
+        id: 'titlecase',
+        type: 'titlecase',
+      };
+
+      manager.register(transformer);
+      const result = await manager.execute('titlecase', 'foo_bar');
+      expect(result).toBe('Foo Bar');
+    });
+
+    it('should convert PascalCase to Title Case', async () => {
+      const transformer: Transformer = {
+        id: 'titlecase',
+        type: 'titlecase',
+      };
+
+      manager.register(transformer);
+      const result = await manager.execute('titlecase', 'FooBar');
+      expect(result).toBe('Foo Bar');
+    });
+
+    it('should handle multiple words', async () => {
+      const transformer: Transformer = {
+        id: 'titlecase',
+        type: 'titlecase',
+      };
+
+      manager.register(transformer);
+      const result = await manager.execute('titlecase', 'helloWorldExample');
+      expect(result).toBe('Hello World Example');
+    });
+
+    it('should handle already spaced text', async () => {
+      const transformer: Transformer = {
+        id: 'titlecase',
+        type: 'titlecase',
+      };
+
+      manager.register(transformer);
+      const result = await manager.execute('titlecase', 'hello world');
+      expect(result).toBe('Hello World');
+    });
+
+    it('should handle mixed formats', async () => {
+      const transformer: Transformer = {
+        id: 'titlecase',
+        type: 'titlecase',
+      };
+
+      manager.register(transformer);
+      const result = await manager.execute('titlecase', 'foo-bar_bazQux');
+      expect(result).toBe('Foo Bar Baz Qux');
+    });
+  });
+
+  describe('capitalCase transformer', () => {
+    it('should convert camelCase to Capital Case', async () => {
+      const transformer: Transformer = {
+        id: 'capitalCase',
+        type: 'capitalCase',
+      };
+
+      manager.register(transformer);
+      const result = await manager.execute('capitalCase', 'fooBar');
+      expect(result).toBe('Foo Bar');
+    });
+
+    it('should convert kebab-case to Capital Case', async () => {
+      const transformer: Transformer = {
+        id: 'capitalCase',
+        type: 'capitalCase',
+      };
+
+      manager.register(transformer);
+      const result = await manager.execute('capitalCase', 'foo-bar');
+      expect(result).toBe('Foo-Bar');
+    });
+
+    it('should convert snake_case to Capital Case', async () => {
+      const transformer: Transformer = {
+        id: 'capitalCase',
+        type: 'capitalCase',
+      };
+
+      manager.register(transformer);
+      const result = await manager.execute('capitalCase', 'foo_bar');
+      expect(result).toBe('Foo_Bar');
+    });
+
+    it('should convert PascalCase to Capital Case', async () => {
+      const transformer: Transformer = {
+        id: 'capitalCase',
+        type: 'capitalCase',
+      };
+
+      manager.register(transformer);
+      const result = await manager.execute('capitalCase', 'FooBar');
+      expect(result).toBe('Foo Bar');
+    });
+
+    it('should handle multiple words', async () => {
+      const transformer: Transformer = {
+        id: 'capitalCase',
+        type: 'capitalCase',
+      };
+
+      manager.register(transformer);
+      const result = await manager.execute('capitalCase', 'helloWorldExample');
+      expect(result).toBe('Hello World Example');
+    });
+
+    it('should handle already spaced text', async () => {
+      const transformer: Transformer = {
+        id: 'capitalCase',
+        type: 'capitalCase',
+      };
+
+      manager.register(transformer);
+      const result = await manager.execute('capitalCase', 'hello world');
+      expect(result).toBe('Hello World');
+    });
+
+    it('should handle mixed formats', async () => {
+      const transformer: Transformer = {
+        id: 'capitalCase',
+        type: 'capitalCase',
+      };
+
+      manager.register(transformer);
+      const result = await manager.execute('capitalCase', 'foo-bar_bazQux');
+      expect(result).toBe('Foo-Bar_Baz Qux');
+    });
+  });
+
+  describe('adaCase transformer', () => {
+    it('should convert camelCase to Ada_Case', async () => {
+      const transformer: Transformer = {
+        id: 'adaCase',
+        type: 'adaCase',
+      };
+
+      manager.register(transformer);
+      const result = await manager.execute('adaCase', 'fooBar');
+      expect(result).toBe('Foo_Bar');
+    });
+
+    it('should convert kebab-case to Ada_Case', async () => {
+      const transformer: Transformer = {
+        id: 'adaCase',
+        type: 'adaCase',
+      };
+
+      manager.register(transformer);
+      const result = await manager.execute('adaCase', 'foo-bar-baz');
+      expect(result).toBe('Foo_Bar_Baz');
+    });
+  });
+
+  describe('cobolCase transformer', () => {
+    it('should convert camelCase to COBOL-CASE', async () => {
+      const transformer: Transformer = {
+        id: 'cobolCase',
+        type: 'cobolCase',
+      };
+
+      manager.register(transformer);
+      const result = await manager.execute('cobolCase', 'fooBar');
+      expect(result).toBe('FOO-BAR');
+    });
+
+    it('should convert snake_case to COBOL-CASE', async () => {
+      const transformer: Transformer = {
+        id: 'cobolCase',
+        type: 'cobolCase',
+      };
+
+      manager.register(transformer);
+      const result = await manager.execute('cobolCase', 'foo_bar_baz');
+      expect(result).toBe('FOO-BAR-BAZ');
+    });
+  });
+
+  describe('dotNotation transformer', () => {
+    it('should convert camelCase to dot.notation', async () => {
+      const transformer: Transformer = {
+        id: 'dotNotation',
+        type: 'dotNotation',
+      };
+
+      manager.register(transformer);
+      const result = await manager.execute('dotNotation', 'fooBar');
+      expect(result).toBe('foo.Bar');
+    });
+
+    it('should convert kebab-case to dot.notation', async () => {
+      const transformer: Transformer = {
+        id: 'dotNotation',
+        type: 'dotNotation',
+      };
+
+      manager.register(transformer);
+      const result = await manager.execute('dotNotation', 'foo-bar-baz');
+      expect(result).toBe('foo.bar.baz');
+    });
+  });
+
+  describe('pathCase transformer', () => {
+    it('should convert camelCase to path/case', async () => {
+      const transformer: Transformer = {
+        id: 'pathCase',
+        type: 'pathCase',
+      };
+
+      manager.register(transformer);
+      const result = await manager.execute('pathCase', 'fooBar');
+      expect(result).toBe('foo/Bar');
+    });
+
+    it('should convert PascalCase to path/case', async () => {
+      const transformer: Transformer = {
+        id: 'pathCase',
+        type: 'pathCase',
+      };
+
+      manager.register(transformer);
+      const result = await manager.execute('pathCase', 'FooBarBaz');
+      expect(result).toBe('Foo/Bar/Baz');
+    });
+  });
+
+  describe('spaceCase transformer', () => {
+    it('should convert camelCase to space case', async () => {
+      const transformer: Transformer = {
+        id: 'spaceCase',
+        type: 'spaceCase',
+      };
+
+      manager.register(transformer);
+      const result = await manager.execute('spaceCase', 'fooBar');
+      expect(result).toBe('foo Bar');
+    });
+
+    it('should convert kebab-case to space case', async () => {
+      const transformer: Transformer = {
+        id: 'spaceCase',
+        type: 'spaceCase',
+      };
+
+      manager.register(transformer);
+      const result = await manager.execute('spaceCase', 'foo-bar-baz');
+      expect(result).toBe('foo-bar-baz');
+    });
+
+    it('should convert snake_case to space case', async () => {
+      const transformer: Transformer = {
+        id: 'spaceCase',
+        type: 'spaceCase',
+      };
+
+      manager.register(transformer);
+      const result = await manager.execute('spaceCase', 'foo_bar_baz');
+      expect(result).toBe('foo_bar_baz');
+    });
+  });
+
+  describe('trainCase transformer', () => {
+    it('should convert camelCase to Train-Case', async () => {
+      const transformer: Transformer = {
+        id: 'trainCase',
+        type: 'trainCase',
+      };
+
+      manager.register(transformer);
+      const result = await manager.execute('trainCase', 'fooBar');
+      expect(result).toBe('Foo-Bar');
+    });
+
+    it('should convert snake_case to Train-Case', async () => {
+      const transformer: Transformer = {
+        id: 'trainCase',
+        type: 'trainCase',
+      };
+
+      manager.register(transformer);
+      const result = await manager.execute('trainCase', 'foo_bar_baz');
+      expect(result).toBe('Foo-Bar-Baz');
+    });
+
+    it('should handle spaces', async () => {
+      const transformer: Transformer = {
+        id: 'trainCase',
+        type: 'trainCase',
+      };
+
+      manager.register(transformer);
+      const result = await manager.execute('trainCase', 'hello world');
+      expect(result).toBe('Hello-World');
+    });
+  });
+
+  describe('upperCamelCase transformer', () => {
+    it('should convert kebab-case to UpperCamelCase', async () => {
+      const transformer: Transformer = {
+        id: 'upperCamelCase',
+        type: 'upperCamelCase',
+      };
+
+      manager.register(transformer);
+      const result = await manager.execute('upperCamelCase', 'foo-bar');
+      expect(result).toBe('FooBar');
+    });
+
+    it('should convert snake_case to UpperCamelCase', async () => {
+      const transformer: Transformer = {
+        id: 'upperCamelCase',
+        type: 'upperCamelCase',
+      };
+
+      manager.register(transformer);
+      const result = await manager.execute('upperCamelCase', 'foo_bar_baz');
+      expect(result).toBe('FooBarBaz');
+    });
+
+    it('should convert camelCase to UpperCamelCase', async () => {
+      const transformer: Transformer = {
+        id: 'upperCamelCase',
+        type: 'upperCamelCase',
+      };
+
+      manager.register(transformer);
+      const result = await manager.execute('upperCamelCase', 'fooBar');
+      expect(result).toBe('FooBar');
+    });
+  });
+
   describe('regex transformer', () => {
     it('should replace using regex pattern', async () => {
       const transformer: RegexTransformer = {
@@ -343,7 +702,7 @@ describe('transformerManager', () => {
 
   describe('utility methods', () => {
     it('should clear all transformers', () => {
-      // Initially has 18 built-in transformers
+      // Initially has 25 built-in transformers
       expect(manager.getIds().length).toBeGreaterThan(0);
 
       manager.registerAll([
@@ -357,9 +716,9 @@ describe('transformerManager', () => {
     });
 
     it('should get all transformer IDs', () => {
-      // Built-in transformers are auto-registered, so we expect 18 by default
+      // Built-in transformers are auto-registered, so we expect 25 by default
       const initialIds = manager.getIds();
-      expect(initialIds).toHaveLength(18);
+      expect(initialIds).toHaveLength(25);
 
       manager.registerAll([
         { id: 'lowercase', type: 'lowercase' },
@@ -369,8 +728,8 @@ describe('transformerManager', () => {
       const ids = manager.getIds();
       expect(ids).toContain('lowercase');
       expect(ids).toContain('uppercase');
-      // Should still have 18 since lowercase and uppercase are already registered
-      expect(ids).toHaveLength(18);
+      // Should still have 25 since lowercase and uppercase are already registered
+      expect(ids).toHaveLength(25);
     });
   });
 });

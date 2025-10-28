@@ -118,7 +118,7 @@ Capitalizes the first letter of the string.
 
 ### `titlecase`
 
-Converts the string to title case (capitalizes the first letter of each word).
+Converts the string to title case (capitalizes the first letter of each word with spaces). This transformer properly handles all input formats (camelCase, kebab-case, snake_case, etc.) and converts them to a properly formatted title.
 
 ```json
 {
@@ -129,10 +129,15 @@ Converts the string to title case (capitalizes the first letter of each word).
 }
 ```
 
-**Example:**
+**Examples:**
 
-- Input: `"hello world example"`
-- Output: `"Hello World Example"`
+- Input: `"hello world example"` → Output: `"Hello World Example"`
+- Input: `"fooBar"` → Output: `"Foo Bar"`
+- Input: `"foo-bar-baz"` → Output: `"Foo Bar Baz"`
+- Input: `"foo_bar"` → Output: `"Foo Bar"`
+- Input: `"FooBarBaz"` → Output: `"Foo Bar Baz"`
+
+This is the **recommended transformer** when you want to convert any format to a human-readable title with proper capitalization and spacing.
 
 ### `capitalCase`
 
@@ -349,6 +354,132 @@ Converts the string to underscore-separated format (similar to snake_case but ma
 
 - Input: `"HelloWorldExample"`
 - Output: `"hello_world_example"`
+
+### `adaCase`
+
+Converts the string to Ada_Case format (capitalized words separated by underscores).
+
+```json
+{
+  "id": "adaName",
+  "message": "Enter Ada-style name",
+  "type": "input",
+  "transformers": ["adaCase"]
+}
+```
+
+**Example:**
+
+- Input: `"helloWorldExample"`
+- Output: `"Hello_World_Example"`
+
+### `cobolCase`
+
+Converts the string to COBOL-CASE format (uppercase words separated by hyphens).
+
+```json
+{
+  "id": "cobolName",
+  "message": "Enter COBOL-style name",
+  "type": "input",
+  "transformers": ["cobolCase"]
+}
+```
+
+**Example:**
+
+- Input: `"helloWorldExample"`
+- Output: `"HELLO-WORLD-EXAMPLE"`
+
+### `dotNotation`
+
+Converts the string to dot.notation format (lowercase words separated by dots).
+
+```json
+{
+  "id": "propertyPath",
+  "message": "Enter property path",
+  "type": "input",
+  "transformers": ["dotNotation"]
+}
+```
+
+**Example:**
+
+- Input: `"helloWorldExample"`
+- Output: `"hello.World.Example"` (note: preserves original casing within segments)
+
+### `pathCase`
+
+Converts the string to path/case format (words separated by forward slashes).
+
+```json
+{
+  "id": "filePath",
+  "message": "Enter file path",
+  "type": "input",
+  "transformers": ["pathCase"]
+}
+```
+
+**Example:**
+
+- Input: `"helloWorldExample"`
+- Output: `"hello/World/Example"` (note: preserves original casing within segments)
+
+### `spaceCase`
+
+Converts the string to space case format (words separated by spaces, lowercase).
+
+```json
+{
+  "id": "displayName",
+  "message": "Enter display name",
+  "type": "input",
+  "transformers": ["spaceCase"]
+}
+```
+
+**Example:**
+
+- Input: `"helloWorldExample"`
+- Output: `"hello World Example"` (note: may preserve some original casing)
+
+### `trainCase`
+
+Converts the string to Train-Case format (capitalized words separated by hyphens).
+
+```json
+{
+  "id": "trainName",
+  "message": "Enter Train-Case name",
+  "type": "input",
+  "transformers": ["trainCase"]
+}
+```
+
+**Example:**
+
+- Input: `"helloWorldExample"`
+- Output: `"Hello-World-Example"`
+
+### `upperCamelCase`
+
+Converts the string to UpperCamelCase format (same as PascalCase).
+
+```json
+{
+  "id": "componentName",
+  "message": "Enter component name",
+  "type": "input",
+  "transformers": ["upperCamelCase"]
+}
+```
+
+**Example:**
+
+- Input: `"hello-world-example"`
+- Output: `"HelloWorldExample"`
 
 ---
 

@@ -4,13 +4,20 @@
 
 import type { BuiltInTransformer, Transformer } from './types';
 import {
+  adaCase,
   camelCase,
   capitalCase,
+  cobolCase,
   constantCase,
+  dotNotation,
   kebabCase,
   lowerCase,
   pascalCase,
+  pathCase,
   snakeCase,
+  spaceCase,
+  trainCase,
+  upperCamelCase,
   upperCase,
 } from 'case-anything';
 import { TransformerError } from '../errors/other';
@@ -57,6 +64,13 @@ export class TransformerManager {
       { id: 'urlencode', type: 'urlencode' },
       { id: 'dasherize', type: 'dasherize' },
       { id: 'underscore', type: 'underscore' },
+      { id: 'adaCase', type: 'adaCase' },
+      { id: 'cobolCase', type: 'cobolCase' },
+      { id: 'dotNotation', type: 'dotNotation' },
+      { id: 'pathCase', type: 'pathCase' },
+      { id: 'spaceCase', type: 'spaceCase' },
+      { id: 'trainCase', type: 'trainCase' },
+      { id: 'upperCamelCase', type: 'upperCamelCase' },
     ];
 
     for (const transformer of builtInTransformers) {
@@ -250,6 +264,27 @@ export class TransformerManager {
       case 'underscore':
         return this.executeUnderscore(value);
 
+      case 'adaCase':
+        return this.executeAdaCase(value);
+
+      case 'cobolCase':
+        return this.executeCobolCase(value);
+
+      case 'dotNotation':
+        return this.executeDotNotation(value);
+
+      case 'pathCase':
+        return this.executePathCase(value);
+
+      case 'spaceCase':
+        return this.executeSpaceCase(value);
+
+      case 'trainCase':
+        return this.executeTrainCase(value);
+
+      case 'upperCamelCase':
+        return this.executeUpperCamelCase(value);
+
       case 'custom':
         return this.executeCustom(transformer, value, context);
 
@@ -410,7 +445,18 @@ export class TransformerManager {
    * Capitalizes the first letter of each word
    */
   private executeTitlecase(value: unknown): string {
-    return capitalCase(String(value));
+    // Convert to Capital Case (which handles word separation correctly)
+    // but capitalCase might preserve separators, so we need a better approach
+    const str = String(value);
+
+    // Use kebabCase to normalize all formats, then convert to Title Case
+    const normalized = kebabCase(str);
+
+    // Split by hyphens and capitalize each word
+    return normalized
+      .split('-')
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(' ');
   }
 
   /**
@@ -503,6 +549,62 @@ export class TransformerManager {
 
   private executeCapitalCase(value: unknown): string {
     return capitalCase(String(value));
+  }
+
+  /**
+   * Execute adaCase transformer
+   * Converts string to Ada_Case format
+   */
+  private executeAdaCase(value: unknown): string {
+    return adaCase(String(value));
+  }
+
+  /**
+   * Execute cobolCase transformer
+   * Converts string to COBOL-CASE format
+   */
+  private executeCobolCase(value: unknown): string {
+    return cobolCase(String(value));
+  }
+
+  /**
+   * Execute dotNotation transformer
+   * Converts string to dot.notation format
+   */
+  private executeDotNotation(value: unknown): string {
+    return dotNotation(String(value));
+  }
+
+  /**
+   * Execute pathCase transformer
+   * Converts string to path/case format
+   */
+  private executePathCase(value: unknown): string {
+    return pathCase(String(value));
+  }
+
+  /**
+   * Execute spaceCase transformer
+   * Converts string to space case format
+   */
+  private executeSpaceCase(value: unknown): string {
+    return spaceCase(String(value));
+  }
+
+  /**
+   * Execute trainCase transformer
+   * Converts string to Train-Case format
+   */
+  private executeTrainCase(value: unknown): string {
+    return trainCase(String(value));
+  }
+
+  /**
+   * Execute upperCamelCase transformer
+   * Converts string to UpperCamelCase format (same as PascalCase)
+   */
+  private executeUpperCamelCase(value: unknown): string {
+    return upperCamelCase(String(value));
   }
 
   /**

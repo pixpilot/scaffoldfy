@@ -279,4 +279,118 @@ describe('collectPrompts', () => {
 
     await expect(collectPrompts(prompts)).rejects.toThrow('Unknown prompt type: unknown');
   });
+
+  it('should apply transformers to default value before showing prompt', async () => {
+    const resolvedDefaults = new Map<string, unknown>();
+    resolvedDefaults.set('projectName', 'my awesome project');
+
+    const prompts: PromptDefinition[] = [
+      {
+        id: 'projectName',
+        type: 'input',
+        message: 'Project name',
+        transformers: ['capitalCase'],
+      },
+    ];
+
+    // User accepts the default by pressing Enter
+    vi.mocked(input).mockResolvedValue('My Awesome Project');
+
+    const result = await collectPrompts(prompts, resolvedDefaults);
+
+    // The default shown should be "My Awesome Project" (transformed)
+    expect(input).toHaveBeenCalledWith({
+      message: 'Project name',
+      default: 'My Awesome Project',
+      required: true,
+    });
+
+    // The final value should be "My Awesome Project" (not double-transformed)
+    expect(result).toEqual({ projectName: 'My Awesome Project' });
+  });
+
+  it('should apply transformers to user input when they provide custom value', async () => {
+    const resolvedDefaults = new Map<string, unknown>();
+    resolvedDefaults.set('projectName', 'default project');
+
+    const prompts: PromptDefinition[] = [
+      {
+        id: 'projectName',
+        type: 'input',
+        message: 'Project name',
+        transformers: ['capitalCase'],
+      },
+    ];
+
+    // User provides their own input instead of accepting the default
+    vi.mocked(input).mockResolvedValue('user custom project');
+
+    const result = await collectPrompts(prompts, resolvedDefaults);
+
+    // The final value should be transformed
+    expect(result).toEqual({ projectName: 'User Custom Project' });
+  });
+
+  it('should apply transformers to prompts with executable defaults', async () => {
+    const prompts: PromptDefinition[] = [
+      {
+        id: 'projectName',
+        type: 'input',
+        message: 'Project name',
+        default: {
+          type: 'static',
+          value: 'scaffoldfy',
+        },
+        transformers: ['capitalCase'],
+      },
+    ];
+
+    // Mock the resolved default as static value
+    const resolvedDefaults = new Map<string, unknown>();
+    resolvedDefaults.set('projectName', 'scaffoldfy');
+
+    // User accepts the transformed default
+    vi.mocked(input).mockResolvedValue('Scaffoldfy');
+
+    const result = await collectPrompts(prompts, resolvedDefaults);
+
+    // The default shown should be transformed
+    expect(input).toHaveBeenCalledWith({
+      message: 'Project name',
+      default: 'Scaffoldfy',
+      required: true,
+    });
+
+    // The final value should be "Scaffoldfy" (not double-transformed)
+    expect(result).toEqual({ projectName: 'Scaffoldfy' });
+  });
+
+  it('should handle multiple transformers in sequence on default values', async () => {
+    const resolvedDefaults = new Map<string, unknown>();
+    resolvedDefaults.set('email', '  JOHN.DOE@EXAMPLE.COM  ');
+
+    const prompts: PromptDefinition[] = [
+      {
+        id: 'email',
+        type: 'input',
+        message: 'Email address',
+        transformers: ['trim', 'lowercase'],
+      },
+    ];
+
+    // User accepts the default
+    vi.mocked(input).mockResolvedValue('john.doe@example.com');
+
+    const result = await collectPrompts(prompts, resolvedDefaults);
+
+    // The default shown should be trimmed and lowercased
+    expect(input).toHaveBeenCalledWith({
+      message: 'Email address',
+      default: 'john.doe@example.com',
+      required: true,
+    });
+
+    // The final value should be transformed only once
+    expect(result).toEqual({ email: 'john.doe@example.com' });
+  });
 });

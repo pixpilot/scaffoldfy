@@ -22,7 +22,14 @@ type BuiltInTransformerType =
   | 'remove-spaces'
   | 'urlencode'
   | 'dasherize'
-  | 'underscore';
+  | 'underscore'
+  | 'adaCase'
+  | 'cobolCase'
+  | 'dotNotation'
+  | 'pathCase'
+  | 'spaceCase'
+  | 'trainCase'
+  | 'upperCamelCase';
 
 /**
  * Available transformer types
