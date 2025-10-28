@@ -66,7 +66,7 @@
     "@inquirer/prompts": "^7.9.0",
     "ajv": "^8.17.1",
     "case-anything": "^3.1.2",
-    "commander": "^14.0.1",
+    "commander": "^14.0.2",
     "handlebars": "^4.7.8"
   },
   "devDependencies": {
