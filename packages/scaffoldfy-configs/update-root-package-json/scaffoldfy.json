@@ -21,7 +21,8 @@
           "homepage": "{{baseRepoUrl}}",
           "bugs": {
             "url": "{{baseRepoUrl}}/issues"
-          }
+          },
+          "license": "{{licenseType}}"
         }
       }
     }
