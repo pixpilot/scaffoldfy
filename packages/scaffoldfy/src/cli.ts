@@ -15,6 +15,7 @@ import { runWithTasks } from './index';
 import { validateTasksSchema } from './scaffoldfy-config-validator';
 import { log } from './utils';
 import { debug, setDebugMode } from './utils/logger';
+import { startSpinner, stopSpinner } from './utils/spinner-loader';
 
 // Interface for CLI options
 interface CliOptions {
@@ -134,11 +135,16 @@ program
                 log('Configuration validated', 'success');
               }
 
-              // Use configs inheritance loader to support extends
-              // Use sequential mode to process configs one at a time
-              const config = await loadTasksWithInheritance(configFile, {
-                sequential: true,
-              });
+              // Start spinner loader
+              const spinnerId = startSpinner('Loading config');
+              let config;
+              try {
+                config = await loadTasksWithInheritance(configFile, {
+                  sequential: true,
+                });
+              } finally {
+                stopSpinner(spinnerId);
+              }
 
               // If we have templates (sequential mode), run them sequentially
               if (config.configs != null && config.configs.length > 0) {
