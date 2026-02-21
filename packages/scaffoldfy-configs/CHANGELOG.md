@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy-configs
 
+## 0.20.1
+
+### Patch Changes
+
+- correct author format in package.json template
+
 ## 0.20.0
 
 ### Minor Changes
