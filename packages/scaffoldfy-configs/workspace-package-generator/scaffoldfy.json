@@ -1,0 +1,150 @@
+{
+  "$schema": "../node_modules/@pixpilot/scaffoldfy/schema/scaffoldfy.schema.json",
+  "name": "workspace-package-generator",
+  "description": "Generate a new package for a pnpm + Turbo monorepo workspace",
+  "extends": [
+    "./scaffoldfy-base.json",
+    "./scaffoldfy-project-info.json",
+    "https://unpkg.com/@pixpilot/scaffoldfy-configs@latest/license-file/scaffoldfy.json"
+  ],
+
+  "tasks": [
+    {
+      "id": "create-eslint-config",
+      "name": "Create eslint.config.mjs",
+      "description": "Create the ESLint configuration file for the new package",
+      "type": "create",
+      "config": {
+        "file": "{{workspace}}/{{packageBaseName}}/eslint.config.mjs",
+        "templateFile": "./templates/eslint.config.mjs.hbs"
+      }
+    },
+    {
+      "id": "create-package-json",
+      "name": "Create package.json",
+      "description": "Create the package.json for the new package",
+      "type": "create",
+      "config": {
+        "file": "{{workspace}}/{{packageBaseName}}/package.json",
+        "templateFile": "./templates/package.json.hbs"
+      }
+    },
+    {
+      "id": "create-tsconfig",
+      "name": "Create tsconfig.json",
+      "description": "Create the TypeScript configuration file for the new package",
+      "type": "create",
+      "config": {
+        "file": "{{workspace}}/{{packageBaseName}}/tsconfig.json",
+        "templateFile": "./templates/tsconfig.json.hbs"
+      }
+    },
+    {
+      "id": "create-tsconfig-build",
+      "name": "Create tsconfig.build.json",
+      "description": "Create the TypeScript build configuration (tsc bundler only)",
+      "type": "create",
+      "enabled": {
+        "type": "condition",
+        "value": "bundler === 'tsc' && isNpmPackage === true"
+      },
+      "config": {
+        "file": "{{workspace}}/{{packageBaseName}}/tsconfig.build.json",
+        "templateFile": "./templates/tsconfig.build.json.hbs"
+      }
+    },
+    {
+      "id": "create-tsdown-config",
+      "name": "Create tsdown.config.ts",
+      "description": "Create the tsdown bundler configuration (tsdown bundler only)",
+      "type": "create",
+      "enabled": {
+        "type": "condition",
+        "value": "bundler === 'tsdown' && isNpmPackage === true"
+      },
+      "config": {
+        "file": "{{workspace}}/{{packageBaseName}}/tsdown.config.ts",
+        "templateFile": "./templates/tsdown.config.ts.hbs"
+      }
+    },
+    {
+      "id": "create-vitest-config",
+      "name": "Create vitest.config.ts",
+      "description": "Create the Vitest configuration file for the new package",
+      "type": "create",
+      "config": {
+        "file": "{{workspace}}/{{packageBaseName}}/vitest.config.ts",
+        "templateFile": "./templates/vitest.config.ts.hbs"
+      }
+    },
+    {
+      "id": "create-readme",
+      "name": "Create README.md",
+      "description": "Create the README file for the new package",
+      "type": "create",
+      "config": {
+        "file": "{{workspace}}/{{packageBaseName}}/README.md",
+        "templateFile": "./templates/README.md.hbs"
+      }
+    },
+    {
+      "id": "create-src-index",
+      "name": "Create src/index.ts",
+      "description": "Create the main entry point source file",
+      "type": "create",
+      "config": {
+        "file": "{{workspace}}/{{packageBaseName}}/src/index.ts",
+        "templateFile": "./templates/src/index.ts.hbs"
+      }
+    },
+    {
+      "id": "create-test-index",
+      "name": "Create test/index.test.ts",
+      "description": "Create the main test file",
+      "type": "create",
+      "config": {
+        "file": "{{workspace}}/{{packageBaseName}}/test/index.test.ts",
+        "templateFile": "./templates/test/index.test.ts.hbs"
+      }
+    },
+    {
+      "id": "add-dependencies",
+      "name": "Add user-specified dependencies",
+      "description": "Add any extra dependencies the user specified to package.json",
+      "type": "exec-file",
+      "required": false,
+      "enabled": {
+        "type": "condition",
+        "value": "deps !== undefined && deps !== '' && deps !== null"
+      },
+      "config": {
+        "file": "./scripts/add-dependencies.cjs",
+        "runtime": "node",
+        "args": [
+          "--file={{workspace}}/{{packageBaseName}}/package.json",
+          "--deps={{deps}}"
+        ]
+      }
+    },
+    {
+      "id": "install-dependencies",
+      "name": "Install dependencies",
+      "description": "Run pnpm install to install workspace dependencies",
+      "type": "exec",
+      "required": false,
+      "config": {
+        "command": "pnpm install"
+      }
+    },
+    {
+      "id": "format-files",
+      "name": "Format generated files",
+      "description": "Run Prettier to format all generated files",
+      "type": "exec",
+      "required": false,
+      "config": {
+        "command": "pnpm prettier --write \"{{workspace}}/{{packageBaseName}}/**\" --ignore-unknown"
+      }
+    }
+  ]
+}

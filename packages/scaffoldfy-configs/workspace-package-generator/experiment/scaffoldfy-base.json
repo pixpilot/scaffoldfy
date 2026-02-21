@@ -1,0 +1,13 @@
+{
+  "$schema": "../node_modules/@pixpilot/scaffoldfy/schema/scaffoldfy.schema.json",
+  "name": "workspace-package-generator",
+  "description": "Generate a new package for a pnpm + Turbo monorepo workspace",
+  "prompts": [
+    {
+      "id": "isEnabled",
+      "type": "confirm",
+      "message": "Should Disable Next Prompt?",
+      "default": false
+    }
+  ]
+}

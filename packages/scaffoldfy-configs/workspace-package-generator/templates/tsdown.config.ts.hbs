@@ -1,0 +1,16 @@
+import { defineConfig } from '{{tsdownConfigPackage}}';
+
+{{#if bundleSizeLimit}}
+const KB = 1024;
+const MAX_BUNDLE_SIZE_KB = {{bundleSizeLimit}};
+
+{{/if}}
+export default defineConfig({
+  {{#if bundleSizeLimit}}
+  bundleSize: MAX_BUNDLE_SIZE_KB * KB,
+  {{/if}}
+  entry: 'src/index.ts',
+  dts: true,
+  minify: true,
+  clean: true,
+});

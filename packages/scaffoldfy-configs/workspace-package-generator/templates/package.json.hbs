@@ -1,0 +1,82 @@
+{
+  "name": "{{#if isNpmPackage}}{{#if orgName}}@{{orgName}}/{{packageBaseName}}{{else}}{{packageBaseName}}{{/if}}{{else}}@internal/{{packageBaseName}}{{/if}}",
+  "type": "module",
+  "version": "0.0.0",
+  {{#unless isNpmPackage}}
+  "private": true,
+  {{/unless}}
+  "packageManager": "pnpm@10.17.0",
+  "author": "{{{author}}}",
+  "license": "MIT",
+  {{#if repoUrl}}
+  "repository": {
+    "type": "git",
+    "url": "{{repoUrl}}",
+    "directory": "{{repoDirectory}}"
+  },
+  {{/if}}
+  "keywords": [],
+  "exports": "./src/index.ts",
+  {{#if isNpmPackage}}
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "{{#if isPublicPackage}}public{{else}}restricted{{/if}}",
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/index.js",
+        "require": "./dist/index.cjs"
+      }
+    },
+    "main": "./dist/index.cjs",
+    "module": "./dist/index.js",
+    "types": "./dist/index.d.ts"
+  },
+  {{/if}}
+  "scripts": {
+    {{#if isNpmPackage}}
+    "prepublishOnly": "pnpm run clean && pnpm run build",
+    {{/if}}
+    "clean": "git clean -xdf .cache .turbo dist",
+    "clean:all": "pnpm clean && git clean -xdf node_modules",
+    {{#if isNpmPackage}}
+    {{#if isBundlerTsc}}
+    "build": "pnpm run clean && tsc -p tsconfig.build.json",
+    "build:watch": "pnpm run clean && tsc -p tsconfig.build.json --watch",
+    {{/if}}
+    {{#if isBundlerTsdown}}
+    "build": "tsdown",
+    "build:watch": "tsdown --watch",
+    {{/if}}
+    {{/if}}
+    "test": "vitest --run --passWithNoTests",
+    "test:watch": "vitest --watch",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest --coverage",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint",
+    "format": "prettier --check . --ignore-path {{relativeRootPath}}.gitignore --ignore-path {{relativeRootPath}}.prettierignore"
+  },
+  "devDependencies": {
+    "@internal/eslint-config": "workspace:*",
+    "@internal/prettier-config": "workspace:*",
+    "@internal/tsconfig": "workspace:*",
+    {{#if isNpmPackage}}
+    {{#if isBundlerTsdown}}
+    "{{tsdownConfigPackage}}": "{{#if hasTsdownConfig}}workspace:*{{else}}^1.0.0{{/if}}",
+    {{/if}}
+    {{/if}}
+    "@internal/vitest-config": "workspace:*",
+    "@types/node": "catalog:dev",
+    "eslint": "catalog:dev",
+    {{#if isNpmPackage}}
+    {{#if isBundlerTsdown}}
+    "tsdown": "catalog:dev",
+    {{/if}}
+    {{/if}}
+    "typescript": "catalog:dev"
+  },
+  "prettier": "@internal/prettier-config"
+}

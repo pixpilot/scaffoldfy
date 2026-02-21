@@ -1,0 +1,132 @@
+{
+  "$schema": "../node_modules/@pixpilot/scaffoldfy/schema/scaffoldfy.schema.json",
+  "name": "workspace-package-generator-base",
+  "description": "Generate a new package for a pnpm + Turbo monorepo workspace",
+
+  "variables": [
+    {
+      "id": "currentYear",
+      "value": {
+        "type": "exec",
+        "value": "node -e \"process.stdout.write(String(new Date().getFullYear()))\""
+      }
+    },
+    {
+      "id": "hasTsdownConfig",
+      "required": false,
+      "value": {
+        "type": "exec-file",
+        "file": "./scripts/check-tsdown-config.cjs",
+        "runtime": "node"
+      }
+    },
+    {
+      "id": "relativeRootPath",
+      "value": "../../"
+    },
+    {
+      "id": "bundler",
+      "value": {
+        "type": "conditional",
+        "condition": "hasTsdownConfig === true",
+        "ifTrue": "tsdown",
+        "ifFalse": "tsc"
+      }
+    },
+    {
+      "id": "isBundlerTsc",
+      "value": {
+        "type": "conditional",
+        "condition": "bundler === 'tsc'",
+        "ifTrue": true,
+        "ifFalse": false
+      }
+    },
+    {
+      "id": "isBundlerTsdown",
+      "value": {
+        "type": "conditional",
+        "condition": "bundler === 'tsdown'",
+        "ifTrue": true,
+        "ifFalse": false
+      }
+    },
+    {
+      "id": "tsdownConfigPackage",
+      "value": {
+        "type": "conditional",
+        "condition": "hasTsdownConfig === true",
+        "ifTrue": "@internal/tsdown-config",
+        "ifFalse": "@pixpilot/tsdown-config"
+      }
+    }
+  ],
+
+  "prompts": [
+    {
+      "id": "workspace",
+      "type": "select",
+      "message": "Select target workspace",
+      "choices": [
+        { "name": "packages", "value": "packages" },
+        { "name": "apps", "value": "apps" },
+        { "name": "tooling", "value": "tooling" },
+        { "name": "api", "value": "api" }
+      ],
+      "default": "packages"
+    },
+    {
+      "id": "packageBaseName",
+      "type": "input",
+      "message": "Enter the package name (e.g. my-package)",
+      "required": true,
+      "transformers": ["kebabcase"]
+    },
+    {
+      "id": "deps",
+      "type": "input",
+      "message": "Enter list of dependencies (space separated, leave empty to skip)",
+      "required": false
+    },
+    {
+      "id": "isNpmPackage",
+      "type": "confirm",
+      "message": "Is this an npm package?",
+      "default": false
+    },
+    {
+      "id": "isPublicPackage",
+      "type": "confirm",
+      "message": "Is this a public package?",
+      "default": false,
+      "enabled": {
+        "type": "condition",
+        "value": "isNpmPackage === true"
+      }
+    },
+    {
+      "id": "bundler",
+      "type": "select",
+      "message": "Select a bundler for this package",
+      "choices": [
+        { "name": "TypeScript Compiler (tsc)", "value": "tsc" },
+        { "name": "tsdown", "value": "tsdown" }
+      ],
+      "default": "tsc",
+      "enabled": {
+        "type": "condition",
+        "value": "isNpmPackage === true"
+      }
+    },
+    {
+      "id": "bundleSizeLimit",
+      "type": "number",
+      "message": "Enter bundle size limit in KB (0 for no limit)",
+      "default": 0,
+      "enabled": {
+        "type": "condition",
+        "value": "bundler === 'tsdown' && isPublicPackage === true"
+      }
+    }
+  ]
+}

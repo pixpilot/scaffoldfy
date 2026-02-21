@@ -1,4 +1,4 @@
-import type { ScaffoldfyConfiguration } from '../types';
+import type { DynamicBooleanValue, ScaffoldfyConfiguration } from '../types';
 import path from 'node:path';
 import process from 'node:process';
 import { CircularDependencyError } from '../errors/base';
@@ -13,6 +13,11 @@ import { topologicalSortConfigs } from './topological-sort';
  * @param visitedPaths - Set of already visited paths (for deduplication)
  * @param visitingPaths - Set of paths currently being visited (for circular detection)
  * @param allConfigurations - Array to collect all loaded configurations
+ * @param inheritedEnabled
+ * An optional enabled condition inherited from the child config that references this
+ * config via `extends`. When set, and the config being loaded has no own `enabled`
+ * condition, the inherited condition is applied so that ancestor configs in an extends
+ * chain are disabled whenever the child that extends them is disabled.
  * @returns Array of all loaded configurations (unmerged)
  */
 async function loadAllConfigurationsRecursive(
@@ -21,6 +26,7 @@ async function loadAllConfigurationsRecursive(
   visitedPaths: Set<string>,
   visitingPaths: Set<string>,
   allConfigurations: ScaffoldfyConfiguration[],
+  inheritedEnabled?: DynamicBooleanValue,
 ): Promise<void> {
   // Check if configPath is a URL
   const isRemote = isUrl(configPath);
@@ -66,9 +72,18 @@ async function loadAllConfigurationsRecursive(
     ? new URL('.', resolvedPath).href
     : path.dirname(resolvedPath);
 
-  // If configuration has extends, load them first (recursively)
+  // If configuration has extends, load them first (recursively).
+  // Propagate the effective enabled condition so that when a child config is
+  // disabled (via its own `enabled` field), all ancestor configs it pulls in via
+  // `extends` are also disabled — unless the ancestor defines its own `enabled`.
   if (config.extends != null && config.extends !== '') {
     const extendsList = Array.isArray(config.extends) ? config.extends : [config.extends];
+
+    /*
+     * The effective condition to pass down is the child's own `enabled` when
+     * present, otherwise whatever was inherited from further down the chain.
+     */
+    const effectiveEnabled = config.enabled ?? inheritedEnabled;
 
     /* eslint-disable no-await-in-loop */
     for (const extendsPath of extendsList) {
@@ -78,6 +93,7 @@ async function loadAllConfigurationsRecursive(
         visitedPaths,
         visitingPaths,
         allConfigurations,
+        effectiveEnabled,
       );
     }
     /* eslint-enable no-await-in-loop */
@@ -87,8 +103,18 @@ async function loadAllConfigurationsRecursive(
   visitingPaths.delete(resolvedPath);
   visitedPaths.add(resolvedPath);
 
-  // Add current configuration to the collection
-  allConfigurations.push(config);
+  /*
+   * When this config has no own `enabled` condition but an ancestor's condition
+   * was passed in, create a copy that carries the inherited condition so that
+   * `runConfigurationSequentially` will correctly skip it when the originating
+   * child config is disabled.
+   */
+  const configToAdd =
+    config.enabled == null && inheritedEnabled != null
+      ? { ...config, enabled: inheritedEnabled }
+      : config;
+
+  allConfigurations.push(configToAdd);
 }
 
 /**

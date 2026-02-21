@@ -1,0 +1,19 @@
+{
+  "$schema": "../node_modules/@pixpilot/scaffoldfy/schema/scaffoldfy.schema.json",
+  "name": "workspace-package-generator",
+  "description": "Generate a new package for a pnpm + Turbo monorepo workspace",
+
+  "extends": [
+    "./scaffoldfy-extend-with-disables.json",
+    "https://unpkg.com/@pixpilot/scaffoldfy-configs@latest/license-file/scaffoldfy.json"
+  ],
+  "enabled": { "type": "condition", "value": "isEnabled == true" },
+
+  "prompts": [
+    {
+      "id": "disabledPrompt",
+      "type": "input",
+      "message": "This prompt is disabled"
+    }
+  ]
+}
