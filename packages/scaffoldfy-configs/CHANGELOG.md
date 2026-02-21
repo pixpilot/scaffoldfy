@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy-configs
 
+## 0.18.0
+
+### Minor Changes
+
+- add template interpolation for file paths
+
 ## 0.17.0
 
 ### Minor Changes
