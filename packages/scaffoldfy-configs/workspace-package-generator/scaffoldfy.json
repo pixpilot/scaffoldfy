@@ -5,7 +5,7 @@
   "extends": [
     "./scaffoldfy-base.json",
     "./scaffoldfy-project-info.json",
-    "https://unpkg.com/@pixpilot/scaffoldfy-configs@latest/license-file/scaffoldfy.json"
+    "../license-file/scaffoldfy.json"
   ],
 
   "tasks": [

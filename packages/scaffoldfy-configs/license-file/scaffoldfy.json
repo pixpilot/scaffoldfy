@@ -10,6 +10,7 @@
       "type": "select",
       "message": "Select a license for your project",
       "choices": [
+        { "name": "No License", "value": "NONE" },
         { "name": "MIT", "value": "MIT" },
         { "name": "Apache 2.0", "value": "Apache-2.0" },
         { "name": "GPL v3", "value": "GPL-3.0" },
@@ -19,10 +20,9 @@
         { "name": "ISC", "value": "ISC" },
         { "name": "MPL 2.0", "value": "MPL-2.0" },
         { "name": "AGPL v3", "value": "AGPL-3.0" },
-        { "name": "Unlicense", "value": "Unlicense" },
-        { "name": "No License", "value": "NONE" }
+        { "name": "Unlicense", "value": "Unlicense" }
       ],
-      "default": "MIT"
+      "default": "NONE"
     }
   ],
   "tasks": [
