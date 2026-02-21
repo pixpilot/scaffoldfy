@@ -43,7 +43,7 @@
       "type": "write",
       "enabled": { "type": "condition", "value": "licenseType === 'MIT'" },
       "config": {
-        "file": "{{licenceFilePath}}/LICENSE",
+        "file": "{{licenceFilePath}}",
         "templateFile": "./licenses/mit.hbs"
       }
     },
