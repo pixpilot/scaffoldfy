@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy
 
+## 0.45.0
+
+### Minor Changes
+
+- add initial implementation for workspace package generator
+
 ## 0.44.0
 
 ### Minor Changes
