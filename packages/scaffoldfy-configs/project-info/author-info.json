@@ -1,0 +1,28 @@
+{
+  "$schema": "../node_modules/@pixpilot/scaffoldfy/schema/scaffoldfy.schema.json",
+  "name": "author-info",
+  "description": "Author information prompts",
+  "extends": [],
+  "prompts": [
+    {
+      "id": "author",
+      "type": "input",
+      "message": "Author name",
+      "default": {
+        "type": "exec",
+        "value": "git config user.name | node -pe \"require('fs').readFileSync(0,'utf-8').trim().replace('ccpu','m.doaie')\""
+      },
+      "required": true
+    },
+    {
+      "id": "authorEmail",
+      "type": "input",
+      "message": "Author email",
+      "default": {
+        "type": "exec",
+        "value": "git config user.email"
+      },
+      "required": false
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "$schema": "../node_modules/@pixpilot/scaffoldfy/schema/scaffoldfy.schema.json",
+  "name": "org-name-info",
+  "description": "Organization name prompt for pnpm-turbo-monorepo-template",
+  "extends": ["./repo-info.json"],
+  "variables": [
+    {
+      "id": "orgNameVar",
+      "transformers": ["capitalize"],
+      "value": {
+        "type": "exec-file",
+        "file": "./detect-git-hub-org.js",
+        "args": ["--repoUrl={{repoUrlVar}}", "--env=production"]
+      }
+    },
+    {
+      "id": "orgNameCapital",
+      "transformers": ["capitalize"],
+      "value": {
+        "type": "interpolate",
+        "value": "{{orgNameVar}}"
+      }
+    }
+  ],
+  "prompts": [
+    {
+      "id": "orgName",
+      "type": "input",
+      "message": "Organization name for packages (used in package scopes)",
+      "default": {
+        "type": "interpolate",
+        "value": "{{orgNameCapital}}"
+      },
+      "required": false
+    }
+  ]
+}

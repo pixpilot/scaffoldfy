@@ -2,7 +2,6 @@
   "$schema": "../node_modules/@pixpilot/scaffoldfy/schema/scaffoldfy.schema.json",
   "name": "workspace-package-generator-base",
   "description": "Generate a new package for a pnpm + Turbo monorepo workspace",
-
   "variables": [
     {
       "id": "currentYear",

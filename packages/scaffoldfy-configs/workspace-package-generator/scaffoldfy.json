@@ -8,6 +8,16 @@
     "../license-file/scaffoldfy.json"
   ],
 
+  "variables": [
+    {
+      "id": "repoDirectory",
+      "value": {
+        "type": "interpolate",
+        "value": "{{workspace}}/{{packageBaseName}}"
+      }
+    }
+  ],
+
   "tasks": [
     {
       "id": "create-eslint-config",
