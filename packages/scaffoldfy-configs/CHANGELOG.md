@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy-configs
 
+## 0.19.0
+
+### Minor Changes
+
+- add license field to root package.json updates
+
 ## 0.18.0
 
 ### Minor Changes
