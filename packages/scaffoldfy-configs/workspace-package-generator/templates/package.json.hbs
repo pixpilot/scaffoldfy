@@ -11,10 +11,14 @@
   "license": "{{licenseType}}",
   {{/if}}
   {{#if repoUrl}}
+  "homepage": "{{baseRepoUrl}}",
   "repository": {
     "type": "git",
     "url": "{{repoUrl}}",
     "directory": "{{repoDirectory}}"
+  },
+  "bugs": {
+    "url": "{{baseRepoUrl}}/issues"
   },
   {{/if}}
   "keywords": [],

@@ -40,6 +40,16 @@
         "value": "{{repoUrlVar}}"
       },
       "required": false
+    },
+    {
+      "id": "baseRepoUrl",
+      "type": "input",
+      "message": "Base repository URL",
+      "default": {
+        "type": "exec",
+        "value": "git remote get-url origin | node -e \"const url=require('fs').readFileSync(0,'utf-8').trim(); const match=url.match(/^(?:https?:\\/\\/|git@)([^/:]+)[:/](.+?)(?:\\.git)?$/); console.log(match ? `https://${match[1]}/${match[2]}` : '')\""
+      },
+      "required": false
     }
   ]
 }

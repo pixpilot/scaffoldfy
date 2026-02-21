@@ -152,16 +152,6 @@
       "config": {
         "command": "pnpm install"
       }
-    },
-    {
-      "id": "format-files",
-      "name": "Format generated files",
-      "description": "Run Prettier to format all generated files",
-      "type": "exec",
-      "required": false,
-      "config": {
-        "command": "pnpm prettier --write \"{{workspace}}/{{packageBaseName}}/**\" --ignore-unknown"
-      }
     }
   ]
 }
