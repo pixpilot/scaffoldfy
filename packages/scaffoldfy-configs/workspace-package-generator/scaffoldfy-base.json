@@ -82,6 +82,16 @@
       "transformers": ["kebabcase"]
     },
     {
+      "id": "packageType",
+      "type": "select",
+      "message": "What type of package?",
+      "choices": [
+        { "name": "Vanilla", "value": "vanilla" },
+        { "name": "React", "value": "react" }
+      ],
+      "default": "vanilla"
+    },
+    {
       "id": "deps",
       "type": "input",
       "message": "Enter list of dependencies (space separated, leave empty to skip)",

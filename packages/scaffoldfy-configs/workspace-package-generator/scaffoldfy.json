@@ -31,9 +31,27 @@
       "name": "Create eslint.config.mjs",
       "description": "Create the ESLint configuration file for the new package",
       "type": "create",
+      "enabled": {
+        "type": "condition",
+        "value": "packageType !== 'react'"
+      },
       "config": {
         "file": "{{workspace}}/{{packageBaseName}}/eslint.config.mjs",
         "templateFile": "./templates/eslint.config.mjs.hbs"
+      }
+    },
+    {
+      "id": "create-eslint-config-react",
+      "name": "Create eslint.config.mjs (React)",
+      "description": "Create the ESLint configuration file for React packages",
+      "type": "create",
+      "enabled": {
+        "type": "condition",
+        "value": "packageType === 'react'"
+      },
+      "config": {
+        "file": "{{workspace}}/{{packageBaseName}}/eslint.config.mjs",
+        "templateFile": "./templates/eslint.config.react.mjs.hbs"
       }
     },
     {
