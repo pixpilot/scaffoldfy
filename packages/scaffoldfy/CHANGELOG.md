@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy
 
+## 0.47.0
+
+### Minor Changes
+
+- add spinner utility for loading configuration
+
 ## 0.46.0
 
 ### Minor Changes
