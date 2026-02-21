@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy-configs
 
+## 0.17.0
+
+### Minor Changes
+
+- add "No License" option and update default selection
+
 ## 0.16.0
 
 ### Minor Changes
