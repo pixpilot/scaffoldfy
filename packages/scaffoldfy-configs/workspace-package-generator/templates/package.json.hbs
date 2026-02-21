@@ -7,6 +7,9 @@
   {{/unless}}
   "packageManager": "pnpm@10.17.0",
   "author": "{{{author}}}",
+  {{#if licenseType}}
+  "license": "{{licenseType}}",
+  {{/if}}
   {{#if repoUrl}}
   "repository": {
     "type": "git",
