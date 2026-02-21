@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy-configs
 
+## 0.20.0
+
+### Minor Changes
+
+- add base repository URL and bugs section to package.json template
+
 ## 0.19.0
 
 ### Minor Changes
