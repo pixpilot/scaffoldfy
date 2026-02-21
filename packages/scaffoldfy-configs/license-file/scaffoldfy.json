@@ -4,6 +4,16 @@
   "description": "Generate a LICENSE file with common open-source licenses",
   "dependencies": ["project-info"],
 
+  "variables": [
+    {
+      "id": "licenceFilePath",
+      "value": {
+        "type": "static",
+        "value": "LICENSE"
+      }
+    }
+  ],
+
   "prompts": [
     {
       "id": "licenseType",
@@ -33,7 +43,7 @@
       "type": "write",
       "enabled": { "type": "condition", "value": "licenseType === 'MIT'" },
       "config": {
-        "file": "LICENSE",
+        "file": "{{licenceFilePath}}/LICENSE",
         "templateFile": "./licenses/mit.hbs"
       }
     },
@@ -44,7 +54,7 @@
       "type": "write",
       "enabled": { "type": "condition", "value": "licenseType === 'Apache-2.0'" },
       "config": {
-        "file": "LICENSE",
+        "file": "{{licenceFilePath}}",
         "templateFile": "./licenses/apache-2.0.hbs"
       }
     },
@@ -55,7 +65,7 @@
       "type": "write",
       "enabled": { "type": "condition", "value": "licenseType === 'GPL-3.0'" },
       "config": {
-        "file": "LICENSE",
+        "file": "{{licenceFilePath}}",
         "templateFile": "./licenses/gpl-3.0.hbs"
       }
     },
@@ -66,7 +76,7 @@
       "type": "write",
       "enabled": { "type": "condition", "value": "licenseType === 'GPL-2.0'" },
       "config": {
-        "file": "LICENSE",
+        "file": "{{licenceFilePath}}",
         "templateFile": "./licenses/gpl-2.0.hbs"
       }
     },
@@ -77,7 +87,7 @@
       "type": "write",
       "enabled": { "type": "condition", "value": "licenseType === 'BSD-3-Clause'" },
       "config": {
-        "file": "LICENSE",
+        "file": "{{licenceFilePath}}",
         "templateFile": "./licenses/bsd-3-clause.hbs"
       }
     },
@@ -88,7 +98,7 @@
       "type": "write",
       "enabled": { "type": "condition", "value": "licenseType === 'BSD-2-Clause'" },
       "config": {
-        "file": "LICENSE",
+        "file": "{{licenceFilePath}}",
         "templateFile": "./licenses/bsd-2-clause.hbs"
       }
     },
@@ -99,7 +109,7 @@
       "type": "write",
       "enabled": { "type": "condition", "value": "licenseType === 'ISC'" },
       "config": {
-        "file": "LICENSE",
+        "file": "{{licenceFilePath}}",
         "templateFile": "./licenses/isc.hbs"
       }
     },
@@ -110,7 +120,7 @@
       "type": "write",
       "enabled": { "type": "condition", "value": "licenseType === 'MPL-2.0'" },
       "config": {
-        "file": "LICENSE",
+        "file": "{{licenceFilePath}}",
         "templateFile": "./licenses/mpl-2.0.hbs"
       }
     },
@@ -121,7 +131,7 @@
       "type": "write",
       "enabled": { "type": "condition", "value": "licenseType === 'AGPL-3.0'" },
       "config": {
-        "file": "LICENSE",
+        "file": "{{licenceFilePath}}",
         "templateFile": "./licenses/agpl-3.0.hbs"
       }
     },
@@ -132,21 +142,8 @@
       "type": "write",
       "enabled": { "type": "condition", "value": "licenseType === 'Unlicense'" },
       "config": {
-        "file": "LICENSE",
+        "file": "{{licenceFilePath}}",
         "templateFile": "./licenses/unlicense.hbs"
-      }
-    },
-    {
-      "id": "update-license",
-      "name": "Update package.json license",
-      "description": "Update license field in package.json",
-      "type": "update-json",
-      "enabled": { "type": "condition", "value": "licenseType !== 'NONE'" },
-      "config": {
-        "file": "package.json",
-        "updates": {
-          "license": "{{licenseType}}"
-        }
       }
     }
   ]

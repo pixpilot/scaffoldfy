@@ -211,4 +211,16 @@ describe('executeWrite', () => {
     expect(fs.existsSync(testFile)).toBe(true);
     expect(fs.readFileSync(testFile, 'utf-8')).toBe('content');
   });
+
+  it('should interpolate template variables in the file path', async () => {
+    const config: WriteConfig = {
+      file: '{{projectName}}/LICENSE',
+      template: 'MIT License',
+    };
+
+    await executeWrite(config, mockConfig);
+
+    expect(fs.existsSync('test-repo/LICENSE')).toBe(true);
+    expect(fs.readFileSync('test-repo/LICENSE', 'utf-8')).toBe('MIT License');
+  });
 });

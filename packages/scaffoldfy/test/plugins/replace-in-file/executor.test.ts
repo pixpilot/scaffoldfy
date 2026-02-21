@@ -150,4 +150,19 @@ describe('executeReplaceInFile', () => {
     const content = fs.readFileSync(testFile, 'utf-8');
     expect(content).toBe('old value');
   });
+
+  it('should interpolate template variables in the file path', async () => {
+    fs.mkdirSync('test-repo', { recursive: true });
+    const testFile = 'test-repo/config.txt';
+    fs.writeFileSync(testFile, 'old value');
+
+    const config: ReplaceInFileConfig = {
+      file: '{{projectName}}/config.txt',
+      replacements: [{ find: 'old', replace: 'new' }],
+    };
+
+    await executeReplaceInFile(config, mockConfig);
+
+    expect(fs.readFileSync(testFile, 'utf-8')).toBe('new value');
+  });
 });

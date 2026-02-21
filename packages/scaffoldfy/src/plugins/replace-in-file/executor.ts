@@ -29,7 +29,7 @@ export async function executeReplaceInFile(
     }
   }
 
-  const filePath = path.join(process.cwd(), config.file);
+  const filePath = path.join(process.cwd(), interpolateTemplate(config.file, initConfig));
   const { replacements } = config;
 
   if (!fs.existsSync(filePath)) {

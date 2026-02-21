@@ -32,7 +32,7 @@ export async function executeUpdateJson(
     }
   }
 
-  const filePath = path.join(process.cwd(), config.file);
+  const filePath = path.join(process.cwd(), interpolateTemplate(config.file, initConfig));
   const { updates } = config;
 
   const content = await readFile(filePath, 'utf-8');

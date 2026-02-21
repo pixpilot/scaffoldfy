@@ -197,4 +197,17 @@ describe('executeDelete', () => {
     // Should not delete because !keepExamplePackages evaluates to false when keepExamplePackages is true
     expect(fs.existsSync(testFile)).toBe(true);
   });
+
+  it('should interpolate template variables in paths', async () => {
+    fs.mkdirSync('test-repo', { recursive: true });
+    fs.writeFileSync('test-repo/file.txt', 'content');
+
+    const config: DeleteConfig = {
+      paths: ['{{projectName}}/file.txt'],
+    };
+
+    await executeDelete(config, mockConfig);
+
+    expect(fs.existsSync('test-repo/file.txt')).toBe(false);
+  });
 });

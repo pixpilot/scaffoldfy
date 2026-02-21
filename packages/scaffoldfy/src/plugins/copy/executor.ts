@@ -8,7 +8,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
 import { promisify } from 'node:util';
-import { evaluateCondition, log } from '../../utils';
+import { evaluateCondition, interpolateTemplate, log } from '../../utils';
 
 const copyFile = promisify(fs.copyFile);
 const stat = promisify(fs.stat);
@@ -52,8 +52,8 @@ export async function executeCopy(
     }
   }
 
-  const fromPath = path.join(process.cwd(), config.from);
-  const toPath = path.join(process.cwd(), config.to);
+  const fromPath = path.join(process.cwd(), interpolateTemplate(config.from, initConfig));
+  const toPath = path.join(process.cwd(), interpolateTemplate(config.to, initConfig));
 
   // Check if source exists
   let stats;

@@ -7,7 +7,7 @@ import type { DeleteConfig } from './types';
 import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
-import { evaluateCondition, log } from '../../utils';
+import { evaluateCondition, interpolateTemplate, log } from '../../utils';
 
 /**
  * Execute delete task
@@ -34,7 +34,9 @@ export async function executeDelete(
   }
 
   for (const relativePath of paths) {
-    const fullPath = path.join(process.cwd(), relativePath);
+    const resolvedPath =
+      initConfig != null ? interpolateTemplate(relativePath, initConfig) : relativePath;
+    const fullPath = path.join(process.cwd(), resolvedPath);
 
     if (fs.existsSync(fullPath)) {
       fs.rmSync(fullPath, { recursive: true, force: true });

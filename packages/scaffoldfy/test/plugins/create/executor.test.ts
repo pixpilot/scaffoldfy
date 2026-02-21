@@ -253,4 +253,16 @@ describe('executeCreate', () => {
 
     await expect(executeCreate(config, mockConfig)).rejects.toThrow();
   });
+
+  it('should interpolate template variables in the file path', async () => {
+    const config: CreateConfig = {
+      file: '{{projectName}}/README.md',
+      template: '# {{projectName}}',
+    };
+
+    await executeCreate(config, mockConfig);
+
+    expect(fs.existsSync('test-repo/README.md')).toBe(true);
+    expect(fs.readFileSync('test-repo/README.md', 'utf-8')).toBe('# test-repo');
+  });
 });

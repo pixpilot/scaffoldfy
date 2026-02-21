@@ -140,4 +140,20 @@ describe('executeRegexReplace', () => {
     const content = fs.readFileSync(testFile, 'utf-8');
     expect(content).toBe('old text');
   });
+
+  it('should interpolate template variables in the file path', async () => {
+    fs.mkdirSync('test-repo', { recursive: true });
+    const testFile = 'test-repo/readme.txt';
+    fs.writeFileSync(testFile, 'hello world');
+
+    const config: RegexReplaceConfig = {
+      file: '{{projectName}}/readme.txt',
+      pattern: 'world',
+      replacement: 'earth',
+    };
+
+    await executeRegexReplace(config, mockConfig);
+
+    expect(fs.readFileSync(testFile, 'utf-8')).toBe('hello earth');
+  });
 });

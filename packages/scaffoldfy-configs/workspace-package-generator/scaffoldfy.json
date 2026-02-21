@@ -15,6 +15,13 @@
         "type": "interpolate",
         "value": "{{workspace}}/{{packageBaseName}}"
       }
+    },
+    {
+      "id": "licenceFilePath",
+      "value": {
+        "type": "interpolate",
+        "value": "{{repoDirectory}}/LICENSE"
+      }
     }
   ],
 
@@ -154,6 +161,19 @@
       "required": false,
       "config": {
         "command": "pnpm prettier --write \"{{workspace}}/{{packageBaseName}}/**\" --ignore-unknown"
+      }
+    },
+    {
+      "id": "update-license",
+      "name": "Update package.json license",
+      "description": "Update license field in package.json",
+      "type": "update-json",
+      "enabled": { "type": "condition", "value": "licenseType !== 'NONE'" },
+      "config": {
+        "file": "{{workspace}}/{{packageBaseName}}/package.json",
+        "updates": {
+          "license": "{{licenseType}}"
+        }
       }
     }
   ]

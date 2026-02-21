@@ -8,7 +8,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
 import { promisify } from 'node:util';
-import { evaluateCondition, log } from '../../utils';
+import { evaluateCondition, interpolateTemplate, log } from '../../utils';
 
 const mkdir = promisify(fs.mkdir);
 
@@ -28,7 +28,7 @@ export async function executeMkdir(
     }
   }
 
-  const dirPath = path.join(process.cwd(), config.path);
+  const dirPath = path.join(process.cwd(), interpolateTemplate(config.path, initConfig));
 
   // Create directory recursively
   await mkdir(dirPath, { recursive: true });

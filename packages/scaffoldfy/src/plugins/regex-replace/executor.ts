@@ -29,7 +29,7 @@ export async function executeRegexReplace(
     }
   }
 
-  const filePath = path.join(process.cwd(), config.file);
+  const filePath = path.join(process.cwd(), interpolateTemplate(config.file, initConfig));
   const { pattern } = config;
   const flags = config.flags ?? '';
   const replacement = config.replacement || '';

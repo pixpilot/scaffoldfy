@@ -10,7 +10,7 @@ import process from 'node:process';
 import { promisify } from 'node:util';
 import { PluginConfigurationError } from '../../errors/other';
 import { processTemplate, validateTemplateConfig } from '../../template';
-import { evaluateCondition, log } from '../../utils';
+import { evaluateCondition, interpolateTemplate, log } from '../../utils';
 
 const writeFile = promisify(fs.writeFile);
 
@@ -31,11 +31,12 @@ export async function executeCreate(
     }
   }
 
-  const filePath = path.join(process.cwd(), config.file);
+  const resolvedFile = interpolateTemplate(config.file, initConfig);
+  const filePath = path.join(process.cwd(), resolvedFile);
 
   // Check if file already exists - skip if it does
   if (fs.existsSync(filePath)) {
-    log(`File already exists, skipping: ${config.file}`, 'info');
+    log(`File already exists, skipping: ${resolvedFile}`, 'info');
     return;
   }
 
@@ -59,5 +60,5 @@ export async function executeCreate(
   }
 
   await writeFile(filePath, content);
-  log(`Created file: ${config.file}`, 'success');
+  log(`Created file: ${resolvedFile}`, 'success');
 }

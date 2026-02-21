@@ -193,4 +193,23 @@ describe('executeAppend', () => {
     const content = fs.readFileSync('test.txt', 'utf-8');
     expect(content).toBe('Original\nAppended');
   });
+
+  it('should interpolate template variables in the file path', async () => {
+    /*
+     * Pre-create the parent directory and a file so appendFile can write
+     * into it – appendFile creates the file but not the parent directory.
+     */
+    fs.mkdirSync('test-repo', { recursive: true });
+    fs.writeFileSync('test-repo/notes.txt', 'existing\n');
+
+    const config: AppendConfig = {
+      file: '{{projectName}}/notes.txt',
+      content: 'hello',
+    };
+
+    await executeAppend(config, mockConfig);
+
+    expect(fs.existsSync('test-repo/notes.txt')).toBe(true);
+    expect(fs.readFileSync('test-repo/notes.txt', 'utf-8')).toContain('hello');
+  });
 });

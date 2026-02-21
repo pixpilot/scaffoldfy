@@ -169,4 +169,19 @@ describe('executeCopy', () => {
     expect(fs.existsSync('source.txt')).toBe(true);
     expect(fs.existsSync('destination.txt')).toBe(true);
   });
+
+  it('should interpolate template variables in from and to paths', async () => {
+    fs.writeFileSync('source.txt', 'test content');
+
+    const config: CopyConfig = {
+      from: 'source.txt',
+      to: '{{projectName}}/destination.txt',
+    };
+
+    await executeCopy(config, mockConfig);
+
+    expect(fs.existsSync('source.txt')).toBe(true);
+    expect(fs.existsSync('test-repo/destination.txt')).toBe(true);
+    expect(fs.readFileSync('test-repo/destination.txt', 'utf-8')).toBe('test content');
+  });
 });

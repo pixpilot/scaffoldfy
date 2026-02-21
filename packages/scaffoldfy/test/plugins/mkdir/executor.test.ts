@@ -134,4 +134,15 @@ describe('executeMkdir', () => {
     expect(fs.existsSync('src/components/ui')).toBe(true);
     expect(fs.existsSync('src/components/ui/buttons')).toBe(true);
   });
+
+  it('should interpolate template variables in the directory path', async () => {
+    const config: MkdirConfig = {
+      path: '{{projectName}}/src',
+    };
+
+    await executeMkdir(config, mockConfig);
+
+    expect(fs.existsSync('test-repo/src')).toBe(true);
+    expect(fs.statSync('test-repo/src').isDirectory()).toBe(true);
+  });
 });

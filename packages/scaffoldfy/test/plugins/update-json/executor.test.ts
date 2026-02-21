@@ -225,4 +225,20 @@ describe('executeUpdateJson', () => {
     const updatedContent = JSON.parse(fs.readFileSync(testFile, 'utf-8'));
     expect(updatedContent.name).toBe('new-name');
   });
+
+  it('should interpolate template variables in the file path', async () => {
+    fs.mkdirSync('test-repo', { recursive: true });
+    const testFile = 'test-repo/package.json';
+    fs.writeFileSync(testFile, JSON.stringify({ name: 'old-name' }));
+
+    const config: UpdateJsonConfig = {
+      file: '{{projectName}}/package.json',
+      updates: { name: 'updated-name' },
+    };
+
+    await executeUpdateJson(config, mockConfig);
+
+    const result = JSON.parse(fs.readFileSync(testFile, 'utf-8'));
+    expect(result.name).toBe('updated-name');
+  });
 });

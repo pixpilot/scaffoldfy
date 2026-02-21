@@ -10,7 +10,7 @@ import process from 'node:process';
 import { promisify } from 'node:util';
 import { PluginConfigurationError } from '../../errors/other';
 import { processTemplate, validateTemplateConfig } from '../../template';
-import { evaluateCondition, log } from '../../utils';
+import { evaluateCondition, interpolateTemplate, log } from '../../utils';
 
 const appendFile = promisify(fs.appendFile);
 const readFile = promisify(fs.readFile);
@@ -33,7 +33,7 @@ export async function executeAppend(
     }
   }
 
-  const filePath = path.join(process.cwd(), config.file);
+  const filePath = path.join(process.cwd(), interpolateTemplate(config.file, initConfig));
 
   // Normalize config: support both 'content' and 'template' for inline content
   const normalizedConfig: { template?: string; templateFile?: string } = {};

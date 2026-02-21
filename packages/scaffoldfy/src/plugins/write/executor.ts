@@ -10,7 +10,7 @@ import process from 'node:process';
 import { promisify } from 'node:util';
 import { PluginConfigurationError } from '../../errors/other';
 import { processTemplate, validateTemplateConfig } from '../../template';
-import { evaluateCondition, log } from '../../utils';
+import { evaluateCondition, interpolateTemplate, log } from '../../utils';
 
 const writeFile = promisify(fs.writeFile);
 
@@ -33,15 +33,16 @@ export async function executeWrite(
     }
   }
 
-  const filePath = path.join(process.cwd(), config.file);
+  const resolvedFile = interpolateTemplate(config.file, initConfig);
+  const filePath = path.join(process.cwd(), resolvedFile);
 
   const fileExists = fs.existsSync(filePath);
   if (!fileExists) {
     if (allowCreate === false) {
-      throw new Error(`Write task failed: file does not exist (${config.file})`);
+      throw new Error(`Write task failed: file does not exist (${resolvedFile})`);
     }
 
-    log(`File not found, creating new file: ${config.file}`, 'info');
+    log(`File not found, creating new file: ${resolvedFile}`, 'info');
   }
 
   // Validate that either template or templateFile is provided
