@@ -49,7 +49,16 @@ export async function collectPrompts(
     // Use current config merged with collected answers for cascading conditions
     const currentContext = { ...config, ...answers };
     if (!(await evaluateEnabledAsync(prompt.enabled, currentContext))) {
-      // Skip this prompt if it's disabled or condition evaluates to false
+      /*
+       * When a prompt is disabled, we still register its id in the answers map
+       * with value `undefined`. This is important because later prompts may have
+       * `enabled` conditions that reference this prompt's id. Without the key
+       * being present in the context, the Function-based condition evaluator
+       * would throw a ReferenceError. With `undefined` present as a proper key,
+       * the condition evaluates safely (e.g. `isPublicPackage === true` yields
+       * `false` instead of throwing).
+       */
+      answers[prompt.id] = undefined;
       // eslint-disable-next-line no-continue
       continue;
     }

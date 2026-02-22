@@ -393,4 +393,169 @@ describe('collectPrompts', () => {
     // The final value should be transformed only once
     expect(result).toEqual({ email: 'john.doe@example.com' });
   });
+
+  describe('disabled prompt context behavior', () => {
+    it('should set disabled prompt value to undefined in returned answers', async () => {
+      /*
+       * When a prompt is skipped because its `enabled` condition is false,
+       * its id must still appear in the returned answers with value `undefined`.
+       * This prevents ReferenceError when later conditions reference that id.
+       */
+      const prompts: PromptDefinition[] = [
+        {
+          id: 'isNpmPackage',
+          type: 'confirm',
+          message: 'Is this an npm package?',
+          default: false,
+        },
+        {
+          id: 'isPublicPackage',
+          type: 'confirm',
+          message: 'Is this a public package?',
+          default: false,
+          enabled: {
+            type: 'condition',
+            value: 'isNpmPackage === true',
+          },
+        },
+      ];
+
+      // User answers false for isNpmPackage, so isPublicPackage should be skipped
+      vi.mocked(confirm).mockResolvedValue(false);
+
+      const result = await collectPrompts(prompts);
+
+      expect(result).toHaveProperty('isNpmPackage', false);
+      // Key must exist with value undefined (not simply absent)
+      expect(result).toHaveProperty('isPublicPackage');
+      expect(result['isPublicPackage']).toBeUndefined();
+      // isPublicPackage prompt must not have been shown
+      expect(confirm).toHaveBeenCalledTimes(1);
+    });
+
+    it('should not throw ReferenceError when a later condition references a skipped prompt', async () => {
+      /*
+       * This is the core regression test for the bug:
+       *   isNpmPackage = false
+       *   → isPublicPackage is skipped (enabled only when isNpmPackage is true)
+       *   → bundler is skipped (enabled only when isNpmPackage is true)
+       *   → bundleSizeLimit condition references both bundler and isPublicPackage
+       *
+       * Without the fix, evaluating bundleSizeLimit's `enabled` would throw a
+       * ReferenceError because bundler and isPublicPackage are not in the context.
+       * With the fix, they are present as `undefined` and the condition safely
+       * evaluates to false.
+       */
+      const prompts: PromptDefinition[] = [
+        {
+          id: 'isNpmPackage',
+          type: 'confirm',
+          message: 'Is this an npm package?',
+          default: false,
+        },
+        {
+          id: 'isPublicPackage',
+          type: 'confirm',
+          message: 'Is this a public package?',
+          default: false,
+          enabled: {
+            type: 'condition',
+            value: 'isNpmPackage === true',
+          },
+        },
+        {
+          id: 'bundler',
+          type: 'select',
+          message: 'Select a bundler',
+          choices: [
+            { name: 'tsc', value: 'tsc' },
+            { name: 'tsdown', value: 'tsdown' },
+          ],
+          enabled: {
+            type: 'condition',
+            value: 'isNpmPackage === true',
+          },
+        },
+        {
+          id: 'bundleSizeLimit',
+          type: 'number',
+          message: 'Bundle size limit in KB',
+          default: 0,
+          enabled: {
+            type: 'condition',
+            value: "bundler === 'tsdown' && isPublicPackage === true",
+          },
+        },
+      ];
+
+      vi.mocked(confirm).mockResolvedValue(false);
+
+      // Must not throw
+      const result = await collectPrompts(prompts);
+
+      expect(result['isNpmPackage']).toBe(false);
+      expect(result).toHaveProperty('isPublicPackage');
+      expect(result['isPublicPackage']).toBeUndefined();
+      expect(result).toHaveProperty('bundler');
+      expect(result['bundler']).toBeUndefined();
+      expect(result).toHaveProperty('bundleSizeLimit');
+      expect(result['bundleSizeLimit']).toBeUndefined();
+    });
+
+    it('should not set a skipped prompt to undefined when the whole template is disabled via $configEnabled', async () => {
+      /*
+       * When a prompt is skipped because its *template* is disabled ($configEnabled),
+       * that is a different skip path - we intentionally do NOT add the prompt id
+       * to the answers. Only prompt-level `enabled` skips register undefined.
+       */
+      const prompts: PromptDefinition[] = [
+        {
+          id: 'isNpmPackage',
+          type: 'confirm',
+          message: 'Is this an npm package?',
+          default: false,
+          $configEnabled: false,
+        },
+      ];
+
+      const result = await collectPrompts(prompts);
+
+      expect(result).not.toHaveProperty('isNpmPackage');
+      expect(confirm).not.toHaveBeenCalled();
+    });
+
+    it('should still prompt and return user answer when enabled condition is true', async () => {
+      /*
+       * Sanity check: when isNpmPackage is true, isPublicPackage should be asked
+       * and its answer (not undefined) should be in the results.
+       */
+      const prompts: PromptDefinition[] = [
+        {
+          id: 'isNpmPackage',
+          type: 'confirm',
+          message: 'Is this an npm package?',
+          default: false,
+        },
+        {
+          id: 'isPublicPackage',
+          type: 'confirm',
+          message: 'Is this a public package?',
+          default: false,
+          enabled: {
+            type: 'condition',
+            value: 'isNpmPackage === true',
+          },
+        },
+      ];
+
+      // First call: isNpmPackage = true, second call: isPublicPackage = true
+      vi.mocked(confirm).mockResolvedValueOnce(true).mockResolvedValueOnce(true);
+
+      const result = await collectPrompts(prompts);
+
+      expect(result['isNpmPackage']).toBe(true);
+      expect(result['isPublicPackage']).toBe(true);
+      expect(confirm).toHaveBeenCalledTimes(2);
+    });
+  });
 });

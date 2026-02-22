@@ -6,7 +6,9 @@
   "private": true,
   {{/unless}}
   "packageManager": "pnpm@10.17.0",
+  {{#if author}}
   "author": "{{author}} <{{authorEmail}}>",
+  {{/if}}
   {{#if licenseType}}
   "license": "{{licenseType}}",
   {{/if}}
