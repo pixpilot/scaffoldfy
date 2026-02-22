@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy-configs
 
+## 0.20.2
+
+### Patch Changes
+
+- ensure disabled prompts are registered with undefined value
+
 ## 0.20.1
 
 ### Patch Changes
