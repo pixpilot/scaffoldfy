@@ -1,5 +1,5 @@
 {
-  "name": "{{#if isNpmPackage}}{{#if orgName}}@{{orgName}}/{{packageBaseName}}{{else}}{{packageBaseName}}{{/if}}{{else}}@internal/{{packageBaseName}}{{/if}}",
+  "name": "{{#if isNpmPackage}}{{#if packageOrgName}}@{{packageOrgName}}/{{packageBaseName}}{{else}}{{packageBaseName}}{{/if}}{{else}}@internal/{{packageBaseName}}{{/if}}",
   "type": "module",
   "version": "0.0.0",
   {{#unless isNpmPackage}}

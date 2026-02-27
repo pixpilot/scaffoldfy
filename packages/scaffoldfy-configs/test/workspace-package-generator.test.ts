@@ -218,7 +218,7 @@ describe('workspace-package-generator – package.json.hbs rendering', () => {
       relativeRootPath: '../../',
       author: 'Test Author',
       repoUrl: 'https://github.com/test/monorepo.git',
-      orgName: 'myorg',
+      packageOrgName: 'myorg',
     };
 
     const rendered = renderHbs(tplPath, ctx);

@@ -22,6 +22,14 @@
         "type": "interpolate",
         "value": "{{repoDirectory}}/LICENSE"
       }
+    },
+    {
+      "id": "packageOrgName",
+      "value": {
+        "type": "interpolate",
+        "value": "{{orgName}}"
+      },
+      "transformers": ["kebabcase"]
     }
   ],
 
