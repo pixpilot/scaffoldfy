@@ -1,5 +1,15 @@
 # @pixpilot/scaffoldfy-configs
 
+## 0.21.0
+
+### Minor Changes
+
+- add packageOrgName variable for package naming
+
+### Patch Changes
+
+- update stdio configuration for output capturing
+
 ## 0.20.2
 
 ### Patch Changes

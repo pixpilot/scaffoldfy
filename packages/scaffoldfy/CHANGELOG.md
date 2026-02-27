@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy
 
+## 0.47.2
+
+### Patch Changes
+
+- update stdio configuration for output capturing
+
 ## 0.47.1
 
 ### Patch Changes
