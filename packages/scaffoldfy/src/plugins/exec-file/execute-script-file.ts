@@ -122,7 +122,13 @@ export async function executeScriptFile(
     // Execute the file
     const result = execSync(fullCommand, {
       cwd,
-      stdio: options.captureOutput ? ['pipe', 'pipe', 'pipe'] : 'inherit',
+      /*
+       * When capturing output (e.g. for variable resolution), pipe stdin and
+       * stdout so we can capture the return value, but keep stderr inherited
+       * so that diagnostic output written by scripts (process.stderr.write /
+       * console.error) remains visible in the terminal.
+       */
+      stdio: options.captureOutput ? ['pipe', 'pipe', 'inherit'] : 'inherit',
       env: {
         ...process.env,
         ...interpolatedParameters,

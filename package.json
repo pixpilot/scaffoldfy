@@ -34,7 +34,7 @@
     "deps:update:major": "npx taze major -r -w && pnpm install",
     "changeset": "changeset",
     "validate:json": "node scripts/validate-json.js",
-    "gen:package": "npx @pixpilot/scaffoldfy --config ./generators/package/scaffoldfy.json"
+    "gen:package": "node packages/scaffoldfy/dist/cli.js --config ./generators/package/scaffoldfy.json"
   },
   "devDependencies": {
     "@changesets/cli": "^2.29.7",
