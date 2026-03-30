@@ -1,0 +1,39 @@
+{
+  "name": "@internal/storybook",
+  "type": "module",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "storybook": "storybook dev -p 6006 --no-open",
+    "build-storybook": "storybook build",
+    "clean": "git clean -xdf .cache storybook-static",
+    "clean:all": "git clean -xdf .cache storybook-static node_modules"
+  },
+  "dependencies": {
+    "@internal/ui": "workspace:*",
+    "next-themes": "catalog:prod"
+  },
+  "devDependencies": {
+    "@internal/eslint-config": "workspace:*",
+    "@internal/prettier-config": "workspace:*",
+    "@internal/tsconfig": "workspace:*",
+    "@storybook/addon-essentials": "catalog:dev",
+    "@storybook/addon-interactions": "catalog:dev",
+    "@storybook/addon-links": "catalog:dev",
+    "@storybook/addon-themes": "catalog:dev",
+    "@storybook/blocks": "catalog:dev",
+    "@storybook/react": "catalog:dev",
+    "@storybook/react-vite": "catalog:dev",
+    "@storybook/test": "catalog:dev",
+    "@tailwindcss/postcss": "catalog:dev",
+    "@types/react": "catalog:dev",
+    "autoprefixer": "catalog:dev",
+    "react": "catalog:prod",
+    "react-dom": "catalog:prod",
+    "storybook": "catalog:dev",
+    "tailwindcss": "catalog:dev",
+    "typescript": "catalog:dev",
+    "vite": "catalog:dev"
+  },
+  "prettier": "@internal/prettier-config"
+}

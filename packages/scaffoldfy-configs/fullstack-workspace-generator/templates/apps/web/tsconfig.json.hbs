@@ -1,0 +1,14 @@
+{
+  "extends": "@internal/tsconfig/base.json",
+  "compilerOptions": {
+    "plugins": [{ "name": "next" }],
+    "jsx": "preserve",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  },
+  "include": ["src/**/*", "next-env.d.ts", "*.config.ts", "*.config.js", "*.config.mjs"],
+  "exclude": ["node_modules"]
+}

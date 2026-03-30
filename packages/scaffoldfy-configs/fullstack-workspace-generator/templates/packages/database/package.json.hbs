@@ -1,0 +1,46 @@
+{
+  "name": "@internal/database",
+  "type": "module",
+  "version": "0.0.0",
+  "private": true,
+  "license": "NONE",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "clean": "git clean -xdf .cache .turbo dist",
+    "clean:all": "pnpm clean && git clean -xdf node_modules",
+    "test": "vitest --run --passWithNoTests",
+    "test:watch": "vitest --watch",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest --coverage",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint",
+    "lint:fix": "eslint --fix",
+    "format": "prettier --check . --ignore-path ../../.gitignore --ignore-path ../../.prettierignore",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate:local": "drizzle-kit migrate",
+    "db:migrate:prod": "cross-env NODE_ENV=production drizzle-kit migrate",
+    "db:migrate": "pnpm run db:migrate:local && pnpm run db:migrate:prod",
+    "db:pull": "npx drizzle-kit pull",
+    "db:push": "drizzle-kit push",
+    "drizzle:studio": "drizzle-kit studio"
+  },
+  "dependencies": {
+    "drizzle-orm": "catalog:prod",
+    "drizzle-zod": "catalog:prod",
+    "zod": "catalog:prod"
+  },
+  "devDependencies": {
+    "@internal/eslint-config": "workspace:*",
+    "@internal/prettier-config": "workspace:*",
+    "@internal/tsconfig": "workspace:*",
+    "@internal/vitest-config": "workspace:*",
+    "@types/node": "catalog:dev",
+    "cross-env": "catalog:dev",
+    "drizzle-kit": "catalog:prod",
+    "eslint": "catalog:dev",
+    "typescript": "catalog:dev"
+  },
+  "prettier": "@internal/prettier-config"
+}

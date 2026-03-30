@@ -1,0 +1,19 @@
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+
+import '@internal/ui/styles';
+
+function SidePanel() {
+  return (
+    <div style=\{{ padding: '1rem' }}>
+      <h1>{{ projectName }}</h1>
+      <p>Side Panel</p>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('app')!).render(
+  <React.StrictMode>
+    <SidePanel />
+  </React.StrictMode>,
+);

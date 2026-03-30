@@ -1,0 +1,29 @@
+{
+  "extends": "@internal/tsconfig/base.json",
+  "compilerOptions": {
+    "target": "ESNext",
+    "jsx": "react-jsx",
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    "useDefineForClassFields": true,
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "paths": {
+      "@/*": ["../../packages/ui/src/*"]
+    },
+    "resolveJsonModule": true,
+    "types": ["chrome", "node", "vitest/globals", "@testing-library/jest-dom"],
+    "allowImportingTsExtensions": true,
+    "allowJs": false,
+    "checkJs": false,
+    "strict": true,
+    "strictNullChecks": true,
+    "noEmit": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "isolatedModules": true,
+    "skipLibCheck": true
+  },
+  "references": [{ "path": "./tsconfig.node.json" }],
+  "include": ["src", "test"],
+  "exclude": ["src/manifest.ts"]
+}

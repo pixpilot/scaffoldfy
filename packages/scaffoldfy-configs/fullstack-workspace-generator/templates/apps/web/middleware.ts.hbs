@@ -1,0 +1,19 @@
+import type { NextRequest, NextResponse } from 'next/server';
+
+{{#if addSupabase}}
+// TODO: Add Supabase session refresh middleware
+// import { updateSession } from './src/utils/supabase/middleware';
+{{/if}}
+
+export async function middleware(request: NextRequest): Promise<NextResponse> {
+  {{#if addSupabase}}
+  // return updateSession(request);
+  {{/if}}
+  return Response.next();
+}
+
+export const config = {
+  matcher: [
+    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+  ],
+};

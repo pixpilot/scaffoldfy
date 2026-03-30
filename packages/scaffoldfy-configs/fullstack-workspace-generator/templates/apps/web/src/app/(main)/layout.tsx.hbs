@@ -1,0 +1,29 @@
+import type { Metadata } from 'next';
+{{#if addTrpc}}
+import { TrpcProvider } from '@internal/api-client';
+{{/if}}
+
+import { metadata as siteMetadata } from '../metadata';
+import '../globals.css';
+
+export const metadata: Metadata = siteMetadata;
+
+export default function MainLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+{{#if addTrpc}}
+    <TrpcProvider>
+      <div className="bg-background text-foreground min-h-screen antialiased transition-colors">
+        {children}
+      </div>
+    </TrpcProvider>
+{{else}}
+    <div className="bg-background text-foreground min-h-screen antialiased transition-colors">
+      {children}
+    </div>
+{{/if}}
+  );
+}

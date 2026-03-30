@@ -1,0 +1,42 @@
+import { crx } from '@crxjs/vite-plugin';
+import tailwindcss from '@tailwindcss/vite';
+import react from '@vitejs/plugin-react';
+import { defineConfig } from 'vite';
+
+import { getManifest } from './src/manifest';
+
+export default defineConfig(({ mode }) => ({
+  server: {
+    port: 4000,
+    strictPort: true,
+    hmr: {
+      port: 4000,
+    },
+  },
+  build: {
+    emptyOutDir: true,
+    outDir: 'build',
+    rollupOptions: {
+      output: {
+        chunkFileNames: 'assets/chunk-[hash].js',
+      },
+    },
+  },
+  plugins: [
+    tailwindcss(),
+    crx({
+      manifest: getManifest(mode === 'development'),
+      contentScripts: {
+        injectCss: true,
+      },
+    }),
+    react(),
+  ],
+  define: {
+    __DEV__: mode === 'development',
+    'process.env.NODE_ENV': JSON.stringify(mode),
+  },
+  optimizeDeps: {
+    include: ['react', 'react-dom'],
+  },
+}));

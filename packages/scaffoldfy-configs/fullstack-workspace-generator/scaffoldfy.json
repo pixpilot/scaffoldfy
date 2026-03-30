@@ -1,0 +1,1077 @@
+{
+  "$schema": "../node_modules/@pixpilot/scaffoldfy/schema/scaffoldfy.schema.json",
+  "name": "fullstack-workspace-generator",
+  "description": "Generate a full-stack workspace with optional Next.js, Supabase, Drizzle, Chrome Extension, Storybook, and Cloudflare support",
+  "extends": [
+    "./scaffoldfy-prompts.json",
+    "../project-info/scaffoldfy.json",
+    "../license-file/scaffoldfy.json"
+  ],
+  "variables": [
+    {
+      "id": "relativePackagesPath",
+      "value": "../../"
+    },
+    {
+      "id": "relativeAppsPath",
+      "value": "../../"
+    },
+    {
+      "id": "relativeToolingPath",
+      "value": "../../"
+    },
+    {
+      "id": "relativeSupabasePath",
+      "value": "../"
+    },
+    {
+      "id": "addTrpc",
+      "value": {
+        "type": "conditional",
+        "condition": "addNextJs === true",
+        "ifTrue": true,
+        "ifFalse": false
+      }
+    },
+    {
+      "id": "licenceFilePath",
+      "value": "LICENSE"
+    },
+    {
+      "id": "packageOrgName",
+      "value": {
+        "type": "interpolate",
+        "value": "{{orgName}}"
+      },
+      "transformers": ["kebabcase"]
+    }
+  ],
+
+  "tasks": [
+    {
+      "id": "create-api-package-json",
+      "name": "Create packages/api/package.json",
+      "type": "create",
+      "config": {
+        "file": "packages/api/package.json",
+        "templateFile": "./templates/packages/api/package.json.hbs"
+      }
+    },
+    {
+      "id": "create-api-tsconfig",
+      "name": "Create packages/api/tsconfig.json",
+      "type": "create",
+      "config": {
+        "file": "packages/api/tsconfig.json",
+        "templateFile": "./templates/common/tsconfig.json.hbs"
+      }
+    },
+    {
+      "id": "create-api-eslint",
+      "name": "Create packages/api/eslint.config.mjs",
+      "type": "create",
+      "config": {
+        "file": "packages/api/eslint.config.mjs",
+        "templateFile": "./templates/common/eslint.config.mjs.hbs"
+      }
+    },
+    {
+      "id": "create-api-vitest",
+      "name": "Create packages/api/vitest.config.ts",
+      "type": "create",
+      "config": {
+        "file": "packages/api/vitest.config.ts",
+        "templateFile": "./templates/common/vitest.config.ts.hbs"
+      }
+    },
+    {
+      "id": "create-api-src",
+      "name": "Create packages/api/src/index.ts",
+      "type": "create",
+      "config": {
+        "file": "packages/api/src/index.ts",
+        "templateFile": "./templates/packages/api/src/index.ts.hbs"
+      }
+    },
+    {
+      "id": "create-api-test",
+      "name": "Create packages/api/test/index.test.ts",
+      "type": "create",
+      "config": {
+        "file": "packages/api/test/index.test.ts",
+        "templateFile": "./templates/common/test/index.test.ts.hbs"
+      }
+    },
+
+    {
+      "id": "create-api-client-package-json",
+      "name": "Create packages/api-client/package.json",
+      "type": "create",
+      "config": {
+        "file": "packages/api-client/package.json",
+        "templateFile": "./templates/packages/api-client/package.json.hbs"
+      }
+    },
+    {
+      "id": "create-api-client-tsconfig",
+      "name": "Create packages/api-client/tsconfig.json",
+      "type": "create",
+      "config": {
+        "file": "packages/api-client/tsconfig.json",
+        "templateFile": "./templates/common/tsconfig.json.hbs"
+      }
+    },
+    {
+      "id": "create-api-client-eslint",
+      "name": "Create packages/api-client/eslint.config.mjs",
+      "type": "create",
+      "config": {
+        "file": "packages/api-client/eslint.config.mjs",
+        "templateFile": "./templates/common/eslint.config.mjs.hbs"
+      }
+    },
+    {
+      "id": "create-api-client-vitest",
+      "name": "Create packages/api-client/vitest.config.ts",
+      "type": "create",
+      "config": {
+        "file": "packages/api-client/vitest.config.ts",
+        "templateFile": "./templates/common/vitest.config.ts.hbs"
+      }
+    },
+    {
+      "id": "create-api-client-src",
+      "name": "Create packages/api-client/src/index.ts",
+      "type": "create",
+      "config": {
+        "file": "packages/api-client/src/index.ts",
+        "templateFile": "./templates/packages/api-client/src/index.ts.hbs"
+      }
+    },
+    {
+      "id": "create-api-client-client",
+      "name": "Create packages/api-client/src/client.ts",
+      "type": "create",
+      "config": {
+        "file": "packages/api-client/src/client.ts",
+        "templateFile": "./templates/packages/api-client/src/client.ts.hbs"
+      }
+    },
+    {
+      "id": "create-api-client-trpc-provider",
+      "name": "Create packages/api-client/src/trpc-provider.tsx",
+      "type": "create",
+      "config": {
+        "file": "packages/api-client/src/trpc-provider.tsx",
+        "templateFile": "./templates/packages/api-client/src/trpc-provider.tsx.hbs"
+      }
+    },
+    {
+      "id": "create-api-client-test",
+      "name": "Create packages/api-client/test/index.test.ts",
+      "type": "create",
+      "config": {
+        "file": "packages/api-client/test/index.test.ts",
+        "templateFile": "./templates/common/test/index.test.ts.hbs"
+      }
+    },
+
+    {
+      "id": "create-app-logger-package-json",
+      "name": "Create packages/app-logger/package.json",
+      "type": "create",
+      "config": {
+        "file": "packages/app-logger/package.json",
+        "templateFile": "./templates/packages/app-logger/package.json.hbs"
+      }
+    },
+    {
+      "id": "create-app-logger-tsconfig",
+      "name": "Create packages/app-logger/tsconfig.json",
+      "type": "create",
+      "config": {
+        "file": "packages/app-logger/tsconfig.json",
+        "templateFile": "./templates/common/tsconfig.json.hbs"
+      }
+    },
+    {
+      "id": "create-app-logger-eslint",
+      "name": "Create packages/app-logger/eslint.config.mjs",
+      "type": "create",
+      "config": {
+        "file": "packages/app-logger/eslint.config.mjs",
+        "templateFile": "./templates/common/eslint.config.mjs.hbs"
+      }
+    },
+    {
+      "id": "create-app-logger-vitest",
+      "name": "Create packages/app-logger/vitest.config.ts",
+      "type": "create",
+      "config": {
+        "file": "packages/app-logger/vitest.config.ts",
+        "templateFile": "./templates/common/vitest.config.ts.hbs"
+      }
+    },
+    {
+      "id": "create-app-logger-src",
+      "name": "Create packages/app-logger/src/index.ts",
+      "type": "create",
+      "config": {
+        "file": "packages/app-logger/src/index.ts",
+        "templateFile": "./templates/packages/app-logger/src/index.ts.hbs"
+      }
+    },
+    {
+      "id": "create-app-logger-test",
+      "name": "Create packages/app-logger/test/index.test.ts",
+      "type": "create",
+      "config": {
+        "file": "packages/app-logger/test/index.test.ts",
+        "templateFile": "./templates/common/test/index.test.ts.hbs"
+      }
+    },
+
+    {
+      "id": "create-configs-package-json",
+      "name": "Create packages/configs/package.json",
+      "type": "create",
+      "config": {
+        "file": "packages/configs/package.json",
+        "templateFile": "./templates/packages/configs/package.json.hbs"
+      }
+    },
+    {
+      "id": "create-configs-tsconfig",
+      "name": "Create packages/configs/tsconfig.json",
+      "type": "create",
+      "config": {
+        "file": "packages/configs/tsconfig.json",
+        "templateFile": "./templates/common/tsconfig.json.hbs"
+      }
+    },
+    {
+      "id": "create-configs-eslint",
+      "name": "Create packages/configs/eslint.config.mjs",
+      "type": "create",
+      "config": {
+        "file": "packages/configs/eslint.config.mjs",
+        "templateFile": "./templates/common/eslint.config.mjs.hbs"
+      }
+    },
+    {
+      "id": "create-configs-vitest",
+      "name": "Create packages/configs/vitest.config.ts",
+      "type": "create",
+      "config": {
+        "file": "packages/configs/vitest.config.ts",
+        "templateFile": "./templates/common/vitest.config.ts.hbs"
+      }
+    },
+    {
+      "id": "create-configs-src",
+      "name": "Create packages/configs/src/index.ts",
+      "type": "create",
+      "config": {
+        "file": "packages/configs/src/index.ts",
+        "templateFile": "./templates/packages/configs/src/index.ts.hbs"
+      }
+    },
+    {
+      "id": "create-configs-test",
+      "name": "Create packages/configs/test/index.test.ts",
+      "type": "create",
+      "config": {
+        "file": "packages/configs/test/index.test.ts",
+        "templateFile": "./templates/common/test/index.test.ts.hbs"
+      }
+    },
+
+    {
+      "id": "create-ui-package-json",
+      "name": "Create packages/ui/package.json",
+      "type": "create",
+      "config": {
+        "file": "packages/ui/package.json",
+        "templateFile": "./templates/packages/ui/package.json.hbs"
+      }
+    },
+    {
+      "id": "create-ui-tsconfig",
+      "name": "Create packages/ui/tsconfig.json",
+      "type": "create",
+      "config": {
+        "file": "packages/ui/tsconfig.json",
+        "templateFile": "./templates/common/tsconfig.json.hbs"
+      }
+    },
+    {
+      "id": "create-ui-eslint",
+      "name": "Create packages/ui/eslint.config.mjs",
+      "type": "create",
+      "config": {
+        "file": "packages/ui/eslint.config.mjs",
+        "templateFile": "./templates/common/eslint.config.react.mjs.hbs"
+      }
+    },
+    {
+      "id": "create-ui-vitest",
+      "name": "Create packages/ui/vitest.config.ts",
+      "type": "create",
+      "config": {
+        "file": "packages/ui/vitest.config.ts",
+        "templateFile": "./templates/common/vitest.config.ts.hbs"
+      }
+    },
+    {
+      "id": "create-ui-src",
+      "name": "Create packages/ui/src/index.ts",
+      "type": "create",
+      "config": {
+        "file": "packages/ui/src/index.ts",
+        "templateFile": "./templates/packages/ui/src/index.ts.hbs"
+      }
+    },
+    {
+      "id": "create-ui-components-index",
+      "name": "Create packages/ui/src/components/index.ts",
+      "type": "create",
+      "config": {
+        "file": "packages/ui/src/components/index.ts",
+        "templateFile": "./templates/packages/ui/src/components/index.ts.hbs"
+      }
+    },
+    {
+      "id": "create-ui-lib-utils",
+      "name": "Create packages/ui/src/lib/utils.ts",
+      "type": "create",
+      "config": {
+        "file": "packages/ui/src/lib/utils.ts",
+        "templateFile": "./templates/packages/ui/src/lib/utils.ts.hbs"
+      }
+    },
+    {
+      "id": "create-ui-globals-css",
+      "name": "Create packages/ui/src/styles/globals.css",
+      "type": "create",
+      "config": {
+        "file": "packages/ui/src/styles/globals.css",
+        "templateFile": "./templates/packages/ui/src/styles/globals.css.hbs"
+      }
+    },
+    {
+      "id": "create-ui-test",
+      "name": "Create packages/ui/test/index.test.ts",
+      "type": "create",
+      "config": {
+        "file": "packages/ui/test/index.test.ts",
+        "templateFile": "./templates/common/test/index.test.ts.hbs"
+      }
+    },
+
+    {
+      "id": "create-utils-package-json",
+      "name": "Create packages/utils/package.json",
+      "type": "create",
+      "config": {
+        "file": "packages/utils/package.json",
+        "templateFile": "./templates/packages/utils/package.json.hbs"
+      }
+    },
+    {
+      "id": "create-utils-tsconfig",
+      "name": "Create packages/utils/tsconfig.json",
+      "type": "create",
+      "config": {
+        "file": "packages/utils/tsconfig.json",
+        "templateFile": "./templates/common/tsconfig.json.hbs"
+      }
+    },
+    {
+      "id": "create-utils-eslint",
+      "name": "Create packages/utils/eslint.config.mjs",
+      "type": "create",
+      "config": {
+        "file": "packages/utils/eslint.config.mjs",
+        "templateFile": "./templates/common/eslint.config.mjs.hbs"
+      }
+    },
+    {
+      "id": "create-utils-vitest",
+      "name": "Create packages/utils/vitest.config.ts",
+      "type": "create",
+      "config": {
+        "file": "packages/utils/vitest.config.ts",
+        "templateFile": "./templates/common/vitest.config.ts.hbs"
+      }
+    },
+    {
+      "id": "create-utils-src",
+      "name": "Create packages/utils/src/index.ts",
+      "type": "create",
+      "config": {
+        "file": "packages/utils/src/index.ts",
+        "templateFile": "./templates/packages/utils/src/index.ts.hbs"
+      }
+    },
+    {
+      "id": "create-utils-cn",
+      "name": "Create packages/utils/src/cn.ts",
+      "type": "create",
+      "config": {
+        "file": "packages/utils/src/cn.ts",
+        "templateFile": "./templates/packages/utils/src/cn.ts.hbs"
+      }
+    },
+    {
+      "id": "create-utils-test",
+      "name": "Create packages/utils/test/index.test.ts",
+      "type": "create",
+      "config": {
+        "file": "packages/utils/test/index.test.ts",
+        "templateFile": "./templates/common/test/index.test.ts.hbs"
+      }
+    },
+
+    {
+      "id": "create-database-package-json",
+      "name": "Create packages/database/package.json",
+      "type": "create",
+      "enabled": {
+        "type": "condition",
+        "value": "addDrizzle === true"
+      },
+      "config": {
+        "file": "packages/database/package.json",
+        "templateFile": "./templates/packages/database/package.json.hbs"
+      }
+    },
+    {
+      "id": "create-database-tsconfig",
+      "name": "Create packages/database/tsconfig.json",
+      "type": "create",
+      "enabled": {
+        "type": "condition",
+        "value": "addDrizzle === true"
+      },
+      "config": {
+        "file": "packages/database/tsconfig.json",
+        "templateFile": "./templates/common/tsconfig.json.hbs"
+      }
+    },
+    {
+      "id": "create-database-eslint",
+      "name": "Create packages/database/eslint.config.mjs",
+      "type": "create",
+      "enabled": {
+        "type": "condition",
+        "value": "addDrizzle === true"
+      },
+      "config": {
+        "file": "packages/database/eslint.config.mjs",
+        "templateFile": "./templates/common/eslint.config.mjs.hbs"
+      }
+    },
+    {
+      "id": "create-database-vitest",
+      "name": "Create packages/database/vitest.config.ts",
+      "type": "create",
+      "enabled": {
+        "type": "condition",
+        "value": "addDrizzle === true"
+      },
+      "config": {
+        "file": "packages/database/vitest.config.ts",
+        "templateFile": "./templates/common/vitest.config.ts.hbs"
+      }
+    },
+    {
+      "id": "create-database-src",
+      "name": "Create packages/database/src/index.ts",
+      "type": "create",
+      "enabled": {
+        "type": "condition",
+        "value": "addDrizzle === true"
+      },
+      "config": {
+        "file": "packages/database/src/index.ts",
+        "templateFile": "./templates/packages/database/src/index.ts.hbs"
+      }
+    },
+    {
+      "id": "create-database-test",
+      "name": "Create packages/database/test/index.test.ts",
+      "type": "create",
+      "enabled": {
+        "type": "condition",
+        "value": "addDrizzle === true"
+      },
+      "config": {
+        "file": "packages/database/test/index.test.ts",
+        "templateFile": "./templates/common/test/index.test.ts.hbs"
+      }
+    },
+
+    {
+      "id": "create-web-package-json",
+      "name": "Create apps/web/package.json",
+      "type": "create",
+      "enabled": {
+        "type": "condition",
+        "value": "addNextJs === true"
+      },
+      "config": {
+        "file": "apps/web/package.json",
+        "templateFile": "./templates/apps/web/package.json.hbs"
+      }
+    },
+    {
+      "id": "create-web-tsconfig",
+      "name": "Create apps/web/tsconfig.json",
+      "type": "create",
+      "enabled": {
+        "type": "condition",
+        "value": "addNextJs === true"
+      },
+      "config": {
+        "file": "apps/web/tsconfig.json",
+        "templateFile": "./templates/apps/web/tsconfig.json.hbs"
+      }
+    },
+    {
+      "id": "create-web-eslint",
+      "name": "Create apps/web/eslint.config.mjs",
+      "type": "create",
+      "enabled": {
+        "type": "condition",
+        "value": "addNextJs === true"
+      },
+      "config": {
+        "file": "apps/web/eslint.config.mjs",
+        "templateFile": "./templates/common/eslint.config.react.mjs.hbs"
+      }
+    },
+    {
+      "id": "create-web-vitest",
+      "name": "Create apps/web/vitest.config.ts",
+      "type": "create",
+      "enabled": {
+        "type": "condition",
+        "value": "addNextJs === true"
+      },
+      "config": {
+        "file": "apps/web/vitest.config.ts",
+        "templateFile": "./templates/common/vitest.config.ts.hbs"
+      }
+    },
+    {
+      "id": "create-web-next-config",
+      "name": "Create apps/web/next.config.ts",
+      "type": "create",
+      "enabled": {
+        "type": "condition",
+        "value": "addNextJs === true"
+      },
+      "config": {
+        "file": "apps/web/next.config.ts",
+        "templateFile": "./templates/apps/web/next.config.ts.hbs"
+      }
+    },
+    {
+      "id": "create-web-layout",
+      "name": "Create apps/web/src/app/layout.tsx",
+      "type": "create",
+      "enabled": {
+        "type": "condition",
+        "value": "addNextJs === true"
+      },
+      "config": {
+        "file": "apps/web/src/app/layout.tsx",
+        "templateFile": "./templates/apps/web/src/app/layout.tsx.hbs"
+      }
+    },
+    {
+      "id": "create-web-page",
+      "name": "Create apps/web/src/app/(main)/page.tsx",
+      "type": "create",
+      "enabled": {
+        "type": "condition",
+        "value": "addNextJs === true"
+      },
+      "config": {
+        "file": "apps/web/src/app/(main)/page.tsx",
+        "templateFile": "./templates/apps/web/src/app/(main)/page.tsx.hbs"
+      }
+    },
+    {
+      "id": "create-web-main-layout",
+      "name": "Create apps/web/src/app/(main)/layout.tsx",
+      "type": "create",
+      "enabled": {
+        "type": "condition",
+        "value": "addNextJs === true"
+      },
+      "config": {
+        "file": "apps/web/src/app/(main)/layout.tsx",
+        "templateFile": "./templates/apps/web/src/app/(main)/layout.tsx.hbs"
+      }
+    },
+    {
+      "id": "create-web-metadata",
+      "name": "Create apps/web/src/app/metadata.ts",
+      "type": "create",
+      "enabled": {
+        "type": "condition",
+        "value": "addNextJs === true"
+      },
+      "config": {
+        "file": "apps/web/src/app/metadata.ts",
+        "templateFile": "./templates/apps/web/src/app/metadata.ts.hbs"
+      }
+    },
+    {
+      "id": "create-web-middleware",
+      "name": "Create apps/web/middleware.ts",
+      "type": "create",
+      "enabled": {
+        "type": "condition",
+        "value": "addNextJs === true"
+      },
+      "config": {
+        "file": "apps/web/middleware.ts",
+        "templateFile": "./templates/apps/web/middleware.ts.hbs"
+      }
+    },
+    {
+      "id": "create-web-globals-css",
+      "name": "Create apps/web/src/app/globals.css",
+      "type": "create",
+      "enabled": {
+        "type": "condition",
+        "value": "addNextJs === true"
+      },
+      "config": {
+        "file": "apps/web/src/app/globals.css",
+        "write": "@import '../../../../packages/ui/src/styles/globals.css';\n"
+      }
+    },
+    {
+      "id": "create-web-postcss",
+      "name": "Create apps/web/postcss.config.mjs",
+      "type": "create",
+      "enabled": {
+        "type": "condition",
+        "value": "addNextJs === true"
+      },
+      "config": {
+        "file": "apps/web/postcss.config.mjs",
+        "templateFile": "./templates/apps/web/postcss.config.mjs.hbs"
+      }
+    },
+    {
+      "id": "create-web-wrangler",
+      "name": "Create apps/web/wrangler.jsonc",
+      "type": "create",
+      "enabled": {
+        "type": "condition",
+        "value": "addNextJs === true && addCloudflare === true"
+      },
+      "config": {
+        "file": "apps/web/wrangler.jsonc",
+        "templateFile": "./templates/apps/web/wrangler.jsonc.hbs"
+      }
+    },
+    {
+      "id": "create-web-trpc-router",
+      "name": "Create apps/web/src/server/trpc.ts",
+      "type": "create",
+      "enabled": {
+        "type": "condition",
+        "value": "addNextJs === true"
+      },
+      "config": {
+        "file": "apps/web/src/server/trpc.ts",
+        "templateFile": "./templates/apps/web/src/server/trpc.ts.hbs"
+      }
+    },
+
+    {
+      "id": "create-chrome-ext-package-json",
+      "name": "Create apps/chrome-extension/package.json",
+      "type": "create",
+      "enabled": {
+        "type": "condition",
+        "value": "addChromeExtension === true"
+      },
+      "config": {
+        "file": "apps/chrome-extension/package.json",
+        "templateFile": "./templates/apps/chrome-extension/package.json.hbs"
+      }
+    },
+    {
+      "id": "create-chrome-ext-tsconfig",
+      "name": "Create apps/chrome-extension/tsconfig.json",
+      "type": "create",
+      "enabled": {
+        "type": "condition",
+        "value": "addChromeExtension === true"
+      },
+      "config": {
+        "file": "apps/chrome-extension/tsconfig.json",
+        "templateFile": "./templates/apps/chrome-extension/tsconfig.json.hbs"
+      }
+    },
+    {
+      "id": "create-chrome-ext-tsconfig-node",
+      "name": "Create apps/chrome-extension/tsconfig.node.json",
+      "type": "create",
+      "enabled": {
+        "type": "condition",
+        "value": "addChromeExtension === true"
+      },
+      "config": {
+        "file": "apps/chrome-extension/tsconfig.node.json",
+        "templateFile": "./templates/apps/chrome-extension/tsconfig.node.json.hbs"
+      }
+    },
+    {
+      "id": "create-chrome-ext-eslint",
+      "name": "Create apps/chrome-extension/eslint.config.mjs",
+      "type": "create",
+      "enabled": {
+        "type": "condition",
+        "value": "addChromeExtension === true"
+      },
+      "config": {
+        "file": "apps/chrome-extension/eslint.config.mjs",
+        "templateFile": "./templates/common/eslint.config.react.mjs.hbs"
+      }
+    },
+    {
+      "id": "create-chrome-ext-vitest",
+      "name": "Create apps/chrome-extension/vitest.config.ts",
+      "type": "create",
+      "enabled": {
+        "type": "condition",
+        "value": "addChromeExtension === true"
+      },
+      "config": {
+        "file": "apps/chrome-extension/vitest.config.ts",
+        "templateFile": "./templates/common/vitest.config.ts.hbs"
+      }
+    },
+    {
+      "id": "create-chrome-ext-manifest",
+      "name": "Create apps/chrome-extension/src/manifest.ts",
+      "type": "create",
+      "enabled": {
+        "type": "condition",
+        "value": "addChromeExtension === true"
+      },
+      "config": {
+        "file": "apps/chrome-extension/src/manifest.ts",
+        "templateFile": "./templates/apps/chrome-extension/src/manifest.ts.hbs"
+      }
+    },
+    {
+      "id": "create-chrome-ext-vite-config",
+      "name": "Create apps/chrome-extension/vite.config.ts",
+      "type": "create",
+      "enabled": {
+        "type": "condition",
+        "value": "addChromeExtension === true"
+      },
+      "config": {
+        "file": "apps/chrome-extension/vite.config.ts",
+        "templateFile": "./templates/apps/chrome-extension/vite.config.ts.hbs"
+      }
+    },
+    {
+      "id": "create-chrome-ext-src",
+      "name": "Create apps/chrome-extension/src/background/index.ts",
+      "type": "create",
+      "enabled": {
+        "type": "condition",
+        "value": "addChromeExtension === true"
+      },
+      "config": {
+        "file": "apps/chrome-extension/src/background/index.ts",
+        "templateFile": "./templates/apps/chrome-extension/src/background/index.ts.hbs"
+      }
+    },
+    {
+      "id": "create-chrome-ext-content-scripts",
+      "name": "Create apps/chrome-extension/src/content-scripts/index.ts",
+      "type": "create",
+      "enabled": {
+        "type": "condition",
+        "value": "addChromeExtension === true"
+      },
+      "config": {
+        "file": "apps/chrome-extension/src/content-scripts/index.ts",
+        "templateFile": "./templates/apps/chrome-extension/src/content-scripts/index.ts.hbs"
+      }
+    },
+    {
+      "id": "create-chrome-ext-popup",
+      "name": "Create apps/chrome-extension/src/popup/index.tsx",
+      "type": "create",
+      "enabled": {
+        "type": "condition",
+        "value": "addChromeExtension === true"
+      },
+      "config": {
+        "file": "apps/chrome-extension/src/popup/index.tsx",
+        "templateFile": "./templates/apps/chrome-extension/src/popup/index.tsx.hbs"
+      }
+    },
+    {
+      "id": "create-chrome-ext-sidepanel",
+      "name": "Create apps/chrome-extension/src/sidepanel/index.tsx",
+      "type": "create",
+      "enabled": {
+        "type": "condition",
+        "value": "addChromeExtension === true"
+      },
+      "config": {
+        "file": "apps/chrome-extension/src/sidepanel/index.tsx",
+        "templateFile": "./templates/apps/chrome-extension/src/sidepanel/index.tsx.hbs"
+      }
+    },
+    {
+      "id": "create-chrome-ext-options",
+      "name": "Create apps/chrome-extension/src/options/index.tsx",
+      "type": "create",
+      "enabled": {
+        "type": "condition",
+        "value": "addChromeExtension === true"
+      },
+      "config": {
+        "file": "apps/chrome-extension/src/options/index.tsx",
+        "templateFile": "./templates/apps/chrome-extension/src/options/index.tsx.hbs"
+      }
+    },
+    {
+      "id": "create-chrome-ext-popup-html",
+      "name": "Create apps/chrome-extension/views/popup.html",
+      "type": "create",
+      "enabled": {
+        "type": "condition",
+        "value": "addChromeExtension === true"
+      },
+      "config": {
+        "file": "apps/chrome-extension/views/popup.html",
+        "templateFile": "./templates/apps/chrome-extension/views/popup.html.hbs"
+      }
+    },
+    {
+      "id": "create-chrome-ext-sidepanel-html",
+      "name": "Create apps/chrome-extension/views/sidepanel.html",
+      "type": "create",
+      "enabled": {
+        "type": "condition",
+        "value": "addChromeExtension === true"
+      },
+      "config": {
+        "file": "apps/chrome-extension/views/sidepanel.html",
+        "templateFile": "./templates/apps/chrome-extension/views/sidepanel.html.hbs"
+      }
+    },
+    {
+      "id": "create-chrome-ext-options-html",
+      "name": "Create apps/chrome-extension/views/options.html",
+      "type": "create",
+      "enabled": {
+        "type": "condition",
+        "value": "addChromeExtension === true"
+      },
+      "config": {
+        "file": "apps/chrome-extension/views/options.html",
+        "templateFile": "./templates/apps/chrome-extension/views/options.html.hbs"
+      }
+    },
+
+    {
+      "id": "create-supabase-package-json",
+      "name": "Create supabase/package.json",
+      "type": "create",
+      "enabled": {
+        "type": "condition",
+        "value": "addSupabase === true"
+      },
+      "config": {
+        "file": "supabase/package.json",
+        "templateFile": "./templates/supabase/package.json.hbs"
+      }
+    },
+    {
+      "id": "create-supabase-tsconfig",
+      "name": "Create supabase/tsconfig.json",
+      "type": "create",
+      "enabled": {
+        "type": "condition",
+        "value": "addSupabase === true"
+      },
+      "config": {
+        "file": "supabase/tsconfig.json",
+        "templateFile": "./templates/common/tsconfig.json.hbs"
+      }
+    },
+    {
+      "id": "create-supabase-eslint",
+      "name": "Create supabase/eslint.config.mjs",
+      "type": "create",
+      "enabled": {
+        "type": "condition",
+        "value": "addSupabase === true"
+      },
+      "config": {
+        "file": "supabase/eslint.config.mjs",
+        "templateFile": "./templates/common/eslint.config.mjs.hbs"
+      }
+    },
+    {
+      "id": "create-supabase-vitest",
+      "name": "Create supabase/vitest.config.ts",
+      "type": "create",
+      "enabled": {
+        "type": "condition",
+        "value": "addSupabase === true"
+      },
+      "config": {
+        "file": "supabase/vitest.config.ts",
+        "templateFile": "./templates/common/vitest.config.ts.hbs"
+      }
+    },
+    {
+      "id": "create-supabase-config-toml",
+      "name": "Create supabase/config.toml",
+      "type": "create",
+      "enabled": {
+        "type": "condition",
+        "value": "addSupabase === true"
+      },
+      "config": {
+        "file": "supabase/config.toml",
+        "templateFile": "./templates/supabase/config.toml.hbs"
+      }
+    },
+    {
+      "id": "create-supabase-index",
+      "name": "Create supabase/index.ts",
+      "type": "create",
+      "enabled": {
+        "type": "condition",
+        "value": "addSupabase === true"
+      },
+      "config": {
+        "file": "supabase/index.ts",
+        "templateFile": "./templates/supabase/index.ts.hbs"
+      }
+    },
+    {
+      "id": "create-sync-supabase-secrets",
+      "name": "Create scripts/sync-supabase-secrets.ts",
+      "type": "create",
+      "enabled": {
+        "type": "condition",
+        "value": "addSupabase === true"
+      },
+      "config": {
+        "file": "scripts/sync-supabase-secrets.ts",
+        "templateFile": "./templates/scripts/sync-supabase-secrets.ts.hbs"
+      }
+    },
+    {
+      "id": "update-pnpm-workspace-supabase",
+      "name": "Add supabase to pnpm-workspace.yaml",
+      "type": "append",
+      "enabled": {
+        "type": "condition",
+        "value": "addSupabase === true"
+      },
+      "config": {
+        "file": "pnpm-workspace.yaml",
+        "content": "  - supabase\n"
+      }
+    },
+
+    {
+      "id": "create-storybook-package-json",
+      "name": "Create tooling/storybook/package.json",
+      "type": "create",
+      "enabled": {
+        "type": "condition",
+        "value": "addStorybook === true"
+      },
+      "config": {
+        "file": "tooling/storybook/package.json",
+        "templateFile": "./templates/tooling/storybook/package.json.hbs"
+      }
+    },
+    {
+      "id": "create-storybook-main",
+      "name": "Create tooling/storybook/.storybook/main.ts",
+      "type": "create",
+      "enabled": {
+        "type": "condition",
+        "value": "addStorybook === true"
+      },
+      "config": {
+        "file": "tooling/storybook/.storybook/main.ts",
+        "templateFile": "./templates/tooling/storybook/.storybook/main.ts.hbs"
+      }
+    },
+    {
+      "id": "create-storybook-preview",
+      "name": "Create tooling/storybook/.storybook/preview.ts",
+      "type": "create",
+      "enabled": {
+        "type": "condition",
+        "value": "addStorybook === true"
+      },
+      "config": {
+        "file": "tooling/storybook/.storybook/preview.ts",
+        "templateFile": "./templates/tooling/storybook/.storybook/preview.ts.hbs"
+      }
+    },
+
+    {
+      "id": "update-turbo-json",
+      "name": "Update turbo.json with environment variables",
+      "type": "write",
+      "config": {
+        "file": "turbo.json",
+        "templateFile": "./templates/root/turbo.json.hbs"
+      }
+    },
+    {
+      "id": "create-tsconfig-watch",
+      "name": "Create tsconfig.watch.json",
+      "type": "create",
+      "config": {
+        "file": "tsconfig.watch.json",
+        "templateFile": "./templates/root/tsconfig.watch.json.hbs"
+      }
+    },
+    {
+      "id": "create-github-copilot-instructions",
+      "name": "Create .github/copilot-instructions.md",
+      "type": "create",
+      "config": {
+        "file": ".github/copilot-instructions.md",
+        "templateFile": "./templates/github/copilot-instructions.md.hbs"
+      }
+    },
+
+    {
+      "id": "install-dependencies",
+      "name": "Install dependencies",
+      "description": "Run pnpm install to set up workspace dependencies",
+      "type": "exec",
+      "required": false,
+      "config": {
+        "command": "pnpm install"
+      }
+    }
+  ]
+}

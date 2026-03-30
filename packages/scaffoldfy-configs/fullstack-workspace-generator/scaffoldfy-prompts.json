@@ -1,0 +1,47 @@
+{
+  "$schema": "../node_modules/@pixpilot/scaffoldfy/schema/scaffoldfy.schema.json",
+  "name": "fullstack-workspace-generator-prompts",
+  "description": "Feature selection prompts for a full-stack workspace generator",
+  "prompts": [
+    {
+      "id": "addNextJs",
+      "type": "confirm",
+      "message": "Do you want to add Next.js with Tailwind?",
+      "default": true
+    },
+    {
+      "id": "addSupabase",
+      "type": "confirm",
+      "message": "Do you want to add Supabase?",
+      "default": false
+    },
+    {
+      "id": "addDrizzle",
+      "type": "confirm",
+      "message": "Do you want to add Drizzle ORM with Zod?",
+      "default": false
+    },
+    {
+      "id": "addChromeExtension",
+      "type": "confirm",
+      "message": "Do you want to add a Chrome extension?",
+      "default": false
+    },
+    {
+      "id": "addStorybook",
+      "type": "confirm",
+      "message": "Do you want to set up Storybook?",
+      "default": false
+    },
+    {
+      "id": "addCloudflare",
+      "type": "confirm",
+      "message": "Do you want to use Cloudflare (Wrangler)?",
+      "default": false,
+      "enabled": {
+        "type": "condition",
+        "value": "addNextJs === true"
+      }
+    }
+  ]
+}

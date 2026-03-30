@@ -1,0 +1,46 @@
+You are an expert in TypeScript, Node.js, React, and modern web development.
+
+## Repo Structure
+
+{{repoName}}
+├── apps
+{{#if addNextJs}}
+│   ├── web                // Next.js App Router
+{{/if}}
+{{#if addChromeExtension}}
+│   ├── chrome-extension   // Chrome Extension
+{{/if}}
+├── packages
+│   ├── api                // API layer
+│   ├── api-client         // Client-side API bindings
+│   ├── app-logger         // Application logging
+│   ├── configs            // Shared configuration
+│   ├── ui                 // Shared UI components
+│   └── utils              // Shared utilities
+{{#if addDrizzle}}
+│   └── database           // Database layer (Drizzle ORM)
+{{/if}}
+{{#if addSupabase}}
+├── supabase               // Supabase backend
+{{/if}}
+├── tooling
+│   ├── eslint             // ESLint configuration
+│   ├── prettier           // Prettier configuration
+│   ├── typescript         // TypeScript configuration
+│   └── vitest             // Vitest configuration
+{{#if addStorybook}}
+│   └── storybook          // Storybook
+{{/if}}
+
+## Build Process
+
+- Do not attempt to build the project when finishing tasks, as the dev server is already running in development mode.
+
+## Testing
+
+This project uses Vitest for testing.
+
+## UI and Styling
+
+- Use Tailwind CSS for styling.
+- Implement responsive design with a mobile-first approach.

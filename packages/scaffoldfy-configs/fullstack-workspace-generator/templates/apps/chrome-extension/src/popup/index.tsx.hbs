@@ -1,0 +1,19 @@
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+
+import '@internal/ui/styles';
+
+function Popup() {
+  return (
+    <div style=\{{ padding: '1rem', minWidth: '300px' }}>
+      <h1>{{ projectName }}</h1>
+      <p>Chrome Extension Popup</p>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('app')!).render(
+  <React.StrictMode>
+    <Popup />
+  </React.StrictMode>,
+);

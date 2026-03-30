@@ -1,0 +1,56 @@
+{
+  "name": "chrome-extension",
+  "type": "module",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Chrome extension with Vite, React, TypeScript, and Tailwind CSS",
+  "license": "MIT",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest --run --passWithNoTests",
+    "test:watch": "vitest --watch",
+    "test:coverage": "vitest --coverage",
+    "lint": "eslint",
+    "lint:fix": "eslint --fix",
+    "format": "prettier --check .",
+    "clean": "git clean -xdf .cache .turbo dist",
+    "clean:all": "git clean -xdf .cache .turbo dist node_modules"
+  },
+  "dependencies": {
+    "@internal/api-client": "workspace:*",
+    "@internal/app-logger": "workspace:*",
+    "@internal/configs": "workspace:*",
+    "@internal/ui": "workspace:*",
+    "@internal/utils": "workspace:*",
+    {{#if addSupabase}}
+    "@api/supabase": "workspace:*",
+    "@supabase/supabase-js": "catalog:prod",
+    {{/if}}
+    "lucide-react": "catalog:prod",
+    "react": "catalog:prod",
+    "react-dom": "catalog:prod"
+  },
+  "devDependencies": {
+    "@crxjs/vite-plugin": "^2.2.1",
+    "@internal/eslint-config": "workspace:*",
+    "@internal/prettier-config": "workspace:*",
+    "@internal/tsconfig": "workspace:*",
+    "@internal/vitest-config": "workspace:*",
+    "@tailwindcss/vite": "catalog:dev",
+    "@testing-library/jest-dom": "catalog:dev",
+    "@testing-library/react": "catalog:dev",
+    "@types/chrome": "catalog:dev",
+    "@types/node": "catalog:dev",
+    "@types/react": "catalog:dev",
+    "@types/react-dom": "catalog:dev",
+    "@vitejs/plugin-react": "catalog:dev",
+    "eslint": "catalog:dev",
+    "tailwindcss": "catalog:dev",
+    "typescript": "catalog:dev",
+    "vite": "catalog:dev"
+  },
+  "prettier": "@internal/prettier-config"
+}

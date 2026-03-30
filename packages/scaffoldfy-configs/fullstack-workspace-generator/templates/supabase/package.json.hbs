@@ -1,0 +1,48 @@
+{
+  "name": "@api/supabase",
+  "type": "module",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Supabase backend with database schema, Edge Functions, and types",
+  "license": "MIT",
+  "exports": {
+    ".": "./index.ts",
+    "./*": "./*"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint",
+    "lint:fix": "eslint --fix",
+    "format": "prettier --check .",
+    "test": "vitest run --passWithNoTests",
+    "test:watch": "vitest",
+    "supabase:start": "pnpx supabase start",
+    "supabase:stop": "pnpx supabase stop",
+    "supabase:status": "pnpx supabase status",
+    "supabase:reset": "pnpx supabase db reset",
+    "functions:serve": "pnpx supabase functions serve --no-verify-jwt",
+    "functions:deploy": "pnpx supabase functions deploy",
+    "clean": "git clean -xdf .cache .turbo",
+    "clean:all": "pnpm clean && git clean -xdf node_modules"
+  },
+  "dependencies": {
+    {{#if addDrizzle}}
+    "@internal/database": "workspace:*",
+    "drizzle-orm": "catalog:prod",
+    "drizzle-zod": "catalog:prod",
+    {{/if}}
+    "zod": "catalog:prod"
+  },
+  "devDependencies": {
+    "@internal/eslint-config": "workspace:*",
+    "@internal/prettier-config": "workspace:*",
+    "@internal/tsconfig": "workspace:*",
+    "@internal/vitest-config": "workspace:*",
+    "@supabase/supabase-js": "catalog:prod",
+    "@types/node": "catalog:dev",
+    "eslint": "catalog:dev",
+    "supabase": "^2.54.11",
+    "typescript": "catalog:dev"
+  },
+  "prettier": "@internal/prettier-config"
+}

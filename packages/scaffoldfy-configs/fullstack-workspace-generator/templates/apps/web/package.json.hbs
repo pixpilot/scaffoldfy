@@ -1,0 +1,74 @@
+{
+  "name": "web",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --turbopack",
+    {{#if addCloudflare}}
+    "build": "pnpm with-env next build",
+    "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy --env production",
+    "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
+    "cf-typegen": "wrangler types --env-interface CloudflareEnv ./cloudflare-env.d.ts",
+    {{else}}
+    "build": "next build",
+    {{/if}}
+    "clean": "git clean -xdf .cache .turbo dist .next .open-next .wrangler",
+    "clean:all": "pnpm clean && git clean -xdf node_modules",
+    "format": "prettier --check . --ignore-path ../../.gitignore --ignore-path ../../.prettierignore",
+    "lint": "eslint",
+    "test": "vitest --run --passWithNoTests",
+    "test:watch": "vitest --watch",
+    "start": "pnpm with-env next start",
+    "typecheck": "tsc --noEmit",
+    "with-env": "dotenv -e ../../.env --"
+  },
+  "dependencies": {
+    "@internal/api": "workspace:*",
+    "@internal/api-client": "workspace:*",
+    "@internal/app-logger": "workspace:*",
+    "@internal/configs": "workspace:*",
+    "@internal/ui": "workspace:*",
+    "@internal/utils": "workspace:*",
+    {{#if addCloudflare}}
+    "@cloudflare/workers-types": "^4.20251107.0",
+    "@opennextjs/cloudflare": "^1.11.1",
+    {{/if}}
+    {{#if addTrpc}}
+    "@trpc/server": "catalog:prod",
+    "superjson": "^2.2.6",
+    {{/if}}
+    {{#if addDrizzle}}
+    "@internal/database": "workspace:*",
+    "drizzle-orm": "catalog:prod",
+    "drizzle-zod": "catalog:prod",
+    {{/if}}
+    {{#if addSupabase}}
+    "@supabase/ssr": "^0.7.0",
+    "@supabase/supabase-js": "catalog:prod",
+    {{/if}}
+    "lucide-react": "catalog:prod",
+    "next": "catalog:prod",
+    "next-themes": "catalog:prod",
+    "react": "catalog:prod",
+    "react-dom": "catalog:prod",
+    "zod": "catalog:prod"
+  },
+  "devDependencies": {
+    "@internal/eslint-config": "workspace:*",
+    "@internal/prettier-config": "workspace:*",
+    "@internal/tsconfig": "workspace:*",
+    "@internal/vitest-config": "workspace:*",
+    "@tailwindcss/postcss": "^4.1.17",
+    "@testing-library/react": "catalog:dev",
+    "@types/node": "catalog:dev",
+    "@types/react": "catalog:dev",
+    "@types/react-dom": "catalog:dev",
+    "autoprefixer": "^10.4.21",
+    "dotenv-cli": "catalog:dev",
+    "postcss": "catalog:dev",
+    "prettier": "catalog:dev",
+    "tailwindcss": "catalog:dev",
+    "typescript": "catalog:dev"{{#if addCloudflare}},
+    "wrangler": "^4.68.1"{{/if}}
+  }
+}

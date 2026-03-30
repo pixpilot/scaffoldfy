@@ -1,0 +1,50 @@
+{
+  "$schema": "https://turborepo.org/schema.json",
+  "ui": "tui",
+  "remoteCache": {
+    "enabled": false
+  },
+  "globalEnv": [
+    "NODE_ENV"{{#if addSupabase}},
+    "SUPABASE_PUBLISHABLE_KEY",
+    "SUPABASE_URL",
+    "SUPABASE_URL_DEV",
+    "SUPABASE_PUBLISHABLE_KEY_DEV",
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_ACCESS_TOKEN",
+    "SUPABASE_PROJECT_REF"{{/if}}{{#if addCloudflare}},
+    "CLOUDFLARE_API_TOKEN",
+    "CLOUDFLARE_ACCOUNT_ID"{{/if}}
+  ],
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": [".cache/tsbuildinfo.json", "dist/**"]
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "format": {
+      "outputs": [".cache/.prettiercache"],
+      "outputLogs": "new-only"
+    },
+    "lint": {
+      "outputs": [".cache/.eslintcache"]
+    },
+    "typecheck": {
+      "outputs": [".cache/tsbuildinfo.json"]
+    },
+    "clean": {
+      "cache": false
+    },
+    "clean:all": {
+      "cache": false
+    },
+    "test": {
+      "outputs": [".cache/test-results/**"],
+      "cache": false,
+      "persistent": false
+    }
+  }
+}
