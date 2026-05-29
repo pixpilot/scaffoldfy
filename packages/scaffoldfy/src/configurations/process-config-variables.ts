@@ -38,26 +38,43 @@ export async function processConfigVariables(
     );
     Object.assign(context, variableValues);
 
-    // Resolve conditional variables
-    const conditionalVariables = configVariables.filter((v) => {
-      if (typeof v.value === 'object' && v.value !== null && !Array.isArray(v.value)) {
-        const valueConfig = v.value as { type?: string };
-        return valueConfig.type === 'conditional';
-      }
-      return false;
-    });
+    // Resolve conditional variables once before prompts are collected.
+    // Some prompt enabled/required conditions may reference these values.
+    await processConfigConditionalVariables(config, context);
+  }
+}
 
-    if (conditionalVariables.length > 0) {
-      const resolvedConditionalValues = await resolveAllVariableValues(
-        conditionalVariables,
-        context,
-      );
-      const conditionalValues = await collectVariables(
-        conditionalVariables,
-        resolvedConditionalValues,
-        context,
-      );
-      Object.assign(context, conditionalValues);
+/**
+ * Re-resolve conditional variables for a single config using the latest context.
+ * This should be called after prompts are collected so conditions can use prompt answers.
+ */
+export async function processConfigConditionalVariables(
+  config: ScaffoldfyConfiguration,
+  context: CurrentConfigurationContext,
+): Promise<void> {
+  const configVariables = config.variables ?? [];
+  if (configVariables.length === 0) {
+    return;
+  }
+
+  const conditionalVariables = configVariables.filter((v) => {
+    if (typeof v.value === 'object' && v.value !== null && !Array.isArray(v.value)) {
+      const valueConfig = v.value as { type?: string };
+      return valueConfig.type === 'conditional';
     }
+    return false;
+  });
+
+  if (conditionalVariables.length > 0) {
+    const resolvedConditionalValues = await resolveAllVariableValues(
+      conditionalVariables,
+      context,
+    );
+    const conditionalValues = await collectVariables(
+      conditionalVariables,
+      resolvedConditionalValues,
+      context,
+    );
+    Object.assign(context, conditionalValues);
   }
 }

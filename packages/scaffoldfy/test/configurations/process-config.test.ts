@@ -5,7 +5,10 @@
 import { describe, expect, it, vi } from 'vitest';
 import { processConfig } from '../../src/configurations/process-config';
 import { processConfigPrompts } from '../../src/configurations/process-config-prompts';
-import { processConfigVariables } from '../../src/configurations/process-config-variables';
+import {
+  processConfigConditionalVariables,
+  processConfigVariables,
+} from '../../src/configurations/process-config-variables';
 import { evaluateEnabledAsync, info } from '../../src/utils';
 
 // Mock dependencies
@@ -20,6 +23,7 @@ vi.mock('../../src/configurations/process-config-prompts', () => ({
 
 vi.mock('../../src/configurations/process-config-variables', () => ({
   processConfigVariables: vi.fn(),
+  processConfigConditionalVariables: vi.fn(),
 }));
 
 describe('process config', () => {
@@ -47,6 +51,7 @@ describe('process config', () => {
     );
     expect(info).toHaveBeenCalledWith('⊘ Config "test-config" is disabled - skipping');
     expect(processConfigVariables).not.toHaveBeenCalled();
+    expect(processConfigConditionalVariables).not.toHaveBeenCalled();
     expect(processConfigPrompts).not.toHaveBeenCalled();
   });
 
@@ -63,6 +68,10 @@ describe('process config', () => {
     );
     expect(processConfigVariables).toHaveBeenCalledWith(mockConfig, mockContext);
     expect(processConfigPrompts).toHaveBeenCalledWith(mockConfig, mockContext);
+    expect(processConfigConditionalVariables).toHaveBeenCalledWith(
+      mockConfig,
+      mockContext,
+    );
     expect(info).not.toHaveBeenCalled();
   });
 
@@ -77,6 +86,10 @@ describe('process config', () => {
     expect(evaluateEnabledAsync).toHaveBeenCalledTimes(2);
     expect(processConfigVariables).toHaveBeenCalledWith(mockConfig, mockContext);
     expect(processConfigPrompts).toHaveBeenCalledWith(mockConfig, mockContext);
+    expect(processConfigConditionalVariables).toHaveBeenCalledWith(
+      mockConfig,
+      mockContext,
+    );
     expect(info).toHaveBeenCalledWith(
       '⊘ Config "test-config" became disabled after variable/prompt resolution - skipping tasks',
     );
@@ -118,7 +131,7 @@ describe('process config', () => {
     );
   });
 
-  it('should call processConfigVariables and processConfigPrompts in correct order', async () => {
+  it('should call config processors in correct order', async () => {
     vi.mocked(evaluateEnabledAsync).mockResolvedValue(true);
 
     const result = await processConfig(mockConfig, mockContext);
@@ -126,11 +139,18 @@ describe('process config', () => {
     expect(result).toBe(true);
     expect(processConfigVariables).toHaveBeenCalledWith(mockConfig, mockContext);
     expect(processConfigPrompts).toHaveBeenCalledWith(mockConfig, mockContext);
+    expect(processConfigConditionalVariables).toHaveBeenCalledWith(
+      mockConfig,
+      mockContext,
+    );
 
     // Verify order by checking call order
     const variablesCallOrder =
       vi.mocked(processConfigVariables).mock.invocationCallOrder[0];
     const promptsCallOrder = vi.mocked(processConfigPrompts).mock.invocationCallOrder[0];
+    const conditionalCallOrder = vi.mocked(processConfigConditionalVariables).mock
+      .invocationCallOrder[0];
     expect(variablesCallOrder! < promptsCallOrder!).toBe(true);
+    expect(promptsCallOrder! < conditionalCallOrder!).toBe(true);
   });
 });

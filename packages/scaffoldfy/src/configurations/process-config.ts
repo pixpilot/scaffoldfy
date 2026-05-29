@@ -2,7 +2,10 @@ import type { CurrentConfigurationContext, ScaffoldfyConfiguration } from '../ty
 import { evaluateEnabledAsync, info } from '../utils';
 
 import { processConfigPrompts } from './process-config-prompts';
-import { processConfigVariables } from './process-config-variables';
+import {
+  processConfigConditionalVariables,
+  processConfigVariables,
+} from './process-config-variables';
 
 /**
  * Process a single config's variables and prompts
@@ -24,6 +27,9 @@ export async function processConfig(
 
   // Process prompts
   await processConfigPrompts(config, context);
+
+  // Re-resolve conditionals after prompts so variables can depend on prompt values.
+  await processConfigConditionalVariables(config, context);
 
   // Re-check config enabled condition after variables and prompts are resolved
   const configStillEnabled = await evaluateEnabledAsync(config.enabled, context);

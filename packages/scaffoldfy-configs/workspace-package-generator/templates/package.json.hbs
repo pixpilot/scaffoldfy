@@ -25,6 +25,12 @@
   {{/if}}
   "keywords": [],
   "exports": "./src/index.ts",
+  {{#if isReactPackage}}
+  "peerDependencies": {
+    "react": "^18 || ^19",
+    "react-dom": "^18 || ^19"
+  },
+  {{/if}}
   {{#if isNpmPackage}}
   "files": [
     "dist"
@@ -71,14 +77,32 @@
     "@internal/eslint-config": "workspace:*",
     "@internal/prettier-config": "workspace:*",
     "@internal/tsconfig": "workspace:*",
+    "@internal/vitest-config": "workspace:*",
+    "@types/node": "catalog:dev",
+    {{#if isReactPackage}}
+    {{#if isNpmPackage}}
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    {{else}}
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    {{/if}}
+    {{/if}}
+    "eslint": "catalog:dev",
+    {{#if isReactPackage}}
+    {{#if isNpmPackage}}
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    {{else}}
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    {{/if}}
+    {{/if}}
     {{#if isNpmPackage}}
     {{#if isBundlerTsdown}}
     "{{tsdownConfigPackage}}": "{{#if hasTsdownConfig}}workspace:*{{else}}^1.0.0{{/if}}",
     {{/if}}
     {{/if}}
-    "@internal/vitest-config": "workspace:*",
-    "@types/node": "catalog:dev",
-    "eslint": "catalog:dev",
     {{#if isNpmPackage}}
     {{#if isBundlerTsdown}}
     "tsdown": "catalog:dev",

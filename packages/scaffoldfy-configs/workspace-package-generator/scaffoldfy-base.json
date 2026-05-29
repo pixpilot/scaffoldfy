@@ -51,6 +51,15 @@
       }
     },
     {
+      "id": "isReactPackage",
+      "value": {
+        "type": "conditional",
+        "condition": "packageType === 'react'",
+        "ifTrue": true,
+        "ifFalse": false
+      }
+    },
+    {
       "id": "tsdownConfigPackage",
       "value": {
         "type": "conditional",
