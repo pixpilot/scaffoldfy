@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy-configs
 
+## 0.22.0
+
+### Minor Changes
+
+- add support for conditional variables in package generation
+
 ## 0.21.0
 
 ### Minor Changes
