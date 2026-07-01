@@ -60,13 +60,13 @@ npx @pixpilot/scaffoldfy --dry-run
 
 ### CLI Options
 
-| Option            | Description                                                                     |
-| ----------------- | ------------------------------------------------------------------------------- |
+| Option            | Description                                                                                    |
+| ----------------- | ---------------------------------------------------------------------------------------------- |
 | `--config <path>` | Path or URL to config file (JSON, or TypeScript for local files; default: `./scaffoldfy.json`) |
-| `--dry-run`       | Preview changes without applying them                                           |
-| `--no-validate`   | Skip schema validation of task configuration (validation is enabled by default) |
-| `-h, --help`      | Show help message                                                               |
-| `-v, --version`   | Show version                                                                    |
+| `--dry-run`       | Preview changes without applying them                                                          |
+| `--no-validate`   | Skip schema validation of task configuration (validation is enabled by default)                |
+| `-h, --help`      | Show help message                                                                              |
+| `-v, --version`   | Show version                                                                                   |
 
 ### Programmatic API
 
