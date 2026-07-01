@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy-configs
 
+## 0.23.0
+
+### Minor Changes
+
+- enhance test scripts and add coverage dependencies
+
 ## 0.22.0
 
 ### Minor Changes
