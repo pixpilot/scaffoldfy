@@ -31,6 +31,9 @@ npx @pixpilot/scaffoldfy  --config ./config.json --dry-run
 
 # With TypeScript tasks file
 npx @pixpilot/scaffoldfy --config ./my-tasks.ts
+
+# With a config file hosted on a URL
+npx @pixpilot/scaffoldfy --config https://example.com/scaffoldfy.json
 ```
 
 ### CLI
@@ -55,6 +58,9 @@ scaffoldfy  --config ./config.json --dry-run
 
 # With TypeScript task file
 scaffoldfy --config ./my-tasks.ts
+
+# With a config file hosted on a URL
+scaffoldfy --config https://example.com/scaffoldfy.json
 ```
 
 ### Programmatic API
@@ -338,7 +344,7 @@ scaffoldfy --help
 ### Options
 
 ```bash
---config <path>    # Path to config file (JSON or TypeScript, default: ./configs-tasks.json)
+--config <path>    # Path or URL to config file (JSON, or TypeScript for local files; default: ./configs-tasks.json)
 --dry-run          # Preview changes without applying them
 --no-validate      # Skip schema validation
 --force            # Force execution even if checks fail

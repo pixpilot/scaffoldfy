@@ -26,6 +26,9 @@ scaffoldfy --config ./config.json --dry-run
 
 # Preview with inherited configurations
 scaffoldfy --config ./my-configuration.json --dry-run
+
+# Preview a config file hosted on a URL
+scaffoldfy --config https://example.com/scaffoldfy.json --dry-run
 ```
 
 ### Programmatic

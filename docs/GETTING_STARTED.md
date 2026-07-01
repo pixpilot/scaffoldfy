@@ -53,6 +53,12 @@ Or with TypeScript:
 scaffoldfy --config ./tasks.ts
 ```
 
+Or with a config file hosted on a URL (JSON only):
+
+```sh
+scaffoldfy --config https://example.com/scaffoldfy.json
+```
+
 ### Schema Validation
 
 By default, all JSON task configuration files are validated against the JSON schema to catch configuration errors early. The schema validation ensures:
@@ -126,7 +132,7 @@ This is particularly useful for:
 
 | Option            | Description                                                                     |
 | ----------------- | ------------------------------------------------------------------------------- |
-| `--config <path>` | Path to config file (JSON or TypeScript, default: `./config-tasks.json`)        |
+| `--config <path>` | Path or URL to config file (JSON, or TypeScript for local files; default: `./config-tasks.json`) |
 | `--dry-run`       | Preview changes without applying them                                           |
 | `--force`         | Force execution even if checks fail                                             |
 | `--no-validate`   | Skip schema validation of task configuration (validation is enabled by default) |
