@@ -9,11 +9,11 @@ import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
 import { Command } from 'commander';
-import { loadTasksWithInheritance } from './configurations/index';
+import { fetchConfigurationFile, loadTasksWithInheritance } from './configurations/index';
 import { EXIT_CODE_ERROR } from './constants';
 import { runWithTasks } from './index';
 import { validateTasksSchema } from './scaffoldfy-config-validator';
-import { log } from './utils';
+import { isUrl, log } from './utils';
 import { debug, setDebugMode } from './utils/logger';
 import { startSpinner, stopSpinner } from './utils/spinner-loader';
 
@@ -51,7 +51,7 @@ program
   .option('--force', 'Force execution even if checks fail')
   .option(
     '--config <path>',
-    'Path to task configuration file (JSON or TypeScript)',
+    'Path or URL to task configuration file (JSON or TypeScript)',
     './scaffoldfy.json',
   )
   .option(
@@ -73,16 +73,26 @@ program
       let transformers: import('./transformers/types').Transformer[] | undefined;
       let configFilePath: string | undefined;
 
-      // Load config file (supports both .json and .ts/.mjs)
+      // Load config file (supports local paths and http(s) URLs, in .json or .ts/.mjs)
       if (options.config != null && options.config !== '') {
-        const configFile = path.resolve(process.cwd(), options.config);
+        const isRemoteConfig = isUrl(options.config);
+        const configFile = isRemoteConfig
+          ? options.config
+          : path.resolve(process.cwd(), options.config);
 
-        if (fs.existsSync(configFile)) {
+        if (isRemoteConfig || fs.existsSync(configFile)) {
           configFilePath = configFile;
           const isTypeScript = configFile.endsWith('.ts') || configFile.endsWith('.mts');
 
           // Try TypeScript/ESM file
           if (isTypeScript) {
+            if (isRemoteConfig) {
+              log('❌ Remote TypeScript config files are not supported', 'error');
+              log('Only JSON config files can be loaded from a URL', 'info');
+
+              process.exit(EXIT_CODE_ERROR);
+            }
+
             log(`Loading tasks from TypeScript file: ${options.config}`, 'info');
 
             try {
@@ -115,8 +125,8 @@ program
               if (options.validate !== false) {
                 debug('Validating task configuration against schema...');
 
-                // Load raw JSON for validation
-                const rawJson = fs.readFileSync(configFile, 'utf-8');
+                // Load raw JSON for validation (works for local paths and URLs)
+                const rawJson = await fetchConfigurationFile(configFile);
                 const rawConfig = JSON.parse(rawJson) as unknown;
 
                 const validationResult = validateTasksSchema(rawConfig, {

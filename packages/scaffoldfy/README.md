@@ -35,6 +35,9 @@ scaffoldfy
 # With custom tasks file
 scaffoldfy --config ./config.json
 
+# With a config file hosted on a URL
+scaffoldfy --config https://example.com/scaffoldfy.json
+
 # Preview changes (dry run)
 scaffoldfy --dry-run
 ```
@@ -48,6 +51,9 @@ npx @pixpilot/scaffoldfy
 # With custom tasks file
 npx @pixpilot/scaffoldfy --config ./config.json
 
+# With a config file hosted on a URL
+npx @pixpilot/scaffoldfy --config https://example.com/scaffoldfy.json
+
 # Preview changes (dry run)
 npx @pixpilot/scaffoldfy --dry-run
 ```
@@ -56,7 +62,7 @@ npx @pixpilot/scaffoldfy --dry-run
 
 | Option            | Description                                                                     |
 | ----------------- | ------------------------------------------------------------------------------- |
-| `--config <path>` | Path to config file (JSON or TypeScript, default: `./scaffoldfy.json`)          |
+| `--config <path>` | Path or URL to config file (JSON, or TypeScript for local files; default: `./scaffoldfy.json`) |
 | `--dry-run`       | Preview changes without applying them                                           |
 | `--no-validate`   | Skip schema validation of task configuration (validation is enabled by default) |
 | `-h, --help`      | Show help message                                                               |
