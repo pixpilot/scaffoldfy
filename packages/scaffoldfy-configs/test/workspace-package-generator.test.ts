@@ -200,6 +200,13 @@ describe('workspace-package-generator – package.json.hbs rendering', () => {
     expect(pkg.private).toBe(true);
     expect(pkg.publishConfig).toBeUndefined();
     expect(pkg.files).toBeUndefined();
+    expect(pkg.scripts?.['test:ui']).toBe('vitest --ui --watch');
+    expect(pkg.scripts?.['test:ui:coverage']).toBe(
+      'vitest --ui --coverage --watch --hookTimeout=30000 --coverage.thresholds.lines=0 --coverage.thresholds.functions=0 --coverage.thresholds.branches=0 --coverage.thresholds.statements=0',
+    );
+    expect(pkg.devDependencies?.['@vitest/coverage-v8']).toBe('catalog:dev');
+    expect(pkg.devDependencies?.['@vitest/ui']).toBe('catalog:dev');
+    expect(pkg.devDependencies?.vitest).toBe('catalog:dev');
   });
 
   /** Public npm package with tsdown bundler */

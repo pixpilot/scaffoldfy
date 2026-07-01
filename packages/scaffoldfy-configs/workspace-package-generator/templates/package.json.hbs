@@ -67,7 +67,8 @@
     {{/if}}
     "test": "vitest --run --passWithNoTests",
     "test:watch": "vitest --watch",
-    "test:ui": "vitest --ui",
+    "test:ui": "vitest --ui --watch",
+    "test:ui:coverage": "vitest --ui --coverage --watch --hookTimeout=30000 --coverage.thresholds.lines=0 --coverage.thresholds.functions=0 --coverage.thresholds.branches=0 --coverage.thresholds.statements=0",
     "test:coverage": "vitest --coverage",
     "typecheck": "tsc --noEmit",
     "lint": "eslint",
@@ -79,6 +80,8 @@
     "@internal/tsconfig": "workspace:*",
     "@internal/vitest-config": "workspace:*",
     "@types/node": "catalog:dev",
+    "@vitest/coverage-v8": "catalog:dev",
+    "@vitest/ui": "catalog:dev",
     {{#if isReactPackage}}
     {{#if isNpmPackage}}
     "@types/react": "^19.0.0",
@@ -108,7 +111,8 @@
     "tsdown": "catalog:dev",
     {{/if}}
     {{/if}}
-    "typescript": "catalog:dev"
+    "typescript": "catalog:dev",
+    "vitest": "catalog:dev"
   },
   "prettier": "@internal/prettier-config"
 }
