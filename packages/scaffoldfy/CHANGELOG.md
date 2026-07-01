@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy
 
+## 0.49.0
+
+### Minor Changes
+
+- support loading configuration from remote URLs
+
 ## 0.48.0
 
 ### Minor Changes
