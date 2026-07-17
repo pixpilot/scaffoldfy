@@ -1,9 +1,6 @@
 {
   "name": "{{#if isNpmPackage}}{{#if packageOrgName}}@{{packageOrgName}}/{{packageBaseName}}{{else}}{{packageBaseName}}{{/if}}{{else}}@internal/{{packageBaseName}}{{/if}}",
   "type": "module",
-  {{#if isNpmPackage}}
-  "sideEffects": false,
-  {{/if}}
   "version": "0.0.0",
   {{#unless isNpmPackage}}
   "private": true,
@@ -22,6 +19,9 @@
     "url": "{{repoUrl}}",
     "directory": "{{repoDirectory}}"
   },
+  {{#if isNpmPackage}}
+  "sideEffects": false,
+  {{/if}}
   "bugs": {
     "url": "{{baseRepoUrl}}/issues"
   },
