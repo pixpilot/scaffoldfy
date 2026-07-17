@@ -1,6 +1,9 @@
 {
   "name": "{{#if isNpmPackage}}{{#if packageOrgName}}@{{packageOrgName}}/{{packageBaseName}}{{else}}{{packageBaseName}}{{/if}}{{else}}@internal/{{packageBaseName}}{{/if}}",
   "type": "module",
+  {{#if isNpmPackage}}
+  "sideEffects": false,
+  {{/if}}
   "version": "0.0.0",
   {{#unless isNpmPackage}}
   "private": true,
@@ -78,10 +81,22 @@
     "@internal/eslint-config": "workspace:*",
     "@internal/prettier-config": "workspace:*",
     "@internal/tsconfig": "workspace:*",
+    {{#if isNpmPackage}}
+    {{#if isBundlerTsdown}}
+    {{#if hasTsdownConfig}}
+    "{{tsdownConfigPackage}}": "workspace:*",
+    {{/if}}
+    {{/if}}
+    {{/if}}
     "@internal/vitest-config": "workspace:*",
+    {{#if isNpmPackage}}
+    {{#if isBundlerTsdown}}
+    {{#unless hasTsdownConfig}}
+    "{{tsdownConfigPackage}}": "^1.0.0",
+    {{/unless}}
+    {{/if}}
+    {{/if}}
     "@types/node": "catalog:dev",
-    "@vitest/coverage-v8": "catalog:dev",
-    "@vitest/ui": "catalog:dev",
     {{#if isReactPackage}}
     {{#if isNpmPackage}}
     "@types/react": "^19.0.0",
@@ -91,6 +106,8 @@
     "@types/react-dom": "catalog:",
     {{/if}}
     {{/if}}
+    "@vitest/coverage-v8": "catalog:dev",
+    "@vitest/ui": "catalog:dev",
     "eslint": "catalog:dev",
     {{#if isReactPackage}}
     {{#if isNpmPackage}}
@@ -99,11 +116,6 @@
     {{else}}
     "react": "catalog:",
     "react-dom": "catalog:",
-    {{/if}}
-    {{/if}}
-    {{#if isNpmPackage}}
-    {{#if isBundlerTsdown}}
-    "{{tsdownConfigPackage}}": "{{#if hasTsdownConfig}}workspace:*{{else}}^1.0.0{{/if}}",
     {{/if}}
     {{/if}}
     {{#if isNpmPackage}}

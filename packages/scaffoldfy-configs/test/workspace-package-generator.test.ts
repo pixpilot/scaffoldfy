@@ -198,6 +198,7 @@ describe('workspace-package-generator – package.json.hbs rendering', () => {
 
     expect(pkg.name).toBe('@internal/my-package');
     expect(pkg.private).toBe(true);
+    expect(pkg.sideEffects).toBeUndefined();
     expect(pkg.publishConfig).toBeUndefined();
     expect(pkg.files).toBeUndefined();
     expect(pkg.scripts?.['test:ui']).toBe('vitest --ui --watch');
@@ -233,6 +234,7 @@ describe('workspace-package-generator – package.json.hbs rendering', () => {
 
     expect(pkg.name).toBe('@myorg/my-package');
     expect(pkg.private).toBeUndefined();
+    expect(pkg.sideEffects).toBe(false);
     expect(pkg.publishConfig?.access).toBe('public');
     expect(pkg.files).toContain('dist');
     expect(pkg.scripts?.build).toBe('tsdown');
@@ -320,6 +322,26 @@ describe('workspace-package-generator – tsdown.config.ts.hbs rendering', () =>
 
     expect(rendered).toContain('MAX_BUNDLE_SIZE_KB = 50');
     expect(rendered).toContain('bundleSize: MAX_BUNDLE_SIZE_KB * KB');
+  });
+
+  it("should add platform: 'neutral' for an npm package", () => {
+    const ctx = {
+      tsdownConfigPackage: '@pixpilot/tsdown-config',
+      isNpmPackage: true,
+    };
+    const rendered = renderHbs(tplPath, ctx);
+
+    expect(rendered).toContain("platform: 'neutral'");
+  });
+
+  it("should not add platform: 'neutral' when not an npm package", () => {
+    const ctx = {
+      tsdownConfigPackage: '@pixpilot/tsdown-config',
+      isNpmPackage: false,
+    };
+    const rendered = renderHbs(tplPath, ctx);
+
+    expect(rendered).not.toContain('platform');
   });
 });
 
