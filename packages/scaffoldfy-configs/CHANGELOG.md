@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy-configs
 
+## 0.24.1
+
+### Patch Changes
+
+- move "sideEffects" property to correct location
+
 ## 0.24.0
 
 ### Minor Changes
