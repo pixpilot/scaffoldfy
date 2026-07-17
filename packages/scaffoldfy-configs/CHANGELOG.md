@@ -1,5 +1,12 @@
 # @pixpilot/scaffoldfy-configs
 
+## 0.24.0
+
+### Minor Changes
+
+- add sideEffects and platform configuration for npm packages
+- add support for configuration files hosted on URLs
+
 ## 0.23.0
 
 ### Minor Changes
