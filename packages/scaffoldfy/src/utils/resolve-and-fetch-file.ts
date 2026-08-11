@@ -9,6 +9,7 @@ import { fetchConfigurationFile } from '../configurations/index';
 import { isUrl } from './is-url';
 import { debug } from './logger';
 import { resolveFilePath } from './resolve-file-path';
+import { startSpinner, stopSpinner } from './spinner-loader';
 
 /**
  * Result of resolving and fetching a file
@@ -62,6 +63,19 @@ export interface ResolveAndFetchFileOptions {
   tempFilePrefix?: string;
 }
 
+async function fetchRemoteFile(remotePath: string): Promise<string> {
+  const fileName = new URL(remotePath).pathname.split('/').pop();
+  const spinnerMessage = fileName == null || fileName === '' ? remotePath : fileName;
+  const spinnerId = startSpinner(`Loading ${spinnerMessage}`);
+
+  try {
+    debug(`Fetching remote file: ${remotePath}`);
+    return await fetchConfigurationFile(remotePath);
+  } finally {
+    stopSpinner(spinnerId);
+  }
+}
+
 /**
  * Resolves a file path (handling both local and remote files) and fetches
  * remote files to a temporary location.
@@ -95,8 +109,7 @@ export async function resolveAndFetchFile(
   // Case 1: File is already a URL
   if (isUrl(file)) {
     resolvedPath = file;
-    debug(`Fetching remote file: ${resolvedPath}`);
-    const fileContent = await fetchConfigurationFile(resolvedPath);
+    const fileContent = await fetchRemoteFile(resolvedPath);
     isRemote = true;
 
     // Create temporary file
@@ -115,8 +128,7 @@ export async function resolveAndFetchFile(
     // (this happens when resolving a relative path against a URL sourceUrl)
     if (isUrl(resolvedPath)) {
       // Case 3a: Resolved to a URL - fetch it
-      debug(`Fetching remote file: ${resolvedPath}`);
-      const fileContent = await fetchConfigurationFile(resolvedPath);
+      const fileContent = await fetchRemoteFile(resolvedPath);
       isRemote = true;
 
       // Create temporary file

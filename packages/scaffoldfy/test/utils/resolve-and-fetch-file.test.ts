@@ -11,6 +11,7 @@ import {
   cleanupTempFile,
   resolveAndFetchFile,
 } from '../../src/utils/resolve-and-fetch-file';
+import * as spinnerLoader from '../../src/utils/spinner-loader';
 
 // Mock the modules
 vi.mock('node:fs');
@@ -22,16 +23,22 @@ vi.mock('../../src/utils/logger', () => ({
   debug: vi.fn(),
   log: vi.fn(),
 }));
+vi.mock('../../src/utils/spinner-loader', () => ({
+  startSpinner: vi.fn(),
+  stopSpinner: vi.fn(),
+}));
 
 describe('resolveAndFetchFile', () => {
   const mockCwd = '/mock/cwd';
   const mockTempDir = '/mock/temp';
 
   beforeEach(() => {
+    vi.clearAllMocks();
     vi.spyOn(process, 'cwd').mockReturnValue(mockCwd);
     vi.mocked(os.tmpdir).mockReturnValue(mockTempDir);
     vi.mocked(fs.existsSync).mockReturnValue(true);
     vi.mocked(fs.writeFileSync).mockImplementation(() => undefined);
+    vi.mocked(spinnerLoader.startSpinner).mockReturnValue(1);
   });
 
   afterEach(() => {
@@ -56,6 +63,8 @@ describe('resolveAndFetchFile', () => {
       expect(result.localFilePath).toContain('test-');
       expect(result.localFilePath).toContain('');
       expect(configInheritance.fetchConfigurationFile).toHaveBeenCalledWith(url);
+      expect(spinnerLoader.startSpinner).toHaveBeenCalledWith('Loading script');
+      expect(spinnerLoader.stopSpinner).toHaveBeenCalledWith(1);
       expect(fs.writeFileSync).toHaveBeenCalledWith(
         result.localFilePath,
         content,
