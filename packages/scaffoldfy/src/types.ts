@@ -41,7 +41,13 @@ export interface CurrentConfigurationContext {
 /**
  * Prompt type definitions for task-embedded prompts
  */
-export type PromptType = 'input' | 'select' | 'confirm' | 'password' | 'number';
+export type PromptType =
+  | 'input'
+  | 'select'
+  | 'checkbox'
+  | 'confirm'
+  | 'password'
+  | 'number';
 
 /**
  * Default value types for prompts
@@ -173,12 +179,23 @@ export interface SelectPrompt extends BasePrompt {
   default?: DefaultValue<string | number | boolean>;
 }
 
+export interface CheckboxPrompt extends BasePrompt {
+  type: 'checkbox';
+  choices: Array<{ name: string; value: string | number | boolean }>;
+  default?: DefaultValue<Array<string | number | boolean>>;
+}
+
 export interface ConfirmPrompt extends BasePrompt {
   type: 'confirm';
   default?: DefaultValue<boolean>;
 }
 
-export type PromptDefinition = InputPrompt | NumberPrompt | SelectPrompt | ConfirmPrompt;
+export type PromptDefinition =
+  | InputPrompt
+  | NumberPrompt
+  | SelectPrompt
+  | CheckboxPrompt
+  | ConfirmPrompt;
 
 /**
  * Variable value configuration for defining optional global or task-scoped variables

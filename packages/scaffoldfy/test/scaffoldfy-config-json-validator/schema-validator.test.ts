@@ -853,6 +853,49 @@ describe('schema-validator', () => {
         expect(result.valid).toBe(true);
       });
 
+      it('should accept checkbox prompts with required choices and array defaults', () => {
+        const config = {
+          $schema:
+            'https://unpkg.com/@pixpilot/scaffoldfy@latest/schema/scaffoldfy.schema.json',
+          name: 'test-template',
+          prompts: [
+            {
+              id: 'features',
+              type: 'checkbox',
+              message: 'Choose features',
+              choices: [
+                { name: 'Testing', value: 'testing' },
+                { name: 'Docker', value: 'docker' },
+              ],
+              default: ['testing'],
+            },
+          ],
+          tasks: [],
+        };
+
+        const result = validateTasksSchema(config, { silent: true });
+        expect(result.valid).toBe(true);
+      });
+
+      it('should reject checkbox prompt without choices', () => {
+        const config = {
+          $schema:
+            'https://unpkg.com/@pixpilot/scaffoldfy@latest/schema/scaffoldfy.schema.json',
+          name: 'test-template',
+          prompts: [
+            {
+              id: 'features',
+              type: 'checkbox',
+              message: 'Choose features',
+            },
+          ],
+          tasks: [],
+        };
+
+        const result = validateTasksSchema(config, { silent: true });
+        expect(result.valid).toBe(false);
+      });
+
       it('should reject select prompt without choices', () => {
         const config = {
           $schema:

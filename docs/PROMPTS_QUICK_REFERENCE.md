@@ -5,7 +5,7 @@
 Every prompt needs:
 
 - `id` - Unique identifier (must be a valid JavaScript identifier: letters, digits, underscores, and `$`, cannot start with a digit)
-- `type` - Prompt type (input, password, number, select, confirm)
+- `type` - Prompt type (input, password, number, select, checkbox, confirm)
 - `message` - Question to display to user
 
 #---
@@ -64,6 +64,21 @@ title: Prompts Quick Reference - Scaffoldfy
     { "name": "Vue", "value": "vue" }
   ],
   "default": "react"
+}
+```
+
+### Checkbox
+
+```json
+{
+  "id": "features",
+  "type": "checkbox",
+  "message": "Choose features",
+  "choices": [
+    { "name": "Testing", "value": "testing" },
+    { "name": "Docker", "value": "docker" }
+  ],
+  "default": ["testing"]
 }
 ```
 
@@ -131,13 +146,13 @@ Values are available via template interpolation:
 | Property   | Types                          | Description                              |
 | ---------- | ------------------------------ | ---------------------------------------- |
 | `id`       | all                            | Unique identifier for the value          |
-| `type`     | all                            | input, password, number, select, confirm |
+| `type`     | all                            | input, password, number, select, checkbox, confirm |
 | `message`  | all                            | Question text                            |
 | `required` | all                            | Force non-empty value                    |
-| `default`  | input, number, select, confirm | Default value                            |
+| `default`  | input, number, select, checkbox, confirm | Default value                     |
 | `min`      | number                         | Minimum value                            |
 | `max`      | number                         | Maximum value                            |
-| `choices`  | select                         | Array of {name, value} objects           |
+| `choices`  | select, checkbox               | Array of {name, value} objects           |
 
 ## Root-Level Prompts
 

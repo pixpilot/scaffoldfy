@@ -233,11 +233,11 @@
       "description": "Built-in transformer ID"
     },
     "valueConfig": {
-      "description": "Configuration for a value that can be static, dynamic, or conditional. Supports static primitives, command execution, script file execution, interpolation with {{variable}} placeholders, or conditional evaluation.",
+      "description": "Configuration for a value that can be static, dynamic, or conditional. Supports static values, command execution, script file execution, interpolation with {{variable}} placeholders, or conditional evaluation.",
       "oneOf": [
         {
-          "type": ["string", "number", "boolean"],
-          "description": "Static value (string, number, or boolean)"
+          "type": ["string", "number", "boolean", "array"],
+          "description": "Static value (string, number, boolean, or array)"
         },
         {
           "type": "object",
@@ -434,7 +434,7 @@
         },
         "type": {
           "type": "string",
-          "enum": ["input", "select", "confirm", "password", "number"],
+          "enum": ["input", "select", "checkbox", "confirm", "password", "number"],
           "description": "Type of prompt to display"
         },
         "message": {
@@ -456,7 +456,7 @@
         },
         "choices": {
           "type": "array",
-          "description": "Available choices (for select prompts)",
+          "description": "Available choices (for select and checkbox prompts)",
           "items": {
             "type": "object",
             "required": ["name", "value"],
@@ -489,7 +489,7 @@
         {
           "if": {
             "properties": {
-              "type": { "const": "select" }
+              "type": { "enum": ["select", "checkbox"] }
             }
           },
           "then": {

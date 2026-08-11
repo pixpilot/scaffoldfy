@@ -115,6 +115,20 @@ describe('validatePrompts', () => {
     );
   });
 
+  it('should validate checkbox prompts have choices', () => {
+    const prompts: PromptDefinition[] = [
+      {
+        id: 'features',
+        type: 'checkbox',
+        message: 'Select features',
+        choices: [],
+      },
+    ];
+
+    const errors = validatePrompts(prompts);
+    expect(errors).toContain('Checkbox prompt "features" must have at least one choice');
+  });
+
   it('should validate number prompt min/max', () => {
     const prompts: PromptDefinition[] = [
       {
@@ -292,6 +306,12 @@ describe('prompt types', () => {
         choices: [{ name: 'Option', value: 'opt' }],
       },
       {
+        id: 'choices',
+        type: 'checkbox',
+        message: 'Choose multiple',
+        choices: [{ name: 'Option', value: 'opt' }],
+      },
+      {
         id: 'agree',
         type: 'confirm',
         message: 'Agree?',
@@ -343,6 +363,12 @@ describe('prompt scope (no longer uses global property)', () => {
         id: 'globalSelect',
         type: 'select',
         message: 'Choose',
+        choices: [{ name: 'Option', value: 'opt' }],
+      },
+      {
+        id: 'globalCheckbox',
+        type: 'checkbox',
+        message: 'Choose multiple',
         choices: [{ name: 'Option', value: 'opt' }],
       },
       {

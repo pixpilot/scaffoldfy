@@ -3,7 +3,7 @@
  */
 
 import type { CurrentConfigurationContext, PromptDefinition } from '../types';
-import { confirm, input, number, password, select } from '@inquirer/prompts';
+import { checkbox, confirm, input, number, password, select } from '@inquirer/prompts';
 import { PromptValidationError } from '../errors/other';
 import { transformerManager } from '../transformers/index';
 import { evaluateEnabledAsync, log } from '../utils';
@@ -196,6 +196,30 @@ export async function collectPrompts(
             selectOptions.default = defaultValue as string | number | boolean;
           }
           answer = await select(selectOptions);
+          break;
+        }
+
+        case 'checkbox': {
+          const checkboxOptions: {
+            message: string;
+            choices: Array<{ name: string; value: string | number | boolean }>;
+            default?: Array<string | number | boolean>;
+            required?: boolean;
+          } = {
+            message: prompt.message,
+            choices: prompt.choices.map((choice) => ({
+              name: choice.name,
+              value: choice.value,
+            })),
+          };
+          if (defaultValue !== undefined) {
+            checkboxOptions.default = defaultValue as Array<string | number | boolean>;
+          }
+          const isRequired = await evaluateRequiredAsync(prompt.required, currentContext);
+          if (isRequired !== undefined) {
+            checkboxOptions.required = isRequired;
+          }
+          answer = await checkbox(checkboxOptions);
           break;
         }
 

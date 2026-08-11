@@ -93,7 +93,7 @@ In this example:
 
 ## Prompt Types
 
-Scaffoldfy supports five prompt types:
+Scaffoldfy supports six prompt types:
 
 ### 1. Input Prompt
 
@@ -177,7 +177,25 @@ Present a list of choices to the user.
 }
 ```
 
-### 5. Confirm Prompt
+### 5. Checkbox Prompt
+
+Present a list of choices and let the user select multiple values. The answer is an array of selected choice values.
+
+```json
+{
+  "id": "features",
+  "type": "checkbox",
+  "message": "Select features to include",
+  "choices": [
+    { "name": "Authentication", "value": "auth" },
+    { "name": "Testing", "value": "testing" },
+    { "name": "Docker", "value": "docker" }
+  ],
+  "default": ["testing"]
+}
+```
+
+### 6. Confirm Prompt
 
 Ask a yes/no question.
 

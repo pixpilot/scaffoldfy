@@ -34,18 +34,24 @@ export function validatePrompts(prompts: PromptDefinition[]): string[] {
     }
 
     // Type-specific validation
-    if (prompt.type === 'select') {
+    if (prompt.type === 'select' || prompt.type === 'checkbox') {
       if (prompt.choices.length === 0) {
-        errors.push(`Select prompt "${prompt.id}" must have at least one choice`);
+        errors.push(
+          `${prompt.type === 'select' ? 'Select' : 'Checkbox'} prompt "${prompt.id}" must have at least one choice`,
+        );
       }
 
       // Validate choice structure
       for (const choice of prompt.choices) {
         if (!choice.name || choice.name.trim() === '') {
-          errors.push(`Select prompt "${prompt.id}" has a choice with empty name`);
+          errors.push(
+            `${prompt.type === 'select' ? 'Select' : 'Checkbox'} prompt "${prompt.id}" has a choice with empty name`,
+          );
         }
         if (choice.value === undefined) {
-          errors.push(`Select prompt "${prompt.id}" has a choice with undefined value`);
+          errors.push(
+            `${prompt.type === 'select' ? 'Select' : 'Checkbox'} prompt "${prompt.id}" has a choice with undefined value`,
+          );
         }
       }
     }

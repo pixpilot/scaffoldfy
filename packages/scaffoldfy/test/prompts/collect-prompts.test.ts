@@ -3,7 +3,7 @@
  */
 
 import type { PromptDefinition } from '../../src/types';
-import { confirm, input, number, password, select } from '@inquirer/prompts';
+import { checkbox, confirm, input, number, password, select } from '@inquirer/prompts';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { collectPrompts } from '../../src/prompts/collect-prompts';
 
@@ -13,6 +13,7 @@ vi.mock('@inquirer/prompts', () => ({
   password: vi.fn(),
   number: vi.fn(),
   select: vi.fn(),
+  checkbox: vi.fn(),
   confirm: vi.fn(),
 }));
 
@@ -195,6 +196,37 @@ describe('collectPrompts', () => {
         { name: 'Blue', value: 'blue' },
       ],
       default: 'blue',
+    });
+  });
+
+  it('should collect checkbox prompt with default values', async () => {
+    const prompts: PromptDefinition[] = [
+      {
+        id: 'features',
+        type: 'checkbox',
+        message: 'Choose features',
+        choices: [
+          { name: 'Testing', value: 'testing' },
+          { name: 'Docker', value: 'docker' },
+        ],
+        default: ['testing'],
+        required: true,
+      },
+    ];
+
+    vi.mocked(checkbox).mockResolvedValue(['testing', 'docker']);
+
+    const result = await collectPrompts(prompts, new Map([['features', ['testing']]]));
+
+    expect(result).toEqual({ features: ['testing', 'docker'] });
+    expect(checkbox).toHaveBeenCalledWith({
+      message: 'Choose features',
+      choices: [
+        { name: 'Testing', value: 'testing' },
+        { name: 'Docker', value: 'docker' },
+      ],
+      default: ['testing'],
+      required: true,
     });
   });
 
