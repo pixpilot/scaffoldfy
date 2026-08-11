@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy-configs
 
+## 0.27.0
+
+### Minor Changes
+
+- add checkbox prompt support
+
 ## 0.26.1
 
 ### Patch Changes
