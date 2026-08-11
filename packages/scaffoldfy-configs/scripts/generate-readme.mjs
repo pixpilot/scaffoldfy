@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url';
 
 const packageDirectory = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const readmePath = path.join(packageDirectory, 'README.md');
-const packageUrl = 'https://unpkg.com/@pixpilot/scaffoldfy-configs';
+const packageUrl = 'https://unpkg.com/@pixpilot/scaffoldfy-configs@latest';
 const startMarker = '<!-- scaffoldfy-templates:start -->';
 const endMarker = '<!-- scaffoldfy-templates:end -->';
 const ignoredDirectories = new Set(['.cache', '.turbo', 'node_modules']);
@@ -62,7 +62,7 @@ async function generateReadme() {
   const generatedSection = templates
     .map(
       ({ configUrl, description, name }) =>
-        `### ${name}\n\n${description}\n\nUsage:\n\n\`\`\`sh\nnpx @pixpilot/scaffoldfy --config ${configUrl}\n\`\`\``,
+        `### ${name}\n\n${description}\n\nUsage:\n\n\`\`\`sh\nnpx @pixpilot/scaffoldfy@latest --config ${configUrl}\n\`\`\``,
     )
     .join('\n\n');
   const readme = await readFile(readmePath, 'utf8');

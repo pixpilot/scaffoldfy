@@ -1,30 +1,24 @@
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
-import { describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { validateScaffoldfyJsonFile } from '../../src/scaffoldfy-config-validator/validate-scaffoldfy-json';
 
-// Helper to create a temp JSON file for testing
+let testDir: string;
+
 function createTempJsonFile(content: object, filename: string) {
-  const filePath = path.join(__dirname, filename);
+  const filePath = path.join(testDir, filename);
   fs.writeFileSync(filePath, JSON.stringify(content, null, 2), 'utf-8');
   return filePath;
 }
 
 describe('validateScaffoldfyJsonFile', () => {
-  afterAll(() => {
-    // Clean up test files
-    const testFiles = [
-      'abs-path.json',
-      'rel-path.json',
-      'no-schema.json',
-      'relative-schema.json',
-    ];
-    testFiles.forEach((filename) => {
-      const filePath = path.join(__dirname, filename);
-      if (fs.existsSync(filePath)) {
-        fs.unlinkSync(filePath);
-      }
-    });
+  beforeEach(() => {
+    testDir = fs.mkdtempSync(path.join(os.tmpdir(), 'scaffoldfy-test-'));
+  });
+
+  afterEach(() => {
+    fs.rmSync(testDir, { recursive: true, force: true });
   });
 
   it('validates a file with absolute path', () => {
@@ -43,7 +37,7 @@ describe('validateScaffoldfyJsonFile', () => {
 
   it('validates a file with relative path (./)', () => {
     const schemaPath = './relative-schema.json';
-    const relSchemaPath = path.join(__dirname, schemaPath);
+    const relSchemaPath = path.join(testDir, schemaPath);
     fs.writeFileSync(relSchemaPath, JSON.stringify({ type: 'object' }), 'utf-8');
     const filePath = createTempJsonFile(
       { $schema: schemaPath, foo: 'bar' },

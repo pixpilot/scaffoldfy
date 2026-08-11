@@ -38,13 +38,13 @@ Or run without installing using npx:
 
 ```sh
 # Basic usage with default task file
-npx @pixpilot/scaffoldfy
+npx @pixpilot/scaffoldfy@latest
 
 # With custom tasks file
-npx @pixpilot/scaffoldfy --config ./config.json
+npx @pixpilot/scaffoldfy@latest --config ./config.json
 
 # Preview changes (dry run)
-npx @pixpilot/scaffoldfy --dry-run
+npx @pixpilot/scaffoldfy@latest --dry-run
 ```
 
 ## 📚 Documentation

@@ -21,7 +21,7 @@ Generate a LICENSE file with common open-source licenses
 Usage:
 
 ```sh
-npx @pixpilot/scaffoldfy --config https://unpkg.com/@pixpilot/scaffoldfy-configs/license-file/scaffoldfy.json
+npx @pixpilot/scaffoldfy@latest --config https://unpkg.com/@pixpilot/scaffoldfy-configs@latest/license-file/scaffoldfy.json
 ```
 
 ### monorepo-generate-packages-section
@@ -31,7 +31,7 @@ Generates packages section in monorepo README by reading package.json files
 Usage:
 
 ```sh
-npx @pixpilot/scaffoldfy --config https://unpkg.com/@pixpilot/scaffoldfy-configs/monorepo-generate-packages-section/scaffoldfy.json
+npx @pixpilot/scaffoldfy@latest --config https://unpkg.com/@pixpilot/scaffoldfy-configs@latest/monorepo-generate-packages-section/scaffoldfy.json
 ```
 
 ### pixpilot-changesets-release
@@ -41,7 +41,7 @@ Pixpilot workspace package generator template for pnpm + Turbo monorepo. Provide
 Usage:
 
 ```sh
-npx @pixpilot/scaffoldfy --config https://unpkg.com/@pixpilot/scaffoldfy-configs/pixpilot-changesets-release/scaffoldfy.json
+npx @pixpilot/scaffoldfy@latest --config https://unpkg.com/@pixpilot/scaffoldfy-configs@latest/pixpilot-changesets-release/scaffoldfy.json
 ```
 
 ### pixpilot-copilot-instructions
@@ -51,7 +51,7 @@ GitHub Copilot instructions template for Pixpilot projects
 Usage:
 
 ```sh
-npx @pixpilot/scaffoldfy --config https://unpkg.com/@pixpilot/scaffoldfy-configs/pixpilot-copilot-instructions/scaffoldfy.json
+npx @pixpilot/scaffoldfy@latest --config https://unpkg.com/@pixpilot/scaffoldfy-configs@latest/pixpilot-copilot-instructions/scaffoldfy.json
 ```
 
 ### pixpilot-info
@@ -61,7 +61,7 @@ Project information prompts for pnpm-turbo-monorepo-template
 Usage:
 
 ```sh
-npx @pixpilot/scaffoldfy --config https://unpkg.com/@pixpilot/scaffoldfy-configs/pixpilot-info/scaffoldfy.json
+npx @pixpilot/scaffoldfy@latest --config https://unpkg.com/@pixpilot/scaffoldfy-configs@latest/pixpilot-info/scaffoldfy.json
 ```
 
 ### project-info
@@ -71,7 +71,7 @@ Project information prompts for pnpm-turbo-monorepo-template
 Usage:
 
 ```sh
-npx @pixpilot/scaffoldfy --config https://unpkg.com/@pixpilot/scaffoldfy-configs/project-info/scaffoldfy.json
+npx @pixpilot/scaffoldfy@latest --config https://unpkg.com/@pixpilot/scaffoldfy-configs@latest/project-info/scaffoldfy.json
 ```
 
 ### security-policy
@@ -81,7 +81,7 @@ Security policy template with configurable contact email
 Usage:
 
 ```sh
-npx @pixpilot/scaffoldfy --config https://unpkg.com/@pixpilot/scaffoldfy-configs/security-policy/scaffoldfy.json
+npx @pixpilot/scaffoldfy@latest --config https://unpkg.com/@pixpilot/scaffoldfy-configs@latest/security-policy/scaffoldfy.json
 ```
 
 ### turbo-workspace-package-generator
@@ -91,7 +91,7 @@ Pixpilot workspace package generator template for pnpm + Turbo monorepo. Provide
 Usage:
 
 ```sh
-npx @pixpilot/scaffoldfy --config https://unpkg.com/@pixpilot/scaffoldfy-configs/turbo-workspace-package-generator/scaffoldfy.json
+npx @pixpilot/scaffoldfy@latest --config https://unpkg.com/@pixpilot/scaffoldfy-configs@latest/turbo-workspace-package-generator/scaffoldfy.json
 ```
 
 ### update-root-package-json
@@ -101,17 +101,17 @@ Update root package.json with repository information
 Usage:
 
 ```sh
-npx @pixpilot/scaffoldfy --config https://unpkg.com/@pixpilot/scaffoldfy-configs/update-root-package-json/scaffoldfy.json
+npx @pixpilot/scaffoldfy@latest --config https://unpkg.com/@pixpilot/scaffoldfy-configs@latest/update-root-package-json/scaffoldfy.json
 ```
 
 ### workspace-generator
 
-Initial setup for a pnpm + Turbo monorepo template, including project info, license, and initial package generation.
+Generate workspace with apps and packages
 
 Usage:
 
 ```sh
-npx @pixpilot/scaffoldfy --config https://unpkg.com/@pixpilot/scaffoldfy-configs/workspace-generator/scaffoldfy.json
+npx @pixpilot/scaffoldfy@latest --config https://unpkg.com/@pixpilot/scaffoldfy-configs@latest/workspace-generator/scaffoldfy.json
 ```
 
 ### workspace-initializer
@@ -121,7 +121,7 @@ Initial setup for a pnpm + Turbo monorepo template, including project info, lice
 Usage:
 
 ```sh
-npx @pixpilot/scaffoldfy --config https://unpkg.com/@pixpilot/scaffoldfy-configs/workspace-initializer/scaffoldfy.json
+npx @pixpilot/scaffoldfy@latest --config https://unpkg.com/@pixpilot/scaffoldfy-configs@latest/workspace-initializer/scaffoldfy.json
 ```
 
 ### workspace-package-generator
@@ -131,7 +131,7 @@ Generate a new package for a pnpm + Turbo monorepo workspace
 Usage:
 
 ```sh
-npx @pixpilot/scaffoldfy --config https://unpkg.com/@pixpilot/scaffoldfy-configs/workspace-package-generator/scaffoldfy.json
+npx @pixpilot/scaffoldfy@latest --config https://unpkg.com/@pixpilot/scaffoldfy-configs@latest/workspace-package-generator/scaffoldfy.json
 ```
 
 ### workspace-package-generator/experiment
@@ -141,7 +141,7 @@ Generate a new package for a pnpm + Turbo monorepo workspace
 Usage:
 
 ```sh
-npx @pixpilot/scaffoldfy --config https://unpkg.com/@pixpilot/scaffoldfy-configs/workspace-package-generator/experiment/scaffoldfy.json
+npx @pixpilot/scaffoldfy@latest --config https://unpkg.com/@pixpilot/scaffoldfy-configs@latest/workspace-package-generator/experiment/scaffoldfy.json
 ```
 
 <!-- scaffoldfy-templates:end -->

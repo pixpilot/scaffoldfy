@@ -24,16 +24,16 @@ title: Quick Reference - Scaffoldfy
 ```bash
 
 # With custom tasks file
-npx @pixpilot/scaffoldfy --config ./config.json
+npx @pixpilot/scaffoldfy@latest --config ./config.json
 
 # Preview changes first (recommended)
-npx @pixpilot/scaffoldfy  --config ./config.json --dry-run
+npx @pixpilot/scaffoldfy@latest --config ./config.json --dry-run
 
 # With TypeScript tasks file
-npx @pixpilot/scaffoldfy --config ./my-tasks.ts
+npx @pixpilot/scaffoldfy@latest --config ./my-tasks.ts
 
 # With a config file hosted on a URL
-npx @pixpilot/scaffoldfy --config https://example.com/scaffoldfy.json
+npx @pixpilot/scaffoldfy@latest --config https://example.com/scaffoldfy.json
 ```
 
 ### CLI

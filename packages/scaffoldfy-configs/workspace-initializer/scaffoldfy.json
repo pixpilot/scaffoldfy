@@ -70,7 +70,7 @@
       "type": "regex-replace",
       "config": {
         "file": "package.json",
-        "pattern": "\\n\\s*\"setup\":\\s*\"npx @pixpilot/scaffoldfy --config https://unpkg.com/@pixpilot/scaffoldfy-configs@latest/workspace-initializer/scaffoldfy.json\",",
+        "pattern": "\\n\\s*\"setup\":\\s*\"npx @pixpilot/scaffoldfy@latest --config https://unpkg.com/@pixpilot/scaffoldfy-configs@latest/workspace-initializer/scaffoldfy.json\",",
         "flags": "",
         "replacement": ""
       }

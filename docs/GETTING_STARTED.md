@@ -26,7 +26,7 @@ npm install -g @pixpilot/scaffoldfy
 You can also run scaffoldfy without installing it using npx:
 
 ```sh
-npx @pixpilot/scaffoldfy --config ./setup/setup-tasks.json
+npx @pixpilot/scaffoldfy@latest --config ./setup/setup-tasks.json
 ```
 
 ## Quick Start
@@ -130,14 +130,14 @@ This is particularly useful for:
 
 ## CLI Options
 
-| Option            | Description                                                                     |
-| ----------------- | ------------------------------------------------------------------------------- |
+| Option            | Description                                                                                      |
+| ----------------- | ------------------------------------------------------------------------------------------------ |
 | `--config <path>` | Path or URL to config file (JSON, or TypeScript for local files; default: `./config-tasks.json`) |
-| `--dry-run`       | Preview changes without applying them                                           |
-| `--force`         | Force execution even if checks fail                                             |
-| `--no-validate`   | Skip schema validation of task configuration (validation is enabled by default) |
-| `-h, --help`      | Show help message                                                               |
-| `-v, --version`   | Show version                                                                    |
+| `--dry-run`       | Preview changes without applying them                                                            |
+| `--force`         | Force execution even if checks fail                                                              |
+| `--no-validate`   | Skip schema validation of task configuration (validation is enabled by default)                  |
+| `-h, --help`      | Show help message                                                                                |
+| `-v, --version`   | Show version                                                                                     |
 
 ## Programmatic Usage
 
