@@ -30,18 +30,12 @@
   ],
   "tasks": [
     {
-      "id": "update-contributing",
-      "name": "Update CONTRIBUTING.md",
-      "description": "Update contributing guidelines with project info",
-      "type": "replace-in-file",
+      "id": "clone-monorepo-template",
+      "name": "Clone Monorepo Template",
+      "description": "Clone the monorepo template",
+      "type": "exec",
       "config": {
-        "file": "CONTRIBUTING.md",
-        "replacements": [
-          {
-            "find": "<projectName>",
-            "replace": "{{projectName}}"
-          }
-        ]
+        "command": "git clone https://github.com/pixpilot/pnpm-turbo-monorepo-template.git"
       }
     }
   ]
