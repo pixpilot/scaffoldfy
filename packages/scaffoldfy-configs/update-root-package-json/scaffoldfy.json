@@ -25,6 +25,18 @@
           "license": "{{licenseType}}"
         }
       }
+    },
+    {
+      "id": "sort-root-package",
+      "name": "Sort root package.json",
+      "description": "Sort root package.json fields into the standard project order",
+      "type": "exec-file",
+      "dependencies": ["update-root-package"],
+      "config": {
+        "file": "./scripts/sort-package-json.cjs",
+        "runtime": "node",
+        "args": ["--file=package.json"]
+      }
     }
   ]
 }
