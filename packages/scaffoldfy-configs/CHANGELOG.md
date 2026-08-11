@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy-configs
 
+## 0.26.1
+
+### Patch Changes
+
+- update setup script URL to use latest version
+
 ## 0.26.0
 
 ### Minor Changes
