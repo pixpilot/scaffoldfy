@@ -70,18 +70,9 @@
       "type": "regex-replace",
       "config": {
         "file": "package.json",
-        "pattern": "\\n\\s*\"setup\":\\s*\"npx @pixpilot/scaffoldfy --config \\./setup/scaffoldfy\\.json\",",
+        "pattern": "\\n\\s*\"setup\":\\s*\"npx @pixpilot/scaffoldfy --config https://unpkg.com/@pixpilot/scaffoldfy-configs/workspace-initializer/scaffoldfy.json\",",
         "flags": "",
         "replacement": ""
-      }
-    },
-    {
-      "id": "delete-setup-tasks",
-      "name": "Delete setup tasks file",
-      "description": "Remove the setup-tasks.json file after setup is complete",
-      "type": "delete",
-      "config": {
-        "paths": ["setup"]
       }
     },
     {
