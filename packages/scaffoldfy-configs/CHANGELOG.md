@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy-configs
 
+## 0.26.0
+
+### Minor Changes
+
+- add sorting task for root package.json
+
 ## 0.25.1
 
 ### Patch Changes
