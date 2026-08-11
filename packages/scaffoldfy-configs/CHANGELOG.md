@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy-configs
 
+## 0.25.1
+
+### Patch Changes
+
+- update setup script URL and remove unnecessary tasks
+
 ## 0.25.0
 
 ### Minor Changes
