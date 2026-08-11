@@ -1,5 +1,15 @@
 # @pixpilot/scaffoldfy
 
+## 0.50.0
+
+### Minor Changes
+
+- add task to update CONTRIBUTING.md with project info
+
+### Patch Changes
+
+- update package URL to use latest version
+
 ## 0.49.0
 
 ### Minor Changes

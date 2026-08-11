@@ -1,5 +1,15 @@
 # @pixpilot/scaffoldfy-configs
 
+## 0.28.0
+
+### Minor Changes
+
+- add loading spinner for remote file fetching
+
+### Patch Changes
+
+- update package URL to use latest version
+
 ## 0.27.0
 
 ### Minor Changes
