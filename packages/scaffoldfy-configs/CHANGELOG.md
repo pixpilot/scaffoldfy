@@ -1,5 +1,12 @@
 # @pixpilot/scaffoldfy-configs
 
+## 0.25.0
+
+### Minor Changes
+
+- add README generation script and update README content
+- add scaffoldfy configuration and README template
+
 ## 0.24.1
 
 ### Patch Changes
