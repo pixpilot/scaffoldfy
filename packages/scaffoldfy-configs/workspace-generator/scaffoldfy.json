@@ -28,5 +28,21 @@
       ]
     }
   ],
-  "tasks": []
+  "tasks": [
+    {
+      "id": "update-contributing",
+      "name": "Update CONTRIBUTING.md",
+      "description": "Update contributing guidelines with project info",
+      "type": "replace-in-file",
+      "config": {
+        "file": "CONTRIBUTING.md",
+        "replacements": [
+          {
+            "find": "<projectName>",
+            "replace": "{{projectName}}"
+          }
+        ]
+      }
+    }
+  ]
 }
