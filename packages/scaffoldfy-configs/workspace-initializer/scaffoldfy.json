@@ -12,6 +12,7 @@
     "../monorepo-generate-packages-section/scaffoldfy.json"
   ],
   "name": "pnpm-turbo-monorepo-template-setup",
+  "description": "Initial setup for a pnpm + Turbo monorepo template, including project info, license, and initial package generation.",
   "prompts": [
     {
       "id": "keepExamplePackages",

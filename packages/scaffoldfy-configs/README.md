@@ -12,41 +12,129 @@ npm install @pixpilot/scaffoldfy @pixpilot/scaffoldfy-configs
 
 This package provides the following scaffoldfy templates:
 
+<!-- scaffoldfy-templates:start -->
+
 ### license-file
 
-Generate a LICENSE file with common open-source licenses (MIT, Apache 2.0, GPL, BSD, etc.)
+Generate a LICENSE file with common open-source licenses
 
-### project-info
+Usage:
 
-Collect and manage project information prompts for consistent project setup
-
-### turbo-workspace-package-generator
-
-Generate packages for pnpm + Turbo monorepos with customizable bundler options
-
-### pixpilot-changesets-release
-
-Configure changesets for automated package publishing
-
-### pixpilot-copilot-instructions
-
-Generate GitHub Copilot instructions for your project
-
-### pixpilot-info
-
-Project information and metadata management
-
-### security-policy
-
-Generate security policy documentation
+```sh
+npx @pixpilot/scaffoldfy --config https://unpkg.com/@pixpilot/scaffoldfy-configs/license-file/scaffoldfy.json
+```
 
 ### monorepo-generate-packages-section
 
-Configure package generation for monorepo setups
+Generates packages section in monorepo README by reading package.json files
+
+Usage:
+
+```sh
+npx @pixpilot/scaffoldfy --config https://unpkg.com/@pixpilot/scaffoldfy-configs/monorepo-generate-packages-section/scaffoldfy.json
+```
+
+### pixpilot-changesets-release
+
+Pixpilot workspace package generator template for pnpm + Turbo monorepo. Provides project info prompts and config tasks.
+
+Usage:
+
+```sh
+npx @pixpilot/scaffoldfy --config https://unpkg.com/@pixpilot/scaffoldfy-configs/pixpilot-changesets-release/scaffoldfy.json
+```
+
+### pixpilot-copilot-instructions
+
+GitHub Copilot instructions template for Pixpilot projects
+
+Usage:
+
+```sh
+npx @pixpilot/scaffoldfy --config https://unpkg.com/@pixpilot/scaffoldfy-configs/pixpilot-copilot-instructions/scaffoldfy.json
+```
+
+### pixpilot-info
+
+Project information prompts for pnpm-turbo-monorepo-template
+
+Usage:
+
+```sh
+npx @pixpilot/scaffoldfy --config https://unpkg.com/@pixpilot/scaffoldfy-configs/pixpilot-info/scaffoldfy.json
+```
+
+### project-info
+
+Project information prompts for pnpm-turbo-monorepo-template
+
+Usage:
+
+```sh
+npx @pixpilot/scaffoldfy --config https://unpkg.com/@pixpilot/scaffoldfy-configs/project-info/scaffoldfy.json
+```
+
+### security-policy
+
+Security policy template with configurable contact email
+
+Usage:
+
+```sh
+npx @pixpilot/scaffoldfy --config https://unpkg.com/@pixpilot/scaffoldfy-configs/security-policy/scaffoldfy.json
+```
+
+### turbo-workspace-package-generator
+
+Pixpilot workspace package generator template for pnpm + Turbo monorepo. Provides project info prompts and config tasks.
+
+Usage:
+
+```sh
+npx @pixpilot/scaffoldfy --config https://unpkg.com/@pixpilot/scaffoldfy-configs/turbo-workspace-package-generator/scaffoldfy.json
+```
 
 ### update-root-package-json
 
-Update root package.json with common configurations
+Update root package.json with repository information
+
+Usage:
+
+```sh
+npx @pixpilot/scaffoldfy --config https://unpkg.com/@pixpilot/scaffoldfy-configs/update-root-package-json/scaffoldfy.json
+```
+
+### workspace-initializer
+
+Initial setup for a pnpm + Turbo monorepo template, including project info, license, and initial package generation.
+
+Usage:
+
+```sh
+npx @pixpilot/scaffoldfy --config https://unpkg.com/@pixpilot/scaffoldfy-configs/workspace-initializer/scaffoldfy.json
+```
+
+### workspace-package-generator
+
+Generate a new package for a pnpm + Turbo monorepo workspace
+
+Usage:
+
+```sh
+npx @pixpilot/scaffoldfy --config https://unpkg.com/@pixpilot/scaffoldfy-configs/workspace-package-generator/scaffoldfy.json
+```
+
+### workspace-package-generator/experiment
+
+Generate a new package for a pnpm + Turbo monorepo workspace
+
+Usage:
+
+```sh
+npx @pixpilot/scaffoldfy --config https://unpkg.com/@pixpilot/scaffoldfy-configs/workspace-package-generator/experiment/scaffoldfy.json
+```
+
+<!-- scaffoldfy-templates:end -->
 
 ## Usage
 
