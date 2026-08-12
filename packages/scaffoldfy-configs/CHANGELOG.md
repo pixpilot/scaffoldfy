@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy-configs
 
+## 0.29.0
+
+### Minor Changes
+
+- replace update task with clone monorepo template task
+
 ## 0.28.0
 
 ### Minor Changes
