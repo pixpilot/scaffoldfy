@@ -10,7 +10,7 @@ import {
   ConfigurationFileNotFoundError,
   InvalidConfigError,
 } from '../errors/index';
-import { isUrl } from '../utils';
+import { isUrl, parseJsonc } from '../utils';
 
 import { configurationCache } from './cache';
 import { fetchRemoteConfiguration } from './fetch-configuration-file';
@@ -73,7 +73,7 @@ export async function loadConfiguration(
   let config: ScaffoldfyConfiguration;
 
   try {
-    config = JSON.parse(content) as ScaffoldfyConfiguration;
+    config = parseJsonc<ScaffoldfyConfiguration>(content);
   } catch (error) {
     throw ConfigParseError.forFile(
       resolvedPath,

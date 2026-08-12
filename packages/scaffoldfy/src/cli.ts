@@ -13,7 +13,7 @@ import { fetchConfigurationFile, loadTasksWithInheritance } from './configuratio
 import { EXIT_CODE_ERROR } from './constants';
 import { runWithTasks } from './index';
 import { validateTasksSchema } from './scaffoldfy-config-validator';
-import { isUrl, log } from './utils';
+import { isUrl, log, parseJsonc } from './utils';
 import { debug, setDebugMode } from './utils/logger';
 import { startSpinner, stopSpinner } from './utils/spinner-loader';
 
@@ -51,7 +51,7 @@ program
   .option('--force', 'Force execution even if checks fail')
   .option(
     '--config <path>',
-    'Path or URL to task configuration file (JSON or TypeScript)',
+    'Path or URL to task configuration file (JSON, JSONC, or TypeScript)',
     './scaffoldfy.json',
   )
   .option(
@@ -73,7 +73,7 @@ program
       let transformers: import('./transformers/types').Transformer[] | undefined;
       let configFilePath: string | undefined;
 
-      // Load config file (supports local paths and http(s) URLs, in .json or .ts/.mjs)
+      // Load config file (supports local paths and http(s) URLs, in .json/.jsonc or .ts/.mjs)
       if (options.config != null && options.config !== '') {
         const isRemoteConfig = isUrl(options.config);
         const configFile = isRemoteConfig
@@ -127,7 +127,7 @@ program
 
                 // Load raw JSON for validation (works for local paths and URLs)
                 const rawJson = await fetchConfigurationFile(configFile);
-                const rawConfig = JSON.parse(rawJson) as unknown;
+                const rawConfig = parseJsonc<unknown>(rawJson);
 
                 const validationResult = validateTasksSchema(rawConfig, {
                   silent: false,

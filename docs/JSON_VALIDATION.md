@@ -1,6 +1,6 @@
-# JSON Schema Validation
+# JSON and JSONC Schema Validation
 
-Scaffoldfy includes a JSON schema validator to catch errors in your config files before runtime.
+Scaffoldfy includes a JSON schema validator to catch errors in your JSON and JSONC config files before runtime. JSONC configuration files may use comments and trailing commas.
 
 ## Usage
 
@@ -12,7 +12,7 @@ Use the convenient root script to validate files from anywhere in the monorepo:
 # Validate a single file
 npm validate:json --file packages/scaffoldfy/examples/config-tasks-with-prompts.json
 
-# Validate all JSON files in a directory
+# Validate all JSON and JSONC files in a directory
 npm validate:json --dir packages/scaffoldfy/examples
 ```
 
@@ -63,13 +63,13 @@ The `validateScaffoldfyJsonFile` function returns an object with:
 
 ## Pre-commit Validation
 
-The validator is automatically integrated with pre-commit hooks via `lint-staged`. Any JSON files in the `packages/scaffoldfy` directory will be validated before commits.
+The validator is automatically integrated with pre-commit hooks via `lint-staged`. Any JSON or JSONC files in the `packages/scaffoldfy` directory will be validated before commits.
 
 If validation fails, the commit will be blocked until the errors are fixed.
 
 ## What Gets Validated
 
-The validator checks JSON files that have a `$schema` property pointing to a scaffoldfy schema. For example:
+The validator checks JSON and JSONC files that have a `$schema` property pointing to a scaffoldfy schema. For example:
 
 ```json
 {
@@ -113,7 +113,7 @@ root: must have required property 'name'
 
 ### `--file <path>` or `-f <path>`
 
-Validate a single JSON file.
+Validate a single JSON or JSONC file.
 
 ```bash
 npm validate:json --file path/to/file.json
@@ -121,11 +121,11 @@ npm validate:json --file path/to/file.json
 
 ### `--dir <path>` or `-d <path>`
 
-Validate all JSON files in a directory recursively. The validator will:
+Validate all JSON and JSONC files in a directory recursively. The validator will:
 
 - Scan the directory and all subdirectories
 - Skip `node_modules`, `.git`, and hidden directories
-- Validate only files ending in `.json`
+- Validate only files ending in `.json` or `.jsonc`
 
 ```bash
 npm validate:json --dir path/to/directory

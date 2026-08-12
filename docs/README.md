@@ -87,7 +87,7 @@ Welcome to the official documentation for **@pixpilot/scaffoldfy** (formerly sca
 - 🔍 **Dry-Run Mode with Diff** - Preview exact changes before applying
 - 🔌 **Plugin System** - Create custom task types and lifecycle hooks
 - 💬 **Interactive Prompts** - Collect user input with 5 prompt types
-- 📦 **JSON/TypeScript Config** - Define tasks in JSON or TypeScript files
+- 📦 **JSON/JSONC/TypeScript Config** - Define tasks in JSON, JSONC, or TypeScript files
 - 🔗 **Task Dependencies** - Ensure tasks run in the correct order
 - ✅ **Type-Safe** - Full TypeScript support with JSON schema validation
 - 🎯 **Template Variables** - Use `{{variable}}` syntax for dynamic configuration

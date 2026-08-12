@@ -4,6 +4,8 @@ packages:
   - '!packages/**/.temp/**'
 
 catalogs:
+  prod:
+    jsonc-parser: ^3.3.1
   dev:
     '@pixpilot/dev-config': ^3.16.0
     '@types/node': ^22.18.11

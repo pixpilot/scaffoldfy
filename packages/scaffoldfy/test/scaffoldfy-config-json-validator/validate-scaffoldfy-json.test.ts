@@ -52,4 +52,18 @@ describe('validateScaffoldfyJsonFile', () => {
     const result = validateScaffoldfyJsonFile(filePath);
     expect(result.valid).toBe(true);
   });
+
+  it('parses JSONC files', () => {
+    const filePath = path.join(testDir, 'commented-config.jsonc');
+    fs.writeFileSync(
+      filePath,
+      `{
+  // JSONC comments are supported.
+  "foo": "bar",
+}`,
+      'utf-8',
+    );
+
+    expect(validateScaffoldfyJsonFile(filePath)).toEqual({ valid: true });
+  });
 });

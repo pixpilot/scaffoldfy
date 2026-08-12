@@ -6,6 +6,7 @@ export * from './handlebars';
 export * from './is-url';
 export * from './logger';
 export * from './object';
+export * from './parse-jsonc';
 export * from './resolve-and-fetch-file';
 export * from './resolve-file-path';
 export * from './resolve-value';

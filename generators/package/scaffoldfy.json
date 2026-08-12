@@ -1,7 +1,5 @@
 {
   "$schema": "https://unpkg.com/@pixpilot/scaffoldfy@latest/schema/scaffoldfy.schema.json",
-  "extends": [
-    "../../packages/scaffoldfy-configs/workspace-package-generator/scaffoldfy.json"
-  ],
+  "extends": ["../../packages/scaffoldfy-configs/workspace-package-generator/scaffoldfy.json"],
   "name": "package-generator"
 }

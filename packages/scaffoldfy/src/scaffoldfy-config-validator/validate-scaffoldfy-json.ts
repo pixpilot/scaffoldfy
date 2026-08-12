@@ -11,6 +11,7 @@ import process from 'node:process';
 import { fileURLToPath } from 'node:url';
 import Ajv from 'ajv';
 import { log } from '../utils';
+import { parseJsonc } from '../utils/parse-jsonc';
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -237,7 +238,7 @@ export function validateScaffoldfyJsonFile(filePath: string): {
 
   try {
     const content = fs.readFileSync(resolvedFilePath, 'utf-8');
-    const data = JSON.parse(content) as unknown;
+    const data = parseJsonc<unknown>(content);
 
     // Check if file has $schema property
     // eslint-disable-next-line ts/strict-boolean-expressions

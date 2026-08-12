@@ -7,7 +7,7 @@ title: Configuration Inheritance - Scaffoldfy
 
 Configuration inheritance allows you to extend base configurations, promoting code reuse and modularity in your configuration files. Configurations can be loaded from local file paths or remote URLs (HTTP/HTTPS).
 
-> **Terminology Note**: In Scaffoldfy, "configuration files" (`.json`/`.ts`) define tasks, prompts, and variables. These are what you extend using the `extends` field. The actual "template files" (`.hbs`) are Handlebars templates referenced within task configurations via the `templateFile` property.
+> **Terminology Note**: In Scaffoldfy, "configuration files" (`.json`, `.jsonc`, or `.ts`) define tasks, prompts, and variables. JSONC files can include comments and trailing commas. These are what you extend using the `extends` field. The actual "template files" (`.hbs`) are Handlebars templates referenced within task configurations via the `templateFile` property.
 
 ## Overview
 

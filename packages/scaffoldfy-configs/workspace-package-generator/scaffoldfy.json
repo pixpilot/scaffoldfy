@@ -163,10 +163,7 @@
       "config": {
         "file": "./scripts/add-dependencies.cjs",
         "runtime": "node",
-        "args": [
-          "--file={{workspace}}/{{packageBaseName}}/package.json",
-          "--deps={{deps}}"
-        ]
+        "args": ["--file={{workspace}}/{{packageBaseName}}/package.json", "--deps={{deps}}"]
       }
     },
     {

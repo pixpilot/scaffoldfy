@@ -41,10 +41,14 @@ scaffoldfy
 
 ### With Configuration File
 
-Define your tasks in a JSON or TypeScript file and pass it to the CLI:
+Define your tasks in a JSON, JSONC, or TypeScript file and pass it to the CLI. JSONC files support comments and trailing commas:
 
 ```sh
 scaffoldfy --config ./tasks.json
+```
+
+```sh
+scaffoldfy --config ./tasks.jsonc
 ```
 
 Or with TypeScript:
@@ -53,7 +57,7 @@ Or with TypeScript:
 scaffoldfy --config ./tasks.ts
 ```
 
-Or with a config file hosted on a URL (JSON only):
+Or with a config file hosted on a URL (JSON or JSONC):
 
 ```sh
 scaffoldfy --config https://example.com/scaffoldfy.json
@@ -61,7 +65,7 @@ scaffoldfy --config https://example.com/scaffoldfy.json
 
 ### Schema Validation
 
-By default, all JSON task configuration files are validated against the JSON schema to catch configuration errors early. The schema validation ensures:
+By default, all JSON and JSONC task configuration files are validated against the JSON schema to catch configuration errors early. The schema validation ensures:
 
 - Required fields are present
 - Field types are correct

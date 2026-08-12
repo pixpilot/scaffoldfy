@@ -67,6 +67,24 @@ describe('loadConfiguration', () => {
     expect(loaded.tasks![0]?.name).toBe('Task 1');
   });
 
+  it('should load a JSONC configuration file', async () => {
+    const filePath = path.join(testDir, 'commented-config.jsonc');
+    fs.mkdirSync(testDir, { recursive: true });
+    fs.writeFileSync(
+      filePath,
+      `{
+  // A JSONC configuration supports comments and trailing commas.
+  "name": "commented-config",
+  "tasks": [],
+}`,
+    );
+
+    await expect(loadConfiguration(filePath)).resolves.toMatchObject({
+      name: 'commented-config',
+      tasks: [],
+    });
+  });
+
   it('should throw error for non-existent file', async () => {
     await expect(loadConfiguration('non-existent.json')).rejects.toThrow(
       ConfigurationFileNotFoundError,

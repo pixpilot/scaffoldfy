@@ -26,6 +26,9 @@ title: Quick Reference - Scaffoldfy
 # With custom tasks file
 npx @pixpilot/scaffoldfy@latest --config ./config.json
 
+# JSONC files support comments and trailing commas
+npx @pixpilot/scaffoldfy@latest --config ./config.jsonc
+
 # Preview changes first (recommended)
 npx @pixpilot/scaffoldfy@latest --config ./config.json --dry-run
 
@@ -52,6 +55,9 @@ npm install --save-dev @pixpilot/scaffoldfy
 
 # With custom tasks file
 scaffoldfy --config ./config.json
+
+# JSONC files support comments and trailing commas
+scaffoldfy --config ./config.jsonc
 
 # Preview changes without applying (dry-run mode)
 scaffoldfy  --config ./config.json --dry-run

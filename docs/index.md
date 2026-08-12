@@ -106,7 +106,7 @@ Welcome to the official documentation for **@pixpilot/scaffoldfy** (formerly sca
 
 ✅ **Interactive Prompts** - Collect user input with 5 prompt types
 
-✅ **JSON/TypeScript Config** - Define tasks in JSON or TypeScript files
+✅ **JSON/JSONC/TypeScript Config** - Define tasks in JSON, JSONC, or TypeScript files
 
 ✅ **Task Dependencies** - Ensure tasks run in the correct order
 

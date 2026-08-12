@@ -1,6 +1,6 @@
 {
   "$schema": "../node_modules/@pixpilot/scaffoldfy/schema/scaffoldfy.schema.json",
-  "extends": ["../workspace-initializer/scaffoldfy.json"],
+  // "extends": ["../workspace-initializer/scaffoldfy.json"],
   "name": "pnpm-turbo-monorepo-template-setup",
   "description": "Generate workspace with apps and packages",
   "prompts": [

@@ -2,7 +2,7 @@
 
 /**
  * JSON Schema Validator for scaffoldfy templates
- * Validates JSON files against their referenced schemas
+ * Validates JSON and JSONC files against their referenced schemas
  */
 
 import fs from 'node:fs';
@@ -13,10 +13,10 @@ import { Command } from 'commander';
 import { validateScaffoldfyJsonFile } from './validate-scaffoldfy-json';
 
 /**
- * Find all JSON files in a directory recursively
+ * Find all JSON and JSONC files in a directory recursively
  */
-function findJsonFiles(dirPath: string): string[] {
-  const jsonFiles: string[] = [];
+function findJsonConfigurationFiles(dirPath: string): string[] {
+  const configurationFiles: string[] = [];
 
   function traverse(currentPath: string) {
     const entries = fs.readdirSync(currentPath, { withFileTypes: true });
@@ -33,14 +33,14 @@ function findJsonFiles(dirPath: string): string[] {
         ) {
           traverse(fullPath);
         }
-      } else if (entry.isFile() && entry.name.endsWith('.json')) {
-        jsonFiles.push(fullPath);
+      } else if (entry.isFile() && /\.jsonc?$/u.test(entry.name)) {
+        configurationFiles.push(fullPath);
       }
     }
   }
 
   traverse(dirPath);
-  return jsonFiles;
+  return configurationFiles;
 }
 
 /**
@@ -51,10 +51,10 @@ function main() {
 
   program
     .name('validate-scaffoldfy-json')
-    .description('Validate scaffoldfy JSON files against their schemas')
+    .description('Validate scaffoldfy JSON and JSONC files against their schemas')
     .version('1.0.0')
-    .option('-f, --file <path>', 'Path to a JSON file to validate')
-    .option('-d, --dir <path>', 'Path to a directory to scan for JSON files')
+    .option('-f, --file <path>', 'Path to a JSON or JSONC file to validate')
+    .option('-d, --dir <path>', 'Path to a directory to scan for JSON and JSONC files')
     .parse(process.argv);
 
   const options = program.opts<{ file?: string; dir?: string }>();
@@ -65,8 +65,8 @@ function main() {
     filesToValidate = [options.file];
   } else if (options.dir !== undefined && options.dir !== '') {
     console.log(`Scanning directory: ${options.dir}`);
-    filesToValidate = findJsonFiles(options.dir);
-    console.log(`Found ${filesToValidate.length} JSON file(s)\n`);
+    filesToValidate = findJsonConfigurationFiles(options.dir);
+    console.log(`Found ${filesToValidate.length} JSON or JSONC file(s)\n`);
   } else {
     console.error('Error: Please provide either --file or --dir option');
     program.help();

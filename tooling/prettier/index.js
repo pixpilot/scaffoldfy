@@ -6,6 +6,9 @@ import prettierConfig from '@pixpilot/dev-config/prettier';
 const config = {
   ...prettierConfig,
   overrides: [
+    // Keep the shared overrides (e.g. `trailingComma: "none"` for JSON/JSONC),
+    // otherwise declaring `overrides` here would replace them entirely.
+    ...(prettierConfig.overrides ?? []),
     {
       files: '*.json.hbs',
       options: {

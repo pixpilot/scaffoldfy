@@ -67,7 +67,8 @@
     "ajv": "^8.17.1",
     "case-anything": "^3.1.2",
     "commander": "^14.0.1",
-    "handlebars": "^4.7.8"
+    "handlebars": "^4.7.8",
+    "jsonc-parser": "catalog:prod"
   },
   "devDependencies": {
     "@internal/eslint-config": "workspace:*",
