@@ -159,6 +159,10 @@ importers:
         version: 5.9.3
 
   packages/scaffoldfy-configs:
+    dependencies:
+      jsonc-parser:
+        specifier: catalog:prod
+        version: 3.3.1
     devDependencies:
       '@internal/eslint-config':
         specifier: workspace:*

@@ -121,6 +121,29 @@ describe('executeUpdateJson', () => {
     expect(updatedContent.repository.url).toBe(mockConfig['repoUrl']);
   });
 
+  it('should update JSONC files with comments and trailing commas', async () => {
+    const testFile = 'config.jsonc';
+    fs.writeFileSync(
+      testFile,
+      `{
+  // JSONC is supported.
+  "name": "old-name",
+}`,
+    );
+
+    await executeUpdateJson(
+      {
+        file: testFile,
+        updates: { name: 'updated-name' },
+      },
+      mockConfig,
+    );
+
+    expect(JSON.parse(fs.readFileSync(testFile, 'utf-8'))).toMatchObject({
+      name: 'updated-name',
+    });
+  });
+
   it('should handle non-string values', async () => {
     const testFile = 'config.json';
     const initialContent = {};

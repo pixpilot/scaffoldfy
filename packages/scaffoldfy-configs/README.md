@@ -104,6 +104,16 @@ Usage:
 npx @pixpilot/scaffoldfy@latest --config https://unpkg.com/@pixpilot/scaffoldfy-configs@latest/update-root-package-json/scaffoldfy.json
 ```
 
+### workspace-generator
+
+Generate workspace with apps and packages
+
+Usage:
+
+```sh
+npx @pixpilot/scaffoldfy@latest --config https://unpkg.com/@pixpilot/scaffoldfy-configs@latest/workspace-generator/scaffoldfy.jsonc
+```
+
 ### workspace-initializer
 
 Initial setup for a pnpm + Turbo monorepo template, including project info, license, and initial package generation.

@@ -1,6 +1,7 @@
 import { readdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { parse, printParseErrorCode } from 'jsonc-parser';
 
 const packageDirectory = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const readmePath = path.join(packageDirectory, 'README.md');
@@ -16,7 +17,10 @@ async function findConfigPaths(directory) {
       if (entry.isDirectory() && !ignoredDirectories.has(entry.name)) {
         return findConfigPaths(path.join(directory, entry.name));
       }
-      if (entry.isFile() && entry.name === 'scaffoldfy.json') {
+      if (
+        entry.isFile() &&
+        (entry.name === 'scaffoldfy.json' || entry.name === 'scaffoldfy.jsonc')
+      ) {
         return [path.join(directory, entry.name)];
       }
       return [];
@@ -31,10 +35,21 @@ async function readTemplate(configPath) {
     .relative(packageDirectory, path.dirname(configPath))
     .split(path.sep)
     .join('/');
-  const relativeConfigPath = relativeDirectory
-    ? `${relativeDirectory}/scaffoldfy.json`
-    : 'scaffoldfy.json';
-  const config = JSON.parse(await readFile(configPath, 'utf8'));
+  const relativeConfigPath = path
+    .relative(packageDirectory, configPath)
+    .split(path.sep)
+    .join('/');
+  const errors = [];
+  const config = parse(await readFile(configPath, 'utf8'), errors, {
+    allowTrailingComma: true,
+  });
+
+  if (errors.length > 0) {
+    const details = errors
+      .map((error) => `${printParseErrorCode(error.error)} at offset ${error.offset}`)
+      .join(', ');
+    throw new Error(`${relativeConfigPath} is not valid JSON or JSONC: ${details}`);
+  }
 
   if (typeof config.description !== 'string' || !config.description.trim()) {
     throw new Error(`${relativeConfigPath} has no description`);

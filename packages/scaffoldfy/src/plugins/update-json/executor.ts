@@ -8,7 +8,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
 import { promisify } from 'node:util';
-import { evaluateCondition, interpolateTemplate, log } from '../../utils';
+import { evaluateCondition, interpolateTemplate, log, parseJsonc } from '../../utils';
 import { setNestedProperty } from '../../utils/object';
 
 const readFile = promisify(fs.readFile);
@@ -36,7 +36,7 @@ export async function executeUpdateJson(
   const { updates } = config;
 
   const content = await readFile(filePath, 'utf-8');
-  const json = JSON.parse(content) as Record<string, unknown>;
+  const json = parseJsonc<Record<string, unknown>>(content);
 
   /**
    * Recursively interpolate template strings in objects

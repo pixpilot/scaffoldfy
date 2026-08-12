@@ -26,25 +26,25 @@
           "value": "expo"
         }
       ]
-    },
-    {
-      "id": "nextjsVisualTest",
-      "type": "input",
-      "message": "Next.js visual-test value:",
-      "enabled": {
-        "type": "condition",
-        "value": "workspaceApps.includes('nextjs')"
-      }
-    },
-    {
-      "id": "expoVisualTest",
-      "type": "input",
-      "message": "Expo visual-test value:",
-      "enabled": {
-        "type": "condition",
-        "value": "workspaceApps.includes('expo')"
-      }
     }
+    // {
+    //   "id": "nextjsVisualTest",
+    //   "type": "input",
+    //   "message": "Next.js visual-test value:",
+    //   "enabled": {
+    //     "type": "condition",
+    //     "value": "workspaceApps.includes('nextjs')"
+    //   }
+    // },
+    // {
+    //   "id": "expoVisualTest",
+    //   "type": "input",
+    //   "message": "Expo visual-test value:",
+    //   "enabled": {
+    //     "type": "condition",
+    //     "value": "workspaceApps.includes('expo')"
+    //   }
+    // }
   ],
   "tasks": [
     {
@@ -53,7 +53,7 @@
       "description": "Clone the monorepo template",
       "type": "exec",
       "config": {
-        "command": "git clone https://github.com/pixpilot/pnpm-turbo-monorepo-template.git"
+        "command": "git clone https://github.com/pixpilot/pnpm-turbo-monorepo-template.git ."
       }
     }
   ]
