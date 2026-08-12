@@ -1116,6 +1116,50 @@ In this example:
 }
 ```
 
+#### Conditional Based on Checkbox Selections
+
+Checkbox prompt answers are arrays containing the selected choice values. Use
+JavaScript's `.includes()` method to show a later prompt only when a particular
+choice was selected:
+
+```json
+{
+  "prompts": [
+    {
+      "id": "workspaceApps",
+      "type": "checkbox",
+      "message": "Select the apps to include:",
+      "choices": [
+        { "name": "Next.js", "value": "nextjs" },
+        { "name": "Expo", "value": "expo" }
+      ]
+    },
+    {
+      "id": "nextjsVisualTest",
+      "type": "input",
+      "message": "Next.js visual-test value:",
+      "enabled": {
+        "type": "condition",
+        "value": "workspaceApps.includes('nextjs')"
+      }
+    },
+    {
+      "id": "expoVisualTest",
+      "type": "input",
+      "message": "Expo visual-test value:",
+      "enabled": {
+        "type": "condition",
+        "value": "workspaceApps.includes('expo')"
+      }
+    }
+  ]
+}
+```
+
+The `nextjsVisualTest` prompt appears only when `nextjs` is selected, and the
+`expoVisualTest` prompt appears only when `expo` is selected. As with every
+prompt condition, define the checkbox prompt before the prompts that use it.
+
 #### Complex Conditional Logic
 
 ```json

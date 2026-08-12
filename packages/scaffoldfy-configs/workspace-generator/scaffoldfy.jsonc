@@ -26,6 +26,24 @@
           "value": "expo"
         }
       ]
+    },
+    {
+      "id": "nextjsVisualTest",
+      "type": "input",
+      "message": "Next.js visual-test value:",
+      "enabled": {
+        "type": "condition",
+        "value": "workspaceApps.includes('nextjs')"
+      }
+    },
+    {
+      "id": "expoVisualTest",
+      "type": "input",
+      "message": "Expo visual-test value:",
+      "enabled": {
+        "type": "condition",
+        "value": "workspaceApps.includes('expo')"
+      }
     }
   ],
   "tasks": [
