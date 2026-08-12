@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy-configs
 
+## 0.31.0
+
+### Minor Changes
+
+- add conditional prompts for Next.js and Expo visual-test values
+
 ## 0.30.0
 
 ### Minor Changes
