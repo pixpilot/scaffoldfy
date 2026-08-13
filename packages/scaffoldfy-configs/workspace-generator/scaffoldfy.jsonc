@@ -14,8 +14,8 @@
           "value": "library"
         },
         {
-          "name": "Next.js",
-          "value": "nextjs"
+          "name": "Next.js Cloudflare",
+          "value": "nextjs-cloudflare"
         },
         {
           "name": "Chrome Extension",
@@ -28,6 +28,17 @@
       ]
     }
     // {
+    //   "id": "workspaceTools",
+    //   "type": "checkbox",
+    //   "message": "Select the packages to include:",
+    //   "choices": [
+    //     {
+    //       "name": "storybook",
+    //       "value": "storybook"
+    //     }
+    //   ]
+    // }
+    // {
     //   "id": "nextjsVisualTest",
     //   "type": "input",
     //   "message": "Next.js visual-test value:",
@@ -36,24 +47,19 @@
     //     "value": "workspaceApps.includes('nextjs')"
     //   }
     // },
-    // {
-    //   "id": "expoVisualTest",
-    //   "type": "input",
-    //   "message": "Expo visual-test value:",
-    //   "enabled": {
-    //     "type": "condition",
-    //     "value": "workspaceApps.includes('expo')"
-    //   }
-    // }
   ],
   "tasks": [
     {
-      "id": "clone-monorepo-template",
-      "name": "Clone Monorepo Template",
-      "description": "Clone the monorepo template",
-      "type": "exec",
+      "id": "setup-workspace",
+      "name": "Set up workspace apps",
+      "description": "Clone the monorepo template and add each selected app",
+      "type": "exec-file",
       "config": {
-        "command": "git clone https://github.com/pixpilot/pnpm-turbo-monorepo-template.git ."
+        "file": "./scripts/setup-workspace.cjs",
+        "runtime": "node",
+        "parameters": {
+          "WORKSPACE_APPS": "{{workspaceApps}}"
+        }
       }
     }
   ]
