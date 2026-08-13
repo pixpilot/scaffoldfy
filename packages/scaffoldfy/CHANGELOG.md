@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy
 
+## 0.52.0
+
+### Minor Changes
+
+- support JSONC template files
+
 ## 0.51.0
 
 ### Minor Changes
