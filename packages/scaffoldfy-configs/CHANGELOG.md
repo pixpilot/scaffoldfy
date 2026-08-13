@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy-configs
 
+## 0.33.0
+
+### Minor Changes
+
+- update app templates and enhance setup script
+
 ## 0.32.0
 
 ### Minor Changes
