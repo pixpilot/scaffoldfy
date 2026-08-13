@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy-configs
 
+## 0.34.0
+
+### Minor Changes
+
+- update ESLint configuration for test files
+
 ## 0.33.0
 
 ### Minor Changes
