@@ -95,10 +95,10 @@ function runSetup(workspaceApps: string): string {
     stdio: 'pipe',
     env: {
       ...process.env,
-      PATH: `${gitBinDirectory}${path.delimiter}${process.env.PATH ?? ''}`,
+      PATH: `${gitBinDirectory}${path.delimiter}${process.env['PATH'] ?? ''}`,
       ...(process.platform === 'win32' && {
-        NODE_OPTIONS: `--require=${fakeGitPath} ${process.env.NODE_OPTIONS ?? ''}`,
-        Path: `${gitBinDirectory}${path.delimiter}${process.env.Path ?? ''}`,
+        NODE_OPTIONS: `--require=${fakeGitPath} ${process.env['NODE_OPTIONS'] ?? ''}`,
+        Path: `${gitBinDirectory}${path.delimiter}${process.env['Path'] ?? ''}`,
         SCAFFOLDFY_FAKE_GIT_MODE: 'preload',
       }),
       WORKSPACE_APPS: workspaceApps,

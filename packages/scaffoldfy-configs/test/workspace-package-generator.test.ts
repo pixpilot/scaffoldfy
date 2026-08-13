@@ -124,13 +124,13 @@ describe('workspace-package-generator – add-dependencies script', () => {
     const initial = { name: 'test-pkg', dependencies: {} };
     const result = runAddDeps(initial, 'lodash axios');
 
-    expect(result.dependencies).toMatchObject({ lodash: '*', axios: '*' });
+    expect(result['dependencies']).toMatchObject({ lodash: '*', axios: '*' });
   });
 
   it('should sort dependencies alphabetically', () => {
     const initial = { name: 'test-pkg', dependencies: {} };
     const result = runAddDeps(initial, 'zod axios chalk');
-    const keys = Object.keys(result.dependencies as Record<string, string>);
+    const keys = Object.keys(result['dependencies'] as Record<string, string>);
 
     expect(keys).toEqual([...keys].sort());
   });
@@ -142,7 +142,7 @@ describe('workspace-package-generator – add-dependencies script', () => {
       devDependencies: { zod: '^3.0.0', axios: '^1.0.0', chalk: '^5.0.0' },
     };
     const result = runAddDeps(initial, 'vitest');
-    const keys = Object.keys(result.devDependencies as Record<string, string>);
+    const keys = Object.keys(result['devDependencies'] as Record<string, string>);
 
     expect(keys).toEqual([...keys].sort());
   });
