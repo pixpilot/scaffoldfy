@@ -1,5 +1,20 @@
 # @pixpilot/scaffoldfy-configs
 
+## 0.35.0
+
+### Minor Changes
+
+- add coding-agent-sandbox initial scaffoldfy config
+- improve workspace generator
+- d52ed00: Add the `coding-agent-sandbox` Scaffoldfy config for running Claude Code, OpenAI Codex, or GitHub Copilot CLI in Docker against a dedicated Git worktree.
+
+### Patch Changes
+
+- generate-packages-section.js: fix the issue with package section generation
+- 65b34e8: fix config release
+- 5a5d17b: fixes release
+- 022bded: test ci release
+
 ## 0.34.0
 
 ### Minor Changes
