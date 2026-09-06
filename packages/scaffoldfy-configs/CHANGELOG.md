@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy-configs
 
+## 0.36.0
+
+### Minor Changes
+
+- support interpolated command arguments
+
 ## 0.35.0
 
 ### Minor Changes
