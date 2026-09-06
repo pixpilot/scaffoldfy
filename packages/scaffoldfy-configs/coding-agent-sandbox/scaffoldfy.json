@@ -1,0 +1,159 @@
+{
+  "$schema": "../node_modules/@pixpilot/scaffoldfy/schema/scaffoldfy.schema.json",
+  "name": "coding-agent-sandbox",
+  "description": "Run an AI coding agent (Claude Code, OpenAI Codex, GitHub Copilot CLI) in Docker against a dedicated Git worktree",
+  "prompts": [
+    {
+      "id": "sandboxAction",
+      "type": "select",
+      "message": "What would you like to do?",
+      "choices": [
+        {
+          "name": "Start a session with internet access",
+          "value": "online"
+        },
+        {
+          "name": "Start offline (installed CLI/image required; cloud agents cannot connect)",
+          "value": "offline"
+        },
+        {
+          "name": "Prune unused dependency/cache volumes (asks before deleting)",
+          "value": "prune"
+        }
+      ],
+      "default": "online",
+      "required": true
+    },
+    {
+      "id": "agent",
+      "type": "select",
+      "message": "Which coding agent should run this task?",
+      "choices": [
+        {
+          "name": "Claude Code",
+          "value": "claude"
+        },
+        {
+          "name": "OpenAI Codex",
+          "value": "codex"
+        },
+        {
+          "name": "GitHub Copilot CLI",
+          "value": "copilot"
+        }
+      ],
+      "default": "claude",
+      "required": true,
+      "enabled": {
+        "type": "condition",
+        "value": "sandboxAction !== 'prune'"
+      }
+    },
+    {
+      "id": "repoPath",
+      "type": "input",
+      "message": "Main Git repository path",
+      "default": {
+        "type": "exec",
+        "value": "node -e \"const{execSync}=require('child_process');let p=process.cwd();try{p=execSync('git rev-parse --show-toplevel',{stdio:['ignore','pipe','ignore']}).toString().trim()}catch{}process.stdout.write(p)\""
+      },
+      "required": true,
+      "enabled": {
+        "type": "condition",
+        "value": "sandboxAction !== 'prune'"
+      }
+    },
+    {
+      "id": "taskName",
+      "type": "input",
+      "message": "Task name (used for the ai/<agent>/<task> branch and the worktree)",
+      "required": true,
+      "enabled": {
+        "type": "condition",
+        "value": "sandboxAction !== 'prune'"
+      }
+    },
+    {
+      "id": "skillsDir",
+      "type": "input",
+      "message": "Centralized skills/prompts directory",
+      "default": "Z:\\github\\ccpu\\skills",
+      "required": true,
+      "enabled": {
+        "type": "condition",
+        "value": "sandboxAction === 'online'"
+      }
+    },
+    {
+      "id": "fullAccess",
+      "type": "confirm",
+      "message": "Let the agent act without approval prompts? (mounted data remains writable)",
+      "default": true,
+      "enabled": {
+        "type": "condition",
+        "value": "sandboxAction !== 'prune'"
+      }
+    },
+    {
+      "id": "gitMountFlag",
+      "type": "select",
+      "message": "Allow writes to shared Git metadata (refs, hooks and config)?",
+      "choices": [
+        {
+          "name": "Allow Git commits and history in the container",
+          "value": ""
+        },
+        {
+          "name": "Withhold Git metadata (Git will not work in the container)",
+          "value": "--no-git-mount"
+        }
+      ],
+      "default": "",
+      "enabled": {
+        "type": "condition",
+        "value": "sandboxAction !== 'prune'"
+      }
+    }
+  ],
+  "tasks": [
+    {
+      "id": "start-sandbox",
+      "name": "Start the coding agent sandbox",
+      "description": "Creates the agent worktree, starts Docker and hands the terminal to the agent",
+      "type": "exec",
+      "config": {
+        "command": "npx -y @pixpilot/coding-agent-sandbox@latest --agent {{agent}} --repo \"{{repoPath}}\" --task \"{{taskName}}\" --skills-dir \"{{skillsDir}}\" --full-access {{fullAccess}} {{gitMountFlag}}"
+      },
+      "enabled": {
+        "type": "condition",
+        "value": "sandboxAction === 'online'"
+      }
+    },
+    {
+      "id": "start-offline-sandbox",
+      "name": "Start the offline coding agent sandbox",
+      "description": "Uses the installed CLI and cached image without package downloads or provisioning",
+      "type": "exec",
+      "enabled": {
+        "type": "condition",
+        "value": "sandboxAction === 'offline'"
+      },
+      "config": {
+        "command": "coding-agent-sandbox --offline --agent {{agent}} --repo \"{{repoPath}}\" --task \"{{taskName}}\" --full-access {{fullAccess}} {{gitMountFlag}}"
+      }
+    },
+    {
+      "id": "prune-sandbox-volumes",
+      "name": "Prune unused sandbox caches",
+      "description": "Lists unused labeled dependency/cache volumes and asks before permanent deletion; preserves auth",
+      "type": "exec",
+      "enabled": {
+        "type": "condition",
+        "value": "sandboxAction === 'prune'"
+      },
+      "config": {
+        "command": "npx -y @pixpilot/coding-agent-sandbox@latest prune"
+      }
+    }
+  ]
+}

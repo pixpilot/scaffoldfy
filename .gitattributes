@@ -2,3 +2,6 @@
 *.ts linguist-language=TypeScript
 *.js linguist-language=TypeScript
 *.mjs linguist-language=TypeScript
+
+# Shell scripts are copied into Linux images; CRLF would break the shebang.
+*.sh text eol=lf
