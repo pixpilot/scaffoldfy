@@ -870,11 +870,16 @@
       "properties": {
         "command": {
           "type": "string",
-          "description": "Shell command to execute"
+          "description": "Shell command to execute. Supports {{variable}} interpolation."
+        },
+        "args": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Arguments appended to the command. Each argument supports {{variable}} interpolation and is quoted automatically; arguments that interpolate to an empty string are dropped."
         },
         "cwd": {
           "type": "string",
-          "description": "Working directory for the command"
+          "description": "Working directory for the command. Supports {{variable}} interpolation."
         },
         "condition": { "$ref": "#/$defs/condition" }
       },

@@ -122,7 +122,22 @@
       "description": "Creates the agent worktree, starts Docker and hands the terminal to the agent",
       "type": "exec",
       "config": {
-        "command": "npx -y @pixpilot/coding-agent-sandbox@latest --agent {{agent}} --repo \"{{repoPath}}\" --task \"{{taskName}}\" --skills-dir \"{{skillsDir}}\" --full-access {{fullAccess}} {{gitMountFlag}}"
+        "command": "npx",
+        "args": [
+          "-y",
+          "@pixpilot/coding-agent-sandbox@latest",
+          "--agent",
+          "{{agent}}",
+          "--repo",
+          "{{repoPath}}",
+          "--task",
+          "{{taskName}}",
+          "--skills-dir",
+          "{{skillsDir}}",
+          "--full-access",
+          "{{fullAccess}}",
+          "{{gitMountFlag}}"
+        ]
       },
       "enabled": {
         "type": "condition",
@@ -139,7 +154,19 @@
         "value": "sandboxAction === 'offline'"
       },
       "config": {
-        "command": "coding-agent-sandbox --offline --agent {{agent}} --repo \"{{repoPath}}\" --task \"{{taskName}}\" --full-access {{fullAccess}} {{gitMountFlag}}"
+        "command": "coding-agent-sandbox",
+        "args": [
+          "--offline",
+          "--agent",
+          "{{agent}}",
+          "--repo",
+          "{{repoPath}}",
+          "--task",
+          "{{taskName}}",
+          "--full-access",
+          "{{fullAccess}}",
+          "{{gitMountFlag}}"
+        ]
       }
     },
     {
@@ -152,7 +179,8 @@
         "value": "sandboxAction === 'prune'"
       },
       "config": {
-        "command": "npx -y @pixpilot/coding-agent-sandbox@latest prune"
+        "command": "npx",
+        "args": ["-y", "@pixpilot/coding-agent-sandbox@latest", "prune"]
       }
     }
   ]

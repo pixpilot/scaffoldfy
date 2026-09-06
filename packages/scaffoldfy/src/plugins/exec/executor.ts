@@ -7,7 +7,8 @@ import type { ExecConfig } from './types';
 import { execSync } from 'node:child_process';
 import path from 'node:path';
 import process from 'node:process';
-import { evaluateCondition, log } from '../../utils';
+import { debug, evaluateCondition, interpolateTemplate, log } from '../../utils';
+import { buildCommand } from './build-command';
 
 /**
  * Execute exec task
@@ -29,9 +30,22 @@ export async function executeExec(
     }
   }
 
-  const cwd = config.cwd != null ? path.join(process.cwd(), config.cwd) : process.cwd();
+  const interpolate = (value: string): string =>
+    initConfig != null ? interpolateTemplate(value, initConfig) : value;
 
-  execSync(config.command, {
+  const command = buildCommand(
+    interpolate(config.command),
+    config.args?.map(interpolate),
+  );
+
+  const cwd =
+    config.cwd != null
+      ? path.join(process.cwd(), interpolate(config.cwd))
+      : process.cwd();
+
+  debug(`Executing: ${command}`);
+
+  execSync(command, {
     cwd,
     stdio: 'inherit',
   });

@@ -107,4 +107,46 @@ describe('executeExec', () => {
 
     expect(fs.existsSync(testFile)).toBe(true);
   });
+
+  it('should interpolate variables in the command', async () => {
+    const config: ExecConfig = {
+      command: `node -e "require('fs').writeFileSync('{{projectName}}.txt', '')"`,
+    };
+
+    await executeExec(config, mockConfig);
+
+    expect(fs.existsSync('test-repo.txt')).toBe(true);
+  });
+
+  it('should interpolate and quote args', async () => {
+    const config: ExecConfig = {
+      command: 'node',
+      args: [
+        '-e',
+        `require('fs').writeFileSync(process.argv[1], process.argv[2])`,
+        'exec-args.txt',
+        '{{author}}',
+      ],
+    };
+
+    await executeExec(config, mockConfig);
+
+    expect(fs.readFileSync('exec-args.txt', 'utf-8')).toBe('Test Author');
+  });
+
+  it('should drop args that interpolate to an empty string', async () => {
+    const config: ExecConfig = {
+      command: 'node',
+      args: [
+        '-e',
+        `require('fs').writeFileSync('exec-empty.txt', String(process.argv.length - 1))`,
+        '{{missingValue}}',
+        'kept',
+      ],
+    };
+
+    await executeExec(config, mockConfig);
+
+    expect(fs.readFileSync('exec-empty.txt', 'utf-8')).toBe('1');
+  });
 });

@@ -8,6 +8,7 @@ import type { CurrentConfigurationContext, ExecConfig, GitInitConfig } from '../
 
 import process from 'node:process';
 
+import { buildCommand } from '../plugins/exec/build-command';
 import { evaluateCondition, interpolateTemplate } from '../utils';
 import { colors, fileExists } from './utils';
 
@@ -54,7 +55,10 @@ export function getExecDiff(
     }
   }
 
-  const command = interpolateTemplate(config.command, initConfig);
+  const command = buildCommand(
+    interpolateTemplate(config.command, initConfig),
+    config.args?.map((arg) => interpolateTemplate(arg, initConfig)),
+  );
   const cwd =
     config.cwd != null ? interpolateTemplate(config.cwd, initConfig) : process.cwd();
 

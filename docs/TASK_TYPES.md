@@ -994,10 +994,13 @@ Execute shell commands.
 ```typescript
 interface Config {
   command: string;
+  args?: string[]; // Optional: arguments appended to the command
   cwd?: string;
   condition?: string; // Optional: only execute if condition evaluates to true
 }
 ```
+
+`command`, `args` and `cwd` all support `{{variable}}` interpolation.
 
 ### Example
 
@@ -1007,6 +1010,32 @@ interface Config {
   "config": {
     "command": "npm install && npm build",
     "cwd": "./"
+  }
+}
+```
+
+### Example: Arguments
+
+Use `args` when values come from prompts. Each argument is quoted for the shell, so
+values containing spaces or backslashes need no manual quoting, and arguments that
+interpolate to an empty string are dropped — which makes optional flags easy to express.
+
+```json
+{
+  "type": "exec",
+  "config": {
+    "command": "npx",
+    "args": [
+      "-y",
+      "@pixpilot/coding-agent-sandbox@latest",
+      "--repo",
+      "{{repoPath}}",
+      "--task",
+      "{{taskName}}",
+      "--full-access",
+      "{{fullAccess}}",
+      "{{gitMountFlag}}"
+    ]
   }
 }
 ```
@@ -1026,7 +1055,8 @@ interface Config {
 ### Features
 
 - Full shell command support
-- Template variable interpolation
+- Template variable interpolation in `command`, `args` and `cwd`
+- Automatic shell quoting for `args`, with empty arguments dropped
 - Custom working directory
 - Captures stdout/stderr
 - Returns exit code
