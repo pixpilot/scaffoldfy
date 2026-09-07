@@ -14,16 +14,6 @@ This package provides the following scaffoldfy templates:
 
 <!-- scaffoldfy-templates:start -->
 
-### coding-agent-sandbox
-
-Run an AI coding agent (Claude Code, OpenAI Codex, GitHub Copilot CLI) in Docker against a dedicated Git worktree
-
-Usage:
-
-```sh
-npx @pixpilot/scaffoldfy@latest --config https://unpkg.com/@pixpilot/scaffoldfy-configs@latest/coding-agent-sandbox/scaffoldfy.json
-```
-
 ### license-file
 
 Generate a LICENSE file with common open-source licenses
