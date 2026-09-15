@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy-configs
 
+## 0.36.2
+
+### Patch Changes
+
+- 983bd3a: update initializer
+
 ## 0.36.1
 
 ### Patch Changes
