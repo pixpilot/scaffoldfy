@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy-configs
 
+## 0.36.3
+
+### Patch Changes
+
+- 634b863: fix release
+
 ## 0.36.2
 
 ### Patch Changes
