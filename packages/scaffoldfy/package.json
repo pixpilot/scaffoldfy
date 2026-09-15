@@ -10,6 +10,9 @@
     "url": "https://github.com/pixpilot/scaffoldfy.git",
     "directory": "packages/scaffoldfy"
   },
+  "bugs": {
+    "url": "https://github.com/pixpilot/scaffoldfy/issues"
+  },
   "keywords": [
     "template",
     "initialization",

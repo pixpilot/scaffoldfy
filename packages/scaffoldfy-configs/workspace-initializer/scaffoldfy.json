@@ -3,7 +3,6 @@
   "extends": [
     "../project-info/scaffoldfy.json",
     "../pixpilot-info/scaffoldfy.json",
-    "../turbo-workspace-package-generator/scaffoldfy.json",
     "../pixpilot-changesets-release/scaffoldfy.json",
     "../license-file/scaffoldfy.json",
     "../update-root-package-json/scaffoldfy.json",
