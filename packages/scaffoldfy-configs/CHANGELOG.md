@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy-configs
 
+## 0.36.4
+
+### Patch Changes
+
+- remove Copilot instructions file
+
 ## 0.36.3
 
 ### Patch Changes
