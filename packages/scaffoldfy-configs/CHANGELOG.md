@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy-configs
 
+## 0.36.5
+
+### Patch Changes
+
+- update NPM_TOKEN to provenance
+
 ## 0.36.4
 
 ### Patch Changes
