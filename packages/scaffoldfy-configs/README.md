@@ -84,6 +84,16 @@ Usage:
 npx @pixpilot/scaffoldfy@latest --config https://unpkg.com/@pixpilot/scaffoldfy-configs@latest/security-policy/scaffoldfy.json
 ```
 
+### setup-guard
+
+Removes a template's one-time setup gate: strips the guard script from package.json and the git hooks so a generated project stops nagging about an initializer it has already run. Extend this first, and add a `delete` task in your own config to remove the guard's folder once nothing else needs it.
+
+Usage:
+
+```sh
+npx @pixpilot/scaffoldfy@latest --config https://unpkg.com/@pixpilot/scaffoldfy-configs@latest/setup-guard/scaffoldfy.json
+```
+
 ### turbo-workspace-package-generator
 
 Pixpilot workspace package generator template for pnpm + Turbo monorepo. Provides project info prompts and config tasks.
