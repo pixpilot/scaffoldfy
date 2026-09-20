@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy-configs
 
+## 0.39.0
+
+### Minor Changes
+
+- enhance package publishing options
+
 ## 0.38.1
 
 ### Patch Changes
