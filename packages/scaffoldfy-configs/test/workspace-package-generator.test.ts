@@ -88,6 +88,41 @@ describe('workspace-package-generator – schema', () => {
     }
     expect(result.valid).toBe(true);
   });
+
+  it('should collect a registry choice for public packages', () => {
+    const configPath = path.join(CONFIG_DIR, 'scaffoldfy-base.json');
+    const config = JSON.parse(fs.readFileSync(configPath, 'utf8')) as {
+      prompts: Array<{
+        id: string;
+        choices?: Array<{ name: string; value: string }>;
+        enabled?: { type: string; value: string };
+      }>;
+    };
+    const registryPrompt = config.prompts.find(
+      (prompt) => prompt.id === 'publishRegistry',
+    );
+    const customRegistryPrompt = config.prompts.find(
+      (prompt) => prompt.id === 'customRegistryUrl',
+    );
+
+    expect(registryPrompt).toMatchObject({
+      enabled: {
+        type: 'condition',
+        value: 'isPublishablePackage === true && isPublicPackage === true',
+      },
+    });
+    expect(registryPrompt?.choices).toEqual([
+      { name: 'GitHub Packages', value: 'github' },
+      { name: 'npm', value: 'npm' },
+      { name: 'Custom registry URL', value: 'custom' },
+    ]);
+    expect(customRegistryPrompt).toMatchObject({
+      enabled: {
+        type: 'condition',
+        value: "publishRegistry === 'custom'",
+      },
+    });
+  });
 });
 
 /* -------------------------------------------------------------------------- */
@@ -180,7 +215,7 @@ describe('workspace-package-generator – package.json.hbs rendering', () => {
   it('should render a valid JSON for an internal package', () => {
     const ctx = {
       packageBaseName: 'my-package',
-      isNpmPackage: false,
+      isPublishablePackage: false,
       workspace: 'packages',
       repoDirectory: 'packages/my-package',
       relativeRootPath: '../../',
@@ -191,6 +226,7 @@ describe('workspace-package-generator – package.json.hbs rendering', () => {
       isBundlerTsdown: false,
       hasTsdownConfig: false,
       tsdownConfigPackage: '@pixpilot/tsdown-config',
+      publishRegistryUrl: 'https://registry.npmjs.org',
     };
 
     const rendered = renderHbs(tplPath, ctx);
@@ -214,7 +250,7 @@ describe('workspace-package-generator – package.json.hbs rendering', () => {
   it('should render valid JSON for a public npm package (tsdown)', () => {
     const ctx = {
       packageBaseName: 'my-package',
-      isNpmPackage: true,
+      isPublishablePackage: true,
       isPublicPackage: true,
       bundler: 'tsdown',
       isBundlerTsc: false,
@@ -227,6 +263,7 @@ describe('workspace-package-generator – package.json.hbs rendering', () => {
       author: 'Test Author',
       repoUrl: 'https://github.com/test/monorepo.git',
       packageOrgName: 'myorg',
+      publishRegistryUrl: 'https://registry.npmjs.org',
     };
 
     const rendered = renderHbs(tplPath, ctx);
@@ -236,6 +273,7 @@ describe('workspace-package-generator – package.json.hbs rendering', () => {
     expect(pkg.private).toBeUndefined();
     expect(pkg.sideEffects).toBe(false);
     expect(pkg.publishConfig?.access).toBe('public');
+    expect(pkg.publishConfig?.registry).toBe('https://registry.npmjs.org');
     expect(pkg.files).toContain('dist');
     expect(pkg.scripts?.build).toBe('tsdown');
     expect(pkg.devDependencies?.['@pixpilot/tsdown-config']).toBeDefined();
@@ -246,7 +284,7 @@ describe('workspace-package-generator – package.json.hbs rendering', () => {
   it('should render valid JSON for a private npm package (tsc)', () => {
     const ctx = {
       packageBaseName: 'my-package',
-      isNpmPackage: true,
+      isPublishablePackage: true,
       isPublicPackage: false,
       bundler: 'tsc',
       isBundlerTsc: true,
@@ -259,6 +297,7 @@ describe('workspace-package-generator – package.json.hbs rendering', () => {
       author: 'Test Author',
       repoUrl: 'https://github.com/test/monorepo.git',
       orgName: '',
+      publishRegistryUrl: 'https://registry.npmjs.org',
     };
 
     const rendered = renderHbs(tplPath, ctx);
@@ -266,16 +305,52 @@ describe('workspace-package-generator – package.json.hbs rendering', () => {
 
     expect(pkg.name).toBe('my-package');
     expect(pkg.publishConfig?.access).toBe('restricted');
+    expect(pkg.publishConfig?.registry).toBe('https://registry.npmjs.org');
     expect(pkg.scripts?.build).toContain('tsc');
     expect(pkg.scripts?.['build:watch']).toContain('tsc');
     expect(pkg.devDependencies?.tsdown).toBeUndefined();
+  });
+
+  /** Private package for the Pixpilot organization */
+  it('should publish a Pixpilot private package through GitHub Packages', () => {
+    const ctx = {
+      packageBaseName: 'foo',
+      isPublishablePackage: true,
+      isPublicPackage: false,
+      isPixpilotPrivatePackage: true,
+      publishRegistryUrl: 'https://npm.pkg.github.com',
+      bundler: 'tsc',
+      isBundlerTsc: true,
+      isBundlerTsdown: false,
+      hasTsdownConfig: false,
+      tsdownConfigPackage: '@pixpilot/tsdown-config',
+      workspace: 'packages',
+      repoDirectory: 'packages/foo',
+      relativeRootPath: '../../',
+      author: 'Test Author',
+      repoUrl: 'https://github.com/pixpilot-private/your-repo.git',
+    };
+
+    const rendered = renderHbs(tplPath, ctx);
+    const pkg = JSON.parse(rendered);
+
+    expect(pkg.name).toBe('@pixpilot-private/foo');
+    expect(pkg.publishConfig).toMatchObject({
+      access: 'restricted',
+      registry: 'https://npm.pkg.github.com',
+    });
+    expect(pkg.repository).toEqual({
+      type: 'git',
+      url: 'https://github.com/pixpilot-private/your-repo.git',
+      directory: 'packages/foo',
+    });
   });
 
   /** npm package with internal tsdown config */
   it('should use @internal/tsdown-config when hasTsdownConfig is true', () => {
     const ctx = {
       packageBaseName: 'my-package',
-      isNpmPackage: true,
+      isPublishablePackage: true,
       isPublicPackage: true,
       bundler: 'tsdown',
       isBundlerTsc: false,
@@ -327,7 +402,7 @@ describe('workspace-package-generator – tsdown.config.ts.hbs rendering', () =>
   it("should add platform: 'neutral' for an npm package", () => {
     const ctx = {
       tsdownConfigPackage: '@pixpilot/tsdown-config',
-      isNpmPackage: true,
+      isPublishablePackage: true,
     };
     const rendered = renderHbs(tplPath, ctx);
 
@@ -337,7 +412,7 @@ describe('workspace-package-generator – tsdown.config.ts.hbs rendering', () =>
   it("should not add platform: 'neutral' when not an npm package", () => {
     const ctx = {
       tsdownConfigPackage: '@pixpilot/tsdown-config',
-      isNpmPackage: false,
+      isPublishablePackage: false,
     };
     const rendered = renderHbs(tplPath, ctx);
 

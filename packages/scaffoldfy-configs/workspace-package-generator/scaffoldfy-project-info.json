@@ -7,5 +7,5 @@
     "../project-info/repo-info.json",
     "../project-info/org-name-info.json"
   ],
-  "enabled": { "type": "condition", "value": "isNpmPackage == true" }
+  "enabled": { "type": "condition", "value": "isPublishablePackage == true" }
 }

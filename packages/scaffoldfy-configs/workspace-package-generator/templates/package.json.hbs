@@ -1,8 +1,8 @@
 {
-  "name": "{{#if isNpmPackage}}{{#if packageOrgName}}@{{packageOrgName}}/{{packageBaseName}}{{else}}{{packageBaseName}}{{/if}}{{else}}@internal/{{packageBaseName}}{{/if}}",
+  "name": "{{#if isPublishablePackage}}{{#if isPublicPackage}}{{#if packageOrgName}}@{{packageOrgName}}/{{packageBaseName}}{{else}}{{packageBaseName}}{{/if}}{{else}}{{#if isPixpilotPrivatePackage}}@pixpilot-private/{{packageBaseName}}{{else}}{{#if packageOrgName}}@{{packageOrgName}}/{{packageBaseName}}{{else}}{{packageBaseName}}{{/if}}{{/if}}{{/if}}{{else}}@internal/{{packageBaseName}}{{/if}}",
   "type": "module",
   "version": "0.0.0",
-  {{#unless isNpmPackage}}
+  {{#unless isPublishablePackage}}
   "private": true,
   {{/unless}}
   "packageManager": "pnpm@10.17.0",
@@ -19,7 +19,7 @@
     "url": "{{repoUrl}}",
     "directory": "{{repoDirectory}}"
   },
-  {{#if isNpmPackage}}
+  {{#if isPublishablePackage}}
   "sideEffects": false,
   {{/if}}
   "bugs": {
@@ -34,12 +34,13 @@
     "react-dom": "^18 || ^19"
   },
   {{/if}}
-  {{#if isNpmPackage}}
+  {{#if isPublishablePackage}}
   "files": [
     "dist"
   ],
   "publishConfig": {
     "access": "{{#if isPublicPackage}}public{{else}}restricted{{/if}}",
+    "registry": "{{publishRegistryUrl}}",
     "exports": {
       ".": {
         "types": "./dist/index.d.ts",
@@ -53,12 +54,12 @@
   },
   {{/if}}
   "scripts": {
-    {{#if isNpmPackage}}
+    {{#if isPublishablePackage}}
     "prepublishOnly": "pnpm run clean && pnpm run build",
     {{/if}}
     "clean": "git clean -xdf .cache .turbo dist",
     "clean:all": "pnpm clean && git clean -xdf node_modules",
-    {{#if isNpmPackage}}
+    {{#if isPublishablePackage}}
     {{#if isBundlerTsc}}
     "build": "pnpm run clean && tsc -p tsconfig.build.json",
     "build:watch": "pnpm run clean && tsc -p tsconfig.build.json --watch",
@@ -81,7 +82,7 @@
     "@internal/eslint-config": "workspace:*",
     "@internal/prettier-config": "workspace:*",
     "@internal/tsconfig": "workspace:*",
-    {{#if isNpmPackage}}
+    {{#if isPublishablePackage}}
     {{#if isBundlerTsdown}}
     {{#if hasTsdownConfig}}
     "{{tsdownConfigPackage}}": "workspace:*",
@@ -89,7 +90,7 @@
     {{/if}}
     {{/if}}
     "@internal/vitest-config": "workspace:*",
-    {{#if isNpmPackage}}
+    {{#if isPublishablePackage}}
     {{#if isBundlerTsdown}}
     {{#unless hasTsdownConfig}}
     "{{tsdownConfigPackage}}": "^1.0.0",
@@ -98,7 +99,7 @@
     {{/if}}
     "@types/node": "catalog:dev",
     {{#if isReactPackage}}
-    {{#if isNpmPackage}}
+    {{#if isPublishablePackage}}
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     {{else}}
@@ -110,7 +111,7 @@
     "@vitest/ui": "catalog:dev",
     "eslint": "catalog:dev",
     {{#if isReactPackage}}
-    {{#if isNpmPackage}}
+    {{#if isPublishablePackage}}
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     {{else}}
@@ -118,7 +119,7 @@
     "react-dom": "catalog:",
     {{/if}}
     {{/if}}
-    {{#if isNpmPackage}}
+    {{#if isPublishablePackage}}
     {{#if isBundlerTsdown}}
     "tsdown": "catalog:dev",
     {{/if}}

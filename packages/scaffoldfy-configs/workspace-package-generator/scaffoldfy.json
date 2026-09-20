@@ -30,6 +30,32 @@
         "value": "{{orgName}}"
       },
       "transformers": ["kebabcase"]
+    },
+    {
+      "id": "isPixpilotPrivatePackage",
+      "value": {
+        "type": "conditional",
+        "condition": "isPublishablePackage === true && isPublicPackage === false && (repoOwner === 'pixpilot' || orgName === 'PixPilot' || orgName === 'pixpilot')",
+        "ifTrue": true,
+        "ifFalse": false
+      }
+    },
+    {
+      "id": "publishRegistryUrl",
+      "value": {
+        "type": "conditional",
+        "condition": "publishRegistry === 'github' || isPixpilotPrivatePackage === true",
+        "ifTrue": "https://npm.pkg.github.com",
+        "ifFalse": {
+          "type": "conditional",
+          "condition": "publishRegistry === 'custom'",
+          "ifTrue": {
+            "type": "interpolate",
+            "value": "{{customRegistryUrl}}"
+          },
+          "ifFalse": "https://registry.npmjs.org"
+        }
+      }
     }
   ],
 
@@ -89,7 +115,7 @@
       "type": "create",
       "enabled": {
         "type": "condition",
-        "value": "bundler === 'tsc' && isNpmPackage === true"
+        "value": "bundler === 'tsc' && isPublishablePackage === true"
       },
       "config": {
         "file": "{{workspace}}/{{packageBaseName}}/tsconfig.build.json",
@@ -103,7 +129,7 @@
       "type": "create",
       "enabled": {
         "type": "condition",
-        "value": "bundler === 'tsdown' && isNpmPackage === true"
+        "value": "bundler === 'tsdown' && isPublishablePackage === true"
       },
       "config": {
         "file": "{{workspace}}/{{packageBaseName}}/tsdown.config.ts",

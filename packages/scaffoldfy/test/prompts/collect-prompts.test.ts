@@ -435,7 +435,7 @@ describe('collectPrompts', () => {
        */
       const prompts: PromptDefinition[] = [
         {
-          id: 'isNpmPackage',
+          id: 'isPublishablePackage',
           type: 'confirm',
           message: 'Is this an npm package?',
           default: false,
@@ -447,17 +447,17 @@ describe('collectPrompts', () => {
           default: false,
           enabled: {
             type: 'condition',
-            value: 'isNpmPackage === true',
+            value: 'isPublishablePackage === true',
           },
         },
       ];
 
-      // User answers false for isNpmPackage, so isPublicPackage should be skipped
+      // User answers false for isPublishablePackage, so isPublicPackage should be skipped
       vi.mocked(confirm).mockResolvedValue(false);
 
       const result = await collectPrompts(prompts);
 
-      expect(result).toHaveProperty('isNpmPackage', false);
+      expect(result).toHaveProperty('isPublishablePackage', false);
       // Key must exist with value undefined (not simply absent)
       expect(result).toHaveProperty('isPublicPackage');
       expect(result['isPublicPackage']).toBeUndefined();
@@ -468,9 +468,9 @@ describe('collectPrompts', () => {
     it('should not throw ReferenceError when a later condition references a skipped prompt', async () => {
       /*
        * This is the core regression test for the bug:
-       *   isNpmPackage = false
-       *   → isPublicPackage is skipped (enabled only when isNpmPackage is true)
-       *   → bundler is skipped (enabled only when isNpmPackage is true)
+       *   isPublishablePackage = false
+       *   → isPublicPackage is skipped (enabled only when isPublishablePackage is true)
+       *   → bundler is skipped (enabled only when isPublishablePackage is true)
        *   → bundleSizeLimit condition references both bundler and isPublicPackage
        *
        * Without the fix, evaluating bundleSizeLimit's `enabled` would throw a
@@ -480,7 +480,7 @@ describe('collectPrompts', () => {
        */
       const prompts: PromptDefinition[] = [
         {
-          id: 'isNpmPackage',
+          id: 'isPublishablePackage',
           type: 'confirm',
           message: 'Is this an npm package?',
           default: false,
@@ -492,7 +492,7 @@ describe('collectPrompts', () => {
           default: false,
           enabled: {
             type: 'condition',
-            value: 'isNpmPackage === true',
+            value: 'isPublishablePackage === true',
           },
         },
         {
@@ -505,7 +505,7 @@ describe('collectPrompts', () => {
           ],
           enabled: {
             type: 'condition',
-            value: 'isNpmPackage === true',
+            value: 'isPublishablePackage === true',
           },
         },
         {
@@ -525,7 +525,7 @@ describe('collectPrompts', () => {
       // Must not throw
       const result = await collectPrompts(prompts);
 
-      expect(result['isNpmPackage']).toBe(false);
+      expect(result['isPublishablePackage']).toBe(false);
       expect(result).toHaveProperty('isPublicPackage');
       expect(result['isPublicPackage']).toBeUndefined();
       expect(result).toHaveProperty('bundler');
@@ -542,7 +542,7 @@ describe('collectPrompts', () => {
        */
       const prompts: PromptDefinition[] = [
         {
-          id: 'isNpmPackage',
+          id: 'isPublishablePackage',
           type: 'confirm',
           message: 'Is this an npm package?',
           default: false,
@@ -552,18 +552,18 @@ describe('collectPrompts', () => {
 
       const result = await collectPrompts(prompts);
 
-      expect(result).not.toHaveProperty('isNpmPackage');
+      expect(result).not.toHaveProperty('isPublishablePackage');
       expect(confirm).not.toHaveBeenCalled();
     });
 
     it('should still prompt and return user answer when enabled condition is true', async () => {
       /*
-       * Sanity check: when isNpmPackage is true, isPublicPackage should be asked
+       * Sanity check: when isPublishablePackage is true, isPublicPackage should be asked
        * and its answer (not undefined) should be in the results.
        */
       const prompts: PromptDefinition[] = [
         {
-          id: 'isNpmPackage',
+          id: 'isPublishablePackage',
           type: 'confirm',
           message: 'Is this an npm package?',
           default: false,
@@ -575,17 +575,17 @@ describe('collectPrompts', () => {
           default: false,
           enabled: {
             type: 'condition',
-            value: 'isNpmPackage === true',
+            value: 'isPublishablePackage === true',
           },
         },
       ];
 
-      // First call: isNpmPackage = true, second call: isPublicPackage = true
+      // First call: isPublishablePackage = true, second call: isPublicPackage = true
       vi.mocked(confirm).mockResolvedValueOnce(true).mockResolvedValueOnce(true);
 
       const result = await collectPrompts(prompts);
 
-      expect(result['isNpmPackage']).toBe(true);
+      expect(result['isPublishablePackage']).toBe(true);
       expect(result['isPublicPackage']).toBe(true);
       expect(confirm).toHaveBeenCalledTimes(2);
     });

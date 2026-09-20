@@ -169,7 +169,7 @@ describe('loadConfigurationsInOrder', () => {
 
       const enabledCondition = {
         type: 'condition' as const,
-        value: 'isNpmPackage == true',
+        value: 'isPublishablePackage == true',
       };
 
       const childConfig: ScaffoldfyConfiguration = {
@@ -225,7 +225,7 @@ describe('loadConfigurationsInOrder', () => {
       const childConfig: ScaffoldfyConfiguration = {
         name: 'child-config',
         extends: 'base.json',
-        enabled: { type: 'condition' as const, value: 'isNpmPackage == true' },
+        enabled: { type: 'condition' as const, value: 'isPublishablePackage == true' },
         tasks: [
           {
             id: 'child-task',
@@ -278,7 +278,7 @@ describe('loadConfigurationsInOrder', () => {
 
       const enabledCondition = {
         type: 'condition' as const,
-        value: 'isNpmPackage == true',
+        value: 'isPublishablePackage == true',
       };
 
       const childConfig: ScaffoldfyConfiguration = {
@@ -370,7 +370,9 @@ describe('loadConfigurationsInOrder', () => {
        */
       const baseConfig: ScaffoldfyConfiguration = {
         name: 'base-config',
-        prompts: [{ id: 'isNpmPackage', type: 'confirm', message: 'Is npm package?' }],
+        prompts: [
+          { id: 'isPublishablePackage', type: 'confirm', message: 'Is npm package?' },
+        ],
       };
 
       const remoteConfig: ScaffoldfyConfiguration = {
@@ -387,7 +389,7 @@ describe('loadConfigurationsInOrder', () => {
 
       const enabledCondition = {
         type: 'condition' as const,
-        value: 'isNpmPackage == true',
+        value: 'isPublishablePackage == true',
       };
 
       const projectInfoConfig: ScaffoldfyConfiguration = {
@@ -453,7 +455,7 @@ describe('loadConfigurationsInOrder', () => {
 
       /*
        * KEY assertion: remote-config must inherit the condition from
-       * project-info so it is skipped whenever isNpmPackage != true.
+       * project-info so it is skipped whenever isPublishablePackage != true.
        */
       expect(remote!.enabled).toEqual(enabledCondition);
     });

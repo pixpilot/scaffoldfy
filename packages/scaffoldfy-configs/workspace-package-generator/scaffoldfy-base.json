@@ -107,9 +107,9 @@
       "required": false
     },
     {
-      "id": "isNpmPackage",
+      "id": "isPublishablePackage",
       "type": "confirm",
-      "message": "Is this an npm package?",
+      "message": "Should this package be published?",
       "default": false
     },
     {
@@ -119,7 +119,32 @@
       "default": false,
       "enabled": {
         "type": "condition",
-        "value": "isNpmPackage === true"
+        "value": "isPublishablePackage === true"
+      }
+    },
+    {
+      "id": "publishRegistry",
+      "type": "select",
+      "message": "Select a registry for this public package",
+      "choices": [
+        { "name": "GitHub Packages", "value": "github" },
+        { "name": "npm", "value": "npm" },
+        { "name": "Custom registry URL", "value": "custom" }
+      ],
+      "default": "npm",
+      "enabled": {
+        "type": "condition",
+        "value": "isPublishablePackage === true && isPublicPackage === true"
+      }
+    },
+    {
+      "id": "customRegistryUrl",
+      "type": "input",
+      "message": "Enter the custom registry URL",
+      "required": true,
+      "enabled": {
+        "type": "condition",
+        "value": "publishRegistry === 'custom'"
       }
     },
     {
@@ -133,7 +158,7 @@
       "default": "tsc",
       "enabled": {
         "type": "condition",
-        "value": "isNpmPackage === true"
+        "value": "isPublishablePackage === true"
       }
     },
     {
