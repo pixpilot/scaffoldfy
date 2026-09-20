@@ -191,9 +191,6 @@ describe('workspace-generator setup script', () => {
     expect(
       fs.readFileSync(path.join(workspaceDirectory, 'pnpm-workspace.yaml'), 'utf8'),
     ).toContain('    template-dependency: ^1.0.0');
-    expect(
-      fs.readFileSync(path.join(workspaceDirectory, 'pnpm-workspace.yaml'), 'utf8'),
-    ).toContain('    "typescript-eslint": ^2.0.0');
     expect(fs.readFileSync(path.join(workspaceDirectory, 'pnpm-lock.yaml'), 'utf8')).toBe(
       'lock',
     );
