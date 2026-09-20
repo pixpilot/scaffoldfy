@@ -6,6 +6,11 @@ const process = require('node:process');
 const packagesDir = path.join(__dirname, '..', 'packages');
 const readmePath = path.join(__dirname, '..', 'README.md');
 
+if (!fs.existsSync(packagesDir)) {
+  console.log('No packages directory found; skipping package section generation.');
+  process.exit(0);
+}
+
 const packages = [];
 const errors = [];
 
