@@ -108,7 +108,7 @@ describe('workspace-package-generator – schema', () => {
     expect(registryPrompt).toMatchObject({
       enabled: {
         type: 'condition',
-        value: 'isPublishablePackage === true && isPublicPackage === true',
+        value: 'isPublishablePackage === true && isPublicPackage === false',
       },
     });
     expect(registryPrompt?.choices).toEqual([
