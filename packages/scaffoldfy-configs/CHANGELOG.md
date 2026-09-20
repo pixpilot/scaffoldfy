@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy-configs
 
+## 0.37.1
+
+### Patch Changes
+
+- change default value for createFirstPackagePrompt to false
+
 ## 0.37.0
 
 ### Minor Changes
