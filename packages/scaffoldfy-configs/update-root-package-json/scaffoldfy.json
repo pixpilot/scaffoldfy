@@ -26,18 +26,7 @@
         }
       }
     },
-    {
-      "id": "reset-package-version",
-      "name": "Reset package version",
-      "description": "Reset the root package version for the newly scaffolded project",
-      "type": "update-json",
-      "config": {
-        "file": "package.json",
-        "updates": {
-          "version": "0.0.0"
-        }
-      }
-    },
+
     {
       "id": "sort-root-package",
       "name": "Sort root package.json",
