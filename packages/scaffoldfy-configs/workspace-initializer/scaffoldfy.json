@@ -22,7 +22,7 @@
       "id": "createFirstPackagePrompt",
       "type": "confirm",
       "message": "Create the first package now?",
-      "default": true
+      "default": false
     }
   ],
   "tasks": [
