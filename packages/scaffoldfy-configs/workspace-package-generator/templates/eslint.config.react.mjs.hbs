@@ -1,4 +1,4 @@
 import reactConfig from '@internal/eslint-config/react';
 
-/** @type {import('typescript-eslint').Config} */
+/** @type {import('eslint').Linter.Config[]} */
 export default reactConfig;
