@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy-configs
 
+## 0.38.1
+
+### Patch Changes
+
+- handle missing packages directory
+
 ## 0.38.0
 
 ### Minor Changes
