@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy
 
+## 0.55.1
+
+### Patch Changes
+
+- update type definitions from 'typescript-eslint' to 'eslint'
+
 ## 0.55.0
 
 ### Minor Changes
