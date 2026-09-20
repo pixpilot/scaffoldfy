@@ -1,5 +1,12 @@
 # @pixpilot/scaffoldfy-configs
 
+## 0.39.1
+
+### Patch Changes
+
+- update type definitions from 'typescript-eslint' to 'eslint'
+- update condition for package visibility
+
 ## 0.39.0
 
 ### Minor Changes
