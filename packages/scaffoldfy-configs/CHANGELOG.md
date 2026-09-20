@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy-configs
 
+## 0.37.0
+
+### Minor Changes
+
+- add setup-guard scaffold
+
 ## 0.36.5
 
 ### Patch Changes
