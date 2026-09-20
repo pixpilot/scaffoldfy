@@ -1,5 +1,12 @@
 # @pixpilot/scaffoldfy-configs
 
+## 0.38.0
+
+### Minor Changes
+
+- add reset package version task
+- add reset package version task
+
 ## 0.37.1
 
 ### Patch Changes
