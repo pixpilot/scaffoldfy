@@ -11,7 +11,7 @@
         { "name": "TypeScript Compiler (tsc)", "value": "tsc" },
         { "name": "TSDown", "value": "tsdown" }
       ],
-      "default": "tsc"
+      "default": "tsdown"
     }
   ],
   "tasks": [
