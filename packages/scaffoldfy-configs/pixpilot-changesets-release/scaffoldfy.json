@@ -3,15 +3,44 @@
   "description": "Pixpilot workspace package generator template for pnpm + Turbo monorepo. Provides project info prompts and config tasks.",
   "name": "github-pixpilot-owner-changesets-release",
   "dependencies": ["pixpilot-info"],
+  "prompts": [
+    {
+      "id": "releaseToGitHubPackages",
+      "type": "confirm",
+      "message": "Publish packages privately to GitHub Packages under @pixpilot-private? (No = npmjs)",
+      "default": false,
+      "enabled": {
+        "type": "condition",
+        "value": "is_pixpilot_organization === true"
+      }
+    }
+  ],
   "tasks": [
     {
       "id": "pixpilot-admin-changesets-release-create",
       "name": "Setup Changesets Release Workflow",
       "description": "Adds a GitHub Actions workflow for Changesets-based releases",
-      "enabled": { "type": "condition", "value": "pixpilot_project == true" },
+      "enabled": {
+        "type": "condition",
+        "value": "pixpilot_project == true && releaseToGitHubPackages != true"
+      },
       "type": "write",
       "config": {
         "templateFile": "release.yml",
+        "file": ".github/workflows/release.yml"
+      }
+    },
+    {
+      "id": "pixpilot-admin-changesets-release-create-github-packages",
+      "name": "Setup Changesets Release Workflow (GitHub Packages)",
+      "description": "Adds a Changesets release workflow publishing to GitHub Packages under @pixpilot-private instead of npmjs",
+      "enabled": {
+        "type": "condition",
+        "value": "pixpilot_project == true && releaseToGitHubPackages == true"
+      },
+      "type": "write",
+      "config": {
+        "templateFile": "release-github-packages.yml",
         "file": ".github/workflows/release.yml"
       }
     },
