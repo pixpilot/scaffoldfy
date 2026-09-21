@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy-configs
 
+## 0.39.2
+
+### Patch Changes
+
+- remove outdated dependency checks from tests
+
 ## 0.39.1
 
 ### Patch Changes
