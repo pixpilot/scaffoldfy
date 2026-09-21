@@ -1,5 +1,12 @@
 # @pixpilot/scaffoldfy-configs
 
+## 0.40.1
+
+### Patch Changes
+
+- update project setup action to use pixpilot/setup-pnpm-project@v1
+- change default bundler to TSDown
+
 ## 0.40.0
 
 ### Minor Changes
