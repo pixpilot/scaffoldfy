@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy-configs
 
+## 0.40.0
+
+### Minor Changes
+
+- add GitHub Packages release workflow
+
 ## 0.39.2
 
 ### Patch Changes
