@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy-configs
 
+## 0.40.2
+
+### Patch Changes
+
+- update REGISTRY_TOKEN usage in release workflow
+
 ## 0.40.1
 
 ### Patch Changes
