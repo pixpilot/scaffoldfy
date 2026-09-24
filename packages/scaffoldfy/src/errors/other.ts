@@ -31,7 +31,7 @@ export class PromptValidationError extends ScaffoldfyError {
   constructor(
     message: string,
     public readonly promptId: string,
-    public readonly reason: 'required' | 'unknown_type',
+    public readonly reason: 'required' | 'unknown_type' | 'invalid_value',
   ) {
     super(message, 'PROMPT_VALIDATION_ERROR');
     this.name = 'PromptValidationError';
@@ -56,6 +56,21 @@ export class PromptValidationError extends ScaffoldfyError {
       `Unknown prompt type: ${type}`,
       type,
       'unknown_type',
+    );
+  }
+
+  /**
+   * Create an invalid preset value error
+   */
+  static invalidValue(
+    promptId: string,
+    value: string,
+    reason: string,
+  ): PromptValidationError {
+    return new PromptValidationError(
+      `Invalid value "${value}" for prompt "${promptId}": ${reason}`,
+      promptId,
+      'invalid_value',
     );
   }
 }

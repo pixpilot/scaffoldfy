@@ -22,8 +22,18 @@
     {
       "id": "createFirstPackagePrompt",
       "type": "confirm",
-      "message": "Create the first package now?",
+      "message": "Create packages now?",
       "default": false
+    },
+    {
+      "id": "packageNames",
+      "type": "input",
+      "message": "Enter package names (comma separated, e.g. my-package, my-other-package)",
+      "required": true,
+      "enabled": {
+        "type": "condition",
+        "value": "createFirstPackagePrompt === true"
+      }
     }
   ],
   "tasks": [
@@ -88,12 +98,19 @@
     },
     {
       "id": "create-first-package",
-      "name": "Create first package",
-      "description": "Generate the first package in the monorepo using the package generator",
-      "type": "exec",
+      "name": "Create packages",
+      "description": "Generate each requested package in the monorepo using the package generator",
+      "type": "exec-file",
+      "enabled": {
+        "type": "condition",
+        "value": "createFirstPackagePrompt === true"
+      },
       "config": {
-        "command": "pnpm run gen:package",
-        "condition": "createFirstPackagePrompt"
+        "file": "./scripts/create-packages.cjs",
+        "runtime": "node",
+        "parameters": {
+          "PACKAGE_NAMES": "{{packageNames}}"
+        }
       }
     },
     {

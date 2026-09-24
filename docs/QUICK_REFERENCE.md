@@ -353,6 +353,7 @@ scaffoldfy --help
 --config <path>    # Path or URL to config file (JSON, or TypeScript for local files; default: ./configs-tasks.json)
 --dry-run          # Preview changes without applying them
 --no-validate      # Skip schema validation
+--set <key=value>  # Answer a prompt up front, e.g. --set packageBaseName=my-pkg (repeatable)
 --force            # Force execution even if checks fail
 ```
 

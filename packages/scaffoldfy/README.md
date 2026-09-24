@@ -65,6 +65,7 @@ npx @pixpilot/scaffoldfy@latest --dry-run
 | `--config <path>` | Path or URL to config file (JSON, or TypeScript for local files; default: `./scaffoldfy.json`) |
 | `--dry-run`       | Preview changes without applying them                                                          |
 | `--no-validate`   | Skip schema validation of task configuration (validation is enabled by default)                |
+| `--set <k=v>`     | Answer a prompt up front instead of being asked (repeatable)                                   |
 | `-h, --help`      | Show help message                                                                              |
 | `-v, --version`   | Show version                                                                                   |
 

@@ -8,6 +8,7 @@ import { PromptValidationError } from '../errors/other';
 import { transformerManager } from '../transformers/index';
 import { evaluateEnabledAsync, log } from '../utils';
 import { evaluateRequiredAsync } from '../utils/evaluate-required';
+import { coercePresetAnswer, getPresetAnswer } from './preset-answers';
 import { resolveDefaultValue } from './resolve-default-value';
 
 /**
@@ -59,6 +60,30 @@ export async function collectPrompts(
        * `false` instead of throwing).
        */
       answers[prompt.id] = undefined;
+      // eslint-disable-next-line no-continue
+      continue;
+    }
+
+    // Use a preset answer (e.g. `--set id=value`) instead of asking
+    const presetAnswer = getPresetAnswer(prompt.id);
+    if (presetAnswer !== undefined) {
+      let answer = coercePresetAnswer(prompt, presetAnswer);
+      if (
+        typeof answer === 'string' &&
+        answer.trim() === '' &&
+        (await evaluateRequiredAsync(prompt.required, currentContext)) === true
+      ) {
+        throw PromptValidationError.required(prompt.id);
+      }
+      if (prompt.transformers !== undefined) {
+        answer = await transformerManager.apply(
+          prompt.transformers,
+          answer,
+          currentContext,
+        );
+      }
+      log(`${prompt.message}: ${String(answer)} (preset)`, 'info');
+      answers[prompt.id] = answer;
       // eslint-disable-next-line no-continue
       continue;
     }

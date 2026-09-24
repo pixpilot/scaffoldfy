@@ -12,6 +12,7 @@ import { Command } from 'commander';
 import { fetchConfigurationFile, loadTasksWithInheritance } from './configurations/index';
 import { EXIT_CODE_ERROR } from './constants';
 import { runWithTasks } from './index';
+import { parsePresetPair, setPresetAnswers } from './prompts/preset-answers';
 import { validateTasksSchema } from './scaffoldfy-config-validator';
 import { isUrl, log, parseJsonc } from './utils';
 import { debug, setDebugMode } from './utils/logger';
@@ -24,6 +25,14 @@ interface CliOptions {
   config?: string;
   validate?: boolean;
   debug?: boolean;
+  set?: string[];
+}
+
+/**
+ * Collect repeated `--set key=value` options
+ */
+function collectPresetPair(value: string, previous: string[] = []): string[] {
+  return [...previous, value];
 }
 
 const program = new Command();
@@ -59,6 +68,11 @@ program
     'Skip schema validation of task configuration (validation is enabled by default)',
   )
   .option('--debug', 'Enable debug logging for verbose output')
+  .option(
+    '--set <key=value>',
+    'Answer a prompt up front instead of being asked (repeatable)',
+    collectPresetPair,
+  )
   .action(async (options: CliOptions) => {
     // Set debug mode globally if --debug flag is present
     if (options.debug === true) {
@@ -66,6 +80,10 @@ program
     }
 
     try {
+      if (options.set != null) {
+        setPresetAnswers(Object.fromEntries(options.set.map(parsePresetPair)));
+      }
+
       let tasks: TaskDefinition[] = [];
       let variables: VariableDefinition[] | undefined;
       let prompts: PromptDefinition[] | undefined;

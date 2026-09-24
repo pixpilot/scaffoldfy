@@ -140,6 +140,7 @@ This is particularly useful for:
 | `--dry-run`       | Preview changes without applying them                                                            |
 | `--force`         | Force execution even if checks fail                                                              |
 | `--no-validate`   | Skip schema validation of task configuration (validation is enabled by default)                  |
+| `--set <k=v>`     | Answer a prompt up front instead of being asked (repeatable)                                     |
 | `-h, --help`      | Show help message                                                                                |
 | `-v, --version`   | Show version                                                                                     |
 
