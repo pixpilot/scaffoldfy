@@ -7,6 +7,7 @@
     "../license-file/scaffoldfy.json",
     "../update-root-package-json/scaffoldfy.json",
     "../security-policy/scaffoldfy.json",
+    "../codeql-private-repo/scaffoldfy.json",
     "../monorepo-generate-packages-section/scaffoldfy.json"
   ],
   "name": "pnpm-turbo-monorepo-template-setup",

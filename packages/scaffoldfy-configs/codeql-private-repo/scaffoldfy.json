@@ -1,0 +1,32 @@
+{
+  "$schema": "../node_modules/@pixpilot/scaffoldfy/schema/scaffoldfy.schema.json",
+  "name": "codeql-private-repo",
+  "description": "Replaces the CodeQL workflow with the pixpilot/codeql-scanner action for private repositories",
+  "prompts": [
+    {
+      "id": "isPrivateRepo",
+      "type": "confirm",
+      "message": "Is this a private repository?",
+      "default": {
+        "type": "exec",
+        "value": "node -e \"try{process.stdout.write(require('child_process').execSync('gh repo view --json isPrivate -q .isPrivate',{stdio:['ignore','pipe','ignore']}).toString().trim())}catch{process.stdout.write('false')}\""
+      }
+    }
+  ],
+  "tasks": [
+    {
+      "id": "codeql-private-repo-workflow",
+      "name": "Replace CodeQL workflow for private repo",
+      "description": "Overwrites the CodeQL workflow to use pixpilot/codeql-scanner",
+      "enabled": {
+        "type": "condition",
+        "value": "isPrivateRepo === true"
+      },
+      "type": "write",
+      "config": {
+        "templateFile": "codeql-analysis.yml",
+        "file": ".github/workflows/codeql-analysis.yml"
+      }
+    }
+  ]
+}

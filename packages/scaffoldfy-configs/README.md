@@ -14,6 +14,16 @@ This package provides the following scaffoldfy templates:
 
 <!-- scaffoldfy-templates:start -->
 
+### codeql-private-repo
+
+Replaces the CodeQL workflow with the pixpilot/codeql-scanner action for private repositories
+
+Usage:
+
+```sh
+npx @pixpilot/scaffoldfy@latest --config https://unpkg.com/@pixpilot/scaffoldfy-configs@latest/codeql-private-repo/scaffoldfy.json
+```
+
 ### license-file
 
 Generate a LICENSE file with common open-source licenses
