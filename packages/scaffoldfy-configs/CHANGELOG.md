@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy-configs
 
+## 0.40.4
+
+### Patch Changes
+
+- update notification step for release status
+
 ## 0.40.3
 
 ### Patch Changes
