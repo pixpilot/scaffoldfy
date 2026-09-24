@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy-configs
 
+## 0.41.0
+
+### Minor Changes
+
+- add CodeQL workflow for private repositories
+
 ## 0.40.4
 
 ### Patch Changes
