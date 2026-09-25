@@ -1,5 +1,12 @@
 # @pixpilot/scaffoldfy-configs
 
+## 0.42.0
+
+### Minor Changes
+
+- add `--set <key=value>` option for preset prompt answers
+- 0319f19: workspace-initializer: create multiple packages at once from a comma separated list of names
+
 ## 0.41.0
 
 ### Minor Changes

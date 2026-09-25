@@ -1,5 +1,12 @@
 # @pixpilot/scaffoldfy
 
+## 0.56.0
+
+### Minor Changes
+
+- add `--set <key=value>` option for preset prompt answers
+- 0319f19: Add `--set key=value` CLI option to answer prompts up front instead of being asked
+
 ## 0.55.1
 
 ### Patch Changes
