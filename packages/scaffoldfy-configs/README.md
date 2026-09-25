@@ -24,6 +24,16 @@ Usage:
 npx @pixpilot/scaffoldfy@latest --config https://unpkg.com/@pixpilot/scaffoldfy-configs@latest/codeql-private-repo/scaffoldfy.json
 ```
 
+### github-action-release-app-token
+
+Replaces the release workflow of a github-action-template clone with the GitHub App token variant (RELEASER_ID / RELEASER_PRIVATE_KEY) for pixpilot and ccpu repositories
+
+Usage:
+
+```sh
+npx @pixpilot/scaffoldfy@latest --config https://unpkg.com/@pixpilot/scaffoldfy-configs@latest/github-action-release-app-token/scaffoldfy.json
+```
+
 ### license-file
 
 Generate a LICENSE file with common open-source licenses

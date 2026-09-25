@@ -1,0 +1,31 @@
+{
+  "$schema": "../node_modules/@pixpilot/scaffoldfy/schema/scaffoldfy.schema.json",
+  "name": "github-action-release-app-token",
+  "description": "Replaces the release workflow of a github-action-template clone with the GitHub App token variant (RELEASER_ID / RELEASER_PRIVATE_KEY) for pixpilot and ccpu repositories",
+  "dependencies": ["pixpilot-info"],
+  "variables": [
+    {
+      "id": "isGithubActionTemplate",
+      "value": {
+        "type": "exec",
+        "value": "node -e \"try{process.stdout.write(String(require(require('path').resolve('package.json')).name==='github-action-template'))}catch{process.stdout.write('false')}\""
+      }
+    }
+  ],
+  "tasks": [
+    {
+      "id": "github-action-release-app-token-workflow",
+      "name": "Use GitHub App token in release workflow",
+      "description": "Overwrites the release workflow to authenticate semantic-release with a GitHub App token",
+      "enabled": {
+        "type": "condition",
+        "value": "isGithubActionTemplate === true && pixpilot_project === true"
+      },
+      "type": "write",
+      "config": {
+        "templateFile": "release.yml",
+        "file": ".github/workflows/release.yml"
+      }
+    }
+  ]
+}
