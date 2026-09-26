@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy-configs
 
+## 0.44.0
+
+### Minor Changes
+
+- add test for React package unbundling in tsdown.config.ts.hbs
+
 ## 0.43.0
 
 ### Minor Changes
