@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy-configs
 
+## 0.45.0
+
+### Minor Changes
+
+- enhance release workflow outputs
+
 ## 0.44.0
 
 ### Minor Changes
