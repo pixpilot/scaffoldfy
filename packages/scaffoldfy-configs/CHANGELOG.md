@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy-configs
 
+## 0.43.0
+
+### Minor Changes
+
+- add GitHub App token release workflow
+
 ## 0.42.0
 
 ### Minor Changes
