@@ -1,3 +1,4 @@
+export * from './answer-flags';
 export * from './collect-prompts';
 export * from './preset-answers';
 export * from './resolve-all-default-values';

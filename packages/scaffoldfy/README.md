@@ -56,18 +56,25 @@ npx @pixpilot/scaffoldfy@latest --config https://example.com/scaffoldfy.json
 
 # Preview changes (dry run)
 npx @pixpilot/scaffoldfy@latest --dry-run
+
+# Answer prompts with flags instead of being asked (camelCase or kebab-case ids)
+npx @pixpilot/scaffoldfy@latest --config ./config.json --keep-example-packages --project-name my-app
+
+# List the prompts of a config (including extended configs)
+npx @pixpilot/scaffoldfy@latest --config ./config.json --help
 ```
 
 ### CLI Options
 
-| Option            | Description                                                                                    |
-| ----------------- | ---------------------------------------------------------------------------------------------- |
-| `--config <path>` | Path or URL to config file (JSON, or TypeScript for local files; default: `./scaffoldfy.json`) |
-| `--dry-run`       | Preview changes without applying them                                                          |
-| `--no-validate`   | Skip schema validation of task configuration (validation is enabled by default)                |
-| `--set <k=v>`     | Answer a prompt up front instead of being asked (repeatable)                                   |
-| `-h, --help`      | Show help message                                                                              |
-| `-v, --version`   | Show version                                                                                   |
+| Option                 | Description                                                                                                |
+| ---------------------- | ---------------------------------------------------------------------------------------------------------- |
+| `--config <path>`      | Path or URL to config file (JSON, or TypeScript for local files; default: `./scaffoldfy.json`)             |
+| `--dry-run`            | Preview changes without applying them                                                                      |
+| `--no-validate`        | Skip schema validation of task configuration (validation is enabled by default)                            |
+| `--set <k=v>`          | Answer a prompt up front instead of being asked (repeatable)                                               |
+| `--<promptId> [value]` | Answer any prompt (also from `extends`) by its id, e.g. `--keep-example-packages`, `--project-name=my-app` |
+| `-h, --help`           | Show help message; with `--config`, also list that config's prompts                                        |
+| `-v, --version`        | Show version                                                                                               |
 
 ### Programmatic API
 

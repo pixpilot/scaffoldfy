@@ -134,15 +134,16 @@ This is particularly useful for:
 
 ## CLI Options
 
-| Option            | Description                                                                                      |
-| ----------------- | ------------------------------------------------------------------------------------------------ |
-| `--config <path>` | Path or URL to config file (JSON, or TypeScript for local files; default: `./config-tasks.json`) |
-| `--dry-run`       | Preview changes without applying them                                                            |
-| `--force`         | Force execution even if checks fail                                                              |
-| `--no-validate`   | Skip schema validation of task configuration (validation is enabled by default)                  |
-| `--set <k=v>`     | Answer a prompt up front instead of being asked (repeatable)                                     |
-| `-h, --help`      | Show help message                                                                                |
-| `-v, --version`   | Show version                                                                                     |
+| Option                 | Description                                                                                                                                                                |
+| ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `--config <path>`      | Path or URL to config file (JSON, or TypeScript for local files; default: `./config-tasks.json`)                                                                           |
+| `--dry-run`            | Preview changes without applying them                                                                                                                                      |
+| `--force`              | Force execution even if checks fail                                                                                                                                        |
+| `--no-validate`        | Skip schema validation of task configuration (validation is enabled by default)                                                                                            |
+| `--set <k=v>`          | Answer a prompt up front instead of being asked (repeatable)                                                                                                               |
+| `--<promptId> [value]` | Answer any prompt (also from `extends`) by its id, e.g. `--keep-example-packages`, `--project-name=my-app` ([details](PROMPTS.md#answering-prompts-from-the-command-line)) |
+| `-h, --help`           | Show help message; with `--config`, also list that config's prompts                                                                                                        |
+| `-v, --version`        | Show version                                                                                                                                                               |
 
 ## Programmatic Usage
 

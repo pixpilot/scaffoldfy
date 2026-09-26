@@ -45,6 +45,12 @@ npx @pixpilot/scaffoldfy@latest --config ./config.json
 
 # Preview changes (dry run)
 npx @pixpilot/scaffoldfy@latest --dry-run
+
+# Answer prompts with flags instead of being asked (camelCase or kebab-case ids)
+npx @pixpilot/scaffoldfy@latest --config ./config.json --keep-example-packages --project-name my-app
+
+# List the prompts of a config (including extended configs)
+npx @pixpilot/scaffoldfy@latest --config ./config.json --help
 ```
 
 ## 📚 Documentation

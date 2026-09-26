@@ -1350,4 +1350,64 @@ scaffoldfy --config ./config-tasks.json
 scaffoldfy  --config ./config-tasks.json --dry-run
 ```
 
-The CLI will automatically detect prompts in your tasks and collect user input before executing the tasks.
+The CLI will automatically detect prompts in your tasks and collect user input before executing the tasks. To skip the questions, answer prompts with flags (see below).
+
+## Answering Prompts from the Command Line
+
+Every prompt can be answered up front with a flag named after its `id`, so it is not asked interactively. This works for prompts in the config you pass with `--config` **and** for prompts pulled in through `extends` (at any depth).
+
+```bash
+npx @pixpilot/scaffoldfy@latest \
+  --config https://unpkg.com/@pixpilot/scaffoldfy-configs@latest/workspace-initializer/scaffoldfy.json \
+  --keep-example-packages \
+  --release-to-github-packages=false \
+  --project-name my-app
+```
+
+### Flag forms
+
+| Form                         | Meaning                                                    |
+| ---------------------------- | ---------------------------------------------------------- |
+| `--keepExamplePackages`      | Bare flag: answers a `confirm` prompt with **yes**         |
+| `--no-keep-example-packages` | Answers a `confirm` prompt with **no**                     |
+| `--keepExamplePackages=no`   | Explicit value (`true`/`false`/`yes`/`no`/`y`/`n`/`1`/`0`) |
+| `--project-name my-app`      | Value as the next argument                                 |
+| `--project-name=my-app`      | Value after `=` (use this when the value starts with `-`)  |
+
+- **Id matching** ignores case, `-` and `_`: `keepExamplePackages`, `--keep-example-packages` and `--KEEP_EXAMPLE_PACKAGES` all match the prompt `keepExamplePackages`; `--is-private-repo` matches `is_private_repo`. An exact id match always wins.
+- **Values** are converted like interactive answers: `number` prompts need a number, `select` prompts need one of the choice values, and `checkbox` prompts take comma-separated choice values (`--workspaces=packages,apps`). An invalid value stops the run with an error.
+- **Bare flags** (no value) only work for `confirm` prompts; other prompt types need a value.
+- **Transformers** defined on the prompt are applied to the flag value.
+- **Conditional prompts** (`enabled`) are only answered when they are enabled; otherwise the flag is ignored, just like the prompt.
+- **Prompts without a flag** are still asked interactively.
+
+### Listing the prompts of a config
+
+Combine `--help` (or `-h`) with `--config` to print the regular help followed by every prompt of that config and its `extends` chain, grouped by config. Each line shows the flag, the prompt message, and details such as choices, static default, `required` and the `enabled` condition:
+
+```bash
+npx @pixpilot/scaffoldfy@latest --help \
+  --config https://unpkg.com/@pixpilot/scaffoldfy-configs@latest/workspace-initializer/scaffoldfy.json
+```
+
+```text
+Prompts (answer with a flag instead of being asked; kebab-case ids work too):
+
+  license-file:
+    --licenseType <value>            Select a license for your project [choices: NONE, MIT, Apache-2.0, ...; default: NONE]
+
+  pnpm-turbo-monorepo-template-setup:
+    --[no-]keepExamplePackages       Keep example packages? (helpful for reference) [default: false]
+    --[no-]createFirstPackagePrompt  Create packages now? [default: false]
+    --packageNames <value>           Enter package names (comma separated, ...) [required; when: createFirstPackagePrompt === true]
+```
+
+Without `--config`, `--help` lists the prompts of `./scaffoldfy.json` when that file exists.
+
+### Unknown flags are errors
+
+A flag that is neither a built-in option nor the id of a prompt in the loaded configs stops the run **before any task executes**, and the error lists the available prompt ids. This also catches typos of built-in options such as `--dryrun`.
+
+### Relation to `--set`
+
+`--set key=value` still works and uses the same id matching (for example `--set keep-example-packages=false`). Use it for prompt ids whose flag would clash with a built-in option (for example a prompt named `config`, `force` or `debug`): built-in options always take precedence over answer flags. When a prompt is answered by both a flag and `--set`, `--set` wins.

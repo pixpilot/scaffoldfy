@@ -354,6 +354,9 @@ scaffoldfy --help
 --dry-run          # Preview changes without applying them
 --no-validate      # Skip schema validation
 --set <key=value>  # Answer a prompt up front, e.g. --set packageBaseName=my-pkg (repeatable)
+--<promptId> [value]  # Answer a prompt by id (camelCase or kebab-case), incl. prompts from extends:
+                   #   --keep-example-packages, --no-keep-example-packages, --project-name=my-app
+-h, --help         # Show help; with --config, also list the config's prompts
 --force            # Force execution even if checks fail
 ```
 
