@@ -11,6 +11,9 @@ export default defineConfig({
   {{/if}}
   entry: 'src/index.ts',
   dts: true,
+  {{#if isReactPackage}}
+  unbundle: true,
+  {{/if}}
   minify: false,
   clean: true,
   {{#if isPublishablePackage}}

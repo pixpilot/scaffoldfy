@@ -376,6 +376,20 @@ describe('workspace-package-generator – package.json.hbs rendering', () => {
 describe('workspace-package-generator – tsdown.config.ts.hbs rendering', () => {
   const tplPath = path.join(TEMPLATES_DIR, 'tsdown.config.ts.hbs');
 
+  it('should unbundle React packages only', () => {
+    const reactConfig = renderHbs(tplPath, {
+      tsdownConfigPackage: '@pixpilot/tsdown-config',
+      isReactPackage: true,
+    });
+    const vanillaConfig = renderHbs(tplPath, {
+      tsdownConfigPackage: '@pixpilot/tsdown-config',
+      isReactPackage: false,
+    });
+
+    expect(reactConfig).toContain('unbundle: true,');
+    expect(vanillaConfig).not.toContain('unbundle:');
+  });
+
   it('should render without bundle size when bundleSizeLimit is falsy', () => {
     const ctx = {
       tsdownConfigPackage: '@pixpilot/tsdown-config',
