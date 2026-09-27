@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy-configs
 
+## 0.47.0
+
+### Minor Changes
+
+- support answers in scaffoldfy configs
+
 ## 0.46.0
 
 ### Minor Changes

@@ -1,5 +1,12 @@
 # @pixpilot/scaffoldfy
 
+## 0.58.0
+
+### Minor Changes
+
+- support answers in scaffoldfy configs
+- 114c910: Add an `answers` field to configs for pre-set prompt answers keyed by prompt id, including prompts from extended configs. Answered prompts are not asked; CLI answer flags and `--set` override them, and `--help` shows which prompts a config answers.
+
 ## 0.57.0
 
 ### Minor Changes
