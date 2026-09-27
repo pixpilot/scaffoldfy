@@ -2,7 +2,12 @@
  * Commander program for the scaffoldfy CLI
  */
 
-import type { PromptDefinition, TaskDefinition, VariableDefinition } from './types';
+import type {
+  PromptDefinition,
+  ScaffoldfyConfiguration,
+  TaskDefinition,
+  VariableDefinition,
+} from './types';
 import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
@@ -13,6 +18,7 @@ import { runWithTasks } from './index';
 import {
   formatPromptsHelp,
   parseAnswerFlags,
+  resolveConfigAnswers,
   resolvePresetAnswers,
 } from './prompts/answer-flags';
 import { parsePresetPair, setPresetAnswers } from './prompts/preset-answers';
@@ -125,10 +131,17 @@ async function runCli(options: CliOptions, command: Command): Promise<void> {
     const answerFlags = parseAnswerFlags(command.args);
     const setPairs = (options.set ?? []).map(parsePresetPair);
 
-    // Answers are matched to prompt ids once every config (including `extends`) is loaded
-    const applyPresetAnswers = (configPrompts: PromptDefinition[]): void => {
+    // Answers are matched to prompt ids once every config (including `extends`) is loaded.
+    // Config `answers` have the lowest priority; flags and --set override them.
+    const applyPresetAnswers = (
+      configPrompts: PromptDefinition[],
+      configs: ScaffoldfyConfiguration[] = [],
+    ): void => {
       try {
-        setPresetAnswers(resolvePresetAnswers(answerFlags, setPairs, configPrompts));
+        setPresetAnswers({
+          ...resolveConfigAnswers(configs, configPrompts),
+          ...resolvePresetAnswers(answerFlags, setPairs, configPrompts),
+        });
       } catch (error) {
         log(error instanceof Error ? error.message : String(error), 'error');
         process.exit(EXIT_CODE_ERROR);
@@ -234,7 +247,10 @@ async function runCli(options: CliOptions, command: Command): Promise<void> {
                 './configurations/initial-config'
               );
 
-              applyPresetAnswers(config.configs.flatMap((c) => c.prompts ?? []));
+              applyPresetAnswers(
+                config.configs.flatMap((c) => c.prompts ?? []),
+                config.configs,
+              );
 
               await runConfigurationSequentially(
                 config.configs,

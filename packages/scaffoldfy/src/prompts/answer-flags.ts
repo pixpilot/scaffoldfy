@@ -4,6 +4,7 @@
  *
  * Flags are parsed before the configuration is loaded and matched to prompt ids once every
  * configuration (including the ones pulled in through `extends`) is known.
+ * Configurations can also pre-set answers in their `answers` field; flags override those.
  */
 
 import type { PromptDefinition, ScaffoldfyConfiguration } from '../types';
@@ -136,7 +137,7 @@ export function resolveAnswerFlags(
     problems.unshift(
       `Unknown option(s) ${unknownFlags.join(', ')}: no prompt with a matching id. ${
         promptIds.length > 0
-          ? `Prompts in this configuration: ${promptIds.join(', ')}`
+          ? `Prompts in this configuration: ${promptIds.join(', ')}` //
           : 'This configuration has no prompts'
       }`,
     );
@@ -169,6 +170,73 @@ export function resolvePresetAnswers(
   return answers;
 }
 
+/**
+ * Convert a config answer to the raw string form used by preset answers
+ */
+function toRawAnswer(value: unknown): string | undefined {
+  if (Array.isArray(value)) return value.map(String).join(',');
+  if (['string', 'number', 'boolean'].includes(typeof value)) return String(value);
+  return undefined;
+}
+
+/**
+ * Collect the `answers` of every configuration in load order, keyed by prompt id
+ */
+function collectConfigAnswers(
+  configs: readonly ScaffoldfyConfiguration[],
+  promptIds: readonly string[],
+): { answers: Record<string, string>; problems: string[] } {
+  const answers: Record<string, string> = {};
+  const problems: string[] = [];
+
+  for (const config of configs) {
+    for (const [key, value] of Object.entries(config.answers ?? {})) {
+      const promptId = findPromptId(key, promptIds);
+      const rawAnswer = toRawAnswer(value);
+
+      if (promptId == null) {
+        problems.push(`Answer "${key}" in config "${config.name}" matches no prompt`);
+      } else if (rawAnswer === undefined) {
+        problems.push(
+          `Answer "${key}" in config "${config.name}" must be a string, number, boolean or array`,
+        );
+      } else {
+        answers[promptId] = rawAnswer;
+      }
+    }
+  }
+
+  return { answers, problems };
+}
+
+/**
+ * Resolve the `answers` of every configuration into raw answers keyed by prompt id.
+ * Configurations are read in load order (extended configurations first), so the config
+ * passed to the CLI overrides the answers of the configs it extends.
+ * Keys use the same id matching as answer flags.
+ * @throws Error listing answers that match no prompt or have an unsupported value
+ */
+export function resolveConfigAnswers(
+  configs: readonly ScaffoldfyConfiguration[],
+  prompts: readonly PromptDefinition[] = configs.flatMap(
+    (config) => config.prompts ?? [],
+  ),
+): Record<string, string> {
+  const promptIds = prompts.map((prompt) => prompt.id);
+  const { answers, problems } = collectConfigAnswers(configs, promptIds);
+
+  if (problems.length > 0) {
+    problems.push(
+      promptIds.length > 0
+        ? `Prompts in this configuration: ${promptIds.join(', ')}`
+        : 'This configuration has no prompts',
+    );
+    throw new Error(problems.join('\n'));
+  }
+
+  return answers;
+}
+
 const MAX_HELP_TERM_WIDTH = 40;
 
 const VALUE_PLACEHOLDERS: Record<Exclude<PromptDefinition['type'], 'confirm'>, string> = {
@@ -189,9 +257,12 @@ function formatPromptFlag(prompt: PromptDefinition): string {
 }
 
 /**
- * Prompt message followed by its choices, static default and enabled condition
+ * Prompt message followed by its choices, static default, enabled condition and config answer
  */
-function formatPromptDescription(prompt: PromptDefinition): string {
+function formatPromptDescription(
+  prompt: PromptDefinition,
+  configAnswer: string | undefined,
+): string {
   const details: string[] = [];
 
   if (prompt.type === 'select' || prompt.type === 'checkbox') {
@@ -223,6 +294,10 @@ function formatPromptDescription(prompt: PromptDefinition): string {
     details.push('disabled');
   }
 
+  if (configAnswer !== undefined) {
+    details.push(`answered in config: ${configAnswer}`);
+  }
+
   return details.length > 0
     ? `${prompt.message} [${details.join('; ')}]`
     : prompt.message;
@@ -232,12 +307,16 @@ function formatPromptDescription(prompt: PromptDefinition): string {
  * Describe the prompts of every configuration for `--help`, grouped by configuration
  */
 export function formatPromptsHelp(configs: readonly ScaffoldfyConfiguration[]): string {
+  const promptIds = configs.flatMap((config) => (config.prompts ?? []).map((p) => p.id));
+  // Help never fails on invalid answers; running the config reports them
+  const { answers } = collectConfigAnswers(configs, promptIds);
+
   const sections = configs
     .map((config) => ({
       name: config.name,
       items: (config.prompts ?? []).map((prompt) => ({
         flag: formatPromptFlag(prompt),
-        description: formatPromptDescription(prompt),
+        description: formatPromptDescription(prompt, answers[prompt.id]),
       })),
     }))
     .filter((section) => section.items.length > 0);

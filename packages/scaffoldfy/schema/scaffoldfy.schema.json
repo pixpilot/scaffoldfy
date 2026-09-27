@@ -58,6 +58,20 @@
       "description": "Top-level global prompts collected once upfront and available to all tasks.",
       "items": { "$ref": "#/$defs/promptItem" }
     },
+    "answers": {
+      "type": "object",
+      "description": "Pre-set prompt answers keyed by prompt id, including prompts from extended configs. Answered prompts are not asked. CLI answer flags and --set override these answers.",
+      "additionalProperties": {
+        "anyOf": [
+          { "type": ["string", "number", "boolean"] },
+          {
+            "type": "array",
+            "description": "Choice values for a checkbox prompt",
+            "items": { "type": ["string", "number", "boolean"] }
+          }
+        ]
+      }
+    },
     "tasks": {
       "type": "array",
       "items": {

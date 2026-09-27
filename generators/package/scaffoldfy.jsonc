@@ -1,0 +1,48 @@
+{
+  "$schema": "../../packages/scaffoldfy/schema/scaffoldfy.schema.json",
+  "extends": ["../../packages/scaffoldfy-configs/workspace-package-generator/scaffoldfy.json"],
+  "name": "package-generator",
+
+  // Pre-set answers so `pnpm gen:package` only asks for what differs per package.
+  // Values follow packages/scaffoldfy-configs/package.json.
+  // Override any answer on the command line, e.g. `pnpm gen:package --no-is-public-package`.
+  // List every prompt with `pnpm gen:package --help`.
+  "answers": {
+    // All packages live in packages/
+    "workspace": "packages",
+
+    // "packageBaseName" differs per package, so it is still asked
+    // (or pass it: `pnpm gen:package --package-base-name my-package`).
+
+    // "packageType": "vanilla",
+
+    // Dependencies differ per package; uncomment to skip the question.
+    // "deps": "",
+
+    // "publishConfig": { "access": "public" }
+    // "isPublishablePackage": true,
+    // "isPublicPackage": true,
+
+    // Only asked for private packages.
+    // "publishRegistry": "npm",
+
+    // tsdown.config.ts + @internal/tsdown-config
+    "bundler": "tsdown",
+
+    // The right limit depends on the package (scaffoldfy uses 80); 0 means no limit.
+    // "bundleSizeLimit": 0,
+
+    // "author": "PixPilot <m.doaie@hotmail.com>"
+    "author": "PixPilot",
+    "authorEmail": "m.doaie@hotmail.com",
+
+    // "repository" and "bugs"
+    "repoOwner": "pixpilot",
+
+    // Package scope: @pixpilot/<package-name>
+    "orgName": "pixpilot",
+
+    // "license": "MIT"
+    "licenseType": "MIT"
+  }
+}

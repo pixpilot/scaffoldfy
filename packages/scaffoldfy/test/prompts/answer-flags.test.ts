@@ -1,5 +1,5 @@
 /**
- * Tests for prompt answers passed as CLI flags
+ * Tests for prompt answers passed as CLI flags or in a config's `answers`
  */
 
 import type { AnswerFlag } from '../../src/prompts/answer-flags';
@@ -14,6 +14,7 @@ import {
   formatPromptsHelp,
   parseAnswerFlags,
   resolveAnswerFlags,
+  resolveConfigAnswers,
   resolvePresetAnswers,
 } from '../../src/prompts/answer-flags';
 
@@ -254,7 +255,113 @@ describe('resolvePresetAnswers', () => {
   });
 });
 
+describe('resolveConfigAnswers', () => {
+  it('should convert typed answers to raw strings keyed by prompt id', () => {
+    const configs: ScaffoldfyConfiguration[] = [
+      {
+        name: 'root',
+        prompts,
+        answers: {
+          keepExamplePackages: false,
+          'is-pixpilot-organization': true,
+          projectName: 'my-app',
+          workspace: 'apps',
+          size: 3,
+          tags: ['a', 'b'],
+        },
+      },
+      {
+        name: 'extra',
+        prompts: [
+          { id: 'size', type: 'number', message: 'Size' },
+          {
+            id: 'tags',
+            type: 'checkbox',
+            message: 'Tags',
+            choices: [
+              { name: 'A', value: 'a' },
+              { name: 'B', value: 'b' },
+            ],
+          },
+        ],
+      },
+    ];
+
+    expect(resolveConfigAnswers(configs)).toEqual({
+      keepExamplePackages: 'false',
+      is_pixpilot_organization: 'true',
+      projectName: 'my-app',
+      workspace: 'apps',
+      size: '3',
+      tags: 'a,b',
+    });
+  });
+
+  it('should let later configs override earlier ones', () => {
+    const configs: ScaffoldfyConfiguration[] = [
+      { name: 'base', prompts, answers: { workspace: 'packages', projectName: 'base' } },
+      { name: 'root', answers: { workspace: 'apps' } },
+    ];
+
+    expect(resolveConfigAnswers(configs)).toEqual({
+      workspace: 'apps',
+      projectName: 'base',
+    });
+  });
+
+  it('should match answers against the given prompts', () => {
+    expect(
+      resolveConfigAnswers([{ name: 'root', answers: { projectName: 'x' } }], prompts),
+    ).toEqual({ projectName: 'x' });
+  });
+
+  it('should return no answers when no config has any', () => {
+    expect(resolveConfigAnswers([{ name: 'root', prompts }])).toEqual({});
+  });
+
+  it('should list answers that match no prompt', () => {
+    expect(() =>
+      resolveConfigAnswers([
+        { name: 'root', prompts: [prompts[0]!], answers: { keepExamples: true } },
+      ]),
+    ).toThrow(
+      'Answer "keepExamples" in config "root" matches no prompt\n' +
+        'Prompts in this configuration: keepExamplePackages',
+    );
+  });
+
+  it('should reject answers with an unsupported value', () => {
+    const answers = { projectName: { value: 'x' } } as unknown as Record<string, string>;
+
+    expect(() => resolveConfigAnswers([{ name: 'root', prompts, answers }])).toThrow(
+      'Answer "projectName" in config "root" must be a string, number, boolean or array',
+    );
+  });
+
+  it('should say when there are no prompts to answer', () => {
+    expect(() =>
+      resolveConfigAnswers([{ name: 'root', answers: { projectName: 'x' } }]),
+    ).toThrow('This configuration has no prompts');
+  });
+});
+
 describe('formatPromptsHelp', () => {
+  it('should show answers from any config and ignore invalid ones', () => {
+    const help = formatPromptsHelp([
+      { name: 'base', prompts: [prompts[0]!, workspacePrompt] },
+      {
+        name: 'root',
+        answers: { 'keep-example-packages': true, workspace: 'apps', unknown: 'x' },
+      },
+    ]);
+
+    expect(help).toContain('Keep example packages? [answered in config: true]');
+    expect(help).toContain(
+      'Workspace [choices: packages, apps; answered in config: apps]',
+    );
+    expect(help).not.toContain('unknown');
+  });
+
   it('should group prompts by configuration and skip configurations without prompts', () => {
     const configs: ScaffoldfyConfiguration[] = [
       { name: 'base', prompts: [prompts[0]!] },

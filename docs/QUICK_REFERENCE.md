@@ -258,6 +258,25 @@ await runWithTasks(tasks, {
 }
 ```
 
+### Pre-set Answers (Extend and Skip Questions)
+
+<!-- prettier-ignore -->
+```jsonc
+{
+  "$schema": "https://unpkg.com/@pixpilot/scaffoldfy/schema",
+  "name": "my-generator",
+  "extends": ["./base/scaffoldfy.json"],
+  // Keyed by prompt id (also prompts from extends); answered prompts are not asked
+  "answers": {
+    "projectName": "my-app",
+    "isPublishablePackage": true
+    // "licenseType": "MIT", // commented out: still asked
+  }
+}
+```
+
+CLI flags (`--project-name other`) and `--set` override these answers. See [Pre-set Answers in the Config](PROMPTS.md#pre-set-answers-in-the-config).
+
 ### Conditional Task Execution
 
 ```json

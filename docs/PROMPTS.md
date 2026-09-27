@@ -1383,7 +1383,7 @@ npx @pixpilot/scaffoldfy@latest \
 
 ### Listing the prompts of a config
 
-Combine `--help` (or `-h`) with `--config` to print the regular help followed by every prompt of that config and its `extends` chain, grouped by config. Each line shows the flag, the prompt message, and details such as choices, static default, `required` and the `enabled` condition:
+Combine `--help` (or `-h`) with `--config` to print the regular help followed by every prompt of that config and its `extends` chain, grouped by config. Each line shows the flag, the prompt message, and details such as choices, static default, `required`, the `enabled` condition and any [answer set in the config](#pre-set-answers-in-the-config) (`answered in config: ...`):
 
 ```bash
 npx @pixpilot/scaffoldfy@latest --help \
@@ -1411,3 +1411,35 @@ A flag that is neither a built-in option nor the id of a prompt in the loaded co
 ### Relation to `--set`
 
 `--set key=value` still works and uses the same id matching (for example `--set keep-example-packages=false`). Use it for prompt ids whose flag would clash with a built-in option (for example a prompt named `config`, `force` or `debug`): built-in options always take precedence over answer flags. When a prompt is answered by both a flag and `--set`, `--set` wins.
+
+## Pre-set Answers in the Config
+
+A config can answer prompts itself with a top-level `answers` object, keyed by prompt id. Answered prompts are not asked. This is handy for a local config that extends a shared one and fixes the answers that never change in your repo, so only the per-run questions remain:
+
+<!-- prettier-ignore -->
+```jsonc
+// generators/package/scaffoldfy.jsonc
+{
+  "$schema": "https://unpkg.com/@pixpilot/scaffoldfy@latest/schema/scaffoldfy.schema.json",
+  "name": "package-generator",
+  "extends": [
+    "https://unpkg.com/@pixpilot/scaffoldfy-configs@latest/workspace-package-generator/scaffoldfy.json"
+  ],
+  "answers": {
+    "workspace": "packages", // prompt from an extended config
+    "isPublishablePackage": true,
+    "licenseType": "MIT"
+    // Not sure yet? Comment it out and the prompt is asked as usual.
+    // "bundleSizeLimit": 80,
+  }
+}
+```
+
+- **Any prompt** in the loaded configs can be answered, including prompts from `extends` at any depth. Keys use the same id matching as [answer flags](#answering-prompts-from-the-command-line) (`"keep-example-packages"` matches `keepExamplePackages`).
+- **Values** are JSON values: `true`/`false` for `confirm`, a number for `number`, one of the choice values for `select`, an array of choice values for `checkbox`, and a string for `input`/`password`. They are checked like interactive answers, so an invalid value stops the run with an error. Transformers defined on the prompt are applied.
+- **Conditional prompts** only use their answer when they are enabled.
+- **Unknown ids are errors**: an answer for a prompt that does not exist stops the run before any task executes.
+- **Use a `.jsonc` config** to leave comments next to answers or comment out the ones you are unsure about.
+- **Precedence** (lowest to highest): answers in extended configs → answers in the config passed with `--config` → answer flags → `--set`. So you can always override a config answer from the command line, e.g. `--no-is-publishable-package`.
+
+Answers are applied by the `scaffoldfy` CLI; `runWithTasks` does not read them.

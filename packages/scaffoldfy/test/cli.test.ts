@@ -399,4 +399,153 @@ describe('cli', () => {
       );
     });
   });
+
+  describe('answers in the config', () => {
+    // Mirrors generators/package/scaffoldfy.jsonc: a JSONC file that extends a config and answers its prompts
+    function writeAnswersConfig(answers: string): string {
+      const filePath = path.join(testDir, 'generator', 'scaffoldfy.jsonc');
+      fs.mkdirSync(path.dirname(filePath), { recursive: true });
+      fs.writeFileSync(
+        filePath,
+        `{
+  "$schema": "${SCHEMA}",
+  // Answers below skip the matching prompts
+  "name": "generator",
+  "extends": ["../main/scaffoldfy.json"],
+  "answers": ${answers}
+}`,
+      );
+      return filePath;
+    }
+
+    it('should use the answers instead of asking, including extended prompts', async () => {
+      const configPath = writeAnswersConfig(`{
+    "releaseToGitHubPackages": true, // from the extended base config
+    "author-name": "Config Author", // kebab-case matches author_name
+    "keepExamplePackages": false,
+    "createFirstPackagePrompt": true,
+    "packageNames": "a, b",
+    "workspace": "apps"
+  }`);
+
+      const exitCode = await runProgram(['--config', configPath]);
+
+      expect(exitCode).toBe(0);
+      expect(collectedAnswers()).toEqual({
+        releaseToGitHubPackages: true,
+        author_name: 'Config Author',
+        keepExamplePackages: false,
+        createFirstPackagePrompt: true,
+        packageNames: 'a, b',
+        workspace: 'apps',
+      });
+      expect(confirm).not.toHaveBeenCalled();
+      expect(input).not.toHaveBeenCalled();
+      expect(select).not.toHaveBeenCalled();
+    });
+
+    it('should still ask the prompts without an answer', async () => {
+      const configPath = writeAnswersConfig('{ "workspace": "apps" }');
+
+      await runProgram(['--config', configPath]);
+
+      expect(collectedAnswers()).toMatchObject({
+        workspace: 'apps',
+        author_name: 'Asked',
+      });
+      expect(select).not.toHaveBeenCalled();
+      expect(input).toHaveBeenCalledTimes(1);
+    });
+
+    it('should let answer flags and --set override config answers', async () => {
+      const configPath = writeAnswersConfig(
+        '{ "workspace": "apps", "keepExamplePackages": true, "author_name": "Config" }',
+      );
+
+      await runProgram([
+        '--config',
+        configPath,
+        '--workspace=packages',
+        '--no-keep-example-packages',
+        '--set',
+        'author_name=Set Author',
+      ]);
+
+      expect(collectedAnswers()).toMatchObject({
+        workspace: 'packages',
+        keepExamplePackages: false,
+        author_name: 'Set Author',
+      });
+    });
+
+    it('should let a config override the answers of the configs it extends', async () => {
+      writeConfig('main/scaffoldfy.json', {
+        ...mainConfig,
+        answers: { workspace: 'packages', keepExamplePackages: true },
+      });
+      const configPath = writeAnswersConfig('{ "workspace": "apps" }');
+
+      await runProgram(['--config', configPath]);
+
+      expect(collectedAnswers()).toMatchObject({
+        workspace: 'apps',
+        keepExamplePackages: true,
+      });
+    });
+
+    it('should fail on an answer for a prompt that does not exist', async () => {
+      const configPath = writeAnswersConfig('{ "keepExamples": true }');
+
+      const exitCode = await runProgram(['--config', configPath]);
+
+      expect(exitCode).toBe(1);
+      expect(runConfigurationSequentially).not.toHaveBeenCalled();
+      expect(loggedOutput()).toContain(
+        'Answer "keepExamples" in config "generator" matches no prompt',
+      );
+    });
+
+    it('should fail on an answer that does not fit the prompt', async () => {
+      const configPath = writeAnswersConfig('{ "workspace": "tooling" }');
+
+      const exitCode = await runProgram(['--config', configPath]);
+
+      expect(exitCode).toBe(1);
+      expect(loggedOutput()).toContain(
+        'Invalid value "tooling" for prompt "workspace": expected one of packages, apps',
+      );
+    });
+
+    it('should reject an answer with an unsupported type in schema validation', async () => {
+      const configPath = writeAnswersConfig('{ "workspace": { "value": "apps" } }');
+
+      const exitCode = await runProgram(['--config', configPath]);
+
+      expect(exitCode).toBe(1);
+      expect(runConfigurationSequentially).not.toHaveBeenCalled();
+      expect(loggedOutput()).toContain('Schema validation failed');
+    });
+
+    it('should reject an answer with an unsupported type without schema validation', async () => {
+      const configPath = writeAnswersConfig('{ "workspace": null }');
+
+      const exitCode = await runProgram(['--config', configPath, '--no-validate']);
+
+      expect(exitCode).toBe(1);
+      expect(runConfigurationSequentially).not.toHaveBeenCalled();
+      expect(loggedOutput()).toContain(
+        'Answer "workspace" in config "generator" must be a string, number, boolean or array',
+      );
+    });
+
+    it('should show config answers in the help', async () => {
+      const configPath = writeAnswersConfig('{ "workspace": "apps" }');
+
+      await runProgram(['--config', configPath, '--help']);
+
+      expect(stdoutOutput()).toContain(
+        'Workspace [choices: packages, apps; answered in config: apps]',
+      );
+    });
+  });
 });

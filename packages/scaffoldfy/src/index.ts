@@ -114,7 +114,11 @@ export {
 
 // Prompt answer flags API (documented in PROMPTS.md)
 export type { AnswerFlag } from './prompts/answer-flags';
-export { parseAnswerFlags, resolveAnswerFlags } from './prompts/answer-flags';
+export {
+  parseAnswerFlags,
+  resolveAnswerFlags,
+  resolveConfigAnswers,
+} from './prompts/answer-flags';
 
 // JSON validation API (documented in JSON_VALIDATION.md)
 export { validateScaffoldfyJsonFile } from './scaffoldfy-config-validator';

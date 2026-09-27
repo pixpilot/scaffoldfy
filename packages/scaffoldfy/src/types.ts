@@ -294,8 +294,19 @@ export interface ScaffoldfyConfiguration {
   transformers?: import('./transformers/types').Transformer[]; // Optional: Array of transformer definitions
   variables?: VariableDefinition[]; // Optional top-level global variables available to all tasks
   prompts?: PromptDefinition[]; // Optional top-level global prompts collected once upfront
+  answers?: Record<string, PromptAnswerValue>; // Optional pre-set answers keyed by prompt id (including prompts from extended configs); answered prompts are not asked
   tasks?: TaskDefinition[]; // Optional tasks array - can be omitted when extending configs that only provide prompts/variables
 }
+
+/**
+ * Value of a pre-set prompt answer in a configuration's `answers`
+ * (checkbox prompts take an array of choice values)
+ */
+export type PromptAnswerValue =
+  | string
+  | number
+  | boolean
+  | Array<string | number | boolean>;
 
 /**
  * Plugin interface for custom task types

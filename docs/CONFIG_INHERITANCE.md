@@ -922,7 +922,12 @@ scaffoldfy --config ./my-config.json --dry-run
 
 # Dry run with remote configuration
 scaffoldfy --config https://raw.githubusercontent.com/org/configs/main/base.json --dry-run
+
+# List the prompts of the config and every config it extends
+scaffoldfy --config ./my-config.json --help
 ```
+
+A config that extends others can answer their prompts with a top-level `answers` object, and any prompt in the chain can be answered from the command line (`--<promptId> [value]`). See [Pre-set Answers in the Config](PROMPTS.md#pre-set-answers-in-the-config) and [Answering Prompts from the Command Line](PROMPTS.md#answering-prompts-from-the-command-line).
 
 ## API Reference
 
