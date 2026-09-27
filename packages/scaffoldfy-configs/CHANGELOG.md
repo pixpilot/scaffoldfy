@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy-configs
 
+## 0.46.0
+
+### Minor Changes
+
+- add CLI flags for answering prompts
+
 ## 0.45.0
 
 ### Minor Changes

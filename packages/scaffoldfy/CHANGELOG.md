@@ -1,5 +1,12 @@
 # @pixpilot/scaffoldfy
 
+## 0.57.0
+
+### Minor Changes
+
+- add CLI flags for answering prompts
+- 9646178: Answer any prompt, including prompts from extended configs, with a flag named after its id (`--keepExamplePackages`, `--keep-example-packages=false`, `--no-keep-example-packages`, `--project-name my-app`). `--help` combined with `--config` now also lists the config's prompts. Unknown flags are now reported as errors instead of being rejected by the argument parser, and `--set` keys accept kebab-case ids too.
+
 ## 0.56.0
 
 ### Minor Changes
