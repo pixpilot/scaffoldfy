@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy-configs
 
+## 0.48.3
+
+### Patch Changes
+
+- update package.json.hbs for dependency cataloging
+
 ## 0.48.2
 
 ### Patch Changes
