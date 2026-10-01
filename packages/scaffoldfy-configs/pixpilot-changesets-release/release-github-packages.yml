@@ -21,9 +21,13 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
-      # Publishing targets GitHub Packages (publishConfig.registry in each package.json),
-      # which authenticates with a token rather than npm OIDC trusted publishing.
+      # Packages publish to two registries (publishConfig.registry in each package.json):
+      # @pixpilot-private/* to GitHub Packages, authenticated with REGISTRY_TOKEN.
       packages: write
+      # @pixpilot/* to npmjs via npm trusted publishing (OIDC). npm exchanges the
+      # OIDC token per package at publish time and falls back to REGISTRY_TOKEN
+      # for GitHub Packages, where the exchange is unsupported.
+      id-token: write
     outputs:
       published: ${{ steps.release.outputs.published }}
       published-versions: ${{ steps.release.outputs.published-versions }}
@@ -60,10 +64,11 @@ jobs:
         with:
           GITHUB_TOKEN: ${{ steps.app_token.outputs.token }}
           # GitHub Packages auth. Must be a token with write:packages on the
-          # package scope; npm OIDC trusted publishing is npmjs-only.
-          # https://github.com/pixpilot-private
+          # package scope. npmjs packages authenticate via OIDC (id-token above),
+          # not this token. https://github.com/pixpilot-private
           REGISTRY_TOKEN: ${{ secrets.PIXPILOT_PRIVATE_REGISTRY_TOKEN }}
-          # npm provenance attestation is not supported by npm.pkg.github.com.
+          # npm provenance is unsupported on npm.pkg.github.com and for packages
+          # published from a private repository.
           provenance: 'false'
 
   notify:
