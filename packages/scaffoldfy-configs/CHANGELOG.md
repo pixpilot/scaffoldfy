@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy-configs
 
+## 0.48.1
+
+### Patch Changes
+
+- adds id-token
+
 ## 0.48.0
 
 ### Minor Changes
