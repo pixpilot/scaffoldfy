@@ -234,6 +234,7 @@ describe('workspace-package-generator – package.json.hbs rendering', () => {
 
     expect(pkg.name).toBe('@internal/my-package');
     expect(pkg.private).toBe(true);
+    expect(pkg.packageManager).toBe('pnpm@10.34.5');
     expect(pkg.sideEffects).toBeUndefined();
     expect(pkg.publishConfig).toBeUndefined();
     expect(pkg.files).toBeUndefined();
@@ -241,9 +242,26 @@ describe('workspace-package-generator – package.json.hbs rendering', () => {
     expect(pkg.scripts?.['test:ui:coverage']).toBe(
       'vitest --ui --coverage --watch --hookTimeout=30000 --coverage.thresholds.lines=0 --coverage.thresholds.functions=0 --coverage.thresholds.branches=0 --coverage.thresholds.statements=0',
     );
-    expect(pkg.devDependencies?.['@vitest/coverage-v8']).toBe('catalog:dev');
-    expect(pkg.devDependencies?.['@vitest/ui']).toBe('catalog:dev');
-    expect(pkg.devDependencies?.vitest).toBe('catalog:dev');
+    expect(pkg.devDependencies?.['@types/node']).toBe('catalog:tooling');
+    expect(pkg.devDependencies?.['@vitest/coverage-v8']).toBe('catalog:testing');
+    expect(pkg.devDependencies?.['@vitest/ui']).toBe('catalog:testing');
+    expect(pkg.devDependencies?.eslint).toBe('catalog:tooling');
+    expect(pkg.devDependencies?.typescript).toBe('catalog:tooling');
+    expect(pkg.devDependencies?.vitest).toBe('catalog:testing');
+  });
+
+  it('should use the React catalog for internal React packages', () => {
+    const rendered = renderHbs(tplPath, {
+      packageBaseName: 'ui',
+      isPublishablePackage: false,
+      isReactPackage: true,
+      relativeRootPath: '../../',
+    });
+    const pkg = JSON.parse(rendered);
+
+    for (const name of ['@types/react', '@types/react-dom', 'react', 'react-dom']) {
+      expect(pkg.devDependencies?.[name]).toBe('catalog:react');
+    }
   });
 
   /** Public npm package with tsdown bundler */
@@ -277,7 +295,7 @@ describe('workspace-package-generator – package.json.hbs rendering', () => {
     expect(pkg.files).toContain('dist');
     expect(pkg.scripts?.build).toBe('tsdown');
     expect(pkg.devDependencies?.['@pixpilot/tsdown-config']).toBeDefined();
-    expect(pkg.devDependencies?.tsdown).toBe('catalog:dev');
+    expect(pkg.devDependencies?.tsdown).toBe('catalog:tooling');
   });
 
   /** Private npm package with tsc bundler */

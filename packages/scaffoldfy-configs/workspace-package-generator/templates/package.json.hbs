@@ -5,7 +5,7 @@
   {{#unless isPublishablePackage}}
   "private": true,
   {{/unless}}
-  "packageManager": "pnpm@10.17.0",
+  "packageManager": "pnpm@10.34.5",
   {{#if author}}
   "author": "{{author}} <{{authorEmail}}>",
   {{/if}}
@@ -93,39 +93,39 @@
     {{#if isPublishablePackage}}
     {{#if isBundlerTsdown}}
     {{#unless hasTsdownConfig}}
-    "{{tsdownConfigPackage}}": "^1.0.0",
+    "{{tsdownConfigPackage}}": "catalog:tooling",
     {{/unless}}
     {{/if}}
     {{/if}}
-    "@types/node": "catalog:dev",
+    "@types/node": "catalog:tooling",
     {{#if isReactPackage}}
     {{#if isPublishablePackage}}
-    "@types/react": "^19.0.0",
-    "@types/react-dom": "^19.0.0",
+    "@types/react": "catalog:react",
+    "@types/react-dom": "catalog:react",
     {{else}}
-    "@types/react": "catalog:",
-    "@types/react-dom": "catalog:",
+    "@types/react": "catalog:react",
+    "@types/react-dom": "catalog:react",
     {{/if}}
     {{/if}}
-    "@vitest/coverage-v8": "catalog:dev",
-    "@vitest/ui": "catalog:dev",
-    "eslint": "catalog:dev",
+    "@vitest/coverage-v8": "catalog:testing",
+    "@vitest/ui": "catalog:testing",
+    "eslint": "catalog:tooling",
     {{#if isReactPackage}}
     {{#if isPublishablePackage}}
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
+    "react": "catalog:react",
+    "react-dom": "catalog:react",
     {{else}}
-    "react": "catalog:",
-    "react-dom": "catalog:",
+    "react": "catalog:react",
+    "react-dom": "catalog:react",
     {{/if}}
     {{/if}}
     {{#if isPublishablePackage}}
     {{#if isBundlerTsdown}}
-    "tsdown": "catalog:dev",
+    "tsdown": "catalog:tooling",
     {{/if}}
     {{/if}}
-    "typescript": "catalog:dev",
-    "vitest": "catalog:dev"
+    "typescript": "catalog:tooling",
+    "vitest": "catalog:testing"
   },
   "prettier": "@internal/prettier-config"
 }
