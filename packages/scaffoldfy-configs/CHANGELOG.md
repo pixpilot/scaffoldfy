@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy-configs
 
+## 0.48.0
+
+### Minor Changes
+
+- add support for pre-set answers in configuration
+
 ## 0.47.0
 
 ### Minor Changes
