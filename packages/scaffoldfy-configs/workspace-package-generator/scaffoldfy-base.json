@@ -152,7 +152,7 @@
       "type": "select",
       "message": "Select a bundler for this package",
       "choices": [
-        { "name": "TypeScript Compiler (tsc)", "value": "tsc" },
+        { "name": "TypeScript Compiler (tsc)", "value": "tsdown" },
         { "name": "tsdown", "value": "tsdown" }
       ],
       "default": "tsc",
