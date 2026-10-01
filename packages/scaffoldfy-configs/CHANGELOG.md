@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy-configs
 
+## 0.48.2
+
+### Patch Changes
+
+- update bundler choice from `tsc` to `tsdown`
+
 ## 0.48.1
 
 ### Patch Changes
