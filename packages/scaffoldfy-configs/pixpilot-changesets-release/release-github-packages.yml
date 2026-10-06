@@ -15,7 +15,8 @@ jobs:
     uses: ./.github/workflows/ci.yml
     # Called workflows get no secrets unless passed; without this the CI
     # install runs with an empty PIXPILOT_PRIVATE_REGISTRY_TOKEN and 401s.
-    secrets: inherit
+    secrets:
+      PIXPILOT_PRIVATE_REGISTRY_TOKEN: ${{ secrets.PIXPILOT_PRIVATE_REGISTRY_TOKEN }}
 
   release:
     name: Create Release and Publish
