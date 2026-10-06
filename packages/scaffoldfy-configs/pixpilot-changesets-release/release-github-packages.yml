@@ -13,6 +13,9 @@ jobs:
   ci:
     name: Run CI Checks
     uses: ./.github/workflows/ci.yml
+    # Called workflows get no secrets unless passed; without this the CI
+    # install runs with an empty PIXPILOT_PRIVATE_REGISTRY_TOKEN and 401s.
+    secrets: inherit
 
   release:
     name: Create Release and Publish
@@ -49,6 +52,11 @@ jobs:
 
       - name: Setup project
         uses: pixpilot/github-actions/setup-pnpm-project@v1
+        env:
+          # setup-node's .npmrc reads ${NODE_AUTH_TOKEN}; it is needed to install
+          # @pixpilot-private dependencies. npm-auth-token would not work here:
+          # it writes ~/.npmrc, which setup-node's NPM_CONFIG_USERCONFIG shadows.
+          NODE_AUTH_TOKEN: ${{ secrets.PIXPILOT_PRIVATE_REGISTRY_TOKEN }}
         with:
           registry-url: 'https://npm.pkg.github.com'
           # setup-node defaults the scope to the repository owner. Left to that
