@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy-configs
 
+## 0.48.5
+
+### Patch Changes
+
+- specify secrets for CI to avoid 401 errors
+
 ## 0.48.4
 
 ### Patch Changes
