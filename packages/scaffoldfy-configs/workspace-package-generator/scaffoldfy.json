@@ -193,6 +193,18 @@
       }
     },
     {
+      "id": "resolve-catalogs",
+      "name": "Resolve catalog references",
+      "description": "Point catalog: dependencies at the catalogs defined in pnpm-workspace.yaml",
+      "type": "exec-file",
+      "required": false,
+      "config": {
+        "file": "./scripts/resolve-catalogs.cjs",
+        "runtime": "node",
+        "args": ["--file={{workspace}}/{{packageBaseName}}/package.json"]
+      }
+    },
+    {
       "id": "install-dependencies",
       "name": "Install dependencies",
       "description": "Run pnpm install to install workspace dependencies",

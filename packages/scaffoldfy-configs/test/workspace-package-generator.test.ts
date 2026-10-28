@@ -73,6 +73,34 @@ function runAddDeps(
   }
 }
 
+/**
+ * Run the resolve-catalogs.cjs script against a temp pnpm-workspace.yaml and
+ * return the resulting package.json as an object.
+ */
+function runResolveCatalogs(
+  initialPkg: Record<string, unknown>,
+  workspaceYaml: string | undefined,
+): Record<string, Record<string, string>> {
+  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'scaffoldfy-test-'));
+  const pkgFile = path.join(tmpDir, 'package.json');
+  try {
+    fs.writeFileSync(pkgFile, JSON.stringify(initialPkg, null, 2));
+    if (workspaceYaml !== undefined) {
+      fs.writeFileSync(path.join(tmpDir, 'pnpm-workspace.yaml'), workspaceYaml);
+    }
+    execSync(
+      `node ${JSON.stringify(path.join(SCRIPTS_DIR, 'resolve-catalogs.cjs'))} --file=${JSON.stringify(pkgFile)}`,
+      { cwd: tmpDir, encoding: 'utf8', stdio: 'pipe' },
+    );
+    return JSON.parse(fs.readFileSync(pkgFile, 'utf8')) as Record<
+      string,
+      Record<string, string>
+    >;
+  } finally {
+    fs.rmSync(tmpDir, { recursive: true, force: true });
+  }
+}
+
 /* -------------------------------------------------------------------------- */
 /*  Schema validation                                                          */
 /* -------------------------------------------------------------------------- */
@@ -201,6 +229,84 @@ describe('workspace-package-generator – add-dependencies script', () => {
     } finally {
       fs.rmSync(tmpDir, { recursive: true, force: true });
     }
+  });
+});
+
+describe('workspace-package-generator – resolve-catalogs script', () => {
+  const workspaceYaml = [
+    'packages:',
+    '  - packages/*',
+    '',
+    'catalog:',
+    '  zod: ^4.0.0',
+    '',
+    'catalogs:',
+    '  # grouped by usage',
+    '  typescript:',
+    "    '@types/node': ^22.0.0",
+    '    typescript: ^5.9.3',
+    '',
+    '  lint:',
+    '    eslint: ^9.37.0 # pinned',
+    '',
+    '  testing:',
+    '    vitest: ^3.2.7',
+    '',
+    'overrides:',
+    "  typescript: 'catalog:typescript'",
+    '',
+  ].join('\n');
+
+  it('should keep references to catalogs that define the dependency', () => {
+    const pkg = runResolveCatalogs(
+      { devDependencies: { vitest: 'catalog:testing' } },
+      workspaceYaml,
+    );
+
+    expect(pkg.devDependencies?.vitest).toBe('catalog:testing');
+  });
+
+  it('should move references to the catalog that defines the dependency', () => {
+    const pkg = runResolveCatalogs(
+      {
+        devDependencies: {
+          '@types/node': 'catalog:tooling',
+          eslint: 'catalog:tooling',
+          typescript: 'catalog:tooling',
+        },
+      },
+      workspaceYaml,
+    );
+
+    expect(pkg.devDependencies).toEqual({
+      '@types/node': 'catalog:typescript',
+      eslint: 'catalog:lint',
+      typescript: 'catalog:typescript',
+    });
+  });
+
+  it('should prefer the default catalog over other named catalogs', () => {
+    const pkg = runResolveCatalogs(
+      { dependencies: { zod: 'catalog:validation' } },
+      workspaceYaml,
+    );
+
+    expect(pkg.dependencies?.zod).toBe('catalog:');
+  });
+
+  it('should fall back to "*" when no catalog defines the dependency', () => {
+    const pkg = runResolveCatalogs(
+      { devDependencies: { tsdown: 'catalog:tooling', lodash: '^4.0.0' } },
+      workspaceYaml,
+    );
+
+    expect(pkg.devDependencies).toEqual({ tsdown: '*', lodash: '^4.0.0' });
+  });
+
+  it('should leave the file unchanged without pnpm-workspace.yaml', () => {
+    const initial = { devDependencies: { eslint: 'catalog:tooling' } };
+
+    expect(runResolveCatalogs(initial, undefined)).toEqual(initial);
   });
 });
 
