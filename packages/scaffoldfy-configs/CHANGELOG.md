@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy-configs
 
+## 0.48.6
+
+### Patch Changes
+
+- remove secrets from CI job
+
 ## 0.48.5
 
 ### Patch Changes
