@@ -1,5 +1,12 @@
 # @pixpilot/scaffoldfy-configs
 
+## 0.49.0
+
+### Minor Changes
+
+- add resolve-catalogs script and update scaffoldfy.json
+- 5f94837: workspace-package-generator: resolve `catalog:` references in the generated package.json against the catalogs defined in the workspace's pnpm-workspace.yaml, so workspaces can group catalogs by usage instead of matching the template's catalog names.
+
 ## 0.48.6
 
 ### Patch Changes
