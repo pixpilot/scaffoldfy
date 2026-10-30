@@ -1,5 +1,18 @@
 # @pixpilot/scaffoldfy-configs
 
+## 0.50.0
+
+### Minor Changes
+
+- add a new feature package generator for Stackforge
+- 74e9279: Add `feature-package-generator`: a Stackforge feature package (db, services, trpc, types, client, ui, a dashboard page and a PGlite test database) that extending configs customise through `extraEntryPoints`, `extraDependencies`, `extraDevDependencies` and task overrides.
+
+### Patch Changes
+
+- correct JSON syntax in README
+- correct JSON structure in README
+- 5327c5a: fix ci
+
 ## 0.49.0
 
 ### Minor Changes
