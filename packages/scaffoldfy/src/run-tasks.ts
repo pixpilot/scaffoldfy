@@ -26,7 +26,10 @@ import { evaluateRequiredAsync } from './utils/evaluate-required';
 import { debug, info, success as logSuccess, warn } from './utils/logger';
 import {
   collectVariables,
+  findPromptDependentVariables,
+  isConditionalVariable,
   resolveAllVariableValues,
+  resolveVariablesIntoContext,
   validateVariables,
 } from './variables/index';
 
@@ -127,6 +130,12 @@ export async function runTasks(
   const variables: VariableDefinition[] = options.variables ?? [];
   const allVariables: VariableDefinition[] = [...variables];
 
+  // Variables that interpolate prompt answers wait until prompts are collected
+  const promptDependentIds = findPromptDependentVariables(
+    allVariables,
+    (options.prompts ?? []).map((prompt) => prompt.id),
+  );
+
   // Validate variables
   if (allVariables.length > 0) {
     const variableErrors = validateVariables(allVariables);
@@ -137,12 +146,14 @@ export async function runTasks(
       process.exit(1);
     }
 
-    // Resolve non-conditional variable values first (execute commands in parallel)
-    // Conditional variables will be resolved after prompts are collected
+    // Resolve variable values that need no prompt answers first
+    // Conditional and prompt-dependent variables are resolved after prompts are collected
     debug('Resolving variable values...');
-    const resolvedVariableValues = await resolveAllVariableValues(allVariables, config, {
-      skipConditional: true,
-    });
+    const resolvedVariableValues = await resolveAllVariableValues(
+      allVariables.filter((variable) => !promptDependentIds.has(variable.id)),
+      config,
+      { skipConditional: true },
+    );
 
     // Collect all variable values and merge into config
     const variableValues = await collectVariables(
@@ -196,33 +207,21 @@ export async function runTasks(
   }
 
   // ============================================================================
-  // Re-resolve Conditional Variables (after prompts are collected)
+  // Resolve Conditional and Prompt-Dependent Variables (after prompts are collected)
   // ============================================================================
-  // Now that we have all prompt values in config, resolve conditional variables
+  // Now that we have all prompt values in config, resolve them in declaration order
   if (allVariables.length > 0) {
-    // Check if there are any conditional variables
-    const conditionalVariables = allVariables.filter((v) => {
-      if (typeof v.value === 'object' && v.value !== null && !Array.isArray(v.value)) {
-        const valueConfig = v.value as { type?: string };
-        return valueConfig.type === 'conditional';
-      }
-      return false;
-    });
+    const conditionalVariables = allVariables.filter(
+      (v) => isConditionalVariable(v) || promptDependentIds.has(v.id),
+    );
 
     if (conditionalVariables.length > 0) {
       debug('Re-resolving conditional variables with prompt values...');
-      const resolvedConditionalValues = await resolveAllVariableValues(
+      // One at a time, so each sees the transformed values of earlier ones
+      const conditionalValues = await resolveVariablesIntoContext(
         conditionalVariables,
         config,
       );
-
-      // Merge conditional variable values into config
-      const conditionalValues = await collectVariables(
-        conditionalVariables,
-        resolvedConditionalValues,
-        config,
-      );
-      Object.assign(config, conditionalValues);
 
       if (Object.keys(conditionalValues).length > 0) {
         debug(

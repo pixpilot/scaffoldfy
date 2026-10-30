@@ -338,10 +338,10 @@ In the last example, if `orgName` is `"myorg"`, it uses a static email. Otherwis
 
 Conditional variables are resolved in **two passes**:
 
-1. **First pass** (before prompts): Non-conditional variables are resolved
-2. **Second pass** (after prompts): Conditional variables are resolved with access to prompt values
+1. **First pass** (before prompts): Non-conditional variables are resolved, except those that use a prompt answer
+2. **Second pass** (after prompts): Conditional variables, and every variable whose value uses a prompt in a `{{placeholder}}` (directly or through another such variable), are resolved in declaration order with access to prompt values
 
-This allows conditional variables to depend on user input from prompts.
+This allows variables to depend on user input from prompts. In the second pass each variable's transformers run before the next variable resolves, so `{{featurePascal}}Screen` sees the transformed `featurePascal`.
 
 #### Dynamic Configuration Enabling
 
@@ -431,7 +431,7 @@ The `apiServiceName` variable will have the value "my-app-api".
 
 #### Referencing Prompts in Variable Values
 
-Variables can reference values from prompts (since prompts are resolved before variables in the second pass):
+Variables can reference values from prompts: a variable that uses a prompt in a `{{placeholder}}` resolves after prompts are collected, with its transformers applied:
 
 ```json
 {

@@ -2,9 +2,22 @@ import type { CurrentConfigurationContext, ScaffoldfyConfiguration } from '../ty
 import process from 'node:process';
 import {
   collectVariables,
+  findPromptDependentVariables,
+  isConditionalVariable,
   resolveAllVariableValues,
+  resolveVariablesIntoContext,
   validateVariables,
 } from '../variables';
+
+/**
+ * Ids of this config's variables that interpolate its prompt answers
+ */
+function getPromptDependentIds(config: ScaffoldfyConfiguration): Set<string> {
+  return findPromptDependentVariables(
+    config.variables ?? [],
+    (config.prompts ?? []).map((prompt) => prompt.id),
+  );
+}
 
 /**
  * Process variables for a single config
@@ -23,16 +36,22 @@ export async function processConfigVariables(
       process.exit(1);
     }
 
+    // Variables that interpolate prompt answers wait until prompts are collected
+    const promptDependentIds = getPromptDependentIds(config);
+    const readyVariables = configVariables.filter(
+      (variable) => !promptDependentIds.has(variable.id),
+    );
+
     // Resolve non-conditional variables first
     const resolvedVariableValues = await resolveAllVariableValues(
-      configVariables,
+      readyVariables,
       context,
       { skipConditional: true },
     );
 
     // Collect and merge into config
     const variableValues = await collectVariables(
-      configVariables,
+      readyVariables,
       resolvedVariableValues,
       context,
     );
@@ -40,13 +59,17 @@ export async function processConfigVariables(
 
     // Resolve conditional variables once before prompts are collected.
     // Some prompt enabled/required conditions may reference these values.
-    await processConfigConditionalVariables(config, context);
+    await resolveVariablesIntoContext(
+      readyVariables.filter(isConditionalVariable),
+      context,
+    );
   }
 }
 
 /**
- * Re-resolve conditional variables for a single config using the latest context.
- * This should be called after prompts are collected so conditions can use prompt answers.
+ * Re-resolve conditional variables, and resolve variables that interpolate prompt
+ * answers, for a single config using the latest context.
+ * This should be called after prompts are collected.
  */
 export async function processConfigConditionalVariables(
   config: ScaffoldfyConfiguration,
@@ -57,24 +80,12 @@ export async function processConfigConditionalVariables(
     return;
   }
 
-  const conditionalVariables = configVariables.filter((v) => {
-    if (typeof v.value === 'object' && v.value !== null && !Array.isArray(v.value)) {
-      const valueConfig = v.value as { type?: string };
-      return valueConfig.type === 'conditional';
-    }
-    return false;
-  });
-
-  if (conditionalVariables.length > 0) {
-    const resolvedConditionalValues = await resolveAllVariableValues(
-      conditionalVariables,
-      context,
-    );
-    const conditionalValues = await collectVariables(
-      conditionalVariables,
-      resolvedConditionalValues,
-      context,
-    );
-    Object.assign(context, conditionalValues);
-  }
+  const promptDependentIds = getPromptDependentIds(config);
+  await resolveVariablesIntoContext(
+    configVariables.filter(
+      (variable) =>
+        isConditionalVariable(variable) || promptDependentIds.has(variable.id),
+    ),
+    context,
+  );
 }
