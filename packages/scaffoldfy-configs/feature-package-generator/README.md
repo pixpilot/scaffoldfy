@@ -38,8 +38,8 @@ Every task id starts with `feature-`. Override one with a task of the same id (i
     { "id": "extraEntryPoints", "value": { "type": "static", "value": ["jobs"] } },
     {
       "id": "extraDevDependencies",
-      "value": { "type": "static", "value": "@electric-sql/pglite-pgvector" }
-    }
+      "value": { "type": "static", "value": "@electric-sql/pglite-pgvector" },
+    },
   ],
   "tasks": [
     {
@@ -48,10 +48,10 @@ Every task id starts with `feature-`. Override one with a task of the same id (i
       "type": "create",
       "config": {
         "file": "{{featureDirectory}}/src/jobs/index.ts",
-        "templateFile": "./templates/jobs.ts.hbs"
-      }
-    }
-  ]
+        "templateFile": "./templates/jobs.ts.hbs",
+      },
+    },
+  ],
 }
 ```
 
