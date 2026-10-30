@@ -1,0 +1,316 @@
+{
+  "$schema": "../node_modules/@pixpilot/scaffoldfy/schema/scaffoldfy.schema.json",
+  "name": "feature-package-generator",
+  "description": "Generate a feature package for a Stackforge workspace: db, services, trpc, types, client and ui entry points, a dashboard page and a PGlite test database. Extend it to add entry points, dependencies or files.",
+  "prompts": [
+    {
+      "id": "featureName",
+      "type": "input",
+      "message": "Feature name, as its package folder (e.g. knowledge)",
+      "required": true,
+      "transformers": ["kebabcase"]
+    }
+  ],
+  "variables": [
+    {
+      "id": "featurePascal",
+      "value": {
+        "type": "interpolate",
+        "value": "{{featureName}}"
+      },
+      "transformers": ["pascalcase"]
+    },
+    {
+      "id": "featureCamel",
+      "value": {
+        "type": "interpolate",
+        "value": "{{featureName}}"
+      },
+      "transformers": ["camelcase"]
+    },
+    {
+      "id": "featureConstant",
+      "value": {
+        "type": "interpolate",
+        "value": "{{featureName}}"
+      },
+      "transformers": ["constantcase"]
+    },
+    {
+      "id": "featureTitle",
+      "value": {
+        "type": "interpolate",
+        "value": "{{featureName}}"
+      },
+      "transformers": ["titlecase"]
+    },
+    {
+      "id": "packageName",
+      "value": {
+        "type": "interpolate",
+        "value": "@internal/{{featureName}}"
+      }
+    },
+    {
+      "id": "featureDirectory",
+      "value": {
+        "type": "interpolate",
+        "value": "packages/{{featureName}}"
+      }
+    },
+    {
+      "id": "featurePagePath",
+      "value": {
+        "type": "interpolate",
+        "value": "/dashboard/{{featureName}}"
+      }
+    },
+    {
+      "id": "relativeRootPath",
+      "value": "../../"
+    },
+    {
+      "id": "extraEntryPoints",
+      "value": {
+        "type": "static",
+        "value": []
+      }
+    },
+    {
+      "id": "extraDependencies",
+      "value": {
+        "type": "static",
+        "value": ""
+      }
+    },
+    {
+      "id": "extraDevDependencies",
+      "value": {
+        "type": "static",
+        "value": ""
+      }
+    }
+  ],
+  "tasks": [
+    {
+      "id": "feature-package-json",
+      "name": "Create package.json",
+      "type": "create",
+      "config": {
+        "file": "{{featureDirectory}}/package.json",
+        "templateFile": "./templates/package.json.hbs"
+      }
+    },
+    {
+      "id": "feature-readme",
+      "name": "Create README.md",
+      "type": "create",
+      "config": {
+        "file": "{{featureDirectory}}/README.md",
+        "templateFile": "./templates/README.md.hbs"
+      }
+    },
+    {
+      "id": "feature-tsconfig",
+      "name": "Create tsconfig.json",
+      "type": "create",
+      "config": {
+        "file": "{{featureDirectory}}/tsconfig.json",
+        "templateFile": "./templates/tsconfig.json.hbs"
+      }
+    },
+    {
+      "id": "feature-eslint-config",
+      "name": "Create eslint.config.mjs",
+      "type": "create",
+      "config": {
+        "file": "{{featureDirectory}}/eslint.config.mjs",
+        "templateFile": "./templates/eslint.config.mjs.hbs"
+      }
+    },
+    {
+      "id": "feature-vitest-config",
+      "name": "Create vitest.config.ts",
+      "type": "create",
+      "config": {
+        "file": "{{featureDirectory}}/vitest.config.ts",
+        "templateFile": "./templates/vitest.config.ts.hbs"
+      }
+    },
+    {
+      "id": "feature-paths",
+      "name": "Create src/paths.ts",
+      "type": "create",
+      "config": {
+        "file": "{{featureDirectory}}/src/paths.ts",
+        "templateFile": "./templates/src/paths.ts.hbs"
+      }
+    },
+    {
+      "id": "feature-db-schema",
+      "name": "Create src/db/schema.ts",
+      "type": "create",
+      "config": {
+        "file": "{{featureDirectory}}/src/db/schema.ts",
+        "templateFile": "./templates/src/db/schema.ts.hbs"
+      }
+    },
+    {
+      "id": "feature-db-index",
+      "name": "Create src/db/index.ts",
+      "type": "create",
+      "config": {
+        "file": "{{featureDirectory}}/src/db/index.ts",
+        "templateFile": "./templates/src/db/index.ts.hbs"
+      }
+    },
+    {
+      "id": "feature-services",
+      "name": "Create src/services/index.ts",
+      "type": "create",
+      "config": {
+        "file": "{{featureDirectory}}/src/services/index.ts",
+        "templateFile": "./templates/src/services/index.ts.hbs"
+      }
+    },
+    {
+      "id": "feature-trpc-router",
+      "name": "Create src/trpc/router.ts",
+      "type": "create",
+      "config": {
+        "file": "{{featureDirectory}}/src/trpc/router.ts",
+        "templateFile": "./templates/src/trpc/router.ts.hbs"
+      }
+    },
+    {
+      "id": "feature-trpc-index",
+      "name": "Create src/trpc/index.ts",
+      "type": "create",
+      "config": {
+        "file": "{{featureDirectory}}/src/trpc/index.ts",
+        "templateFile": "./templates/src/trpc/index.ts.hbs"
+      }
+    },
+    {
+      "id": "feature-types",
+      "name": "Create src/types/index.ts",
+      "type": "create",
+      "config": {
+        "file": "{{featureDirectory}}/src/types/index.ts",
+        "templateFile": "./templates/src/types/index.ts.hbs"
+      }
+    },
+    {
+      "id": "feature-client",
+      "name": "Create src/client/index.ts",
+      "type": "create",
+      "config": {
+        "file": "{{featureDirectory}}/src/client/index.ts",
+        "templateFile": "./templates/src/client/index.ts.hbs"
+      }
+    },
+    {
+      "id": "feature-ui-screen",
+      "name": "Create the page screen",
+      "type": "create",
+      "config": {
+        "file": "{{featureDirectory}}/src/ui/{{featurePascal}}Screen.tsx",
+        "templateFile": "./templates/src/ui/Screen.tsx.hbs"
+      }
+    },
+    {
+      "id": "feature-ui-nav",
+      "name": "Create src/ui/nav.tsx",
+      "type": "create",
+      "config": {
+        "file": "{{featureDirectory}}/src/ui/nav.tsx",
+        "templateFile": "./templates/src/ui/nav.tsx.hbs"
+      }
+    },
+    {
+      "id": "feature-ui-index",
+      "name": "Create src/ui/index.ts",
+      "type": "create",
+      "config": {
+        "file": "{{featureDirectory}}/src/ui/index.ts",
+        "templateFile": "./templates/src/ui/index.ts.hbs"
+      }
+    },
+    {
+      "id": "feature-test-nav",
+      "name": "Create test/nav.test.ts",
+      "type": "create",
+      "config": {
+        "file": "{{featureDirectory}}/test/nav.test.ts",
+        "templateFile": "./templates/test/nav.test.ts.hbs"
+      }
+    },
+    {
+      "id": "feature-test-db",
+      "name": "Create test/db.ts",
+      "type": "create",
+      "config": {
+        "file": "{{featureDirectory}}/test/db.ts",
+        "templateFile": "./templates/test/db.ts.hbs"
+      }
+    },
+    {
+      "id": "feature-test-db-check",
+      "name": "Create test/db.test.ts",
+      "type": "create",
+      "config": {
+        "file": "{{featureDirectory}}/test/db.test.ts",
+        "templateFile": "./templates/test/db.test.ts.hbs"
+      }
+    },
+    {
+      "id": "feature-add-dependencies",
+      "name": "Add extra dependencies",
+      "description": "Add extraDependencies and extraDevDependencies, then sort the dependency maps",
+      "type": "exec-file",
+      "config": {
+        "file": "./scripts/add-package-dependencies.cjs",
+        "runtime": "node",
+        "args": [
+          "--file={{featureDirectory}}/package.json",
+          "--dependencies={{extraDependencies}}",
+          "--dev-dependencies={{extraDevDependencies}}"
+        ]
+      }
+    },
+    {
+      "id": "feature-resolve-catalogs",
+      "name": "Resolve catalog references",
+      "description": "Point catalog: dependencies at the catalogs defined in pnpm-workspace.yaml",
+      "type": "exec-file",
+      "required": false,
+      "dependencies": ["feature-add-dependencies"],
+      "config": {
+        "file": "../workspace-package-generator/scripts/resolve-catalogs.cjs",
+        "runtime": "node",
+        "args": ["--file={{featureDirectory}}/package.json"]
+      }
+    },
+    {
+      "id": "feature-install",
+      "name": "Install dependencies",
+      "type": "exec",
+      "required": false,
+      "dependencies": ["feature-resolve-catalogs"],
+      "config": {
+        "command": "pnpm install"
+      }
+    },
+    {
+      "id": "feature-tidy",
+      "name": "Sort exports and format",
+      "description": "Export order and table widths depend on the name, so eslint --fix and prettier settle them. Extending configs add their tasks to this task's dependencies.",
+      "type": "exec",
+      "required": false,
+      "dependencies": ["feature-install"],
+      "config": {
+        "command": "pnpm --filter {{packageName}} exec eslint --fix . && pnpm --filter {{packageName}} exec prettier --write . --ignore-path {{relativeRootPath}}.gitignore --ignore-path {{relativeRootPath}}.prettierignore"
+      }
+    }
+  ]
+}

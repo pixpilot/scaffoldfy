@@ -1,0 +1,6 @@
+/*
+ * Tables only: the database package aggregates them and higher features'
+ * db/ references them by foreign key. Services import operations from their
+ * own files in db/, never from here or from schema.ts.
+ */
+export * from './schema';

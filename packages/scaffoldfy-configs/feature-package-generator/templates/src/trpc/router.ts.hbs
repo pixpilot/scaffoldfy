@@ -1,0 +1,11 @@
+import { createTRPCFactory } from '@internal/trpc';
+
+// Add procedures from `createProcedures(t)`, as `@internal/trpc`'s own routers do:
+// input schema → service → result.
+const t = createTRPCFactory();
+
+/** The {{featureTitle}} procedures; `@internal/api` mounts them as `{{featureCamel}}`. */
+// eslint-disable-next-line ts/explicit-module-boundary-types -- preserve inferred router types
+export function create{{featurePascal}}Router() {
+  return t.router({});
+}

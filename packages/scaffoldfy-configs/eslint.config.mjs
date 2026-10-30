@@ -5,6 +5,8 @@ import baseConfig from '@internal/eslint-config/base';
 /** @type {import('eslint').Linter.Config[]} */
 export default [
   ...(await baseConfig()),
+  // Templates are rendered with Handlebars first, so they are not valid source.
+  { ignores: ['feature-package-generator/templates/**'] },
   {
     files: ['test/**/*.test.ts'],
     rules: {

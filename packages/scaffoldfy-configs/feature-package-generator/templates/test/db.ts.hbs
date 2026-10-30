@@ -1,0 +1,16 @@
+import type { PgliteDatabase } from 'drizzle-orm/pglite';
+import { fileURLToPath } from 'node:url';
+import { createPostgresqlTestDb } from '@pixpilot/drizzle-test-pglite';
+import * as schema from '../src/db';
+
+const dbFolder = fileURLToPath(new URL('../src/db', import.meta.url));
+
+/** An in-memory Postgres holding this feature's tables; one per test worker. */
+export const { createTestDb } = createPostgresqlTestDb<PgliteDatabase<typeof schema>>({
+  schema,
+  cache: {
+    directory: fileURLToPath(new URL('../node_modules/.cache/pglite', import.meta.url)),
+    key: '{{featureName}}',
+    watchedPaths: [dbFolder],
+  },
+});

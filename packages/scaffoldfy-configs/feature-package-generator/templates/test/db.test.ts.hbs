@@ -1,0 +1,15 @@
+import { sql } from 'drizzle-orm';
+import { createTestDb } from './db';
+
+describe('test database', () => {
+  it('answers queries', async () => {
+    const db = await createTestDb();
+    try {
+      const { rows } = await db.execute<{ ok: number }>(sql`select 1 as ok`);
+
+      expect(rows).toEqual([{ ok: 1 }]);
+    } finally {
+      await db.$client.close();
+    }
+  });
+});

@@ -1,0 +1,62 @@
+{
+  "name": "{{packageName}}",
+  "type": "module",
+  "version": "0.0.0",
+  "private": true,
+  "license": "NONE",
+  "keywords": [],
+  "exports": {
+    "./db": "./src/db/index.ts",
+    "./services": "./src/services/index.ts",
+    "./trpc": "./src/trpc/index.ts",
+{{#each extraEntryPoints}}
+    "./{{this}}": "./src/{{this}}/index.ts",
+{{/each}}
+    "./types": "./src/types/index.ts",
+    "./client": "./src/client/index.ts",
+    "./ui": "./src/ui/index.ts"
+  },
+  "scripts": {
+    "clean": "git clean -xdf .cache .turbo dist",
+    "clean:all": "pnpm clean && git clean -xdf node_modules",
+    "test": "vitest --run --passWithNoTests",
+    "test:watch": "vitest --watch",
+    "test:ui": "vitest --ui --watch",
+    "test:coverage": "vitest --coverage",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint",
+    "format": "prettier --check . --ignore-path {{relativeRootPath}}.gitignore --ignore-path {{relativeRootPath}}.prettierignore"
+  },
+  "peerDependencies": {
+    "react": "catalog:",
+    "react-dom": "catalog:"
+  },
+  "dependencies": {
+    "@internal/dashboard": "workspace:*",
+    "@internal/trpc": "workspace:*",
+    "@pixpilot/shadcn-dashboard": "catalog:",
+    "drizzle-orm": "catalog:",
+    "lucide-react": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "catalog:",
+    "@internal/eslint-config": "workspace:*",
+    "@internal/prettier-config": "workspace:*",
+    "@internal/tsconfig": "workspace:*",
+    "@internal/vitest-config": "workspace:*",
+    "@pixpilot/drizzle-test-pglite": "catalog:",
+    "@types/node": "catalog:",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "@vitest/coverage-v8": "catalog:",
+    "@vitest/ui": "catalog:",
+    "drizzle-kit": "catalog:",
+    "eslint": "catalog:",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  },
+  "prettier": "@internal/prettier-config"
+}

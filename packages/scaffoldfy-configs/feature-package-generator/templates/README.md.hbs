@@ -1,0 +1,31 @@
+# {{packageName}}
+
+{{featureTitle}}: add one line on what this feature owns.
+
+Delete the entry points this feature does not use, from `src/` and from `exports` in `package.json`.
+
+## Entry points
+
+| Import | Contents | Runs in |
+| --- | --- | --- |
+| `{{packageName}}/db` | Tables, for the database aggregate and higher features' foreign keys | Server |
+| `{{packageName}}/services` | Use cases; other features and routers call these | Server |
+| `{{packageName}}/trpc` | `create{{featurePascal}}Router()` | Server |
+{{#each extraEntryPoints}}
+| `{{../packageName}}/{{this}}` | See `src/{{this}}/index.ts` | Server |
+{{/each}}
+| `{{packageName}}/types` | Types, Zod schemas, vocabulary | Browser |
+| `{{packageName}}/client` | Hooks shared with other hosts | Browser |
+| `{{packageName}}/ui` | `{{featurePascal}}Screen`, `{{featureConstant}}_NAV_ITEM`, `{{featureConstant}}_PATH` | Browser |
+
+## Wire it in
+
+1. `packages/database/src/schema/{{featureName}}.schema.ts`: `export * from '{{packageName}}/db';`, add it to `schema/index.ts`, then `pnpm db:generate`.
+2. `packages/api/src/trpc/app.router.ts`: `{{featureCamel}}: create{{featurePascal}}Router(),`.
+3. The web app: a page at `{{featurePagePath}}` rendering `{{featurePascal}}Screen`, and `{{featureConstant}}_NAV_ITEM` in the dashboard layout's nav items.
+
+Add this package as a dependency of each package that imports it.
+
+## Tests
+
+`test/db.ts` gives each test an in-memory Postgres (PGlite, via `@pixpilot/drizzle-test-pglite`) holding this feature's tables. Check one out with `await createTestDb()` in `beforeEach` and release it with `await db.$client.close()` in `afterEach`; tables are emptied between checkouts.

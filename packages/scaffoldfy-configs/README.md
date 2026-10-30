@@ -24,6 +24,16 @@ Usage:
 npx @pixpilot/scaffoldfy@latest --config https://unpkg.com/@pixpilot/scaffoldfy-configs@latest/codeql-private-repo/scaffoldfy.json
 ```
 
+### feature-package-generator
+
+Generate a feature package for a Stackforge workspace: db, services, trpc, types, client and ui entry points, a dashboard page and a PGlite test database. Extend it to add entry points, dependencies or files.
+
+Usage:
+
+```sh
+npx @pixpilot/scaffoldfy@latest --config https://unpkg.com/@pixpilot/scaffoldfy-configs@latest/feature-package-generator/scaffoldfy.json
+```
+
 ### github-action-release-app-token
 
 Replaces the release workflow of a github-action-template clone with the GitHub App token variant (RELEASER_ID / RELEASER_PRIVATE_KEY) for pixpilot and ccpu repositories

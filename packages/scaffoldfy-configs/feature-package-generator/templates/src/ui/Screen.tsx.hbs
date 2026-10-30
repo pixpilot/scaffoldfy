@@ -1,0 +1,17 @@
+'use client';
+
+import type { ReactNode } from 'react';
+import { DashboardPageContent, DashboardPageHeader } from '@pixpilot/shadcn-dashboard';
+import { Boxes } from 'lucide-react';
+
+/** The {{featureTitle}} page; the app's page at `{{featurePagePath}}` renders it. */
+export function {{featurePascal}}Screen(): ReactNode {
+  return (
+    <DashboardPageContent>
+      <DashboardPageHeader
+        icon={<Boxes className="size-5" aria-hidden="true" />}
+        title="{{featureTitle}}"
+      />
+    </DashboardPageContent>
+  );
+}

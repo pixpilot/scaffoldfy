@@ -1,0 +1,10 @@
+import type { DashboardNavItem } from '@internal/dashboard';
+import { Boxes } from 'lucide-react';
+import { {{featureConstant}}_PATH } from '../paths';
+
+/** The sidebar link to the {{featureTitle}} page. */
+export const {{featureConstant}}_NAV_ITEM: DashboardNavItem = {
+  href: {{featureConstant}}_PATH,
+  label: '{{featureTitle}}',
+  icon: <Boxes className="size-4" aria-hidden="true" />,
+};

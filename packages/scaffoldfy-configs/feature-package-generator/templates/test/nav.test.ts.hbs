@@ -1,0 +1,10 @@
+import { {{featureConstant}}_NAV_ITEM, {{featureConstant}}_PATH } from '../src/ui';
+
+describe('sidebar link', () => {
+  it('links to the {{featureTitle}} page', () => {
+    expect({{featureConstant}}_NAV_ITEM).toMatchObject({
+      href: {{featureConstant}}_PATH,
+      label: '{{featureTitle}}',
+    });
+  });
+});
