@@ -31,15 +31,15 @@ Create a config that `extends` this one, then override variables or tasks by id:
 
 Every task id starts with `feature-`. Override one with a task of the same id (its `templateFile` resolves next to your config), e.g. `feature-test-db` to load a PGlite extension. Add notes to the generated README with an `append` task on `{{featureDirectory}}/README.md` that depends on `feature-readme`.
 
-```jsonc
+```json
 {
   "extends": "https://unpkg.com/@pixpilot/scaffoldfy-configs@<version>/feature-package-generator/scaffoldfy.json",
   "variables": [
     { "id": "extraEntryPoints", "value": { "type": "static", "value": ["jobs"] } },
     {
       "id": "extraDevDependencies",
-      "value": { "type": "static", "value": "@electric-sql/pglite-pgvector" },
-    },
+      "value": { "type": "static", "value": "@electric-sql/pglite-pgvector" }
+    }
   ],
   "tasks": [
     {
@@ -48,10 +48,10 @@ Every task id starts with `feature-`. Override one with a task of the same id (i
       "type": "create",
       "config": {
         "file": "{{featureDirectory}}/src/jobs/index.ts",
-        "templateFile": "./templates/jobs.ts.hbs",
-      },
-    },
-  ],
+        "templateFile": "./templates/jobs.ts.hbs"
+      }
+    }
+  ]
 }
 ```
 
