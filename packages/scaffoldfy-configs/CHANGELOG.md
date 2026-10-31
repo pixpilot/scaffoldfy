@@ -1,5 +1,15 @@
 # @pixpilot/scaffoldfy-configs
 
+## 0.51.0
+
+### Minor Changes
+
+- add CI tasks for GitHub Packages registry token
+
+### Patch Changes
+
+- 40d6b1c: pixpilot-changesets-release: declare PIXPILOT_PRIVATE_REGISTRY_TOKEN in ci.yml when publishing to GitHub Packages, so release.yml validates and CI can install @pixpilot-private dependencies
+
 ## 0.50.0
 
 ### Minor Changes
