@@ -1,100 +1,86 @@
 import fs from 'node:fs';
+import { createRequire } from 'node:module';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 
-interface RegexReplaceTask {
-  id: string;
-  type: string;
-  config: { file: string; pattern: string; flags?: string; replacement: string };
-}
-
-const configPath = path.join(
+const CONFIG_DIR = path.join(__dirname, '..', 'pixpilot-changesets-release');
+const SCAFFOLDFY_DIR = path.join(
   __dirname,
   '..',
-  'pixpilot-changesets-release',
-  'scaffoldfy.json',
+  'node_modules',
+  '@pixpilot',
+  'scaffoldfy',
 );
 
-// Mirrors .github/workflows/ci.yml in pnpm-turbo-monorepo-template and ts-npm-package-template.
-const templateCi = `name: CI
+// The Handlebars that scaffoldfy itself renders templates with.
+const requireFromScaffoldfy = createRequire(path.join(SCAFFOLDFY_DIR, 'package.json'));
+const Handlebars = requireFromScaffoldfy('handlebars') as typeof import('handlebars');
 
-on:
-  push:
-    branches:
-      - main
-  workflow_call:
-
-jobs:
-  ci:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup project
-        uses: pixpilot/github-actions/setup-pnpm-project@v1
-
-      - name: Lint
-        run: pnpm lint
-`;
-
-function applyCiTasks(content: string): string {
-  const { tasks } = JSON.parse(fs.readFileSync(configPath, 'utf-8')) as {
-    tasks: RegexReplaceTask[];
-  };
-  return tasks
-    .filter((task) => task.config.file === '.github/workflows/ci.yml')
-    .reduce(
-      (result, task) =>
-        result.replace(
-          new RegExp(task.config.pattern, task.config.flags ?? ''),
-          task.config.replacement,
-        ),
-      content,
-    );
+function render(template: string, releaseToGitHubPackages: boolean): string {
+  const content = fs.readFileSync(path.join(CONFIG_DIR, template), 'utf-8');
+  return Handlebars.compile(content)({ releaseToGitHubPackages });
 }
 
-describe('pixpilot-changesets-release', () => {
-  it('should declare the registry token passed by release-github-packages.yml in ci.yml', () => {
-    const releaseWorkflow = fs.readFileSync(
-      path.join(path.dirname(configPath), 'release-github-packages.yml'),
-      'utf-8',
+/** Secret names release.yml passes to the reusable CI workflow. */
+function passedCiSecrets(release: string): string[] {
+  const body = /\n {2}ci:\n(?<body>[\s\S]*?)\n {2}\w/u.exec(release)?.groups?.body ?? '';
+  return [...body.matchAll(/^ {6}(?<name>\w+): \$\{\{/gmu)].map(
+    (match) => match.groups!.name!,
+  );
+}
+
+/** Secret names ci.yml declares under on.workflow_call.secrets. */
+function workflowCallSecrets(ci: string): string[] {
+  const body =
+    /\n {2}workflow_call:\n(?<body>[\s\S]*?)\n\n/u.exec(ci)?.groups?.body ?? '';
+  return [...body.matchAll(/^ {6}(?<name>\w+):$/gmu)].map((match) => match.groups!.name!);
+}
+
+describe('pixpilot-changesets-release templates', () => {
+  it.each([true, false])(
+    'should declare in ci.yml every secret release.yml passes to CI (GitHub Packages: %s)',
+    (releaseToGitHubPackages) => {
+      const passed = passedCiSecrets(render('release.yml.hbs', releaseToGitHubPackages));
+
+      expect(passed).toEqual(
+        releaseToGitHubPackages ? ['PIXPILOT_PRIVATE_REGISTRY_TOKEN'] : [],
+      );
+      expect(workflowCallSecrets(render('ci.yml.hbs', releaseToGitHubPackages))).toEqual(
+        passed,
+      );
+    },
+  );
+
+  it('should keep GitHub expressions literal when publishing to GitHub Packages', () => {
+    const ci = render('ci.yml.hbs', true);
+    const release = render('release.yml.hbs', true);
+
+    expect(ci).toMatch(
+      /\n {10}NODE_AUTH_TOKEN: \$\{\{ secrets\.PIXPILOT_PRIVATE_REGISTRY_TOKEN \}\}\n/u,
     );
-    expect(releaseWorkflow).toMatch(
-      /PIXPILOT_PRIVATE_REGISTRY_TOKEN: \$\{\{ secrets\.PIXPILOT_PRIVATE_REGISTRY_TOKEN \}\}/u,
+    expect(ci).toContain("scope: '@pixpilot-private'");
+    expect(release).toMatch(
+      /\n {10}REGISTRY_TOKEN: \$\{\{ secrets\.PIXPILOT_PRIVATE_REGISTRY_TOKEN \}\}\n/u,
     );
+    expect(release).toContain("registry-url: 'https://npm.pkg.github.com'");
+    expect(release).toContain("provenance: 'false'");
+    expect(release).toContain('      packages: write\n');
+  });
 
-    expect(applyCiTasks(templateCi)).toBe(`name: CI
+  it('should leave the registry token out when publishing to npmjs', () => {
+    const ci = render('ci.yml.hbs', false);
+    const release = render('release.yml.hbs', false);
 
-on:
-  push:
-    branches:
-      - main
-  workflow_call:
-    # Declared so release.yml can pass it; called workflows get no secrets otherwise.
-    secrets:
-      PIXPILOT_PRIVATE_REGISTRY_TOKEN:
-        required: false
-
-jobs:
-  ci:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup project
-        uses: pixpilot/github-actions/setup-pnpm-project@v1
-        env:
-          # Read by setup-node's .npmrc to install @pixpilot-private dependencies.
-          NODE_AUTH_TOKEN: \${{ secrets.PIXPILOT_PRIVATE_REGISTRY_TOKEN }}
-        with:
-          registry-url: 'https://npm.pkg.github.com'
-          # Only route @pixpilot-private to GitHub Packages; @pixpilot stays on npmjs.
-          scope: '@pixpilot-private'
-
-      - name: Lint
-        run: pnpm lint
-`);
+    expect(ci).not.toContain('PIXPILOT_PRIVATE_REGISTRY_TOKEN');
+    expect(ci).toContain(
+      '        uses: pixpilot/github-actions/setup-pnpm-project@v1\n\n      - name: Lint\n',
+    );
+    expect(release).not.toContain('PIXPILOT_PRIVATE_REGISTRY_TOKEN');
+    expect(release).not.toContain('packages: write');
+    expect(release).toContain("registry-url: 'https://registry.npmjs.org'");
+    expect(release).toContain("provenance: 'true'");
+    expect(release).toMatch(
+      /\n {10}message: \$\{\{ needs\.release\.outputs\.release-summary \}\}\n/u,
+    );
   });
 });

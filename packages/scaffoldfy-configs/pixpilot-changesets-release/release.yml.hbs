@@ -13,10 +13,12 @@ jobs:
   ci:
     name: Run CI Checks
     uses: ./.github/workflows/ci.yml
+{{#if releaseToGitHubPackages}}
     # Called workflows get no secrets unless passed; without this the CI
     # install runs with an empty PIXPILOT_PRIVATE_REGISTRY_TOKEN and 401s.
     secrets:
-      PIXPILOT_PRIVATE_REGISTRY_TOKEN: ${{ secrets.PIXPILOT_PRIVATE_REGISTRY_TOKEN }}
+      PIXPILOT_PRIVATE_REGISTRY_TOKEN: $\{{ secrets.PIXPILOT_PRIVATE_REGISTRY_TOKEN }}
+{{/if}}
 
   release:
     name: Create Release and Publish
@@ -25,60 +27,72 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
+{{#if releaseToGitHubPackages}}
       # Packages publish to two registries (publishConfig.registry in each package.json):
       # @pixpilot-private/* to GitHub Packages, authenticated with REGISTRY_TOKEN.
       packages: write
       # @pixpilot/* to npmjs via npm trusted publishing (OIDC). npm exchanges the
       # OIDC token per package at publish time and falls back to REGISTRY_TOKEN
       # for GitHub Packages, where the exchange is unsupported.
+{{/if}}
       id-token: write
     outputs:
-      published: ${{ steps.release.outputs.published }}
-      published-versions: ${{ steps.release.outputs.published-versions }}
-      release-summary: ${{ steps.release.outputs.release-summary }}
+      published: $\{{ steps.release.outputs.published }}
+      published-versions: $\{{ steps.release.outputs.published-versions }}
+      release-summary: $\{{ steps.release.outputs.release-summary }}
 
     steps:
       - name: Generate bot app token
         id: app_token
         uses: actions/create-github-app-token@v2
         with:
-          app-id: ${{ secrets.RELEASER_ID }}
-          private-key: ${{ secrets.RELEASER_PRIVATE_KEY }}
+          app-id: $\{{ secrets.RELEASER_ID }}
+          private-key: $\{{ secrets.RELEASER_PRIVATE_KEY }}
 
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          token: ${{ steps.app_token.outputs.token }}
+          token: $\{{ steps.app_token.outputs.token }}
 
       - name: Setup project
         uses: pixpilot/github-actions/setup-pnpm-project@v1
+{{#if releaseToGitHubPackages}}
         env:
           # setup-node's .npmrc reads ${NODE_AUTH_TOKEN}; it is needed to install
           # @pixpilot-private dependencies. npm-auth-token would not work here:
           # it writes ~/.npmrc, which setup-node's NPM_CONFIG_USERCONFIG shadows.
-          NODE_AUTH_TOKEN: ${{ secrets.PIXPILOT_PRIVATE_REGISTRY_TOKEN }}
+          NODE_AUTH_TOKEN: $\{{ secrets.PIXPILOT_PRIVATE_REGISTRY_TOKEN }}
+{{/if}}
         with:
+{{#if releaseToGitHubPackages}}
           registry-url: 'https://npm.pkg.github.com'
           # setup-node defaults the scope to the repository owner. Left to that
           # default it would send @pixpilot-private packages to npmjs, and
           # redirect the public @pixpilot packages this repo consumes to GitHub
           # Packages — breaking both the publish and the install.
           scope: '@pixpilot-private'
+{{else}}
+          registry-url: 'https://registry.npmjs.org'
+{{/if}}
           build: 'false'
 
       - name: Release
         id: release
         uses: pixpilot/changesets-autopilot@v1
         with:
-          GITHUB_TOKEN: ${{ steps.app_token.outputs.token }}
+          GITHUB_TOKEN: $\{{ steps.app_token.outputs.token }}
+{{#if releaseToGitHubPackages}}
           # GitHub Packages auth. Must be a token with write:packages on the
           # package scope. npmjs packages authenticate via OIDC (id-token above),
           # not this token. https://github.com/pixpilot-private
-          REGISTRY_TOKEN: ${{ secrets.PIXPILOT_PRIVATE_REGISTRY_TOKEN }}
+          REGISTRY_TOKEN: $\{{ secrets.PIXPILOT_PRIVATE_REGISTRY_TOKEN }}
           # npm provenance is unsupported on npm.pkg.github.com and for packages
           # published from a private repository.
           provenance: 'false'
+{{else}}
+          provenance: 'true'
+{{/if}}
 
   notify:
     name: Notify Release Status
@@ -90,11 +104,11 @@ jobs:
       - name: Send Telegram release-status notification
         uses: pixpilot/notify-action@v1
         with:
-          status: ${{ contains(needs.*.result, 'failure') && 'failure' || contains(needs.*.result, 'cancelled') && 'cancelled' || 'success' }}
+          status: $\{{ contains(needs.*.result, 'failure') && 'failure' || contains(needs.*.result, 'cancelled') && 'cancelled' || 'success' }}
           notify-on: any
           # Names the released versions; an empty title falls back to the generated one.
-          title: ${{ needs.release.outputs.published == 'true' && format('Released {0} ({1})', needs.release.outputs.published-versions, github.repository) || '' }}
+          title: $\{{ needs.release.outputs.published == 'true' && format('Released {0} ({1})', needs.release.outputs.published-versions, github.repository) || '' }}
           # Published packages, why nothing was published, or why the release failed.
-          message: ${{ needs.release.outputs.release-summary }}
-          telegram-bot-token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          telegram-chat-id: ${{ secrets.TELEGRAM_CHAT_ID }}
+          message: $\{{ needs.release.outputs.release-summary }}
+          telegram-bot-token: $\{{ secrets.TELEGRAM_BOT_TOKEN }}
+          telegram-chat-id: $\{{ secrets.TELEGRAM_CHAT_ID }}

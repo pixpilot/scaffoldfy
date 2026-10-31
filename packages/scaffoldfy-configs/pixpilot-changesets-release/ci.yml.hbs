@@ -1,0 +1,55 @@
+# GitHub Actions CI workflow for pnpm-based TypeScript project
+# This workflow runs tests, linting, type checks, and formatting checks on PRs and workflow calls
+
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+      - master
+      - next
+  pull_request:
+    branches:
+      - main
+      - master
+      - next
+  workflow_call:
+{{#if releaseToGitHubPackages}}
+    # Declared so release.yml can pass it; called workflows get no secrets otherwise.
+    secrets:
+      PIXPILOT_PRIVATE_REGISTRY_TOKEN:
+        required: false
+{{/if}}
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    name: JavaScript Tests
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup project
+        uses: pixpilot/github-actions/setup-pnpm-project@v1
+{{#if releaseToGitHubPackages}}
+        env:
+          # Read by setup-node's .npmrc to install @pixpilot-private dependencies.
+          NODE_AUTH_TOKEN: $\{{ secrets.PIXPILOT_PRIVATE_REGISTRY_TOKEN }}
+        with:
+          registry-url: 'https://npm.pkg.github.com'
+          # Only route @pixpilot-private to GitHub Packages; @pixpilot stays on npmjs.
+          scope: '@pixpilot-private'
+{{/if}}
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Prettier check
+        run: pnpm format
+
+      - name: TypeScript check
+        run: pnpm typecheck
+
+      - name: Run tests
+        run: pnpm test

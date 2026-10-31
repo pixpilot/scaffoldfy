@@ -19,59 +19,29 @@
     {
       "id": "pixpilot-admin-changesets-release-create",
       "name": "Setup Changesets Release Workflow",
-      "description": "Adds a GitHub Actions workflow for Changesets-based releases",
+      "description": "Adds a GitHub Actions workflow for Changesets-based releases, publishing to npmjs or, for GitHub Packages, under @pixpilot-private",
       "enabled": {
         "type": "condition",
-        "value": "pixpilot_project == true && releaseToGitHubPackages != true"
+        "value": "pixpilot_project == true"
       },
       "type": "write",
       "config": {
-        "templateFile": "release.yml",
+        "templateFile": "release.yml.hbs",
         "file": ".github/workflows/release.yml"
       }
     },
     {
-      "id": "pixpilot-admin-changesets-release-create-github-packages",
-      "name": "Setup Changesets Release Workflow (GitHub Packages)",
-      "description": "Adds a Changesets release workflow publishing to GitHub Packages under @pixpilot-private instead of npmjs",
+      "id": "pixpilot-admin-changesets-release-ci",
+      "name": "Setup CI Workflow",
+      "description": "Writes ci.yml; for GitHub Packages it declares and uses PIXPILOT_PRIVATE_REGISTRY_TOKEN, since GitHub rejects release.yml unless ci.yml declares the secret it passes",
       "enabled": {
         "type": "condition",
-        "value": "pixpilot_project == true && releaseToGitHubPackages == true"
+        "value": "pixpilot_project == true"
       },
       "type": "write",
       "config": {
-        "templateFile": "release-github-packages.yml",
-        "file": ".github/workflows/release.yml"
-      }
-    },
-    {
-      "id": "pixpilot-admin-changesets-release-ci-declare-registry-token",
-      "name": "Declare registry token in CI workflow",
-      "description": "release-github-packages.yml passes PIXPILOT_PRIVATE_REGISTRY_TOKEN to ci.yml; GitHub rejects release.yml unless ci.yml declares it under workflow_call",
-      "enabled": {
-        "type": "condition",
-        "value": "pixpilot_project == true && releaseToGitHubPackages == true"
-      },
-      "type": "regex-replace",
-      "config": {
-        "file": ".github/workflows/ci.yml",
-        "pattern": "\\n  workflow_call:\\n",
-        "replacement": "\n  workflow_call:\n    # Declared so release.yml can pass it; called workflows get no secrets otherwise.\n    secrets:\n      PIXPILOT_PRIVATE_REGISTRY_TOKEN:\n        required: false\n"
-      }
-    },
-    {
-      "id": "pixpilot-admin-changesets-release-ci-use-registry-token",
-      "name": "Use registry token in CI install",
-      "description": "Lets the CI install authenticate to GitHub Packages for @pixpilot-private dependencies",
-      "enabled": {
-        "type": "condition",
-        "value": "pixpilot_project == true && releaseToGitHubPackages == true"
-      },
-      "type": "regex-replace",
-      "config": {
-        "file": ".github/workflows/ci.yml",
-        "pattern": "\\n        uses: pixpilot/github-actions/setup-pnpm-project@v1\\n",
-        "replacement": "\n        uses: pixpilot/github-actions/setup-pnpm-project@v1\n        env:\n          # Read by setup-node's .npmrc to install @pixpilot-private dependencies.\n          NODE_AUTH_TOKEN: ${{ secrets.PIXPILOT_PRIVATE_REGISTRY_TOKEN }}\n        with:\n          registry-url: 'https://npm.pkg.github.com'\n          # Only route @pixpilot-private to GitHub Packages; @pixpilot stays on npmjs.\n          scope: '@pixpilot-private'\n"
+        "templateFile": "ci.yml.hbs",
+        "file": ".github/workflows/ci.yml"
       }
     },
     {
