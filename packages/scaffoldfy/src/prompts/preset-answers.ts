@@ -59,6 +59,9 @@ export function coercePresetAnswer(prompt: PromptDefinition, raw: string): unkno
     }
 
     case 'select': {
+      if (!Array.isArray(prompt.choices)) {
+        throw new TypeError(`Choices for prompt "${prompt.id}" have not been resolved`);
+      }
       const choice = prompt.choices.find((c) => String(c.value) === raw);
       if (choice == null) {
         throw PromptValidationError.invalidValue(

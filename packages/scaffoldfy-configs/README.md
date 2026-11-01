@@ -180,6 +180,13 @@ npx @pixpilot/scaffoldfy@latest --config https://unpkg.com/@pixpilot/scaffoldfy-
 
 After installing both `@pixpilot/scaffoldfy` and `@pixpilot/scaffoldfy-configs`, you can use any of the templates by referencing them in your scaffoldfy configuration.
 
+Run the workspace package generator from the pnpm workspace root with pnpm on
+the PATH. After entering a package name, select an existing parent directory
+that matches `pnpm-workspace.yaml`. Existing package directories, excluded paths,
+and destinations that already exist are omitted. Empty groups are included;
+create a group directory first if it does not exist. Location discovery requires
+Node.js 22.5 or newer and ignores paths containing shell-sensitive characters.
+
 ### Example: Using the license-file template
 
 Create a `scaffoldfy.json` file in your project:

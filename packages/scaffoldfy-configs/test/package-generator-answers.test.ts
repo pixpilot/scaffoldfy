@@ -29,7 +29,6 @@ describe('package generator answers', () => {
     });
 
     expect(resolveConfigAnswers(configs)).toEqual({
-      workspace: 'packages',
       bundler: 'tsdown',
       author: 'PixPilot',
       authorEmail: 'm.doaie@hotmail.com',

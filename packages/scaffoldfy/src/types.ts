@@ -175,7 +175,9 @@ export interface NumberPrompt extends BasePrompt {
 
 export interface SelectPrompt extends BasePrompt {
   type: 'select';
-  choices: Array<{ name: string; value: string | number | boolean }>;
+  choices:
+    | Array<{ name: string; value: string | number | boolean }>
+    | ExecFileValueConfig;
   default?: DefaultValue<string | number | boolean>;
 }
 

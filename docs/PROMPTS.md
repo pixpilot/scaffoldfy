@@ -177,6 +177,24 @@ Present a list of choices to the user.
 }
 ```
 
+Select choices can also come from an `exec-file` script. The script must write a
+non-empty JSON array of `{ "name": ..., "value": ... }` objects to stdout.
+It runs when the prompt is reached, with earlier answers available to parameter
+interpolation; preset answers are checked against the resulting choices.
+
+```json
+{
+  "id": "workspace",
+  "type": "select",
+  "message": "Select a workspace",
+  "choices": {
+    "type": "exec-file",
+    "file": "./scripts/list-workspaces.cjs",
+    "parameters": { "PACKAGE_NAME": "{{packageBaseName}}" }
+  }
+}
+```
+
 ### 5. Checkbox Prompt
 
 Present a list of choices and let the user select multiple values. The answer is an array of selected choice values.

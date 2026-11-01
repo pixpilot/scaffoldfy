@@ -6,7 +6,7 @@ import type { CurrentConfigurationContext, PromptDefinition } from '../types';
 import { checkbox, confirm, input, number, password, select } from '@inquirer/prompts';
 import { PromptValidationError } from '../errors/other';
 import { transformerManager } from '../transformers/index';
-import { evaluateEnabledAsync, log } from '../utils';
+import { evaluateEnabledAsync, log, resolveValue } from '../utils';
 import { evaluateRequiredAsync } from '../utils/evaluate-required';
 import { coercePresetAnswer, getPresetAnswer } from './preset-answers';
 import { resolveDefaultValue } from './resolve-default-value';
@@ -31,7 +31,8 @@ export async function collectPrompts(
     return answers;
   }
 
-  for (const prompt of prompts) {
+  for (const definition of prompts) {
+    let prompt = definition;
     // First check if the template this prompt belongs to is enabled
     // This allows lazy evaluation - templates can be conditionally enabled based on previous prompts
     if (prompt.$configEnabled != null) {
@@ -62,6 +63,35 @@ export async function collectPrompts(
       answers[prompt.id] = undefined;
       // eslint-disable-next-line no-continue
       continue;
+    }
+
+    if (prompt.type === 'select' && !Array.isArray(prompt.choices)) {
+      const choices: unknown = await resolveValue(prompt.choices, {
+        id: prompt.id,
+        contextType: 'Prompt',
+        context: currentContext,
+        ...(prompt.$sourceUrl != null && { sourceUrl: prompt.$sourceUrl }),
+      });
+      if (
+        !Array.isArray(choices) ||
+        choices.length === 0 ||
+        choices.some(
+          (choice: unknown) =>
+            typeof choice !== 'object' ||
+            choice === null ||
+            typeof (choice as { name?: unknown }).name !== 'string' ||
+            (choice as { name: string }).name.trim() === '' ||
+            !['string', 'number', 'boolean'].includes(
+              typeof (choice as { value?: unknown }).value,
+            ),
+        )
+      ) {
+        throw new Error(`Could not resolve valid choices for prompt "${prompt.id}"`);
+      }
+      prompt = {
+        ...prompt,
+        choices: choices as Array<{ name: string; value: string | number | boolean }>,
+      };
     }
 
     // Use a preset answer (e.g. `--set id=value`) instead of asking
@@ -206,6 +236,8 @@ export async function collectPrompts(
         }
 
         case 'select': {
+          if (!Array.isArray(prompt.choices))
+            throw new Error(`Choices for prompt "${prompt.id}" have not been resolved`);
           const selectOptions: {
             message: string;
             choices: Array<{ name: string; value: string | number | boolean }>;

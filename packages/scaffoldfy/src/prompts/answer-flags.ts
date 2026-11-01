@@ -267,7 +267,9 @@ function formatPromptDescription(
 
   if (prompt.type === 'select' || prompt.type === 'checkbox') {
     details.push(
-      `choices: ${prompt.choices.map((choice) => String(choice.value)).join(', ')}`,
+      Array.isArray(prompt.choices)
+        ? `choices: ${prompt.choices.map((choice) => String(choice.value)).join(', ')}`
+        : 'choices: resolved at runtime',
     );
   }
 

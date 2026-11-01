@@ -34,7 +34,10 @@ export function validatePrompts(prompts: PromptDefinition[]): string[] {
     }
 
     // Type-specific validation
-    if (prompt.type === 'select' || prompt.type === 'checkbox') {
+    if (
+      (prompt.type === 'select' || prompt.type === 'checkbox') &&
+      Array.isArray(prompt.choices)
+    ) {
       if (prompt.choices.length === 0) {
         errors.push(
           `${prompt.type === 'select' ? 'Select' : 'Checkbox'} prompt "${prompt.id}" must have at least one choice`,

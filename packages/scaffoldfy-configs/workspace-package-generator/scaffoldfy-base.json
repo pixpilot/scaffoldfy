@@ -21,7 +21,11 @@
     },
     {
       "id": "relativeRootPath",
-      "value": "../../"
+      "value": {
+        "type": "exec-file",
+        "file": "./scripts/relative-root-path.cjs",
+        "parameters": { "SCAFFOLDFY_WORKSPACE": "{{workspace}}" }
+      }
     },
     {
       "id": "bundler",
@@ -72,23 +76,21 @@
 
   "prompts": [
     {
-      "id": "workspace",
-      "type": "select",
-      "message": "Select target workspace",
-      "choices": [
-        { "name": "packages", "value": "packages" },
-        { "name": "apps", "value": "apps" },
-        { "name": "tooling", "value": "tooling" },
-        { "name": "api", "value": "api" }
-      ],
-      "default": "packages"
-    },
-    {
       "id": "packageBaseName",
       "type": "input",
       "message": "Enter the package name (e.g. my-package)",
       "required": true,
       "transformers": ["kebabcase"]
+    },
+    {
+      "id": "workspace",
+      "type": "select",
+      "message": "Select target workspace",
+      "choices": {
+        "type": "exec-file",
+        "file": "./scripts/find-package-locations.cjs",
+        "parameters": { "SCAFFOLDFY_PACKAGE_NAME": "{{packageBaseName}}" }
+      }
     },
     {
       "id": "packageType",

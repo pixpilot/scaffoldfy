@@ -395,7 +395,10 @@ describe('formatPromptsHelp', () => {
             id: 'workspaces',
             type: 'checkbox',
             message: 'Workspaces',
-            choices: workspacePrompt.choices,
+            choices: [
+              { name: 'packages', value: 'packages' },
+              { name: 'apps', value: 'apps' },
+            ],
           },
         ],
       },

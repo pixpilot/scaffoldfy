@@ -469,24 +469,45 @@
           "description": "Maximum value (for number prompts)"
         },
         "choices": {
-          "type": "array",
-          "description": "Available choices (for select and checkbox prompts)",
-          "items": {
-            "type": "object",
-            "required": ["name", "value"],
-            "properties": {
-              "name": {
-                "type": "string",
-                "description": "Display name for the choice"
-              },
-              "value": {
-                "description": "Value to use when this choice is selected"
+          "oneOf": [
+            {
+              "type": "array",
+              "description": "Available choices (for select and checkbox prompts)",
+              "items": {
+                "type": "object",
+                "required": ["name", "value"],
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "Display name for the choice"
+                  },
+                  "value": {
+                    "description": "Value to use when this choice is selected"
+                  }
+                }
               }
+            },
+            {
+              "type": "object",
+              "required": ["type", "file"],
+              "properties": {
+                "type": { "const": "exec-file" },
+                "file": { "type": "string" },
+                "runtime": { "enum": ["node", "bash", "sh", "pwsh", "powershell"] },
+                "args": { "type": "array", "items": { "type": "string" } },
+                "parameters": { "type": "object", "additionalProperties": { "type": "string" } },
+                "cwd": { "type": "string" }
+              },
+              "additionalProperties": false
             }
-          }
+          ]
         }
       },
       "allOf": [
+        {
+          "if": { "properties": { "type": { "const": "checkbox" } } },
+          "then": { "properties": { "choices": { "type": "array" } } }
+        },
         {
           "if": {
             "properties": {
