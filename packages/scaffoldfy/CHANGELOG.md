@@ -1,5 +1,11 @@
 # @pixpilot/scaffoldfy
 
+## 0.60.0
+
+### Minor Changes
+
+- enhance dynamic choice resolution for select prompts
+
 ## 0.59.0
 
 ### Minor Changes
